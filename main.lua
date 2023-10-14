@@ -10,6 +10,7 @@ local characterTable = {
     [1]  = {
         name = "Default",
         description = "You're good ol' vanilla cast, at least to sm64ex-coop...",
+        credit = "Nintendo / sm4ex-coop Team",
         model = nil,
         forceChar = nil,
     },
@@ -56,6 +57,14 @@ local function chat_command(msg)
         menu = not menu
         return true
     end
+    
+    if msg == "list" then
+        for i = 1, #characterTable do
+            djui_chat_message_create("Model " .. i .. " / " ..  #characterTable.. "\n" .."Model Name: " .. characterTable[i].name.. "\n" .."Model by: " .. characterTable[i].credit.. "\n" .."Model Description: " .. characterTable[i].description)
+        end
+        return true
+    end
+
 
     for i = 1, #characterTable do
         if characterTable[i].name == msg then
@@ -65,6 +74,7 @@ local function chat_command(msg)
         end
     end
     djui_chat_message_create("Invalid Model Name Entered")
+    return true
 end
 
 hook_chat_command("char-select", "Opens the Character Select Menu", chat_command)
@@ -86,6 +96,7 @@ _G.charSelect.character_add = function(name, description, credit, modelInfo, for
     characterTable[#characterTable + 1] = {
         name = name,
         description = description,
+        credit = credit,
         model = modelInfo,
         forceChar = forceChar,
     }
