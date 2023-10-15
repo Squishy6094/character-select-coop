@@ -11,7 +11,7 @@ local characterTable = {
         name = "Default",
         description = "You're good ol' vanilla cast, at least to sm64ex-coop...",
         credit = "Nintendo / sm4ex-coop Team",
-        color = {r = 255, g = 0, b = 0},
+        color = {r = 255, g = 255, b = 255},
         model = nil,
         forceChar = nil,
     },
@@ -35,19 +35,6 @@ local function nullify_inputs(m)
     m.controller.stickMag = 0 
     m.controller.buttonPressed = 0 
     m.controller.buttonDown = 0
-end
-
-local function lerp(a, b, t) return a * (1 - t) + b * t end
-
---- @param a Color
---- @param b Color
---- @return Color
-local function color_lerp(a, b, t)
-    return {
-        r = lerp(a.r, b.r, t),
-        g = lerp(a.g, b.g, t),
-        b = lerp(a.b, b.b, t)
-    }
 end
 
 -------------------
