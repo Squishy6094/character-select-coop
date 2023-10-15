@@ -13,22 +13,16 @@ local E_MODEL_BABENOOK = smlua_model_util_get_id("mina_geo")
 local E_MODEL_PBEAR = smlua_model_util_get_id("kuma_geo")
 local E_MODEL_TOONNOOK = smlua_model_util_get_id("skipper_geo")
 
-local CT_MARIO = CT_MARIO
-local CT_LUIGI = CT_LUIGI
-local CT_TOAD = CT_TOAD
-local CT_WALUIGI = CT_WALUIGI
-local CT_WARIO = CT_WARIO
-
 if _G.charSelectExists then
-    _G.charSelect.character_add("Yuyake", nil, "AngelicMiracles", E_MODEL_LION, CT_MARIO)
-    _G.charSelect.character_add("Angel Yuyake", nil, "AngelicMiracles", E_MODEL_ANGEL, CT_MARIO)
-    _G.charSelect.character_add("Brianna", nil, "AngelicMiracles", E_MODEL_WOLFGIRL, CT_MARIO)
-    _G.charSelect.character_add("Veph", nil, "AngelicMiracles", E_MODEL_DOLPHFOX, CT_MARIO)
-    _G.charSelect.character_add("Dirk", nil, "AngelicMiracles", E_MODEL_HUSKY, CT_MARIO)
-    _G.charSelect.character_add("Flare", nil, "AngelicMiracles", E_MODEL_LIZARD, CT_MARIO)
-    _G.charSelect.character_add("Ryder", nil, "AngelicMiracles", E_MODEL_FALCON, CT_MARIO)
-    _G.charSelect.character_add("Bradly", nil, "AngelicMiracles", E_MODEL_WOLFBOY, CT_MARIO)
-    _G.charSelect.character_add("Mina", nil, "AngelicMiracles", E_MODEL_BABENOOK, CT_MARIO)
-    _G.charSelect.character_add("Kuma", nil, "AngelicMiracles", E_MODEL_PBEAR, CT_WARIO)
-    _G.charSelect.character_add("Skipper", nil, "AngelicMiracles", E_MODEL_TOONNOOK, CT_MARIO)
+    _G.charSelect.character_add("Yuyake", nil, "AngelicMiracles", nil, E_MODEL_LION, CT_MARIO)
+    _G.charSelect.character_add("Angel Yuyake", nil, "AngelicMiracles", nil, E_MODEL_ANGEL, CT_MARIO)
+    _G.charSelect.character_add("Brianna", nil, "AngelicMiracles", nil, E_MODEL_WOLFGIRL, CT_MARIO)
+    _G.charSelect.character_add("Veph", nil, "AngelicMiracles", nil, E_MODEL_DOLPHFOX, CT_MARIO)
+    _G.charSelect.character_add("Dirk", nil, "AngelicMiracles", nil, E_MODEL_HUSKY, CT_MARIO)
+    _G.charSelect.character_add("Flare", nil, "AngelicMiracles", nil, E_MODEL_LIZARD, CT_MARIO)
+    _G.charSelect.character_add("Ryder", nil, "AngelicMiracles", nil, E_MODEL_FALCON, CT_MARIO)
+    _G.charSelect.character_add("Bradly", nil, "AngelicMiracles", nil, E_MODEL_WOLFBOY, CT_MARIO)
+    _G.charSelect.character_add("Mina", nil, "AngelicMiracles", nil, E_MODEL_BABENOOK, CT_MARIO)
+    _G.charSelect.character_add("Kuma", nil, "AngelicMiracles", nil, E_MODEL_PBEAR, CT_WARIO)
+    _G.charSelect.character_add("Skipper", nil, "AngelicMiracles", nil, E_MODEL_TOONNOOK, CT_MARIO)
 end
