@@ -19,6 +19,14 @@ local characterTable = {
     },
 }
 
+local charColorTable = {
+    [CT_MARIO] = {r = 255, g = 150, b = 150},
+    [CT_LUIGI] = {r = 150, g = 255, b = 150},
+    [CT_TOAD] = {r = 100, g = 100, b = 255},
+    [CT_WARIO] = {r = 255, g = 255, b = 150},
+    [CT_WALUIGI] = {r = 191, g = 100, b = 255},
+}
+
 ---------------
 -- Functions --
 ---------------
@@ -47,6 +55,7 @@ local function mario_update(m)
             end
         else
             gPlayerSyncTable[0].modelId = nil
+            --characterTable[1].color = charColorTable[m.character]
         end
     end
     if gPlayerSyncTable[m.playerIndex].modelId ~= nil then
