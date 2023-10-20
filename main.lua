@@ -1,5 +1,5 @@
--- name: *Character Selector*
--- description: WIP
+-- name: -Character Select-
+-- description: A Library / API made to make adding custom skins as simple as possible!
 
 local menu = false
 local currChar = 1
@@ -17,12 +17,6 @@ local characterTable = {
         model = nil,
         forceChar = nil,
     },
-}
-
-local animTable = {
-    [1] = {
-        name = "Default"
-    }
 }
 
 ---------------
