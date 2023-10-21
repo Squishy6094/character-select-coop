@@ -61,6 +61,21 @@ local function string_space_to_underscore(string)
     return s
 end
 
+local function load_prefered_char()
+    if mod_storage_load("PrefChar") ~= nil and mod_storage_load("PrefChar") ~= "Default" then
+        for i = 2, #characterTable do
+            if characterTable[i].name == mod_storage_load("PrefChar") then
+                currChar = i
+                djui_chat_message_create('Your Prefered Character "'..mod_storage_load("PrefChar")..'" was applied!')
+                TEXT_PREF_LOAD = mod_storage_load("PrefChar")
+                break
+            end
+        end
+    else
+        mod_storage_save("PrefChar", "Default")
+    end
+end
+
 -- Localized Functions --
 local mod_storage_save = mod_storage_save
 local mod_storage_load = mod_storage_load
@@ -84,6 +99,13 @@ local djui_hud_render_texture = djui_hud_render_texture
 -------------------
 
 local stallFrame = 0
+
+-- Respecfully, GO FUCK YOURSELVES. I hate EVERY SINGLE ONE OF YOU. Your lives are NOTHING. You serve ZERO PURPOSE. You should kill yourselves, NOW!
+local ignored_surfaces = {
+    SURFACE_BURNING, SURFACE_QUICKSAND, SURFACE_INSTANT_QUICKSAND, SURFACE_INSTANT_MOVING_QUICKSAND, SURFACE_DEEP_MOVING_QUICKSAND, SURFACE_INSTANT_QUICKSAND, SURFACE_DEEP_QUICKSAND, SURFACE_SHALLOW_MOVING_QUICKSAND,
+    SURFACE_SHALLOW_QUICKSAND, SURFACE_WARP, SURFACE_LOOK_UP_WARP, SURFACE_WOBBLING_WARP, SURFACE_INSTANT_WARP_1B, SURFACE_INSTANT_WARP_1C, SURFACE_INSTANT_WARP_1D, SURFACE_INSTANT_WARP_1E
+}
+-- Yes floral gave me permission to use this table full of USELESS PIECES OF SHIT :3
 
 --- @param m MarioState
 local function mario_update(m)
@@ -109,8 +131,9 @@ local function mario_update(m)
             gLakituState.pos.y = m.pos.y + 100
             gLakituState.pos.z = m.pos.z + coss(m.faceAngle.y) * 500
 
-            if m.forwardVel == 0 and m.pos.y == m.floorHeight then
-                m.action = ACT_READING_NPC_DIALOG
+            if m.forwardVel == 0 and m.pos.y == m.floorHeight and not ignored_surfaces[m.floor.type] then
+                set_mario_action(m, ACT_IDLE, 0)
+                set_mario_animation(m, MARIO_ANIM_STAR_DANCE)
             end
         else
             camera_unfreeze()
@@ -118,18 +141,7 @@ local function mario_update(m)
 
         -- Load Prefered Character
         if stallFrame == 1 then
-            if mod_storage_load("PrefChar") ~= nil and mod_storage_load("PrefChar") ~= "Default" then
-                for i = 2, #characterTable do
-                    if characterTable[i].name == mod_storage_load("PrefChar") then
-                        currChar = i
-                        djui_chat_message_create('Your Prefered Character "'..mod_storage_load("PrefChar")..'" was applied!')
-                        TEXT_PREF_LOAD = mod_storage_load("PrefChar")
-                        break
-                    end
-                end
-            else
-                mod_storage_save("PrefChar", "Default")
-            end
+            load_prefered_char()
         end
         stallFrame = stallFrame + 1
     end
@@ -139,7 +151,7 @@ local function mario_update(m)
 end
 
 local function set_model(o, id)
-    if id == E_MODEL_MARIO or id == E_MODEL_LUIGI or id == E_MODEL_TOAD_PLAYER or id == E_MODEL_WALUIGI or id == E_MODEL_WARIO then
+    if id == E_MODEL_MARIO then
         local i = network_local_index_from_global(o.globalPlayerIndex)
         if gPlayerSyncTable[i].modelId ~= nil then
             obj_set_model_extended(o, gPlayerSyncTable[i].modelId)
