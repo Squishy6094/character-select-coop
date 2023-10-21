@@ -1,5 +1,5 @@
 -- name: -Character Select-
--- description: A Library / API made to make adding custom skins as simple as possible!
+-- description: A Library / API made to make adding\nCustom Characters as simple as possible!
 
 local menu = false
 local currChar = 1
@@ -8,23 +8,17 @@ local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 
 local TEX_HEADER = get_texture_info("char-select-text")
 
+local TEXT_PREF_LOAD = mod_storage_load("PrefChar")
+
 local characterTable = {
     [1]  = {
         name = "Default",
         description = "You're good ol' vanilla cast, at least to sm64ex-coop...",
-        credit = "Nintendo / sm4ex-coop Team",
-        color = {r = 255, g = 255, b = 255},
+        credit = "Nintendo / sm64ex-coop Team",
+        color = {r = 255, b = 100, g = 100},
         model = nil,
         forceChar = nil,
     },
-}
-
-local charColorTable = {
-    [CT_MARIO] = {r = 255, g = 150, b = 150},
-    [CT_LUIGI] = {r = 150, g = 255, b = 150},
-    [CT_TOAD] = {r = 100, g = 100, b = 255},
-    [CT_WARIO] = {r = 255, g = 255, b = 150},
-    [CT_WALUIGI] = {r = 191, g = 100, b = 255},
 }
 
 ---------------
@@ -41,9 +35,55 @@ local function nullify_inputs(m)
     m.controller.buttonDown = 0
 end
 
+local function string_underscore_to_space(string)
+    local s = ''
+    for i = 1, #string do
+        local c = string:sub(i,i)
+        if c ~= '_' then
+            s = s .. c
+        else
+            s = s .. " "
+        end
+    end
+    return s
+end
+
+local function string_space_to_underscore(string)
+    local s = ''
+    for i = 1, #string do
+        local c = string:sub(i,i)
+        if c ~= ' ' then
+            s = s .. c
+        else
+            s = s .. "_"
+        end
+    end
+    return s
+end
+
+-- Localized Functions --
+local mod_storage_save = mod_storage_save
+local mod_storage_load = mod_storage_load
+local camera_freeze = camera_freeze
+local camera_unfreeze = camera_unfreeze
+local network_local_index_from_global = network_local_index_from_global
+local obj_set_model_extended = obj_set_model_extended
+local djui_chat_message_create = djui_chat_message_create
+local djui_hud_set_resolution = djui_hud_set_resolution
+local djui_hud_set_font = djui_hud_set_font
+local djui_hud_set_color = djui_hud_set_color
+local djui_hud_get_screen_width = djui_hud_get_screen_width
+local djui_hud_get_screen_height = djui_hud_get_screen_height
+local djui_hud_render_rect = djui_hud_render_rect
+local djui_hud_print_text = djui_hud_print_text
+local djui_hud_render_texture = djui_hud_render_texture
+
+
 -------------------
 -- Model Handler --
 -------------------
+
+local stallFrame = 0
 
 --- @param m MarioState
 local function mario_update(m)
@@ -55,25 +95,51 @@ local function mario_update(m)
             end
         else
             gPlayerSyncTable[0].modelId = nil
-            --characterTable[1].color = charColorTable[m.character]
         end
+
+        if menu then
+            camera_freeze()
+            local focusPos = {
+                x = m.pos.x,
+                y = m.pos.y + 150,
+                z = m.pos.z,
+            }
+            vec3f_copy(gLakituState.focus, focusPos)
+            gLakituState.pos.x = m.pos.x + sins(m.faceAngle.y) * 500
+            gLakituState.pos.y = m.pos.y + 100
+            gLakituState.pos.z = m.pos.z + coss(m.faceAngle.y) * 500
+
+            if m.forwardVel == 0 and m.pos.y == m.floorHeight then
+                m.action = ACT_READING_NPC_DIALOG
+            end
+        else
+            camera_unfreeze()
+        end
+
+        -- Load Prefered Character
+        if stallFrame == 1 then
+            if mod_storage_load("PrefChar") ~= nil and mod_storage_load("PrefChar") ~= "Default" then
+                for i = 2, #characterTable do
+                    if characterTable[i].name == mod_storage_load("PrefChar") then
+                        currChar = i
+                        djui_chat_message_create('Your Prefered Character "'..mod_storage_load("PrefChar")..'" was applied!')
+                        TEXT_PREF_LOAD = mod_storage_load("PrefChar")
+                        break
+                    end
+                end
+            else
+                mod_storage_save("PrefChar", "Default")
+            end
+        end
+        stallFrame = stallFrame + 1
     end
     if gPlayerSyncTable[m.playerIndex].modelId ~= nil then
         obj_set_model_extended(m.marioObj, gPlayerSyncTable[m.playerIndex].modelId)
     end
-
-    if menu then
-        camera_freeze()
-        gLakituState.pos.x = m.pos.x + 500
-        gLakituState.pos.y = m.pos.y + 300
-        gLakituState.pos.z = m.pos.z + 500
-    else
-        camera_unfreeze()
-    end
 end
 
 local function set_model(o, id)
-    if id == E_MODEL_MARIO then
+    if id == E_MODEL_MARIO or id == E_MODEL_LUIGI or id == E_MODEL_TOAD_PLAYER or id == E_MODEL_WALUIGI or id == E_MODEL_WARIO then
         local i = network_local_index_from_global(o.globalPlayerIndex)
         if gPlayerSyncTable[i].modelId ~= nil then
             obj_set_model_extended(o, gPlayerSyncTable[i].modelId)
@@ -92,6 +158,7 @@ local animTimer = 0
 
 local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
+    djui_hud_set_font(FONT_NORMAL)
 
     local width = djui_hud_get_screen_width() + 1.2
     local height = djui_hud_get_screen_height()
@@ -107,6 +174,7 @@ local function on_hud_render()
 
         animTimer = animTimer + 1
 
+        local buttonColor = {}
         for i = -1, 4 do
             if characterTable[i + currChar] ~= nil then
                 buttonColor = characterTable[i + currChar].color
@@ -119,15 +187,15 @@ local function on_hud_render()
                 djui_hud_render_rect(x + 1, y + 1, 68, 18)
                 djui_hud_set_font(FONT_NORMAL)
                 djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
-                djui_hud_print_text(characterTable[currChar + i].name, x + 5, y + 5, 0.3)
+                djui_hud_print_text(string_underscore_to_space(characterTable[currChar + i].name), x + 5, y + 5, 0.3)
             end
         end
 
-        djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
+        djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
         djui_hud_render_rect(10, 55, 7, 180)
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(11, 56, 5, 178)
-        djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
+        djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
         djui_hud_render_rect(12, 57 + 176 * ((currChar - 1) / #characterTable), 3, 176/#characterTable)
 
         
@@ -136,6 +204,18 @@ local function on_hud_render()
         djui_hud_render_rect(width - 130, 0, 130, height)
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(width - 128, 2, 126, height - 4)
+        djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
+        djui_hud_set_font(FONT_NORMAL)
+
+        local TEXT_NAME = string_underscore_to_space(characterTable[currChar].name)
+        local TEXT_CREDIT = "By: "..characterTable[currChar].credit
+        local TEXT_PREF = 'Prefered Character: "'..string_underscore_to_space(TEXT_PREF_LOAD)..'"'
+        local TEXT_PREF_SAVE = "Press A to Set as Prefered Character"
+
+        djui_hud_print_text(TEXT_NAME, width - 65 - djui_hud_measure_text(TEXT_NAME)*0.35, 55, 0.7)
+        djui_hud_print_text(TEXT_CREDIT, width - 65 - djui_hud_measure_text(TEXT_CREDIT)*0.15, 75, 0.3)
+        djui_hud_print_text(TEXT_PREF, width - 65 - djui_hud_measure_text(TEXT_PREF)*0.15, height - 20, 0.3)
+        djui_hud_print_text(TEXT_PREF_SAVE, width - 65 - djui_hud_measure_text(TEXT_PREF_SAVE)*0.15, height - 30, 0.3)
 
         --Character Select Header
         djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
@@ -170,6 +250,11 @@ local function before_mario_update(m)
             end
             if m.controller.stickY > 60 then
                 currChar = currChar - 1
+                inputStallTimer = inputStallTo
+            end
+            if (m.controller.buttonPressed & A_BUTTON) ~= 0 then
+                mod_storage_save("PrefChar", characterTable[currChar].name)
+                TEXT_PREF_LOAD = characterTable[currChar].name
                 inputStallTimer = inputStallTo
             end
             if (m.controller.buttonPressed & B_BUTTON) ~= 0 then
@@ -226,6 +311,7 @@ _G.charSelect = {}
 
 _G.charSelect.character_add = function(name, description, credit, color, modelInfo, forceChar)
     if name == nil then name = "Untitled" end
+    name = string_space_to_underscore(name)
     if description == nil then description = "No description has been provided" end
     if credit == nil then credit = "Unknown" end
     if color == nil then color = {r = 255, g = 255, b = 255} end

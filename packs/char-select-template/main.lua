@@ -23,6 +23,8 @@ end
 --[[
     Notes:
     Function to Add Character can be used as many times as you need!
+
+    Underscores ( _ ) will be turned into spaces as a result of the save system
     
     You can use a Color Picker to get your RGB (decimal format) Color.
     The Color is used for the Menu and can be left as nil.
