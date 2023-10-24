@@ -10,8 +10,8 @@ local TEXT_MOD_NAME = "Character Template"
 
 if _G.charSelectExists then
 
--- Function to Add Character   |    Model Name     |        Description        |        Credit         |   Model Color (RGB 0-255)  |    Model Variable   | Forced Character
-    _G.charSelect.character_add("Custom Model Name", "Custom Model Description", "Custom Model Creator", {r = 255, g = 200, b = 200}, E_MODEL_CUSTOM_MODEL, CT_MARIO)
+-- Function to Add Character   |    Model Name     |                      Description                        |        Credit         |   Model Color (RGB 0-255)  |    Model Variable   | Forced Character
+    _G.charSelect.character_add("Custom Model Name", {"Custom Model Description", "Custom Model Description"}, "Custom Model Creator", {r = 255, g = 200, b = 200}, E_MODEL_CUSTOM_MODEL, CT_MARIO)
 
 else
 
@@ -23,9 +23,12 @@ end
 --[[
     Notes:
     Function to Add Character can be used as many times as you need!
-
-    Underscores ( _ ) will be turned into spaces as a result of the save system
+    Underscores ( _ ) in model names will be turned into spaces as a result of the save system
     
+    The Description uses a table, Allowing customization to line wraping
+    The Table should be formated {"Line 1", "Line 2", "etc."}
+    The is no real limit to how many lines you can make, but we reccommend 10-11 lines
+
     You can use a Color Picker to get your RGB (decimal format) Color.
     The Color is used for the Menu and can be left as nil.
 

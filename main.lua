@@ -8,14 +8,14 @@ local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 
 local TEX_HEADER = get_texture_info("char-select-text")
 
-local TEXT_PREF_LOAD = mod_storage_load("PrefChar")
+local TEXT_PREF_LOAD = "Default"
 
 local characterTable = {
     [1]  = {
         name = "Default",
-        description = "You're good ol' vanilla cast, at least to sm64ex-coop...",
+        description = {"The vanilla cast for sm64ex-coop!", "", "These Characters are interchangeable", "via the default Options Menu"},
         credit = "Nintendo / sm64ex-coop Team",
-        color = {r = 255, b = 100, g = 100},
+        color = {r = 255, b = 50, g = 50},
         model = nil,
         forceChar = nil,
     },
@@ -66,19 +66,18 @@ local function load_prefered_char()
         for i = 2, #characterTable do
             if characterTable[i].name == mod_storage_load("PrefChar") then
                 currChar = i
-                djui_chat_message_create('Your Prefered Character "'..mod_storage_load("PrefChar")..'" was applied!')
+                djui_chat_message_create('Your Prefered Character "'..string_underscore_to_space(mod_storage_load("PrefChar"))..'" was applied!')
                 TEXT_PREF_LOAD = mod_storage_load("PrefChar")
                 break
             end
         end
-    else
+    elseif mod_storage_load("PrefChar") == nil then
         mod_storage_save("PrefChar", "Default")
+        TEXT_PREF_LOAD = mod_storage_load("PrefChar")
     end
 end
 
 -- Localized Functions --
-local mod_storage_save = mod_storage_save
-local mod_storage_load = mod_storage_load
 local camera_freeze = camera_freeze
 local camera_unfreeze = camera_unfreeze
 local network_local_index_from_global = network_local_index_from_global
@@ -105,7 +104,7 @@ local ignored_surfaces = {
     SURFACE_BURNING, SURFACE_QUICKSAND, SURFACE_INSTANT_QUICKSAND, SURFACE_INSTANT_MOVING_QUICKSAND, SURFACE_DEEP_MOVING_QUICKSAND, SURFACE_INSTANT_QUICKSAND, SURFACE_DEEP_QUICKSAND, SURFACE_SHALLOW_MOVING_QUICKSAND,
     SURFACE_SHALLOW_QUICKSAND, SURFACE_WARP, SURFACE_LOOK_UP_WARP, SURFACE_WOBBLING_WARP, SURFACE_INSTANT_WARP_1B, SURFACE_INSTANT_WARP_1C, SURFACE_INSTANT_WARP_1D, SURFACE_INSTANT_WARP_1E
 }
--- Yes floral gave me permission to use this table full of USELESS PIECES OF SHIT :3
+-- Yes, floral gave me permission to use this table full of USELESS PIECES OF SHITS
 
 --- @param m MarioState
 local function mario_update(m)
@@ -143,7 +142,10 @@ local function mario_update(m)
         if stallFrame == 1 then
             load_prefered_char()
         end
-        stallFrame = stallFrame + 1
+
+        if stallFrame < 2 then
+            stallFrame = stallFrame + 1
+        end
     end
     if gPlayerSyncTable[m.playerIndex].modelId ~= nil then
         obj_set_model_extended(m.marioObj, gPlayerSyncTable[m.playerIndex].modelId)
@@ -221,11 +223,17 @@ local function on_hud_render()
 
         local TEXT_NAME = string_underscore_to_space(characterTable[currChar].name)
         local TEXT_CREDIT = "By: "..characterTable[currChar].credit
+        local TEXT_DESCRIPTION = "Character Description:"
+        local TEXT_DESCRIPTION_TABLE = characterTable[currChar].description
         local TEXT_PREF = 'Prefered Character: "'..string_underscore_to_space(TEXT_PREF_LOAD)..'"'
         local TEXT_PREF_SAVE = "Press A to Set as Prefered Character"
 
-        djui_hud_print_text(TEXT_NAME, width - 65 - djui_hud_measure_text(TEXT_NAME)*0.35, 55, 0.7)
-        djui_hud_print_text(TEXT_CREDIT, width - 65 - djui_hud_measure_text(TEXT_CREDIT)*0.15, 75, 0.3)
+        djui_hud_print_text(TEXT_NAME, width - 65 - djui_hud_measure_text(TEXT_NAME)*0.3, 55, 0.6)
+        djui_hud_print_text(TEXT_CREDIT, width - 65 - djui_hud_measure_text(TEXT_CREDIT)*0.15, 72, 0.3)
+        djui_hud_print_text(TEXT_DESCRIPTION, width - 65 - djui_hud_measure_text(TEXT_DESCRIPTION)*0.2, 85, 0.4)
+        for i = 1, #TEXT_DESCRIPTION_TABLE do
+            djui_hud_print_text(TEXT_DESCRIPTION_TABLE[i], width - 65 - djui_hud_measure_text(TEXT_DESCRIPTION_TABLE[i])*0.15, 90 + i*9, 0.3)
+        end
         djui_hud_print_text(TEXT_PREF, width - 65 - djui_hud_measure_text(TEXT_PREF)*0.15, height - 20, 0.3)
         djui_hud_print_text(TEXT_PREF_SAVE, width - 65 - djui_hud_measure_text(TEXT_PREF_SAVE)*0.15, height - 30, 0.3)
 
@@ -265,8 +273,8 @@ local function before_mario_update(m)
                 inputStallTimer = inputStallTo
             end
             if (m.controller.buttonPressed & A_BUTTON) ~= 0 then
-                mod_storage_save("PrefChar", characterTable[currChar].name)
                 TEXT_PREF_LOAD = characterTable[currChar].name
+                mod_storage_save("PrefChar", TEXT_PREF_LOAD)
                 inputStallTimer = inputStallTo
             end
             if (m.controller.buttonPressed & B_BUTTON) ~= 0 then
@@ -286,28 +294,8 @@ hook_event(HOOK_ON_HUD_RENDER, on_hud_render)
 -- Commands --
 --------------
 
-local function chat_command(msg)
-    if msg == "" then
-        menu = not menu
-        return true
-    end
-    
-    if msg == "list" then
-        for i = 1, #characterTable do
-            djui_chat_message_create("Model " .. i .. " / " ..  #characterTable.. "\n" .."Model Name: " .. characterTable[i].name.. "\n" .."Model by: " .. characterTable[i].credit.. "\n" .."Model Description: " .. characterTable[i].description)
-        end
-        return true
-    end
-
-
-    for i = 1, #characterTable do
-        if characterTable[i].name == msg then
-            currChar = i
-            djui_chat_message_create("Character set to " .. characterTable[currChar].name .." by ".. characterTable[currChar].credit .."\n".. characterTable[currChar].description)
-            return true
-        end
-    end
-    djui_chat_message_create("Invalid Model Name Entered")
+local function chat_command()
+    menu = not menu
     return true
 end
 
@@ -324,7 +312,7 @@ _G.charSelect = {}
 _G.charSelect.character_add = function(name, description, credit, color, modelInfo, forceChar)
     if name == nil then name = "Untitled" end
     name = string_space_to_underscore(name)
-    if description == nil then description = "No description has been provided" end
+    if description == nil then description = {"No description has been provided"} end
     if credit == nil then credit = "Unknown" end
     if color == nil then color = {r = 255, g = 255, b = 255} end
     if modelInfo == nil then modelInfo = E_MODEL_ARMATURE end
