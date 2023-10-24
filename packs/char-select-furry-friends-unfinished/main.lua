@@ -13,6 +13,8 @@ local E_MODEL_BABENOOK = smlua_model_util_get_id("mina_geo")
 local E_MODEL_PBEAR = smlua_model_util_get_id("kuma_geo")
 local E_MODEL_TOONNOOK = smlua_model_util_get_id("skipper_geo")
 
+local TEXT_MOD_NAME = "Furry Friends [Unreleased Build]"
+
 if _G.charSelectExists then
     _G.charSelect.character_add("Yuyake", nil, "AngelicMiracles", nil, E_MODEL_LION, CT_MARIO)
     _G.charSelect.character_add("Angel Yuyake", nil, "AngelicMiracles", nil, E_MODEL_ANGEL, CT_MARIO)
@@ -25,4 +27,6 @@ if _G.charSelectExists then
     _G.charSelect.character_add("Mina", nil, "AngelicMiracles", nil, E_MODEL_BABENOOK, CT_MARIO)
     _G.charSelect.character_add("Kuma", nil, "AngelicMiracles", nil, E_MODEL_PBEAR, CT_WARIO)
     _G.charSelect.character_add("Skipper", nil, "AngelicMiracles", nil, E_MODEL_TOONNOOK, CT_MARIO)
+else
+    djui_popup_create("\\#ffffdc\\\n"..TEXT_MOD_NAME.."\nRequires the Character Select Mod\nto use as a Library!\n\nPlease turn on the Character Select Mod\nand Restart the Room!", 6)        
 end
