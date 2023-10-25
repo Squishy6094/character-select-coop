@@ -2,7 +2,7 @@
 ### Gives full descriptions of all API functions and their use cases
 
 ## The Basics (Adding a Character)
- This section goes over the basics of adding a Model via the API, you can follow this step-by-step with the [Model Template](//packs/char-select-template/).
+ This section goes over the basics of adding a Model via the API, you can follow this step-by-step with the [Model Template](https://github.com/SQUISHY6094/character-select-coop/tree/main/packs/char-select-template).
 
  This section can be skipped if you're just looking for all of the functions.
 
