@@ -327,22 +327,17 @@ _G.charSelect.character_add = function(name, description, credit, color, modelIn
     }
 end
 
-_G.charSelect.character_edit = function(ogName, name, description, credit, color, modelInfo, forceChar)
-    local locatedTable
-    for i = 2, #characterTable do
-        if characterTable[i].name == ogName then
-            locatedTable = i
-        end
-    end
-    if name == nil then name = characterTable[locatedTable].name end
-    name = string_space_to_underscore(name)
-    if description == nil then description = characterTable[locatedTable].description end
-    if credit == nil then credit = characterTable[locatedTable].credit end
-    if color == nil then color = characterTable[locatedTable].color end
-    if modelInfo == nil then modelInfo = characterTable[locatedTable].model end
-    if forceChar == nil then forceChar = characterTable[locatedTable] end
 
-    characterTable[locatedTable] = {
+_G.charSelect.character_edit = function(charNum, name, description, credit, color, modelInfo, forceChar)
+    if name == nil then name = characterTable[charNum].name end
+    name = string_space_to_underscore(name)
+    if description == nil then description = characterTable[charNum].description end
+    if credit == nil then credit = characterTable[charNum].credit end
+    if color == nil then color = characterTable[charNum].color end
+    if modelInfo == nil then modelInfo = characterTable[charNum].model end
+    if forceChar == nil then forceChar = characterTable[charNum] end
+
+    characterTable[charNum] = {
         name = name,
         description = description,
         credit = credit,
@@ -354,6 +349,10 @@ end
 
 _G.charSelect.character_get_current_name = function ()
     return characterTable[currChar].name
+end
+
+_G.charSelect.character_get_current_model_number = function ()
+    return currChar
 end
 
 _G.charSelect.character_get_number_from_string = function (string)
