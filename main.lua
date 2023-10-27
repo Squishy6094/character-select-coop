@@ -361,4 +361,5 @@ _G.charSelect.character_get_number_from_string = function (string)
             return i
         end
     end
+    return false
 end
