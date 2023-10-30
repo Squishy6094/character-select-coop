@@ -82,6 +82,8 @@ local camera_freeze = camera_freeze
 local camera_unfreeze = camera_unfreeze
 local network_local_index_from_global = network_local_index_from_global
 local obj_set_model_extended = obj_set_model_extended
+local hud_hide = hud_hide
+local hud_show = hud_show
 local djui_chat_message_create = djui_chat_message_create
 local djui_hud_set_resolution = djui_hud_set_resolution
 local djui_hud_set_font = djui_hud_set_font
@@ -120,6 +122,7 @@ local function mario_update(m)
 
         if menu then
             camera_freeze()
+            hud_hide()
             local focusPos = {
                 x = m.pos.x,
                 y = m.pos.y + 150,
@@ -136,6 +139,7 @@ local function mario_update(m)
             end
         else
             camera_unfreeze()
+            hud_show()
         end
 
         -- Load Prefered Character
@@ -178,13 +182,16 @@ local function on_hud_render()
     local height = djui_hud_get_screen_height()
     local widthHalf = width*0.5
     local heightHalf = height*0.5
+    local widthScale = math.max(width, 321.2)*0.00311332503
 
     if menu then
         --Character Buttons
+
+        local x = 135 * widthScale * 0.8
         djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
-        djui_hud_render_rect(0, 0, 130, height)
+        djui_hud_render_rect(0, 0, x, height)
         djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_render_rect(2, 2, 126, height - 4)
+        djui_hud_render_rect(2, 2, x - 4, height - 4)
 
         animTimer = animTimer + 1
 
@@ -193,31 +200,32 @@ local function on_hud_render()
             if characterTable[i + currChar] ~= nil then
                 buttonColor = characterTable[i + currChar].color
                 djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
-                local x = 30
-                if i == 0 then x = x + math.sin(animTimer*0.05)*2.5 + 5 end
+                local buttonX = 20 * widthScale
+                if i == 0 then buttonX = buttonX + math.sin(animTimer*0.05)*2.5 + 5 end
                 local y = (i + 2) * 30 + 30
-                djui_hud_render_rect(x, y, 70, 20)
+                djui_hud_render_rect(buttonX, y, 70, 20)
                 djui_hud_set_color(0, 0, 0, 255)
-                djui_hud_render_rect(x + 1, y + 1, 68, 18)
+                djui_hud_render_rect(buttonX + 1, y + 1, 68, 18)
                 djui_hud_set_font(FONT_NORMAL)
                 djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
-                djui_hud_print_text(string_underscore_to_space(characterTable[currChar + i].name), x + 5, y + 5, 0.3)
+                djui_hud_print_text(string_underscore_to_space(characterTable[currChar + i].name), buttonX + 5, y + 5, 0.3)
             end
         end
 
+        -- Scroll Bar
         djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
-        djui_hud_render_rect(10, 55, 7, 180)
+        djui_hud_render_rect(7 * widthScale, 55, 7, 180)
         djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_render_rect(11, 56, 5, 178)
+        djui_hud_render_rect(7 * widthScale + 1, 56, 5, 178)
         djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
-        djui_hud_render_rect(12, 57 + 176 * ((currChar - 1) / #characterTable), 3, 176/#characterTable)
+        djui_hud_render_rect(7 * widthScale + 2, 57 + 176 * ((currChar - 1) / #characterTable), 3, 176/#characterTable)
 
         
         --Character Description
         djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
-        djui_hud_render_rect(width - 130, 0, 130, height)
+        djui_hud_render_rect(width - x, 0, x, height)
         djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_render_rect(width - 128, 2, 126, height - 4)
+        djui_hud_render_rect(width - x + 2, 2, x - 4, height - 4)
         djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
         djui_hud_set_font(FONT_NORMAL)
 
@@ -228,14 +236,15 @@ local function on_hud_render()
         local TEXT_PREF = 'Prefered Character: "'..string_underscore_to_space(TEXT_PREF_LOAD)..'"'
         local TEXT_PREF_SAVE = "Press A to Set as Prefered Character"
 
-        djui_hud_print_text(TEXT_NAME, width - 65 - djui_hud_measure_text(TEXT_NAME)*0.3, 55, 0.6)
-        djui_hud_print_text(TEXT_CREDIT, width - 65 - djui_hud_measure_text(TEXT_CREDIT)*0.15, 72, 0.3)
-        djui_hud_print_text(TEXT_DESCRIPTION, width - 65 - djui_hud_measure_text(TEXT_DESCRIPTION)*0.2, 85, 0.4)
+        local textX = x * 0.5
+        djui_hud_print_text(TEXT_NAME, width - textX - djui_hud_measure_text(TEXT_NAME)*0.3, 55, 0.6)
+        djui_hud_print_text(TEXT_CREDIT, width - textX - djui_hud_measure_text(TEXT_CREDIT)*0.15, 72, 0.3)
+        djui_hud_print_text(TEXT_DESCRIPTION, width - textX - djui_hud_measure_text(TEXT_DESCRIPTION)*0.2, 85, 0.4)
         for i = 1, #TEXT_DESCRIPTION_TABLE do
-            djui_hud_print_text(TEXT_DESCRIPTION_TABLE[i], width - 65 - djui_hud_measure_text(TEXT_DESCRIPTION_TABLE[i])*0.15, 90 + i*9, 0.3)
+            djui_hud_print_text(TEXT_DESCRIPTION_TABLE[i], width - textX - djui_hud_measure_text(TEXT_DESCRIPTION_TABLE[i])*0.15, 90 + i*9, 0.3)
         end
-        djui_hud_print_text(TEXT_PREF, width - 65 - djui_hud_measure_text(TEXT_PREF)*0.15, height - 20, 0.3)
-        djui_hud_print_text(TEXT_PREF_SAVE, width - 65 - djui_hud_measure_text(TEXT_PREF_SAVE)*0.15, height - 30, 0.3)
+        djui_hud_print_text(TEXT_PREF, width - textX - djui_hud_measure_text(TEXT_PREF)*0.15, height - 20, 0.3)
+        djui_hud_print_text(TEXT_PREF_SAVE, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE)*0.15, height - 30, 0.3)
 
         --Character Select Header
         djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
