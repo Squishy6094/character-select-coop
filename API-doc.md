@@ -69,3 +69,6 @@ A function that returns a character's number in the table based off the inputted
 Character's Name String
 
 Example: `"Custom Model"`
+
+## _G.charSelect.version_get
+A function that returns the current version of the mod in a string format

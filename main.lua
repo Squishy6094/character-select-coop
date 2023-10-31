@@ -1,7 +1,10 @@
 -- name: -Character Select-
--- description: A Library / API made to make adding\nCustom Characters as simple as possible!
+-- description: A Library / API made to make adding and\nusing Custom Characters as simple as possible!\n\nCreated by:\\#008800\\ Squishy 6094\n\\#dcdcdc\\Concepts by:\\#FF8800\\ AngelicMiracles\\#AAAAFF\\\n\nGithub:\nSQUISHY6094/character-select-coop
+local modVersion = "In-Dev"
 
 local menu = false
+local options = false
+
 local currChar = 1
 
 local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
@@ -172,9 +175,16 @@ hook_event(HOOK_OBJECT_SET_MODEL, set_model)
 -- Menu Handler --
 ------------------
 
-local animTimer = 0
+local buttonAnimTimer = 0
+
+local optionAnimTimer = -200
+local optionAnimTimerCap = optionAnimTimer
+
+local TEXT_RES_UNSUPPORTED = "Your Current Resolution is Unsupported!!!"
 
 local function on_hud_render()
+    local m = gMarioStates[0]
+
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_font(FONT_NORMAL)
 
@@ -185,6 +195,7 @@ local function on_hud_render()
     local widthScale = math.max(width, 321.2)*0.00311332503
 
     if menu then
+
         --Character Buttons
 
         local x = 135 * widthScale * 0.8
@@ -193,7 +204,7 @@ local function on_hud_render()
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(2, 2, x - 4, height - 4)
 
-        animTimer = animTimer + 1
+        buttonAnimTimer = buttonAnimTimer + 1
 
         local buttonColor = {}
         for i = -1, 4 do
@@ -201,7 +212,7 @@ local function on_hud_render()
                 buttonColor = characterTable[i + currChar].color
                 djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
                 local buttonX = 20 * widthScale
-                if i == 0 then buttonX = buttonX + math.sin(animTimer*0.05)*2.5 + 5 end
+                if i == 0 then buttonX = buttonX + math.sin(buttonAnimTimer*0.05)*2.5 + 5 end
                 local y = (i + 2) * 30 + 30
                 djui_hud_render_rect(buttonX, y, 70, 20)
                 djui_hud_set_color(0, 0, 0, 255)
@@ -253,7 +264,31 @@ local function on_hud_render()
         djui_hud_render_rect(2, 2, width - 4, 46)
         djui_hud_set_color(255, 255, 255, 255)
         djui_hud_render_texture(TEX_HEADER, widthHalf - 128, 10, 1, 1)
+        djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
+        djui_hud_set_font(FONT_TINY)
+        djui_hud_print_text("Version: "..modVersion, 5, 3, 0.5)
 
+        if width < 321.2 then
+            djui_hud_print_text(TEXT_RES_UNSUPPORTED, 5, 39, 0.5)
+        end
+
+        if options or optionAnimTimer > optionAnimTimerCap then
+            djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
+            djui_hud_render_rect(width*0.5 - 50 * widthScale, 55 + optionAnimTimer * -1, 100 * widthScale, 200)
+            djui_hud_set_color(0, 0, 0, 255)
+            djui_hud_render_rect(width*0.5 - 50 * widthScale + 2, 55 + optionAnimTimer * -1 + 2, 100 * widthScale - 4, 196)
+        end
+        if options then
+            if optionAnimTimer < -1 then
+                optionAnimTimer = optionAnimTimer/1.1
+            end
+        else
+            if optionAnimTimer > optionAnimTimerCap then
+                optionAnimTimer = optionAnimTimer*1.2
+            end
+        end
+    else
+        options = false
     end
 end
 
@@ -263,7 +298,7 @@ local inputStallTo = 15
 local function before_mario_update(m)
     if m.playerIndex ~= 0 then return end
     if inputStallTimer > 0 then inputStallTimer = inputStallTimer - 1 end
-    if menu then
+    if menu and not options then
         if inputStallTimer == 0 then
             if (m.controller.buttonPressed & D_JPAD) ~= 0 then
                 currChar = currChar + 1
@@ -289,9 +324,23 @@ local function before_mario_update(m)
             if (m.controller.buttonPressed & B_BUTTON) ~= 0 then
                 menu = false
             end
+            if (m.controller.buttonPressed & START_BUTTON) ~= 0 then
+                options = true
+            end
         end
         if currChar > #characterTable then currChar = 1 end
         if currChar < 1 then currChar = #characterTable end
+        nullify_inputs(m)
+        if is_game_paused() then
+            m.controller.buttonPressed = START_BUTTON
+        end
+    end
+
+    if options then
+        if (m.controller.buttonPressed & B_BUTTON) ~= 0 then
+            options = false
+            inputStallTimer = inputStallTo
+        end
         nullify_inputs(m)
     end
 end
@@ -371,4 +420,8 @@ _G.charSelect.character_get_number_from_string = function (string)
         end
     end
     return false
+end
+
+_G.charSelect.version_get = function ()
+    return modVersion
 end
