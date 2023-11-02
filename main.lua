@@ -33,7 +33,7 @@ local optionTableRef = {
 
 local optionTable = {
     [optionTableRef.openInputs] = {
-        name = "Inputs to Open Menu",
+        name = "Menu Inputs",
         toggle = tonumber(mod_storage_load("MenuInput")),
         toggleSaveName = "MenuInput",
         toggleDefault = 0,
@@ -204,6 +204,12 @@ local function mario_update(m)
     if gPlayerSyncTable[m.playerIndex].modelId ~= nil then
         obj_set_model_extended(m.marioObj, gPlayerSyncTable[m.playerIndex].modelId)
     end
+
+    --Set Pref to Default Check
+    if optionTable[optionTableRef.prefToDefault].toggle > 0 then
+        mod_storage_save("PrefChar", "Default")
+        optionTable[optionTableRef.prefToDefault].toggle = 0
+    end
 end
 
 local function set_model(o, id)
@@ -229,6 +235,8 @@ local optionAnimTimerCap = optionAnimTimer
 
 local TEXT_OPTIONS_HEADER = "Options"
 local TEXT_RES_UNSUPPORTED = "Your Current Resolution is Unsupported!!!"
+local TEXT_PREF_SAVE = "Press A to Set as Prefered Character"
+local TEXT_Z_OPEN = "Z Button - Character Select"
 
 local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
@@ -249,7 +257,9 @@ local function on_hud_render()
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(2, 2, x - 4, height - 4)
 
-        buttonAnimTimer = buttonAnimTimer + 1
+        if optionTable[optionTableRef.anims].toggle > 0 then
+            buttonAnimTimer = buttonAnimTimer + 1
+        end
 
         local buttonColor = {}
         for i = -1, 4 do
@@ -290,7 +300,6 @@ local function on_hud_render()
         local TEXT_DESCRIPTION = "Character Description:"
         local TEXT_DESCRIPTION_TABLE = characterTable[currChar].description
         local TEXT_PREF = 'Prefered Character: "'..string_underscore_to_space(TEXT_PREF_LOAD)..'"'
-        local TEXT_PREF_SAVE = "Press A to Set as Prefered Character"
 
         local textX = x * 0.5
         djui_hud_print_text(TEXT_NAME, width - textX - djui_hud_measure_text(TEXT_NAME)*0.3, 55, 0.6)
@@ -331,33 +340,50 @@ local function on_hud_render()
 
             for i = 1, #optionTable do
                 local toggleName = optionTable[i].name
-                local scale = 0.6
-                local yOffset = 95 + i * 9 + optionAnimTimer * -1
+                local scale = 0.5
+                local yOffset = 95 + i * 9 * widthScale + optionAnimTimer * -1
                 if i == currOption then
                     djui_hud_set_font(FONT_NORMAL)
-                    scale = 0.35
+                    scale = 0.3
                     yOffset = yOffset - 1
                     if optionTable[i].toggleNames[optionTable[i].toggle + 1] ~= "" then
-                        toggleName = toggleName .. " - " .. optionTable[i].toggleNames[optionTable[i].toggle + 1]
+                        toggleName = "> " .. toggleName .. " - " .. optionTable[i].toggleNames[optionTable[i].toggle + 1]
+                    else
+                        toggleName = "> " .. toggleName
                     end
                 else
                     djui_hud_set_font(FONT_TINY)
                 end
+                scale = scale * widthScale
                 djui_hud_print_text(toggleName, widthHalf - djui_hud_measure_text(toggleName)*scale*0.5, yOffset, scale)
             end
         end
         if options then
-            if optionAnimTimer < -1 then
-                optionAnimTimer = optionAnimTimer/1.1
+            if optionTable[optionTableRef.anims].toggle > 0 then
+                if optionAnimTimer < -1 then
+                    optionAnimTimer = optionAnimTimer/1.1
+                end
+            else
+                optionAnimTimer = -1
             end
         else
-            if optionAnimTimer > optionAnimTimerCap then
-                optionAnimTimer = optionAnimTimer*1.2
+            if optionTable[optionTableRef.anims].toggle > 0 then
+                if optionAnimTimer > optionAnimTimerCap then
+                    optionAnimTimer = optionAnimTimer*1.2
+                end
+            else
+                optionAnimTimer = optionAnimTimerCap
             end
         end
     else
         options = false
         optionAnimTimer = optionAnimTimerCap
+    end
+
+    if is_game_paused() and optionTable[optionTableRef.openInputs].toggle == 2 then
+        djui_hud_set_resolution(RESOLUTION_DJUI)
+        djui_hud_set_font(FONT_NORMAL)
+        djui_hud_set_color(255, 255, 255, 255)
     end
 end
 
