@@ -6,6 +6,7 @@ local menu = false
 local options = false
 
 local currChar = 1
+local currOption = 1
 
 local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 
@@ -21,6 +22,37 @@ local characterTable = {
         color = {r = 255, b = 50, g = 50},
         model = nil,
         forceChar = nil,
+    },
+}
+
+local optionTableRef = {
+    openInputs = 1,
+    anims = 2,
+    prefToDefault = 3,
+}
+
+local optionTable = {
+    [optionTableRef.openInputs] = {
+        name = "Inputs to Open Menu",
+        toggle = tonumber(mod_storage_load("MenuInput")),
+        toggleSaveName = "MenuInput",
+        toggleDefault = 0,
+        toggleMax = 2,
+        toggleNames = {"None", "Down D-pad", "Z (Pause Menu)"},
+    },
+    [optionTableRef.anims] = {
+        name = "Menu Animations",
+        toggle = tonumber(mod_storage_load("Anims")),
+        toggleSaveName = "Anims",
+        toggleDefault = 1,
+        toggleMax = 1,
+    },
+    [optionTableRef.prefToDefault] = {
+        name = "Set Preference to Default",
+        toggle = 0,
+        toggleDefault = 0,
+        toggleMax = 1,
+        toggleNames = {"", ""},
     },
 }
 
@@ -77,6 +109,20 @@ local function load_prefered_char()
     elseif mod_storage_load("PrefChar") == nil then
         mod_storage_save("PrefChar", "Default")
         TEXT_PREF_LOAD = mod_storage_load("PrefChar")
+    end
+end
+
+local function failsafe_options()
+    for i = 1, #optionTable do
+        if optionTable[i].toggle == nil then
+            optionTable[i].toggle = optionTable[i].toggleDefault
+            if optionTable[i].toggleSaveName ~= nil then
+                mod_storage_save(optionTable[i].toggleSaveName, tostring(optionTable[i].toggle))
+            end
+        end
+        if optionTable[i].toggleNames == nil then
+            optionTable[i].toggleNames = {"Off", "On"}
+        end
     end
 end
 
@@ -145,9 +191,10 @@ local function mario_update(m)
             hud_show()
         end
 
-        -- Load Prefered Character
+        -- Load Prefered Character and FailSafe Options
         if stallFrame == 1 then
             load_prefered_char()
+            failsafe_options()
         end
 
         if stallFrame < 2 then
@@ -180,24 +227,22 @@ local buttonAnimTimer = 0
 local optionAnimTimer = -200
 local optionAnimTimerCap = optionAnimTimer
 
+local TEXT_OPTIONS_HEADER = "Options"
 local TEXT_RES_UNSUPPORTED = "Your Current Resolution is Unsupported!!!"
 
 local function on_hud_render()
-    local m = gMarioStates[0]
-
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_font(FONT_NORMAL)
 
-    local width = djui_hud_get_screen_width() + 1.2
+    local width = djui_hud_get_screen_width() + 1.4
     local height = djui_hud_get_screen_height()
     local widthHalf = width*0.5
     local heightHalf = height*0.5
-    local widthScale = math.max(width, 321.2)*0.00311332503
+    local widthScale = math.max(width, 321.4)*0.00311332503
 
     if menu then
 
         --Character Buttons
-
         local x = 135 * widthScale * 0.8
         djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
         djui_hud_render_rect(0, 0, x, height)
@@ -267,16 +312,39 @@ local function on_hud_render()
         djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
         djui_hud_set_font(FONT_TINY)
         djui_hud_print_text("Version: "..modVersion, 5, 3, 0.5)
-
+        --Unsupported Res Warning
         if width < 321.2 then
             djui_hud_print_text(TEXT_RES_UNSUPPORTED, 5, 39, 0.5)
         end
 
+        --Options display
         if options or optionAnimTimer > optionAnimTimerCap then
+            djui_hud_set_color(0, 0, 0, 205 + math.max(-200, optionAnimTimer))
+            djui_hud_render_rect(0, 0, width, height)
             djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
             djui_hud_render_rect(width*0.5 - 50 * widthScale, 55 + optionAnimTimer * -1, 100 * widthScale, 200)
             djui_hud_set_color(0, 0, 0, 255)
             djui_hud_render_rect(width*0.5 - 50 * widthScale + 2, 55 + optionAnimTimer * -1 + 2, 100 * widthScale - 4, 196)
+            djui_hud_set_font(FONT_NORMAL)
+            djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
+            djui_hud_print_text(TEXT_OPTIONS_HEADER, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_HEADER)*0.5, 65 + optionAnimTimer * -1, 1)
+
+            for i = 1, #optionTable do
+                local toggleName = optionTable[i].name
+                local scale = 0.6
+                local yOffset = 95 + i * 9 + optionAnimTimer * -1
+                if i == currOption then
+                    djui_hud_set_font(FONT_NORMAL)
+                    scale = 0.35
+                    yOffset = yOffset - 1
+                    if optionTable[i].toggleNames[optionTable[i].toggle + 1] ~= "" then
+                        toggleName = toggleName .. " - " .. optionTable[i].toggleNames[optionTable[i].toggle + 1]
+                    end
+                else
+                    djui_hud_set_font(FONT_TINY)
+                end
+                djui_hud_print_text(toggleName, widthHalf - djui_hud_measure_text(toggleName)*scale*0.5, yOffset, scale)
+            end
         end
         if options then
             if optionAnimTimer < -1 then
@@ -289,6 +357,7 @@ local function on_hud_render()
         end
     else
         options = false
+        optionAnimTimer = optionAnimTimerCap
     end
 end
 
@@ -337,10 +406,38 @@ local function before_mario_update(m)
     end
 
     if options then
-        if (m.controller.buttonPressed & B_BUTTON) ~= 0 then
-            options = false
-            inputStallTimer = inputStallTo
+        if inputStallTimer == 0 then
+            if (m.controller.buttonPressed & D_JPAD) ~= 0 then
+                currOption = currOption + 1
+                inputStallTimer = inputStallTo
+            end
+            if (m.controller.buttonPressed & U_JPAD) ~= 0 then
+                currOption = currOption - 1
+                inputStallTimer = inputStallTo
+            end
+            if m.controller.stickY < -60 then
+                currOption = currOption + 1
+                inputStallTimer = inputStallTo
+            end
+            if m.controller.stickY > 60 then
+                currOption = currOption - 1
+                inputStallTimer = inputStallTo
+            end
+            if (m.controller.buttonPressed & A_BUTTON) ~= 0 then
+                optionTable[currOption].toggle = optionTable[currOption].toggle + 1
+                if optionTable[currOption].toggle > optionTable[currOption].toggleMax then optionTable[currOption].toggle = 0 end
+                if optionTable[currOption].toggleSaveName ~= nil then
+                    mod_storage_save(optionTable[currOption].toggleSaveName, tostring(optionTable[currOption].toggle))
+                end
+                inputStallTimer = inputStallTo
+            end
+            if (m.controller.buttonPressed & B_BUTTON) ~= 0 then
+                options = false
+                inputStallTimer = inputStallTo
+            end
         end
+        if currOption > #optionTable then currOption = 1 end
+        if currOption < 1 then currOption = #optionTable end
         nullify_inputs(m)
     end
 end
@@ -352,7 +449,7 @@ hook_event(HOOK_ON_HUD_RENDER, on_hud_render)
 -- Commands --
 --------------
 
-local function chat_command()
+local function chat_command(msg)
     menu = not menu
     return true
 end
