@@ -27,18 +27,27 @@ local characterTable = {
 
 local optionTableRef = {
     openInputs = 1,
-    anims = 2,
-    prefToDefault = 3,
+    MenuColor = 2,
+    anims = 3,
+    prefToDefault = 4,
 }
 
 local optionTable = {
     [optionTableRef.openInputs] = {
-        name = "Menu Inputs",
+        name = "Menu Bind",
         toggle = tonumber(mod_storage_load("MenuInput")),
         toggleSaveName = "MenuInput",
         toggleDefault = 0,
         toggleMax = 2,
         toggleNames = {"None", "Down D-pad", "Z (Pause Menu)"},
+    },
+    [optionTableRef.MenuColor] = {
+        name = "Menu Color",
+        toggle = tonumber(mod_storage_load("MenuColor")),
+        toggleSaveName = "MenuColor",
+        toggleDefault = 0,
+        toggleMax = 8,
+        toggleNames = {"Auto", "Red", "Orange", "Yellow", "Green", "Blue", "Purple", "White", "Black"},
     },
     [optionTableRef.anims] = {
         name = "Menu Animations",
@@ -54,6 +63,17 @@ local optionTable = {
         toggleMax = 1,
         toggleNames = {"", ""},
     },
+}
+
+menuColorTable = {
+    {r = 255, g = 50, b = 50},
+    {r = 255, g = 100, b = 50},
+    {r = 255, g = 255, b = 50},
+    {r = 50, g = 255, b = 50},
+    {r = 50, g = 50, b = 255},
+    {r = 130, g = 25, b = 130},
+    {r = 255, g = 255, b = 255},
+    {r = 50, g = 50, b = 50},
 }
 
 ---------------
@@ -208,6 +228,7 @@ local function mario_update(m)
     --Set Pref to Default Check
     if optionTable[optionTableRef.prefToDefault].toggle > 0 then
         mod_storage_save("PrefChar", "Default")
+        TEXT_PREF_LOAD = "Default"
         optionTable[optionTableRef.prefToDefault].toggle = 0
     end
 end
@@ -249,10 +270,15 @@ local function on_hud_render()
     local widthScale = math.max(width, 321.4)*0.00311332503
 
     if menu then
-
+        if optionTable[optionTableRef.MenuColor].toggle ~= 0 then
+            menuColor = menuColorTable[optionTable[optionTableRef.MenuColor].toggle]
+        else
+            menuColor = characterTable[currChar].color
+        end
+        
         --Character Buttons
         local x = 135 * widthScale * 0.8
-        djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_rect(0, 0, x, height)
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(2, 2, x - 4, height - 4)
@@ -279,20 +305,20 @@ local function on_hud_render()
         end
 
         -- Scroll Bar
-        djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_rect(7 * widthScale, 55, 7, 180)
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(7 * widthScale + 1, 56, 5, 178)
-        djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_rect(7 * widthScale + 2, 57 + 176 * ((currChar - 1) / #characterTable), 3, 176/#characterTable)
 
         
         --Character Description
-        djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_rect(width - x, 0, x, height)
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(width - x + 2, 2, x - 4, height - 4)
-        djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_set_font(FONT_NORMAL)
 
         local TEXT_NAME = string_underscore_to_space(characterTable[currChar].name)
@@ -312,13 +338,13 @@ local function on_hud_render()
         djui_hud_print_text(TEXT_PREF_SAVE, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE)*0.15, height - 30, 0.3)
 
         --Character Select Header
-        djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_rect(0, 0, width, 50)
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(2, 2, width - 4, 46)
         djui_hud_set_color(255, 255, 255, 255)
         djui_hud_render_texture(TEX_HEADER, widthHalf - 128, 10, 1, 1)
-        djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_set_font(FONT_TINY)
         djui_hud_print_text("Version: "..modVersion, 5, 3, 0.5)
         --Unsupported Res Warning
@@ -330,12 +356,12 @@ local function on_hud_render()
         if options or optionAnimTimer > optionAnimTimerCap then
             djui_hud_set_color(0, 0, 0, 205 + math.max(-200, optionAnimTimer))
             djui_hud_render_rect(0, 0, width, height)
-            djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
+            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_render_rect(width*0.5 - 50 * widthScale, 55 + optionAnimTimer * -1, 100 * widthScale, 200)
             djui_hud_set_color(0, 0, 0, 255)
             djui_hud_render_rect(width*0.5 - 50 * widthScale + 2, 55 + optionAnimTimer * -1 + 2, 100 * widthScale - 4, 196)
             djui_hud_set_font(FONT_NORMAL)
-            djui_hud_set_color(characterTable[currChar].color.r, characterTable[currChar].color.g, characterTable[currChar].color.b, 255)
+            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_print_text(TEXT_OPTIONS_HEADER, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_HEADER)*0.5, 65 + optionAnimTimer * -1, 1)
 
             for i = 1, #optionTable do
@@ -380,10 +406,14 @@ local function on_hud_render()
         optionAnimTimer = optionAnimTimerCap
     end
 
-    if is_game_paused() and optionTable[optionTableRef.openInputs].toggle == 2 then
+    if is_game_paused() and not djui_hud_is_pause_menu_created() and optionTable[optionTableRef.openInputs].toggle == 2 then
         djui_hud_set_resolution(RESOLUTION_DJUI)
+        local width = djui_hud_get_screen_width()
         djui_hud_set_font(FONT_NORMAL)
+        djui_hud_set_color(0, 0, 0, 255)
+        djui_hud_print_text(TEXT_Z_OPEN, width - djui_hud_measure_text(TEXT_Z_OPEN) - 19, 17, 1)
         djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_print_text(TEXT_Z_OPEN, width - djui_hud_measure_text(TEXT_Z_OPEN) - 20, 16, 1)
     end
 end
 
@@ -393,6 +423,15 @@ local inputStallTo = 15
 local function before_mario_update(m)
     if m.playerIndex ~= 0 then return end
     if inputStallTimer > 0 then inputStallTimer = inputStallTimer - 1 end
+
+    -- Menu Inputs
+    if (m.controller.buttonPressed & D_JPAD) ~= 0 and optionTable[optionTableRef.openInputs].toggle == 1 then
+        menu = true
+    end
+    if is_game_paused() and (m.controller.buttonPressed & Z_TRIG) ~= 0 and optionTable[optionTableRef.openInputs].toggle == 2 then
+        menu = true
+    end
+
     if menu and not options then
         if inputStallTimer == 0 then
             if (m.controller.buttonPressed & D_JPAD) ~= 0 then
@@ -475,7 +514,7 @@ hook_event(HOOK_ON_HUD_RENDER, on_hud_render)
 -- Commands --
 --------------
 
-local function chat_command(msg)
+local function chat_command()
     menu = not menu
     return true
 end
