@@ -27,34 +27,43 @@ local characterTable = {
 
 local optionTableRef = {
     openInputs = 1,
-    MenuColor = 2,
+    menuColor = 2,
     anims = 3,
-    prefToDefault = 4,
+    inputLatency = 4,
+    prefToDefault = 5,
 }
 
 local optionTable = {
     [optionTableRef.openInputs] = {
-        name = "Menu Bind",
+        name = "Open Binds",
         toggle = tonumber(mod_storage_load("MenuInput")),
         toggleSaveName = "MenuInput",
         toggleDefault = 0,
         toggleMax = 2,
-        toggleNames = {"None", "Down D-pad", "Z (Pause Menu)"},
+        toggleNames = {"None", "D-pad Down", "Z (Pause Menu)"},
     },
-    [optionTableRef.MenuColor] = {
+    [optionTableRef.menuColor] = {
         name = "Menu Color",
         toggle = tonumber(mod_storage_load("MenuColor")),
         toggleSaveName = "MenuColor",
         toggleDefault = 0,
-        toggleMax = 8,
-        toggleNames = {"Auto", "Red", "Orange", "Yellow", "Green", "Blue", "Purple", "White", "Black"},
+        toggleMax = 9,
+        toggleNames = {"Auto", "Red", "Orange", "Yellow", "Green", "Blue", "Pink", "Purple", "White", "Black"},
     },
     [optionTableRef.anims] = {
-        name = "Menu Animations",
+        name = "Animations",
         toggle = tonumber(mod_storage_load("Anims")),
         toggleSaveName = "Anims",
         toggleDefault = 1,
         toggleMax = 1,
+    },
+    [optionTableRef.inputLatency] = {
+        name = "Menu Scrolling Speed",
+        toggle = tonumber(mod_storage_load("Latency")),
+        toggleSaveName = "Latency",
+        toggleDefault = 1,
+        toggleMax = 2,
+        toggleNames = {"Slow", "Normal", "Fast"},
     },
     [optionTableRef.prefToDefault] = {
         name = "Set Preference to Default",
@@ -65,16 +74,27 @@ local optionTable = {
     },
 }
 
-menuColorTable = {
-    {r = 255, g = 50, b = 50},
-    {r = 255, g = 100, b = 50},
-    {r = 255, g = 255, b = 50},
-    {r = 50, g = 255, b = 50},
-    {r = 50, g = 50, b = 255},
-    {r = 130, g = 25, b = 130},
+local menuColorTable = {
+    {r = 255, g = 50,  b = 50 },
+    {r = 255, g = 100, b = 50 },
+    {r = 255, g = 255, b = 50 },
+    {r = 50,  g = 255, b = 50 },
+    {r = 50,  g = 50,  b = 255},
+    {r = 251, g = 148, b = 220},
+    {r = 130, g = 25,  b = 130},
     {r = 255, g = 255, b = 255},
-    {r = 50, g = 50, b = 50},
+    {r = 50,  g = 50,  b = 50 },
 }
+
+for i in pairs(gActiveMods) do
+    local name = gActiveMods[i].name
+    if (name:find("OMM Rebirth")) then
+        ommActive = true
+        optionTable[optionTableRef.openInputs].toggleNames[1] = "R + D-pad Down"
+    end
+end
+
+local latencyValueTable = {15, 10, 5}
 
 ---------------
 -- Functions --
@@ -192,6 +212,9 @@ local function mario_update(m)
         if menu then
             camera_freeze()
             hud_hide()
+            if _G.PersonalStarCounter ~= nil then
+                _G.PersonalStarCounter.hide_star_counters(true)
+            end
             local focusPos = {
                 x = m.pos.x,
                 y = m.pos.y + 150,
@@ -209,6 +232,9 @@ local function mario_update(m)
         else
             camera_unfreeze()
             hud_show()
+            if _G.PersonalStarCounter ~= nil then
+                _G.PersonalStarCounter.hide_star_counters(false)
+            end
         end
 
         -- Load Prefered Character and FailSafe Options
@@ -254,7 +280,7 @@ local buttonAnimTimer = 0
 local optionAnimTimer = -200
 local optionAnimTimerCap = optionAnimTimer
 
-local TEXT_OPTIONS_HEADER = "Options"
+local TEXT_OPTIONS_HEADER = "Menu Options"
 local TEXT_RES_UNSUPPORTED = "Your Current Resolution is Unsupported!!!"
 local TEXT_PREF_SAVE = "Press A to Set as Prefered Character"
 local TEXT_Z_OPEN = "Z Button - Character Select"
@@ -270,8 +296,8 @@ local function on_hud_render()
     local widthScale = math.max(width, 321.4)*0.00311332503
 
     if menu then
-        if optionTable[optionTableRef.MenuColor].toggle ~= 0 then
-            menuColor = menuColorTable[optionTable[optionTableRef.MenuColor].toggle]
+        if optionTable[optionTableRef.menuColor].toggle ~= 0 then
+            menuColor = menuColorTable[optionTable[optionTableRef.menuColor].toggle]
         else
             menuColor = characterTable[currChar].color
         end
@@ -293,7 +319,11 @@ local function on_hud_render()
                 buttonColor = characterTable[i + currChar].color
                 djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
                 local buttonX = 20 * widthScale
-                if i == 0 then buttonX = buttonX + math.sin(buttonAnimTimer*0.05)*2.5 + 5 end
+                if optionTable[optionTableRef.anims].toggle > 0 then
+                    if i == 0 then buttonX = buttonX + math.sin(buttonAnimTimer*0.05)*2.5 + 5 end
+                else
+                    if i == 0 then buttonX = buttonX + 10 end
+                end
                 local y = (i + 2) * 30 + 30
                 djui_hud_render_rect(buttonX, y, 70, 20)
                 djui_hud_set_color(0, 0, 0, 255)
@@ -360,6 +390,8 @@ local function on_hud_render()
             djui_hud_render_rect(width*0.5 - 50 * widthScale, 55 + optionAnimTimer * -1, 100 * widthScale, 200)
             djui_hud_set_color(0, 0, 0, 255)
             djui_hud_render_rect(width*0.5 - 50 * widthScale + 2, 55 + optionAnimTimer * -1 + 2, 100 * widthScale - 4, 196)
+            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+            djui_hud_render_rect(width*0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
             djui_hud_set_font(FONT_NORMAL)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_print_text(TEXT_OPTIONS_HEADER, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_HEADER)*0.5, 65 + optionAnimTimer * -1, 1)
@@ -408,12 +440,12 @@ local function on_hud_render()
 
     if is_game_paused() and not djui_hud_is_pause_menu_created() and optionTable[optionTableRef.openInputs].toggle == 2 then
         djui_hud_set_resolution(RESOLUTION_DJUI)
-        local width = djui_hud_get_screen_width()
+        local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_Z_OPEN)
         djui_hud_set_font(FONT_NORMAL)
         djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_print_text(TEXT_Z_OPEN, width - djui_hud_measure_text(TEXT_Z_OPEN) - 19, 17, 1)
+        djui_hud_print_text(TEXT_Z_OPEN, width - 19, 17, 1)
         djui_hud_set_color(255, 255, 255, 255)
-        djui_hud_print_text(TEXT_Z_OPEN, width - djui_hud_measure_text(TEXT_Z_OPEN) - 20, 16, 1)
+        djui_hud_print_text(TEXT_Z_OPEN, width - 20, 16, 1)
     end
 end
 
@@ -430,6 +462,10 @@ local function before_mario_update(m)
     end
     if is_game_paused() and (m.controller.buttonPressed & Z_TRIG) ~= 0 and optionTable[optionTableRef.openInputs].toggle == 2 then
         menu = true
+    end
+
+    if menu and inputStallTo ~= latencyValueTable[optionTable[optionTableRef.inputLatency].toggle + 1] then
+        inputStallTo = latencyValueTable[optionTable[optionTableRef.inputLatency].toggle + 1]
     end
 
     if menu and not options then
