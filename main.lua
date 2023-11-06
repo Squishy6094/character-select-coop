@@ -1,6 +1,6 @@
 -- name: -Character Select-
 -- description: A Library / API made to make adding and\nusing Custom Characters as simple as possible!\n\nCreated by:\\#008800\\ Squishy 6094\n\\#dcdcdc\\Concepts by:\\#FF8800\\ AngelicMiracles\\#AAAAFF\\\n\nGithub:\nSQUISHY6094/character-select-coop
-local modVersion = "In-Dev"
+local modVersion = "v1.0 (In-Dev)"
 
 local menu = false
 local options = false
@@ -17,7 +17,7 @@ local TEXT_PREF_LOAD = "Default"
 local characterTable = {
     [1]  = {
         name = "Default",
-        description = {"The vanilla cast for sm64ex-coop!", "", "These Characters are interchangeable", "via the default Options Menu"},
+        description = {"The vanilla cast for sm64ex-coop!", "", "These Characters are swappable", "via the default Options Menu"},
         credit = "Nintendo / sm64ex-coop Team",
         color = {r = 255, b = 50, g = 50},
         model = nil,
@@ -30,7 +30,8 @@ local optionTableRef = {
     menuColor = 2,
     anims = 3,
     inputLatency = 4,
-    prefToDefault = 5,
+    localModels = 5,
+    prefToDefault = 6,
 }
 
 local optionTable = {
@@ -64,6 +65,13 @@ local optionTable = {
         toggleDefault = 1,
         toggleMax = 2,
         toggleNames = {"Slow", "Normal", "Fast"},
+    },
+    [optionTableRef.localModels] = {
+        name = "Locally Display Models",
+        toggle = tonumber(mod_storage_load("localModels")),
+        toggleSaveName = "localModels",
+        toggleDefault = 1,
+        toggleMax = 1,
     },
     [optionTableRef.prefToDefault] = {
         name = "Set Preference to Default",
@@ -141,8 +149,8 @@ local function load_prefered_char()
         for i = 2, #characterTable do
             if characterTable[i].name == mod_storage_load("PrefChar") then
                 currChar = i
-                djui_chat_message_create('Your Prefered Character "'..string_underscore_to_space(mod_storage_load("PrefChar"))..'" was applied!')
                 TEXT_PREF_LOAD = mod_storage_load("PrefChar")
+                djui_popup_create('Character Select:\nYour Prefered Character\n"'..string_underscore_to_space(TEXT_PREF_LOAD)..'"\nwas applied successfully!', 4)
                 break
             end
         end
@@ -200,7 +208,7 @@ local ignored_surfaces = {
 --- @param m MarioState
 local function mario_update(m)
     if m.playerIndex == 0 then
-        if currChar ~= 1 then
+        if currChar ~= 1 and optionTable[optionTableRef.localModels].toggle > 0 then
             gPlayerSyncTable[0].modelId = characterTable[currChar].model
             if characterTable[currChar].forceChar ~= nil and gPlayerSyncTable[m.playerIndex].modelId ~= nil then
                 gNetworkPlayers[m.playerIndex].overrideModelIndex = characterTable[currChar].forceChar
@@ -284,6 +292,9 @@ local TEXT_OPTIONS_HEADER = "Menu Options"
 local TEXT_RES_UNSUPPORTED = "Your Current Resolution is Unsupported!!!"
 local TEXT_PREF_SAVE = "Press A to Set as Prefered Character"
 local TEXT_Z_OPEN = "Z Button - Character Select"
+local TEXT_LOCAL_MODEL_OFF = "Locally Display Models is Off"
+local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Menu"
+local TEXT_LOCAL_MODEL_OFF_PRESS_START = "(Press START to open the Options Menu)"
 
 local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
@@ -300,6 +311,14 @@ local function on_hud_render()
             menuColor = menuColorTable[optionTable[optionTableRef.menuColor].toggle]
         else
             menuColor = characterTable[currChar].color
+        end
+
+        if optionTable[optionTableRef.localModels].toggle == 0 then
+            djui_hud_set_color(0, 0, 0, 200)
+            djui_hud_render_rect(0, 0, width, height)
+            djui_hud_set_color(255, 255, 255, 255)
+            djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, widthHalf - djui_hud_measure_text(TEXT_LOCAL_MODEL_OFF)*0.15*widthScale, heightHalf, 0.3 * widthScale)
+            djui_hud_print_text(TEXT_LOCAL_MODEL_OFF_OPTIONS, widthHalf - djui_hud_measure_text(TEXT_LOCAL_MODEL_OFF_OPTIONS)*0.1*widthScale, heightHalf + 10*widthScale, 0.2*widthScale)
         end
         
         --Character Buttons
