@@ -190,7 +190,9 @@ local djui_hud_get_screen_height = djui_hud_get_screen_height
 local djui_hud_render_rect = djui_hud_render_rect
 local djui_hud_print_text = djui_hud_print_text
 local djui_hud_render_texture = djui_hud_render_texture
-
+local math_max = math.max
+local math_min = math.min
+local math_sin = math.sin
 
 -------------------
 -- Model Handler --
@@ -294,7 +296,6 @@ local TEXT_PREF_SAVE = "Press A to Set as Prefered Character"
 local TEXT_Z_OPEN = "Z Button - Character Select"
 local TEXT_LOCAL_MODEL_OFF = "Locally Display Models is Off"
 local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Menu"
-local TEXT_LOCAL_MODEL_OFF_PRESS_START = "(Press START to open the Options Menu)"
 
 local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
@@ -304,7 +305,7 @@ local function on_hud_render()
     local height = djui_hud_get_screen_height()
     local widthHalf = width*0.5
     local heightHalf = height*0.5
-    local widthScale = math.max(width, 321.4)*0.00311332503
+    local widthScale = math_max(width, 321.4)*0.00311332503
 
     if menu then
         if optionTable[optionTableRef.menuColor].toggle ~= 0 then
@@ -339,7 +340,7 @@ local function on_hud_render()
                 djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
                 local buttonX = 20 * widthScale
                 if optionTable[optionTableRef.anims].toggle > 0 then
-                    if i == 0 then buttonX = buttonX + math.sin(buttonAnimTimer*0.05)*2.5 + 5 end
+                    if i == 0 then buttonX = buttonX + math_sin(buttonAnimTimer*0.05)*2.5 + 5 end
                 else
                     if i == 0 then buttonX = buttonX + 10 end
                 end
@@ -403,7 +404,7 @@ local function on_hud_render()
 
         --Options display
         if options or optionAnimTimer > optionAnimTimerCap then
-            djui_hud_set_color(0, 0, 0, 205 + math.max(-200, optionAnimTimer))
+            djui_hud_set_color(0, 0, 0, 205 + math_max(-200, optionAnimTimer))
             djui_hud_render_rect(0, 0, width, height)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_render_rect(width*0.5 - 50 * widthScale, 55 + optionAnimTimer * -1, 100 * widthScale, 200)
@@ -412,13 +413,14 @@ local function on_hud_render()
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_render_rect(width*0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
             djui_hud_set_font(FONT_NORMAL)
-            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_print_text(TEXT_OPTIONS_HEADER, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_HEADER)*0.5, 65 + optionAnimTimer * -1, 1)
+            djui_hud_set_color(255, 255, 255, 255)
+            djui_hud_print_text(TEXT_OPTIONS_HEADER, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_HEADER)*0.3*widthScale, 65 + optionAnimTimer * -1, 0.6*widthScale)
 
+            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             for i = 1, #optionTable do
                 local toggleName = optionTable[i].name
                 local scale = 0.5
-                local yOffset = 95 + i * 9 * widthScale + optionAnimTimer * -1
+                local yOffset = 70 + 10 * math_min(widthScale, 1.8) + i * 9 * math_min(widthScale, 1.8) + optionAnimTimer * -1
                 if i == currOption then
                     djui_hud_set_font(FONT_NORMAL)
                     scale = 0.3
