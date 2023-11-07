@@ -186,7 +186,6 @@ local djui_hud_set_resolution = djui_hud_set_resolution
 local djui_hud_set_font = djui_hud_set_font
 local djui_hud_set_color = djui_hud_set_color
 local djui_hud_get_screen_width = djui_hud_get_screen_width
-local djui_hud_get_screen_height = djui_hud_get_screen_height
 local djui_hud_render_rect = djui_hud_render_rect
 local djui_hud_print_text = djui_hud_print_text
 local djui_hud_render_texture = djui_hud_render_texture
@@ -302,7 +301,7 @@ local function on_hud_render()
     djui_hud_set_font(FONT_NORMAL)
 
     local width = djui_hud_get_screen_width() + 1.4
-    local height = djui_hud_get_screen_height()
+    local height = 240
     local widthHalf = width*0.5
     local heightHalf = height*0.5
     local widthScale = math_max(width, 321.4)*0.00311332503
@@ -398,7 +397,7 @@ local function on_hud_render()
         djui_hud_set_font(FONT_TINY)
         djui_hud_print_text("Version: "..modVersion, 5, 3, 0.5)
         --Unsupported Res Warning
-        if width < 321.2 then
+        if width < 321.2 or width > 575 then
             djui_hud_print_text(TEXT_RES_UNSUPPORTED, 5, 39, 0.5)
         end
 
@@ -433,7 +432,7 @@ local function on_hud_render()
                 else
                     djui_hud_set_font(FONT_TINY)
                 end
-                scale = scale * widthScale
+                scale = scale * math_min(widthScale, 1.8)
                 djui_hud_print_text(toggleName, widthHalf - djui_hud_measure_text(toggleName)*scale*0.5, yOffset, scale)
             end
         end
