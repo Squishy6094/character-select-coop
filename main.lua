@@ -98,7 +98,7 @@ for i in pairs(gActiveMods) do
     local name = gActiveMods[i].name
     if (name:find("OMM Rebirth")) then
         ommActive = true
-        optionTable[optionTableRef.openInputs].toggleNames[1] = "R + D-pad Down"
+        optionTable[optionTableRef.openInputs].toggleNames[2] = "D-pad Down + R"
     end
 end
 
@@ -475,17 +475,24 @@ local inputStallTo = 15
 local function before_mario_update(m)
     if m.playerIndex ~= 0 then return end
     if inputStallTimer > 0 then inputStallTimer = inputStallTimer - 1 end
+    
+    if menu and inputStallTo ~= latencyValueTable[optionTable[optionTableRef.inputLatency].toggle + 1] then
+        inputStallTo = latencyValueTable[optionTable[optionTableRef.inputLatency].toggle + 1]
+    end
 
     -- Menu Inputs
-    if (m.controller.buttonPressed & D_JPAD) ~= 0 and optionTable[optionTableRef.openInputs].toggle == 1 then
-        menu = true
+    if not menu and (m.controller.buttonDown & D_JPAD) ~= 0 and optionTable[optionTableRef.openInputs].toggle == 1 then
+        if ommActive then
+            if (m.controller.buttonDown & R_TRIG) ~= 0 then
+                menu = true
+            end
+        else
+            menu = true
+        end
+        inputStallTimer = inputStallTo
     end
     if is_game_paused() and (m.controller.buttonPressed & Z_TRIG) ~= 0 and optionTable[optionTableRef.openInputs].toggle == 2 then
         menu = true
-    end
-
-    if menu and inputStallTo ~= latencyValueTable[optionTable[optionTableRef.inputLatency].toggle + 1] then
-        inputStallTo = latencyValueTable[optionTable[optionTableRef.inputLatency].toggle + 1]
     end
 
     if menu and not options then
