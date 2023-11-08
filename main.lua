@@ -256,6 +256,7 @@ local function mario_update(m)
             stallFrame = stallFrame + 1
         end
     end
+    
     if gPlayerSyncTable[m.playerIndex].modelId ~= nil then
         obj_set_model_extended(m.marioObj, gPlayerSyncTable[m.playerIndex].modelId)
     end
@@ -618,7 +619,7 @@ _G.charSelect.character_edit = function(charNum, name, description, credit, colo
     if credit == nil then credit = characterTable[charNum].credit end
     if color == nil then color = characterTable[charNum].color end
     if modelInfo == nil then modelInfo = characterTable[charNum].model end
-    if forceChar == nil then forceChar = characterTable[charNum] end
+    if forceChar == nil then forceChar = characterTable[charNum].forceChar end
 
     characterTable[charNum] = {
         name = name,
