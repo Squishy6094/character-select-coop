@@ -1,12 +1,12 @@
--- name: [CS] Pizza Tower Pack
--- description: A character swap mod using the Character Select's API.
+-- name: [CS] Pizizito's Pizza Tower Pack
+-- description: \\#ff7777\\This Mod Requires the Character Select Mod\nto use as a Library!
 
 local E_MODEL_PEPPERMAN = smlua_model_util_get_id("pepperman_geo")
 local E_MODEL_VIGILANTE = smlua_model_util_get_id("vigilante_geo")
 local E_MODEL_NOISE = smlua_model_util_get_id("noise_geo")
 local E_MODEL_PIZZELLE = smlua_model_util_get_id("pizzelle_geo")
 
-local TEXT_MOD_NAME = "Pizza Tower Pack"
+local TEXT_MOD_NAME = "Pizizito's Pizza Tower Pack"
 
 if _G.charSelectExists then
     _G.charSelect.character_add("Pepperman", {"The Perfect Pepper of Pizza Tower's", "First Floor"}, "Pizizito", {r = 225, g = 47, b = 0}, E_MODEL_PEPPERMAN, CT_WARIO)
