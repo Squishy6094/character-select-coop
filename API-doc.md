@@ -70,5 +70,8 @@ Character's Name String
 
 Example: `"Custom Model"`
 
-## _G.charSelect.version_get
+## _G.charSelect.version_get()
 A function that returns the current version of the mod in a string format
+
+## _G.charSelect.is_menu_open()
+A function that returns the either True or False if the Menu is Open or not.

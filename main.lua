@@ -651,3 +651,7 @@ end
 _G.charSelect.version_get = function ()
     return modVersion
 end
+
+_G.charSelect.is_menu_open = function ()
+    return menu
+end
