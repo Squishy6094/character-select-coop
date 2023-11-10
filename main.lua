@@ -392,7 +392,7 @@ local function on_hud_render()
         djui_hud_render_rect(0, 0, width, 50)
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(2, 2, width - 4, 46)
-        djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
         djui_hud_render_texture(TEX_HEADER, widthHalf - 128, 10, 1, 1)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_set_font(FONT_TINY)
@@ -413,7 +413,7 @@ local function on_hud_render()
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_render_rect(width*0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
             djui_hud_set_font(FONT_NORMAL)
-            djui_hud_set_color(255, 255, 255, 255)
+            djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
             djui_hud_print_text(TEXT_OPTIONS_HEADER, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_HEADER)*0.3*widthScale, 65 + optionAnimTimer * -1, 0.6*widthScale)
 
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
@@ -505,6 +505,14 @@ local function before_mario_update(m)
             if (m.controller.buttonPressed & U_JPAD) ~= 0 then
                 currChar = currChar - 1
                 inputStallTimer = inputStallTo
+            end
+            if (m.controller.buttonPressed & D_CBUTTONS) ~= 0 then
+                currChar = currChar + 1
+                inputStallTimer = 3
+            end
+            if (m.controller.buttonPressed & U_CBUTTONS) ~= 0 then
+                currChar = currChar - 1
+                inputStallTimer = 3
             end
             if m.controller.stickY < -60 then
                 currChar = currChar + 1
