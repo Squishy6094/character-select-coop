@@ -459,7 +459,7 @@ local function on_hud_render()
         optionAnimTimer = optionAnimTimerCap
     end
 
-    if is_game_paused() and not djui_hud_is_pause_menu_created() and optionTable[optionTableRef.openInputs].toggle == 2 then
+    if is_game_paused() and not djui_hud_is_pause_menu_created() and gMarioStates[0].action ~= ACT_EXIT_LAND_SAVE_DIALOG and optionTable[optionTableRef.openInputs].toggle == 2 then
         djui_hud_set_resolution(RESOLUTION_DJUI)
         local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_Z_OPEN)
         djui_hud_set_font(FONT_NORMAL)
@@ -482,7 +482,7 @@ local function before_mario_update(m)
     end
 
     -- Menu Inputs
-    if not menu and (m.controller.buttonDown & D_JPAD) ~= 0 and optionTable[optionTableRef.openInputs].toggle == 1 then
+    if not menu and (m.controller.buttonDown & D_JPAD) ~= 0 and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and optionTable[optionTableRef.openInputs].toggle == 1 then
         if ommActive then
             if (m.controller.buttonDown & R_TRIG) ~= 0 then
                 menu = true
@@ -492,7 +492,7 @@ local function before_mario_update(m)
         end
         inputStallTimer = inputStallTo
     end
-    if is_game_paused() and (m.controller.buttonPressed & Z_TRIG) ~= 0 and optionTable[optionTableRef.openInputs].toggle == 2 then
+    if is_game_paused() and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and (m.controller.buttonPressed & Z_TRIG) ~= 0 and optionTable[optionTableRef.openInputs].toggle == 2 then
         menu = true
     end
 
