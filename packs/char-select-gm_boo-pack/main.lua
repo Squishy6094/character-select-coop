@@ -12,11 +12,25 @@ local E_MODEL_ARCHIE = smlua_model_util_get_id("archie_geo")
 local TEXT_MOD_NAME = "Gm_Boo3volved Pack"
 
 if _G.charSelectExists then
-    _G.charSelect.character_add("Squishy", nil, "Trashcam", {r = 0, g = 136,b = 0}, E_MODEL_SQUISHY, CT_MARIO)
+    if network_discord_id_from_local_index(0) == "678794043018182675" then
+        _G.charSelect.character_add("Squishy", nil, "Trashcam", {r = 0, g = 136,b = 0}, E_MODEL_SQUISHY, CT_MARIO)
+    end
+
+    if network_discord_id_from_local_index(0) == "401406794649436161" then
     _G.charSelect.character_add("Ari", nil, "Trashcam", nil, E_MODEL_ARI, CT_LUIGI)
+    end
+
+    if network_discord_id_from_local_index(0) == "397847847283720193" then
     _G.charSelect.character_add("Lime", {"Press D-pad Up to Equip Shades"}, "Trashcam", nil, E_MODEL_LIME, CT_LUIGI)
+    end
+
+    if network_discord_id_from_local_index(0) == "673582558507827221" then
     _G.charSelect.character_add("Elby", nil, "Trashcam", nil, E_MODEL_ELBY, CT_LUIGI)
+    end
+
+    if network_discord_id_from_local_index(0) == "1064980922371420313" then
     _G.charSelect.character_add("Archie", nil, "Trashcam", nil, E_MODEL_ARCHIE, CT_LUIGI)
+    end
 else
     djui_popup_create("\\#ffffdc\\\n"..TEXT_MOD_NAME.."\nRequires the Character Select Mod\nto use as a Library!\n\nPlease turn on the Character Select Mod\nand Restart the Room!", 6)
 end
