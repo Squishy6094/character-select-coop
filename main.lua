@@ -21,7 +21,7 @@ local characterTable = {
         credit = "Nintendo / sm64ex-coop Team",
         color = {r = 255, b = 50, g = 50},
         model = nil,
-        forceChar = nil,
+        forceChar = 0xff,
     },
 }
 
