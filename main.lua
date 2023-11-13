@@ -295,6 +295,7 @@ local TEXT_RES_UNSUPPORTED = "Your Current Resolution is Unsupported!!!"
 local TEXT_PREF_SAVE = "Press A to Set as Prefered Character"
 local TEXT_Z_OPEN = "Z Button - Character Select"
 local TEXT_OPTIONS_OPEN = "Press START to open Options"
+local TEXT_MENU_CLOSE = "Press B to Exit Menu"
 local TEXT_LOCAL_MODEL_OFF = "Locally Display Models is Off"
 local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Menu"
 
@@ -441,14 +442,18 @@ local function on_hud_render()
 
         -- How to open options display
         if not options or optionAnimTimer < -1 then
+            local widthScaleUnlimited = widthScale
+            local widthScale = math_min(widthScale, 1.42)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_render_rect(widthHalf - 50 * widthScale, height - 20 + optionAnimTimer + 200, 100 * widthScale, 20)
+            djui_hud_render_rect(widthHalf - 50 * widthScaleUnlimited, height - 25 * widthScale + optionAnimTimer + 200, 100 * widthScaleUnlimited, 26 * widthScale)
             djui_hud_set_color(0, 0, 0, 255)
-            djui_hud_render_rect(widthHalf - 50 * widthScale + 2, height - 20 + optionAnimTimer + 202, 100 * widthScale - 4, 16)
+            djui_hud_render_rect(widthHalf - 50 * widthScaleUnlimited + 2, height - 25 * widthScale + optionAnimTimer + 202, 100 * widthScaleUnlimited - 4, 22 * widthScale)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_render_rect(widthHalf - 50 * widthScale, height - 2, 100 * widthScale, 2)
+            djui_hud_render_rect(widthHalf - 50 * widthScaleUnlimited, height - 2, 100 * widthScaleUnlimited, 2)
             djui_hud_set_font(FONT_NORMAL)
-            djui_hud_print_text(TEXT_OPTIONS_OPEN, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_OPEN)*0.2, height - 18 + optionAnimTimer + 202, 0.4)
+            djui_hud_print_text(TEXT_OPTIONS_OPEN, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_OPEN)*0.175 * widthScale, height - 23 * widthScale + optionAnimTimer + 202, 0.35 * widthScale)
+            djui_hud_set_font(FONT_TINY)
+            djui_hud_print_text(TEXT_MENU_CLOSE, widthHalf - djui_hud_measure_text(TEXT_MENU_CLOSE)*0.25 * widthScale, height - 13 * widthScale + optionAnimTimer + 202, 0.5 * widthScale)
         end
 
         -- Anim logic
