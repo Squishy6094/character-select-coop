@@ -7,7 +7,7 @@ local E_MODEL_YUMI = smlua_model_util_get_id("yumi_geo")
 local TEXT_MOD_NAME = "Yumi Martinez"
 
 if _G.charSelectExists then
-    _G.charSelect.character_add("Yumi Martinez", nil, "Frijoles Y Queso", nil, E_MODEL_YUMI, CT_MARIO)
+    _G.charSelect.character_add("Yumi Martinez", nil, "Frijoles Y Queso", {r = 80, g = 80, b = 200}, E_MODEL_YUMI, CT_MARIO)
 else
     djui_popup_create("\\#ffffdc\\\n"..TEXT_MOD_NAME.."\nRequires the Character Select Mod\nto use as a Library!\n\nPlease turn on the Character Select Mod\nand Restart the Room!", 6)
 end
