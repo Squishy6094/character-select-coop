@@ -21,7 +21,7 @@ local characterTable = {
         credit = "Nintendo / sm64ex-coop Team",
         color = {r = 255, b = 50, g = 50},
         model = nil,
-        forceChar = 0xff,
+        forceChar = 0xff, -- Talk to X later, this doesn't fix override problem
     },
 }
 
@@ -209,7 +209,7 @@ local ignored_surfaces = {
 --- @param m MarioState
 local function mario_update(m)
     if m.playerIndex == 0 then
-        if currChar ~= 1 and optionTable[optionTableRef.localModels].toggle > 0 then
+        if optionTable[optionTableRef.localModels].toggle > 0 then
             gPlayerSyncTable[0].modelId = characterTable[currChar].model
             if characterTable[currChar].forceChar ~= nil and gPlayerSyncTable[m.playerIndex].modelId ~= nil then
                 gNetworkPlayers[m.playerIndex].overrideModelIndex = characterTable[currChar].forceChar
@@ -291,7 +291,8 @@ local optionAnimTimer = -200
 local optionAnimTimerCap = optionAnimTimer
 
 local TEXT_OPTIONS_HEADER = "Menu Options"
-local TEXT_RES_UNSUPPORTED = "Your Current Resolution is Unsupported!!!"
+local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
+local TEXT_DESCRIPTION = "Character Description:"
 local TEXT_PREF_SAVE = "Press A to Set as Prefered Character"
 local TEXT_Z_OPEN = "Z Button - Character Select"
 local TEXT_OPTIONS_OPEN = "Press START to open Options"
@@ -375,13 +376,14 @@ local function on_hud_render()
 
         local TEXT_NAME = string_underscore_to_space(characterTable[currChar].name)
         local TEXT_CREDIT = "By: "..characterTable[currChar].credit
-        local TEXT_DESCRIPTION = "Character Description:"
         local TEXT_DESCRIPTION_TABLE = characterTable[currChar].description
         local TEXT_PREF = 'Prefered Character: "'..string_underscore_to_space(TEXT_PREF_LOAD)..'"'
 
         local textX = x * 0.5
         djui_hud_print_text(TEXT_NAME, width - textX - djui_hud_measure_text(TEXT_NAME)*0.3, 55, 0.6)
-        djui_hud_print_text(TEXT_CREDIT, width - textX - djui_hud_measure_text(TEXT_CREDIT)*0.15, 72, 0.3)
+        djui_hud_set_font(FONT_TINY)
+        djui_hud_print_text(TEXT_CREDIT, width - textX - djui_hud_measure_text(TEXT_CREDIT)*0.3, 72, 0.6)
+        djui_hud_set_font(FONT_NORMAL)
         djui_hud_print_text(TEXT_DESCRIPTION, width - textX - djui_hud_measure_text(TEXT_DESCRIPTION)*0.2, 85, 0.4)
         for i = 1, #TEXT_DESCRIPTION_TABLE do
             djui_hud_print_text(TEXT_DESCRIPTION_TABLE[i], width - textX - djui_hud_measure_text(TEXT_DESCRIPTION_TABLE[i])*0.15, 90 + i*9, 0.3)
@@ -401,7 +403,7 @@ local function on_hud_render()
         djui_hud_print_text("Version: "..modVersion, 5, 3, 0.5)
         --Unsupported Res Warning
         if width < 321.2 or width > 575 then
-            djui_hud_print_text(TEXT_RES_UNSUPPORTED, 5, 39, 0.5)
+            djui_hud_print_text(TEXT_RATIO_UNSUPPORTED, 5, 39, 0.5)
         end
 
         --Options display
