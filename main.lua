@@ -629,6 +629,7 @@ _G.charSelect.character_add = function(name, description, credit, color, modelIn
     if credit == nil then credit = "Unknown" end
     if color == nil then color = {r = 255, g = 255, b = 255} end
     if modelInfo == nil then modelInfo = E_MODEL_ARMATURE end
+    if forceChar == nil then forceChar = 0xff end
 
     characterTable[#characterTable + 1] = {
         name = name,
