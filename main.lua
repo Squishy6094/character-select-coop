@@ -209,7 +209,16 @@ local ignored_surfaces = {
 
 --- @param m MarioState
 local function mario_update(m)
-    if m.playerIndex == 0 then
+    if stallFrame == 1 then
+        load_prefered_char()
+        failsafe_options()
+    end
+
+    if stallFrame < 2 then
+        stallFrame = stallFrame + 1
+    end
+    
+    if m.playerIndex == 0 and stallFrame > 1 then
         if optionTable[optionTableRef.localModels].toggle > 0 then
             gPlayerSyncTable[0].modelId = characterTable[currChar].model
             if characterTable[currChar].forceChar ~= nil and gPlayerSyncTable[m.playerIndex].modelId ~= nil then
@@ -245,16 +254,6 @@ local function mario_update(m)
             if _G.PersonalStarCounter ~= nil then
                 _G.PersonalStarCounter.hide_star_counters(false)
             end
-        end
-
-        -- Load Prefered Character and FailSafe Options
-        if stallFrame == 1 then
-            load_prefered_char()
-            failsafe_options()
-        end
-
-        if stallFrame < 2 then
-            stallFrame = stallFrame + 1
         end
     end
     
@@ -300,6 +299,8 @@ local TEXT_OPTIONS_OPEN = "Press START to open Options"
 local TEXT_MENU_CLOSE = "Press B to Exit Menu"
 local TEXT_LOCAL_MODEL_OFF = "Locally Display Models is Off"
 local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Menu"
+
+local menuColor = {r = 255, g = 255, b = 255}
 
 local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
@@ -633,7 +634,7 @@ local function chat_command()
     return true
 end
 
-hook_chat_command("char-select", "Opens the Character Select Menu", chat_command)
+hook_chat_command("char-select", "- Opens the Character Select Menu", chat_command)
 
 
 ---------
