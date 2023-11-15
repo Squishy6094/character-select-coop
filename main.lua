@@ -193,7 +193,7 @@ local djui_hud_render_texture = djui_hud_render_texture
 local math_max = math.max
 local math_min = math.min
 local math_sin = math.sin
-
+local play_sound = play_sound
 -------------------
 -- Model Handler --
 -------------------
@@ -520,36 +520,45 @@ local function before_mario_update(m)
         menu = true
     end
 
+    local cameraToObject = gMarioStates[0].marioObj.header.gfx.cameraToObject
+
     if menu and not options then
         if inputStallTimer == 0 then
             if (m.controller.buttonPressed & D_JPAD) ~= 0 then
                 currChar = currChar + 1
                 inputStallTimer = inputStallTo
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if (m.controller.buttonPressed & U_JPAD) ~= 0 then
                 currChar = currChar - 1
                 inputStallTimer = inputStallTo
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if (m.controller.buttonPressed & D_CBUTTONS) ~= 0 then
                 currChar = currChar + 1
                 inputStallTimer = 3
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if (m.controller.buttonPressed & U_CBUTTONS) ~= 0 then
                 currChar = currChar - 1
                 inputStallTimer = 3
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if m.controller.stickY < -60 then
                 currChar = currChar + 1
                 inputStallTimer = inputStallTo
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if m.controller.stickY > 60 then
                 currChar = currChar - 1
                 inputStallTimer = inputStallTo
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if (m.controller.buttonPressed & A_BUTTON) ~= 0 then
                 TEXT_PREF_LOAD = characterTable[currChar].name
                 mod_storage_save("PrefChar", TEXT_PREF_LOAD)
                 inputStallTimer = inputStallTo
+                play_sound(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject)
             end
             if (m.controller.buttonPressed & B_BUTTON) ~= 0 then
                 menu = false
@@ -571,18 +580,22 @@ local function before_mario_update(m)
             if (m.controller.buttonPressed & D_JPAD) ~= 0 then
                 currOption = currOption + 1
                 inputStallTimer = inputStallTo
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if (m.controller.buttonPressed & U_JPAD) ~= 0 then
                 currOption = currOption - 1
                 inputStallTimer = inputStallTo
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if m.controller.stickY < -60 then
                 currOption = currOption + 1
                 inputStallTimer = inputStallTo
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if m.controller.stickY > 60 then
                 currOption = currOption - 1
                 inputStallTimer = inputStallTo
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if (m.controller.buttonPressed & A_BUTTON) ~= 0 then
                 optionTable[currOption].toggle = optionTable[currOption].toggle + 1
@@ -591,6 +604,7 @@ local function before_mario_update(m)
                     mod_storage_save(optionTable[currOption].toggleSaveName, tostring(optionTable[currOption].toggle))
                 end
                 inputStallTimer = inputStallTo
+                play_sound(SOUND_MENU_CHANGE_SELECT, cameraToObject)
             end
             if (m.controller.buttonPressed & B_BUTTON) ~= 0 then
                 options = false
