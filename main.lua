@@ -94,6 +94,7 @@ local menuColorTable = {
     {r = 50,  g = 50,  b = 50 },
 }
 
+local ommActive = false
 for i in pairs(gActiveMods) do
     local name = gActiveMods[i].name
     if (name:find("OMM Rebirth")) then
@@ -624,6 +625,12 @@ hook_chat_command("char-select", "Opens the Character Select Menu", chat_command
 _G.charSelectExists = true
 _G.charSelect = {}
 
+---@param name string Underscores turn into Spaces
+---@param description table {"string"}
+---@param credit string
+---@param color table {x, y, z}
+---@param modelInfo ModelExtendedId Use smlua_model_util_get_id()
+---@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
 _G.charSelect.character_add = function(name, description, credit, color, modelInfo, forceChar)
     if name == nil then name = "Untitled" end
     name = string_space_to_underscore(name)
@@ -643,7 +650,13 @@ _G.charSelect.character_add = function(name, description, credit, color, modelIn
     }
 end
 
-
+---@param charNum integer Use _G.charSelect.character_get_number_from_string()
+---@param name string Underscores turn into Spaces
+---@param description table {"string"}
+---@param credit string
+---@param color table {x, y, z}
+---@param modelInfo ModelExtendedId Use smlua_model_util_get_id()
+---@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
 _G.charSelect.character_edit = function(charNum, name, description, credit, color, modelInfo, forceChar)
     if name == nil then name = characterTable[charNum].name end
     name = string_space_to_underscore(name)
@@ -671,9 +684,10 @@ _G.charSelect.character_get_current_model_number = function ()
     return currChar
 end
 
-_G.charSelect.character_get_number_from_string = function (string)
+---@param name string
+_G.charSelect.character_get_number_from_string = function (name)
     for i = 2, #characterTable do
-        if characterTable[i].name == string then
+        if characterTable[i].name == name then
             return i
         end
     end
