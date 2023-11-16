@@ -648,7 +648,7 @@ _G.charSelect = {}
 ---@param description table {"string"}
 ---@param credit string
 ---@param color table {x, y, z}
----@param modelInfo ModelExtendedId Use smlua_model_util_get_id()
+---@param modelInfo integer Use smlua_model_util_get_id()
 ---@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
 _G.charSelect.character_add = function(name, description, credit, color, modelInfo, forceChar)
     if name == nil then name = "Untitled" end
@@ -674,7 +674,7 @@ end
 ---@param description table {"string"}
 ---@param credit string
 ---@param color table {x, y, z}
----@param modelInfo ModelExtendedId Use smlua_model_util_get_id()
+---@param modelInfo integer Use smlua_model_util_get_id()
 ---@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
 _G.charSelect.character_edit = function(charNum, name, description, credit, color, modelInfo, forceChar)
     if name == nil then name = characterTable[charNum].name end
