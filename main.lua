@@ -212,6 +212,9 @@ local function mario_update(m)
     if stallFrame == 1 then
         load_prefered_char()
         failsafe_options()
+        if optionTable[optionTableRef.openInputs].toggle == 1 and ommActive then
+            djui_popup_create('Character Select:\nYour Open bind has changed to:\nD-pad Down + R\nDue to OMM Rebirth being active!', 4)
+        end
     end
 
     if stallFrame < 2 then
