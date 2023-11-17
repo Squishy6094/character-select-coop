@@ -76,6 +76,9 @@ A function that returns the current version of the mod in a string format
 ## _G.charSelect.is_menu_open()
 A function that returns the either True or False if the Menu is Open or not.
 
+## _G.charSelect.is_options_open()
+A function that returns the either True or False if the Menu Options is Open or not.
+
 ## _G.charSelect.get_status()
 A function that returns the status of an inputted value relitive to the option table
 
