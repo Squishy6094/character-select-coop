@@ -44,8 +44,6 @@ Example: `CT_MARIO`
 _G.charSelect.character_add("Custom Model Name", {"Custom Model Description", "Custom Model Description"}, "Custom Model Creator", {r = 255, g = 200, b = 200}, E_MODEL_CUSTOM_MODEL, CT_MARIO)
 ```
 
-A More In-Depth Description of everything can be found in the [Tutorial Doc](https://github.com/SQUISHY6094/character-select-coop/blob/main/Tutorial.md)
-
 ## _G.charSelect.character_edit()
 A function that Edits an Existing Character, has 7 inputs
 
