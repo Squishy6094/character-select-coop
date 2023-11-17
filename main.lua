@@ -21,7 +21,7 @@ local characterTable = {
         credit = "Nintendo / Coop Team",
         color = {r = 255, b = 50, g = 50},
         model = nil,
-        forceChar = 0xff, -- Talk to X later, this doesn't fix override problem
+        forceChar = nil,
     },
 }
 
@@ -222,13 +222,15 @@ local function mario_update(m)
     end
     
     if m.playerIndex == 0 and stallFrame > 1 then
+        characterTable[1].forceChar = gNetworkPlayers[m.playerIndex].modelIndex
         if optionTable[optionTableRef.localModels].toggle > 0 then
             gPlayerSyncTable[0].modelId = characterTable[currChar].model
-            if characterTable[currChar].forceChar ~= nil and gPlayerSyncTable[m.playerIndex].modelId ~= nil then
+            if characterTable[currChar].forceChar ~= nil then
                 gNetworkPlayers[m.playerIndex].overrideModelIndex = characterTable[currChar].forceChar
             end
         else
             gPlayerSyncTable[0].modelId = nil
+            gNetworkPlayers[m.playerIndex].overrideModelIndex = characterTable[1].forceChar
         end
 
         if menu then
@@ -356,9 +358,9 @@ local function on_hud_render()
                 djui_hud_render_rect(buttonX, y, 70, 20)
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_render_rect(buttonX + 1, y + 1, 68, 18)
-                djui_hud_set_font(FONT_NORMAL)
+                djui_hud_set_font(FONT_TINY)
                 djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
-                djui_hud_print_text(string_underscore_to_space(characterTable[currChar + i].name), buttonX + 5, y + 5, 0.3)
+                djui_hud_print_text(string_underscore_to_space(characterTable[currChar + i].name), buttonX + 5, y + 5, 0.6)
             end
         end
 
@@ -660,7 +662,7 @@ _G.charSelect.character_add = function(name, description, credit, color, modelIn
     if credit == nil then credit = "Unknown" end
     if color == nil then color = {r = 255, g = 255, b = 255} end
     if modelInfo == nil then modelInfo = E_MODEL_ARMATURE end
-    if forceChar == nil then forceChar = 0xff end
+    if forceChar == nil then forceChar = CT_MARIO end
 
     characterTable[#characterTable + 1] = {
         name = name,
