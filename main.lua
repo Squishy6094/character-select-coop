@@ -723,3 +723,9 @@ end
 _G.charSelect.is_menu_open = function ()
     return menu
 end
+
+---@param tableNum integer
+_G.charSelect.get_status = function (tableNum)
+    if tableNum == optionTableRef.prefToDefault then return nil end
+    return optionTable[tableNum].toggle
+end
