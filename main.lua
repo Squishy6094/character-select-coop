@@ -711,7 +711,7 @@ end
 ---@param name string
 _G.charSelect.character_get_number_from_string = function (name)
     for i = 2, #characterTable do
-        if characterTable[i].name == name then
+        if characterTable[i].name == name or characterTable[i].name == string_space_to_underscore(name) then
             return i
         end
     end
