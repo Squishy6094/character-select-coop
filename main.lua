@@ -1,4 +1,4 @@
--- name: # Character Select #
+-- name: Character Select
 -- description: A Library / API made to make adding and\nusing Custom Characters as simple as possible!\n\nCreated by:\\#008800\\ Squishy 6094\n\\#dcdcdc\\Concepts by:\\#FF8800\\ AngelicMiracles\\#AAAAFF\\\n\nGithub:\nSQUISHY6094/character-select-coop
 local modVersion = "v1.0 (In-Dev)"
 
@@ -14,6 +14,12 @@ local TEX_HEADER = get_texture_info("char-select-text")
 
 local TEXT_PREF_LOAD = "Default"
 
+--[[
+    Note: Do NOT add characters via the characterTable below,
+    We highly reccomend you create your own mod and use the
+    API to add characters, this ensures your pack is easy
+    to use for anyone!
+]]
 local characterTable = {
     [1]  = {
         name = "Default",
@@ -31,7 +37,8 @@ local optionTableRef = {
     anims = 3,
     inputLatency = 4,
     localModels = 5,
-    prefToDefault = 6,
+    movesets = 6,
+    prefToDefault = 7,
 }
 
 local optionTable = {
@@ -73,12 +80,28 @@ local optionTable = {
         toggleDefault = 1,
         toggleMax = 1,
     },
+    [optionTableRef.movesets] = {
+        name = "Character Movesets",
+        toggle = tonumber(mod_storage_load("Movesets")),
+        toggleSaveName = "Movesets",
+        toggleDefault = 1,
+        toggleMax = 1,
+    },
     [optionTableRef.prefToDefault] = {
         name = "Set Preference to Default",
         toggle = 0,
         toggleDefault = 0,
         toggleMax = 1,
         toggleNames = {"", ""},
+    },
+}
+
+local hostOptionTable = {
+    [optionTableRef.prefToDefault] = {
+        name = "Global Char Movesets",
+        toggle = 0,
+        toggleDefault = 1,
+        toggleMax = 1,
     },
 }
 
@@ -241,7 +264,7 @@ local function mario_update(m)
             end
             local focusPos = {
                 x = m.pos.x,
-                y = m.pos.y + 150,
+                y = m.pos.y + 120,
                 z = m.pos.z,
             }
             vec3f_copy(gLakituState.focus, focusPos)
@@ -302,6 +325,7 @@ local TEXT_PREF_SAVE = "Press A to Set as Prefered Character"
 local TEXT_Z_OPEN = "Z Button - Character Select"
 local TEXT_OPTIONS_OPEN = "Press START to open Options"
 local TEXT_MENU_CLOSE = "Press B to Exit Menu"
+local TEXT_OPTIONS_SELECT = "A - Select | B - Exit  "
 local TEXT_LOCAL_MODEL_OFF = "Locally Display Models is Off"
 local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Menu"
 
