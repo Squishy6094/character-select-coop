@@ -173,15 +173,14 @@ local function load_prefered_char()
         for i = 2, #characterTable do
             if characterTable[i].name == mod_storage_load("PrefChar") then
                 currChar = i
-                TEXT_PREF_LOAD = mod_storage_load("PrefChar")
-                djui_popup_create('Character Select:\nYour Prefered Character\n"'..string_underscore_to_space(TEXT_PREF_LOAD)..'"\nwas applied successfully!', 4)
+                djui_popup_create('Character Select:\nYour Prefered Character\n"'..string_underscore_to_space(characterTable[i].name)..'"\nwas applied successfully!', 4)
                 break
             end
         end
     elseif mod_storage_load("PrefChar") == nil then
         mod_storage_save("PrefChar", "Default")
-        TEXT_PREF_LOAD = mod_storage_load("PrefChar")
     end
+    TEXT_PREF_LOAD = mod_storage_load("PrefChar")
 end
 
 local function failsafe_options()
