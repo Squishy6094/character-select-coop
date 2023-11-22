@@ -37,8 +37,7 @@ local optionTableRef = {
     anims = 3,
     inputLatency = 4,
     localModels = 5,
-    movesets = 6,
-    prefToDefault = 7,
+    prefToDefault = 6,
 }
 
 local optionTable = {
