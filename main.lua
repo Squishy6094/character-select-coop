@@ -80,13 +80,6 @@ local optionTable = {
         toggleDefault = 1,
         toggleMax = 1,
     },
-    [optionTableRef.movesets] = {
-        name = "Character Movesets",
-        toggle = tonumber(mod_storage_load("Movesets")),
-        toggleSaveName = "Movesets",
-        toggleDefault = 1,
-        toggleMax = 1,
-    },
     [optionTableRef.prefToDefault] = {
         name = "Set Preference to Default",
         toggle = 0,
