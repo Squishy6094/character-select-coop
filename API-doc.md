@@ -81,3 +81,15 @@ A function that returns the either True or False if the Menu Options is Open or 
 A function that returns the status of an inputted value relitive to the option table
 
 Inputs can be `1 (Open Binds)`, `2 (Menu Color)`, `3 (Animations)`, `4 (Menu Scrolling Speed)`, `5 (Locally Display Models)`
+
+# Tips on API Usage
+### Helpful info for common API use cases
+
+## Storing Character Table Position
+You can store a character's placement in the character table by storing `_G.charSelect.character_get_number_from_string()` to a local variable after adding the character instead of using the function every frame. (Characters will never change positions in the table once added)
+
+Example: `local myCharPlacement = _G.charSelect.character_get_number_from_string("Custom Model")`
+
+This can be used to easily edit your character when necessary.
+
+Example: `_G.charSelect.character_edit(myCharPlacement, nil, nil, nil, nil, nil, nil)`
