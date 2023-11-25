@@ -745,6 +745,8 @@ _G.charSelect.is_options_open = function ()
     return options
 end
 
+_G.charSelect.optionTableRef = optionTableRef
+
 ---@param tableNum integer
 _G.charSelect.get_status = function (tableNum)
     if tableNum == optionTableRef.prefToDefault then return nil end
