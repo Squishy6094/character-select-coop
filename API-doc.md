@@ -1,5 +1,5 @@
 # Character Select API Documantation
-### Gives full descriptions of all API functions and their use cases
+### Gives full descriptions of all API functions
 
 ## _G.charSelectExists
 A Varible checking if the Mod is active, this is useful for preventing script errors when the mod isn't on.
@@ -93,3 +93,20 @@ Example: `local myCharPlacement = _G.charSelect.character_get_number_from_string
 This can be used to easily edit your character when necessary.
 
 Example: `_G.charSelect.character_edit(myCharPlacement, nil, nil, nil, nil, nil, nil)`
+
+## Unlockable Characters
+A character can be "unlockable" by setting a condition and then running `_G.charSelect.character_add()` once.
+
+Example:
+```
+local unlockedCharacter = false
+local unlockableCharPlacement = 0
+
+local function mario_update()
+    if unlockedCharacter == true and unlockableCharPlacement == 0 then
+        _G.charSelect.character_add("Unlockable", nil, nil, nil, nil, nil)
+        unlockableCharPlacement = _G.charSelect.character_get_number_from_string("Unlockable")
+    end
+end
+```
+This function doesn't loop due to the `unlockableCharPlacement` being set, thus only running once. (Character locations will never be under `2`)
