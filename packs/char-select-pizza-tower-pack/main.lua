@@ -1,5 +1,5 @@
 -- name: [CS] Pizizito's Pizza Tower Pack
--- description: \\#ff7777\\This Mod Requires the Character Select Mod\nto use as a Library!
+-- description: A handful of Pizza Tower/Sugary Spire Characters in Super Mario 64!\n\nModels by: Pizizito!\n\n\\#ff7777\\This Mod Requires the Character Select Mod\nto use as a Library!
 
 local E_MODEL_PEPPERMAN = smlua_model_util_get_id("pepperman_geo")
 local E_MODEL_VIGILANTE = smlua_model_util_get_id("vigilante_geo")
