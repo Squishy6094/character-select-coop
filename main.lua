@@ -124,6 +124,29 @@ local latencyValueTable = {15, 10, 5}
 -- Functions --
 ---------------
 
+-- Localized Functions --
+local camera_freeze = camera_freeze
+local camera_unfreeze = camera_unfreeze
+local network_local_index_from_global = network_local_index_from_global
+local obj_set_model_extended = obj_set_model_extended
+local hud_hide = hud_hide
+local hud_show = hud_show
+local djui_chat_message_create = djui_chat_message_create
+local djui_hud_set_resolution = djui_hud_set_resolution
+local djui_hud_set_font = djui_hud_set_font
+local djui_hud_set_color = djui_hud_set_color
+local djui_hud_get_screen_width = djui_hud_get_screen_width
+local djui_hud_render_rect = djui_hud_render_rect
+local djui_hud_print_text = djui_hud_print_text
+local djui_hud_render_texture = djui_hud_render_texture
+local math_max = math.max
+local math_min = math.min
+local math_sin = math.sin
+local play_sound = play_sound
+local mod_storage_save = mod_storage_save
+local mod_storage_load = mod_storage_load
+
+-- Custom Functions --
 local function nullify_inputs(m)
     m.controller.rawStickY = 0 
     m.controller.rawStickX = 0 
@@ -188,26 +211,6 @@ local function failsafe_options()
         end
     end
 end
-
--- Localized Functions --
-local camera_freeze = camera_freeze
-local camera_unfreeze = camera_unfreeze
-local network_local_index_from_global = network_local_index_from_global
-local obj_set_model_extended = obj_set_model_extended
-local hud_hide = hud_hide
-local hud_show = hud_show
-local djui_chat_message_create = djui_chat_message_create
-local djui_hud_set_resolution = djui_hud_set_resolution
-local djui_hud_set_font = djui_hud_set_font
-local djui_hud_set_color = djui_hud_set_color
-local djui_hud_get_screen_width = djui_hud_get_screen_width
-local djui_hud_render_rect = djui_hud_render_rect
-local djui_hud_print_text = djui_hud_print_text
-local djui_hud_render_texture = djui_hud_render_texture
-local math_max = math.max
-local math_min = math.min
-local math_sin = math.sin
-local play_sound = play_sound
 -------------------
 -- Model Handler --
 -------------------
@@ -313,7 +316,7 @@ local TEXT_OPTIONS_HEADER = "Menu Options"
 local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
 local TEXT_DESCRIPTION = "Character Description:"
 local TEXT_PREF_SAVE = "Press A to Set as Prefered Character"
-local TEXT_Z_OPEN = "Z Button - Character Select"
+local TEXT_PAUSE_Z_OPEN = "Z Button - Character Select"
 local TEXT_OPTIONS_OPEN = "Press START to open Options"
 local TEXT_MENU_CLOSE = "Press B to Exit Menu"
 local TEXT_OPTIONS_SELECT = "A - Select | B - Exit  "
@@ -462,6 +465,9 @@ local function on_hud_render()
                 scale = scale * math_min(widthScale, 1.8)
                 djui_hud_print_text(toggleName, widthHalf - djui_hud_measure_text(toggleName)*scale*0.5, yOffset, scale)
             end
+
+            djui_hud_set_font(FONT_TINY)
+            djui_hud_print_text(TEXT_OPTIONS_SELECT, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_SELECT)*0.3, height - 20 - optionAnimTimer, 0.6)
         end
 
         -- How to open options display
@@ -506,12 +512,12 @@ local function on_hud_render()
 
     if is_game_paused() and not djui_hud_is_pause_menu_created() and gMarioStates[0].action ~= ACT_EXIT_LAND_SAVE_DIALOG and optionTable[optionTableRef.openInputs].toggle == 2 then
         djui_hud_set_resolution(RESOLUTION_DJUI)
-        local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_Z_OPEN)
+        local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_Z_OPEN)
         djui_hud_set_font(FONT_NORMAL)
         djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_print_text(TEXT_Z_OPEN, width - 19, 17, 1)
+        djui_hud_print_text(TEXT_PAUSE_Z_OPEN, width - 19, 17, 1)
         djui_hud_set_color(255, 255, 255, 255)
-        djui_hud_print_text(TEXT_Z_OPEN, width - 20, 16, 1)
+        djui_hud_print_text(TEXT_PAUSE_Z_OPEN, width - 20, 16, 1)
     end
 end
 
