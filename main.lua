@@ -18,7 +18,7 @@ local TEXT_PREF_LOAD = "Default"
     Note: Do NOT add characters via the characterTable below,
     We highly reccomend you create your own mod and use the
     API to add characters, this ensures your pack is easy
-    to use for anyone!
+    to use for anyone and low on file space!
 ]]
 local characterTable = {
     [1]  = {
