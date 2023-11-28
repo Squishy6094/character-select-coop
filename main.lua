@@ -142,6 +142,7 @@ local djui_hud_render_texture = djui_hud_render_texture
 local math_max = math.max
 local math_min = math.min
 local math_sin = math.sin
+local math_random = math.random
 local play_sound = play_sound
 local mod_storage_save = mod_storage_save
 local mod_storage_load = mod_storage_load
@@ -317,6 +318,11 @@ local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
 local TEXT_DESCRIPTION = "Character Description:"
 local TEXT_PREF_SAVE = "Press A to Set as Prefered Character"
 local TEXT_PAUSE_Z_OPEN = "Z Button - Character Select"
+local TEXT_PAUSE_CURR_CHAR = "Current Character: "
+if math_random(1, 100) == 64 then -- Easter Egg if you get lucky loading the mod >v<
+    TEXT_PAUSE_Z_OPEN = "Z - DynOS" -- Referencing the original sm64ex DynOS options
+    TEXT_PAUSE_CURR_CHAR = "Character: "
+end
 local TEXT_OPTIONS_OPEN = "Press START to open Options"
 local TEXT_MENU_CLOSE = "Press B to Exit Menu"
 local TEXT_OPTIONS_SELECT = "A - Select | B - Exit  "
@@ -518,6 +524,13 @@ local function on_hud_render()
         djui_hud_print_text(TEXT_PAUSE_Z_OPEN, width - 19, 17, 1)
         djui_hud_set_color(255, 255, 255, 255)
         djui_hud_print_text(TEXT_PAUSE_Z_OPEN, width - 20, 16, 1)
+
+        local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_CURR_CHAR..characterTable[currChar].name)
+        djui_hud_set_font(FONT_NORMAL)
+        djui_hud_set_color(0, 0, 0, 255)
+        djui_hud_print_text(TEXT_PAUSE_CURR_CHAR..characterTable[currChar].name, width - 19, 42, 1)
+        djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_print_text(TEXT_PAUSE_CURR_CHAR, width - 20, 41, 1)
     end
 end
 
