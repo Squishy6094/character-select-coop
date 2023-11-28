@@ -13,6 +13,9 @@ The "Add-on" type system allows for both simple character addition, and Custom C
 
 We'll keep an Archive of all Released Packs Here!
 
+ - [Pizizito's Pizza Tower Pack](/packs/char-select-pizza-tower-pack.zip) - Pizizito
+ - [Squid Sisters](/packs/char-select-squid-sisters.zip) - Frijoles Y Queso
+
 ## Resources
  - [API Documentation](API-doc.md)
  - [Squishy's Server | Discord Server](https://discord.gg/2bg2FnFp6f)
