@@ -25,7 +25,7 @@ local characterTable = {
         name = "Default",
         description = {"The vanilla cast for sm64ex-coop!", "", "These Characters are swappable", "via the default Options Menu"},
         credit = "Nintendo / Coop Team",
-        color = {r = 255, b = 50, g = 50},
+        color = {r = 255, g = 50, b = 50},
         model = nil,
         forceChar = nil,
     },
@@ -88,25 +88,24 @@ local optionTable = {
     },
 }
 
-local hostOptionTable = {
-    [optionTableRef.prefToDefault] = {
-        name = "Global Char Movesets",
-        toggle = 0,
-        toggleDefault = 1,
-        toggleMax = 1,
-    },
-}
-
 local menuColorTable = {
     {r = 255, g = 50,  b = 50 },
     {r = 255, g = 100, b = 50 },
     {r = 255, g = 255, b = 50 },
     {r = 50,  g = 255, b = 50 },
-    {r = 50,  g = 50,  b = 255},
+    {r = 100,  g = 100,  b = 255},
     {r = 251, g = 148, b = 220},
     {r = 130, g = 25,  b = 130},
     {r = 255, g = 255, b = 255},
     {r = 50,  g = 50,  b = 50 },
+}
+
+local defaultPlayerColors = {
+    [CT_MARIO] = {r = 255, g = 50, b = 50},
+    [CT_LUIGI] = {r = 50, g = 255, b = 50},
+    [CT_TOAD] = {r = 100,  g = 100,  b = 255},
+    [CT_WALUIGI] = {r = 130, g = 25,  b = 130},
+    [CT_WARIO] = {r = 255, g = 255, b = 50},
 }
 
 local ommActive = false
@@ -241,6 +240,9 @@ local function mario_update(m)
     
     if m.playerIndex == 0 and stallFrame > 1 then
         characterTable[1].forceChar = gNetworkPlayers[m.playerIndex].modelIndex
+        if currChar == 1 then
+            characterTable[1].color = defaultPlayerColors[gNetworkPlayers[m.playerIndex].modelIndex]
+        end
         if optionTable[optionTableRef.localModels].toggle > 0 then
             gPlayerSyncTable[0].modelId = characterTable[currChar].model
             if characterTable[currChar].forceChar ~= nil then
@@ -279,6 +281,7 @@ local function mario_update(m)
             end
         end
     end
+
     
     if gPlayerSyncTable[m.playerIndex].modelId ~= nil then
         obj_set_model_extended(m.marioObj, gPlayerSyncTable[m.playerIndex].modelId)
@@ -329,7 +332,7 @@ local TEXT_OPTIONS_SELECT = "A - Select | B - Exit  "
 local TEXT_LOCAL_MODEL_OFF = "Locally Display Models is Off"
 local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Menu"
 
-local menuColor = {r = 255, g = 255, b = 255}
+local menuColor = characterTable[currChar].color
 
 local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
@@ -525,12 +528,17 @@ local function on_hud_render()
         djui_hud_set_color(255, 255, 255, 255)
         djui_hud_print_text(TEXT_PAUSE_Z_OPEN, width - 20, 16, 1)
 
-        local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_CURR_CHAR..characterTable[currChar].name)
+        local charName = string_underscore_to_space(characterTable[currChar].name)
+        local TEXT_PAUSE_CURR_CHAR_WITH_NAME = TEXT_PAUSE_CURR_CHAR..charName
+        local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME)
+        local charColor = characterTable[currChar].color
         djui_hud_set_font(FONT_NORMAL)
         djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_print_text(TEXT_PAUSE_CURR_CHAR..characterTable[currChar].name, width - 19, 42, 1)
+        djui_hud_print_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME, width - 19, 42, 1)
         djui_hud_set_color(255, 255, 255, 255)
         djui_hud_print_text(TEXT_PAUSE_CURR_CHAR, width - 20, 41, 1)
+        djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
+        djui_hud_print_text(charName, djui_hud_get_screen_width() - djui_hud_measure_text(charName) - 20, 41, 1)
     end
 end
 
