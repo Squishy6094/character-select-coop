@@ -80,12 +80,20 @@ A function that returns the either True or False if the Menu Options is Open or 
 ## _G.charSelect.get_status()
 A function that returns the status of an inputted value relitive to the option table
 
-Inputs can be `1 (Open Binds)`, `2 (Menu Color)`, `3 (Animations)`, `4 (Menu Scrolling Speed)`, `5 (Locally Display Models)`
+Inputs can be the following:
+```
+_G.charSelect.optionTableRef.openInputs    (1)
+_G.charSelect.optionTableRef.menuColor     (2)
+_G.charSelect.optionTableRef.anims         (3)
+_G.charSelect.optionTableRef.inputLatency  (4)
+_G.charSelect.optionTableRef.localModels   (5)
+_G.charSelect.optionTableRef.prefToDefault (6)
+```
 
 # Tips on API Usage
 ### Helpful info for common API use cases
 
-## Storing Character Table Position
+## Storing Character Table Positions
 You can store a character's placement in the character table by storing `_G.charSelect.character_get_number_from_string()` to a local variable after adding the character instead of using the function every frame. (Characters will never change positions in the table once added)
 
 Example: `local myCharPlacement = _G.charSelect.character_get_number_from_string("Custom Model")`

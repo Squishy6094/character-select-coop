@@ -65,7 +65,7 @@ local optionTable = {
         toggleMax = 1,
     },
     [optionTableRef.inputLatency] = {
-        name = "Menu Scrolling Speed",
+        name = "Scroll Speed",
         toggle = tonumber(mod_storage_load("Latency")),
         toggleSaveName = "Latency",
         toggleDefault = 1,
@@ -324,7 +324,7 @@ local TEXT_PAUSE_Z_OPEN = "Z Button - Character Select"
 local TEXT_PAUSE_CURR_CHAR = "Current Character: "
 if math_random(1, 100) == 64 then -- Easter Egg if you get lucky loading the mod >v<
     TEXT_PAUSE_Z_OPEN = "Z - DynOS" -- Referencing the original sm64ex DynOS options
-    TEXT_PAUSE_CURR_CHAR = "Character: "
+    TEXT_PAUSE_CURR_CHAR = "Model: "
 end
 local TEXT_OPTIONS_OPEN = "Press START to open Options"
 local TEXT_MENU_CLOSE = "Press B to Exit Menu"
@@ -528,17 +528,26 @@ local function on_hud_render()
         djui_hud_set_color(255, 255, 255, 255)
         djui_hud_print_text(TEXT_PAUSE_Z_OPEN, width - 20, 16, 1)
 
-        local charName = string_underscore_to_space(characterTable[currChar].name)
-        local TEXT_PAUSE_CURR_CHAR_WITH_NAME = TEXT_PAUSE_CURR_CHAR..charName
-        local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME)
-        local charColor = characterTable[currChar].color
-        djui_hud_set_font(FONT_NORMAL)
-        djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_print_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME, width - 19, 42, 1)
-        djui_hud_set_color(255, 255, 255, 255)
-        djui_hud_print_text(TEXT_PAUSE_CURR_CHAR, width - 20, 41, 1)
-        djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
-        djui_hud_print_text(charName, djui_hud_get_screen_width() - djui_hud_measure_text(charName) - 20, 41, 1)
+        if optionTable[optionTableRef.localModels].toggle == 1 then
+            local charName = string_underscore_to_space(characterTable[currChar].name)
+            local TEXT_PAUSE_CURR_CHAR_WITH_NAME = TEXT_PAUSE_CURR_CHAR..charName
+            local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME)
+            local charColor = characterTable[currChar].color
+            djui_hud_set_font(FONT_NORMAL)
+            djui_hud_set_color(0, 0, 0, 255)
+            djui_hud_print_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME, width - 19, 42, 1)
+            djui_hud_set_color(255, 255, 255, 255)
+            djui_hud_print_text(TEXT_PAUSE_CURR_CHAR, width - 20, 41, 1)
+            djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
+            djui_hud_print_text(charName, djui_hud_get_screen_width() - djui_hud_measure_text(charName) - 20, 41, 1)
+        else
+            local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_LOCAL_MODEL_OFF)
+            djui_hud_set_font(FONT_NORMAL)
+            djui_hud_set_color(0, 0, 0, 255)
+            djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, width - 19, 42, 1)
+            djui_hud_set_color(255, 255, 255, 255)
+            djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, width - 20, 41, 1)
+        end
     end
 end
 
@@ -683,7 +692,6 @@ end
 
 hook_chat_command("char-select", "- Opens the Character Select Menu", chat_command)
 
-
 ---------
 -- API --
 ---------
@@ -776,6 +784,5 @@ _G.charSelect.optionTableRef = optionTableRef
 
 ---@param tableNum integer
 _G.charSelect.get_status = function (tableNum)
-    if tableNum == optionTableRef.prefToDefault then return nil end
     return optionTable[tableNum].toggle
 end
