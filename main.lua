@@ -519,14 +519,18 @@ local function on_hud_render()
         optionAnimTimer = optionAnimTimerCap
     end
 
-    if is_game_paused() and not djui_hud_is_pause_menu_created() and gMarioStates[0].action ~= ACT_EXIT_LAND_SAVE_DIALOG and optionTable[optionTableRef.openInputs].toggle == 2 then
+    if is_game_paused() and not djui_hud_is_pause_menu_created() and gMarioStates[0].action ~= ACT_EXIT_LAND_SAVE_DIALOG then
+        local currCharY = 0
         djui_hud_set_resolution(RESOLUTION_DJUI)
-        local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_Z_OPEN)
-        djui_hud_set_font(FONT_NORMAL)
-        djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_print_text(TEXT_PAUSE_Z_OPEN, width - 19, 17, 1)
-        djui_hud_set_color(255, 255, 255, 255)
-        djui_hud_print_text(TEXT_PAUSE_Z_OPEN, width - 20, 16, 1)
+        if optionTable[optionTableRef.openInputs].toggle == 2 then
+            currCharY = 27
+            local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_Z_OPEN)
+            djui_hud_set_font(FONT_NORMAL)
+            djui_hud_set_color(0, 0, 0, 255)
+            djui_hud_print_text(TEXT_PAUSE_Z_OPEN, width - 19, 17, 1)
+            djui_hud_set_color(255, 255, 255, 255)
+            djui_hud_print_text(TEXT_PAUSE_Z_OPEN, width - 20, 16, 1)
+        end
 
         if optionTable[optionTableRef.localModels].toggle == 1 then
             local charName = string_underscore_to_space(characterTable[currChar].name)
@@ -535,18 +539,18 @@ local function on_hud_render()
             local charColor = characterTable[currChar].color
             djui_hud_set_font(FONT_NORMAL)
             djui_hud_set_color(0, 0, 0, 255)
-            djui_hud_print_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME, width - 19, 42, 1)
+            djui_hud_print_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME, width - 19, 17 + currCharY, 1)
             djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_print_text(TEXT_PAUSE_CURR_CHAR, width - 20, 41, 1)
+            djui_hud_print_text(TEXT_PAUSE_CURR_CHAR, width - 20, 16 + currCharY, 1)
             djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
-            djui_hud_print_text(charName, djui_hud_get_screen_width() - djui_hud_measure_text(charName) - 20, 41, 1)
+            djui_hud_print_text(charName, djui_hud_get_screen_width() - djui_hud_measure_text(charName) - 20, 16 + currCharY, 1)
         else
             local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_LOCAL_MODEL_OFF)
             djui_hud_set_font(FONT_NORMAL)
             djui_hud_set_color(0, 0, 0, 255)
-            djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, width - 19, 42, 1)
+            djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, width - 19, 17 + currCharY, 1)
             djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, width - 20, 41, 1)
+            djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, width - 20, 16 + currCharY, 1)
         end
     end
 end
