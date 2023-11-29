@@ -52,7 +52,7 @@ The Number of the Character you want to edit, this can be found using `_G.charSe
 
 Example: `_G.charSelect.character_get_number_from_string("Custom Model")`
 
-**All 6 other inputs are the same as [`_G.charSelect.character_add()`](https://github.com/SQUISHY6094/character-select-coop/blob/main/API-doc.md#_gcharselectcharacter_add)**
+**All 6 other inputs are the same as `_G.charSelect.character_add()`**
 
 ## _G.charSelect.character_get_current_name()
 A function that returns the Current Character's Name String
