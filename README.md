@@ -4,12 +4,12 @@
 
  ![menu-preview](images/menu-preview.png)
 
- Our main goal is to make Character Creation on Lua's end as simple as possible, and to move away from the old Skin Pack mod people keep copy/pasting. This this goal in mind we treid to make everything as streamlined as possible throughout the character addition process, While allowing for tons of customizability!
+ Our main goal is to make Character Creation on Lua's end as simple as possible, and to move away from the old Skin Pack mod people keep copy/pasting. With this goal in mind we tried to make everything as streamlined as possible throughout the character addition process, While allowing for tons of customizability!
 
 ## Packs
  The "Add-on" type system allows for both simple character addition, and Custom Code for Characters such as Movesets!
 
- We'll keep an Archive of all Released Packs Here!
+ We'll keep an archive of all user-made packs here, as well as our packs included with the initial release!
 
  - [Pizizito's Pizza Tower Pack](/packs/char-select-pizza-tower-pack.zip) - Pizizito
  - [Squid Sisters](/packs/char-select-squid-sisters.zip) - Frijoles Y Queso
