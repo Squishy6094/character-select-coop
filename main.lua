@@ -755,7 +755,13 @@ _G.charSelect.character_edit = function(charNum, name, description, credit, colo
 end
 
 _G.charSelect.character_get_current_name = function ()
-    return characterTable[currChar].name
+    local name = ""
+    if currChar > 1 then
+        name = string_underscore_to_space(characterTable[currChar].name)
+    else
+        name = gMarioStates[0].character.name
+    end
+    return name
 end
 
 _G.charSelect.character_get_current_model_number = function ()
