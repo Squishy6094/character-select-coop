@@ -216,6 +216,7 @@ end
 -------------------
 
 local stallFrame = 0
+local noLoop = false
 
 -- Respecfully, GO FUCK YOURSELVES. I hate EVERY SINGLE ONE OF YOU. Your lives are NOTHING. You serve ZERO PURPOSE. You should kill yourselves, NOW!
 local ignored_surfaces = {
@@ -269,19 +270,20 @@ local function mario_update(m)
             gLakituState.pos.y = m.pos.y + 100
             gLakituState.pos.z = m.pos.z + coss(m.faceAngle.y) * 500
 
-            if m.forwardVel == 0 and m.pos.y == m.floorHeight and not ignored_surfaces[m.floor.type] then
+            if m.forwardVel == 0 and m.pos.y == m.floorHeight and not ignored_surfaces[m.floor.type] and m.health > 255 then
                 set_mario_action(m, ACT_IDLE, 0)
                 set_mario_animation(m, MARIO_ANIM_STAR_DANCE)
             end
-        else
+            noLoop = false
+        elseif not noLoop then
             camera_unfreeze()
             hud_show()
             if _G.PersonalStarCounter ~= nil then
                 _G.PersonalStarCounter.hide_star_counters(false)
             end
+            noLoop = true
         end
     end
-
     
     if gPlayerSyncTable[m.playerIndex].modelId ~= nil then
         obj_set_model_extended(m.marioObj, gPlayerSyncTable[m.playerIndex].modelId)
@@ -557,6 +559,7 @@ end
 
 local inputStallTimer = 0
 local inputStallTo = 15
+local ACT_C_UP = 201327143
 
 local function before_mario_update(m)
     if m.playerIndex ~= 0 then return end
@@ -582,6 +585,13 @@ local function before_mario_update(m)
     end
 
     local cameraToObject = gMarioStates[0].marioObj.header.gfx.cameraToObject
+
+    -- C-up Failsafe (Camera Softlocks)
+    if m.action == ACT_C_UP or (m.prevAction == ACT_C_UP and is_game_paused()) then
+        menu = false
+    elseif m.prevAction == ACT_C_UP and not is_game_paused() then
+        m.prevAction = ACT_WALKING
+    end
 
     if menu and not options then
         if inputStallTimer == 0 then
