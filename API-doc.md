@@ -1,5 +1,6 @@
 # Character Select API Documantation
 ### Gives full descriptions of all API functions
+We highly recommend messing around with our [Character Select Template](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template.zip) while first reading this doc to get a handle on everything here
 
 ## _G.charSelectExists
 A Varible checking if the Mod is active, this is useful for preventing script errors when the mod isn't on.
@@ -15,7 +16,7 @@ String (Spaces replace Underscores when Displaying)
 Example `"Custom Model"`
 
 ### Description:
-Table containing Strings
+Table containing Strings (Recommended 30-33 letters per string)
 
 Example `{"Custom Description", "Custom Description"}`
 
@@ -73,6 +74,9 @@ A function that returns the current version of the mod in a string format
 
 ## _G.charSelect.is_menu_open()
 A function that returns the either True or False if the Menu is Open or not.
+
+## _G.charSelect.stop_menu_open()
+A function that prevents the menu from being opened via boolean
 
 ## _G.charSelect.is_options_open()
 A function that returns the either True or False if the Menu Options is Open or not.
