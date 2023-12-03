@@ -1,6 +1,6 @@
 -- name: Character Select
--- description: A Library / API made to make adding and\nusing Custom Characters as simple as possible!\n\nCreated by:\\#008800\\ Squishy 6094\n\\#dcdcdc\\Concepts by:\\#FF8800\\ AngelicMiracles\\#AAAAFF\\\n\nGithub:\nSQUISHY6094/character-select-coop
-local modVersion = "v1.0 (In-Dev)"
+-- description: A Library / API made to make adding and\nusing Custom Characters as simple as possible!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\\#AAAAFF\\\n\nGithub:\nSquishy6094/character-select-coop
+local modVersion = "1.0"
 
 local menu = false
 local options = false
@@ -230,6 +230,9 @@ local function mario_update(m)
     if stallFrame == 1 then
         load_prefered_char()
         failsafe_options()
+        if #characterTable == 1 then
+            djui_popup_create("Character Select:\nNo Characters were Found", 2)
+        end
         if optionTable[optionTableRef.openInputs].toggle == 1 and ommActive then
             djui_popup_create('Character Select:\nYour Open bind has changed to:\nD-pad Down + R\nDue to OMM Rebirth being active!', 4)
         end
