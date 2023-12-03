@@ -1,5 +1,5 @@
 -- name: [CS] Uncle Grandpa
--- description: \\#ff7777\\This Mod Requires the Character Select Mod\nto use as a Library!
+-- description: Good Morning!\n\nUncle Grandpa in Super Mario 64,\nStylized to look 2D and Includes Eye State!\n\nModel by: Garlicker\nImporting by: Dj Khaled/Wahooo, Fbell & LuigiGamer\n\n\\#ff7777\\This Mod Requires the Character Select Mod\nto use as a Library!
 
 local E_MODEL_UNCLE_GRANDPA = smlua_model_util_get_id("uncle_grandpa_geo")
 
