@@ -1,5 +1,5 @@
 -- name: [CS] Model Pack Template
--- description: Character Select Template made to show to basics of making a Model Pack
+-- description: A Template for Character Select to build off of when making your own pack!\n\n\\#ff7777\\This Mod Requires the Character Select Mod\nto use as a Library!
 
 --[[
     API Documentation for Character Select can be found below:
