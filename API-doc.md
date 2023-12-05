@@ -1,6 +1,6 @@
 # Character Select API Documantation
 ### Gives full descriptions of all API functions
-We highly recommend messing around with our [Character Select Template](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template.zip) while first reading this doc to get a handle on everything here
+We highly recommend messing around with our [Character Select Template](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template.zip) while first reading this doc to get a handle on everything here. And DO NOT modify/add any content within the Character Select mod itself, please use the API and an individual mod when adding characters.
 
 ## _G.charSelectExists
 A Varible checking if the Mod is active, this is useful for preventing script errors when the mod isn't on.
