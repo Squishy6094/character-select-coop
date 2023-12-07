@@ -25,7 +25,7 @@ gCustomVoiceStream = nil
 
 --Define what triggers the custom voice
 local function use_custom_voice(m)
-    return characterTable[_G.charSelect.character_get_model_number_from_player(m)].voice ~= nil and gPlayerSyncTable[m.playerIndex].customVoice and killVoice
+    return _G.charSelect.character_get_voice(m) ~= nil and gPlayerSyncTable[m.playerIndex].customVoice and killVoice
 end
 
 --Get the player's sample, stop whatever sound
