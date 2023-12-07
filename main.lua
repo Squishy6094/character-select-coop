@@ -719,7 +719,7 @@ _G.charSelect = {
     ---@param description table {"string"}
     ---@param credit string
     ---@param color Color {r, g, b}
-    ---@param modelInfo ModelExtendedId Use smlua_model_util_get_id()
+    ---@param modelInfo ModelExtendedId|table Use smlua_model_util_get_id()
     ---@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
     character_add = function(name, description, credit, color, modelInfo, forceChar)
         table.insert(characterTable, {
@@ -745,7 +745,7 @@ _G.charSelect = {
     ---@param description table {"string"}
     ---@param credit string
     ---@param color Color {r, g, b}
-    ---@param modelInfo ModelExtendedId Use smlua_model_util_get_id()
+    ---@param modelInfo ModelExtendedId|table Use smlua_model_util_get_id()
     ---@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
     character_edit = function(charNum, name, description, credit, color, modelInfo, forceChar)
         characterTable[charNum] = characterTable[charNum] and {
@@ -753,7 +753,8 @@ _G.charSelect = {
             description = description and description or characterTable[charNum].description,
             credit = credit and credit or characterTable[charNum].credit,
             color = color and color or characterTable[charNum].color,
-            model = modelInfo and modelInfo or characterTable[charNum].model,
+            model = modelInfo and (type(modelInfo) == "table" and modelInfo[1] or modelInfo) or characterTable[charNum].model,
+            capModel = type(modelInfo) == "table" and modelInfo[2] or characterTable[charNum].capModel,
             forceChar = forceChar and forceChar or characterTable[charNum].forceChar,
         } or nil
     end,
