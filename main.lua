@@ -1,6 +1,6 @@
 -- name: Character Select
 -- description: A Library / API made to make adding and\nusing Custom Characters as simple as possible!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\\#AAAAFF\\\n\nGithub:\nSquishy6094/character-select-coop
-local modVersion = "1.1"
+local modVersion = "1.5 (In-Dev)"
 
 local menu = false
 local options = false
