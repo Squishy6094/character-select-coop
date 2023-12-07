@@ -22,7 +22,7 @@ local ommActive = _G.OmmApi ~= nil
     API to add characters, this ensures your pack is easy
     to use for anyone and low on file space!
 ]]
-characterTable = {
+local characterTable = {
     [1]  = {
         name = "Default",
         description = {"The vanilla cast for sm64ex-coop!", "", "These Characters are swappable", "via the default Options Menu"},
