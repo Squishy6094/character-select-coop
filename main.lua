@@ -1,6 +1,6 @@
 -- name: Character Select
 -- description: A Library / API made to make adding and\nusing Custom Characters as simple as possible!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\\#AAAAFF\\\n\nGithub:\nSquishy6094/character-select-coop
-local modVersion = "1.0"
+local modVersion = "1.1"
 
 local menu = false
 local options = false
@@ -13,6 +13,8 @@ local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 local TEX_HEADER = get_texture_info("char-select-text")
 
 local TEXT_PREF_LOAD = "Default"
+
+local ommActive = _G.OmmApi ~= nil
 
 --[[
     Note: Do NOT add characters via the characterTable below,
@@ -47,7 +49,7 @@ local optionTable = {
         toggleSaveName = "MenuInput",
         toggleDefault = 0,
         toggleMax = 2,
-        toggleNames = {"None", "D-pad Down", "Z (Pause Menu)"},
+        toggleNames = {"None", ommActive and "D-pad Down + R" or "D-pad Down", "Z (Pause Menu)"},
     },
     [optionTableRef.menuColor] = {
         name = "Menu Color",
@@ -108,15 +110,6 @@ local defaultPlayerColors = {
     [CT_WARIO] = {r = 255, g = 255, b = 50},
 }
 
-local ommActive = false
-for i in pairs(gActiveMods) do
-    local name = gActiveMods[i].name
-    if (name:find("OMM Rebirth")) then
-        ommActive = true
-        optionTable[optionTableRef.openInputs].toggleNames[2] = "D-pad Down + R"
-    end
-end
-
 local latencyValueTable = {15, 10, 5}
 
 ---------------
@@ -148,12 +141,12 @@ local mod_storage_load = mod_storage_load
 
 -- Custom Functions --
 local function nullify_inputs(m)
-    m.controller.rawStickY = 0 
-    m.controller.rawStickX = 0 
-    m.controller.stickX = 0 
-    m.controller.stickY = 0 
-    m.controller.stickMag = 0 
-    m.controller.buttonPressed = 0 
+    m.controller.rawStickY = 0
+    m.controller.rawStickX = 0
+    m.controller.stickX = 0
+    m.controller.stickY = 0
+    m.controller.stickMag = 0
+    m.controller.buttonPressed = 0
     m.controller.buttonDown = 0
 end
 
@@ -249,18 +242,20 @@ local function mario_update(m)
         end
         if optionTable[optionTableRef.localModels].toggle > 0 then
             gPlayerSyncTable[0].modelId = characterTable[currChar].model
+            gPlayerSyncTable[0].capModelId = characterTable[currChar].capModel
             if characterTable[currChar].forceChar ~= nil then
                 gNetworkPlayers[m.playerIndex].overrideModelIndex = characterTable[currChar].forceChar
             end
         else
             gPlayerSyncTable[0].modelId = nil
+            gPlayerSyncTable[0].capModelId = nil
             gNetworkPlayers[m.playerIndex].overrideModelIndex = characterTable[1].forceChar
         end
 
         if menu then
             camera_freeze()
             hud_hide()
-            if _G.PersonalStarCounter ~= nil then
+            if _G.PersonalStarCounter then
                 _G.PersonalStarCounter.hide_star_counters(true)
             end
             local focusPos = {
@@ -281,15 +276,11 @@ local function mario_update(m)
         elseif not noLoop then
             camera_unfreeze()
             hud_show()
-            if _G.PersonalStarCounter ~= nil then
+            if _G.PersonalStarCounter then
                 _G.PersonalStarCounter.hide_star_counters(false)
             end
             noLoop = true
         end
-    end
-    
-    if gPlayerSyncTable[m.playerIndex].modelId ~= nil then
-        obj_set_model_extended(m.marioObj, gPlayerSyncTable[m.playerIndex].modelId)
     end
 
     --Set Pref to Default Check
@@ -300,11 +291,20 @@ local function mario_update(m)
     end
 end
 
-local function set_model(o, id)
-    if id == E_MODEL_MARIO then
+function set_model(o)
+    if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
         local i = network_local_index_from_global(o.globalPlayerIndex)
-        if gPlayerSyncTable[i].modelId ~= nil then
+        if gPlayerSyncTable[i].modelId ~= nil and obj_has_model_extended(o, gPlayerSyncTable[i].modelId) == 0 then
             obj_set_model_extended(o, gPlayerSyncTable[i].modelId)
+        end
+    end
+    if obj_has_behavior_id(o, id_bhvNormalCap) +
+       obj_has_behavior_id(o, id_bhvWingCap) +
+       obj_has_behavior_id(o, id_bhvVanishCap) +
+       obj_has_behavior_id(o, id_bhvMetalCap) ~= 0 then
+        local i = network_local_index_from_global(o.globalPlayerIndex)
+        if gPlayerSyncTable[i].capModelId ~= nil and obj_has_model_extended(o, gPlayerSyncTable[i].capModelId) == 0 then
+            obj_set_model_extended(o, gPlayerSyncTable[i].capModelId)
         end
     end
 end
@@ -327,7 +327,7 @@ local TEXT_DESCRIPTION = "Character Description:"
 local TEXT_PREF_SAVE = "Press A to Set as Prefered Character"
 local TEXT_PAUSE_Z_OPEN = "Z Button - Character Select"
 local TEXT_PAUSE_CURR_CHAR = "Current Character: "
-if math_random(1, 100) == 64 then -- Easter Egg if you get lucky loading the mod >v<
+if math_random(100) == 64 then -- Easter Egg if you get lucky loading the mod >v<
     TEXT_PAUSE_Z_OPEN = "Z - DynOS" -- Referencing the original sm64ex DynOS options
     TEXT_PAUSE_CURR_CHAR = "Model: "
 end
@@ -416,7 +416,7 @@ local function on_hud_render()
         local TEXT_NAME = string_underscore_to_space(characterTable[currChar].name)
         local TEXT_CREDIT = "By: "..characterTable[currChar].credit
         local TEXT_DESCRIPTION_TABLE = characterTable[currChar].description
-        local TEXT_PREF = 'Prefered Character: "'..string_underscore_to_space(TEXT_PREF_LOAD)..'"'
+        local TEXT_PREF = 'Preferred Character: "'..string_underscore_to_space(TEXT_PREF_LOAD)..'"'
 
         local textX = x * 0.5
         djui_hud_print_text(TEXT_NAME, width - textX - djui_hud_measure_text(TEXT_NAME)*0.3, 55, 0.6)
@@ -713,99 +713,96 @@ hook_chat_command("char-select", "- Opens the Character Select Menu", chat_comma
 -- API --
 ---------
 
-_G.charSelectExists = true
-_G.charSelect = {}
+_G.charSelectExists = true -- Ace
+_G.charSelect = {
+    ---@param name string Underscores turn into Spaces
+    ---@param description table {"string"}
+    ---@param credit string
+    ---@param color Color {r, g, b}
+    ---@param modelInfo ModelExtendedId|table Use smlua_model_util_get_id()
+    ---@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
+    character_add = function(name, description, credit, color, modelInfo, forceChar)
+        table.insert(characterTable, {
+            name = name and string_space_to_underscore(name) or "Untitled",
+            description = description and description or {"No description has been provided"},
+            credit = credit and credit or "Unknown",
+            color = color and color or menuColorTable[8],
+            model = modelInfo and (type(modelInfo) == "table" and modelInfo[1] or modelInfo) or E_MODEL_ARMATURE,
+            capModel = type(modelInfo) == "table" and modelInfo[2] or nil,
+            forceChar = forceChar and forceChar or CT_MARIO,
+        })
+        return #characterTable
+    end,
 
----@param name string Underscores turn into Spaces
----@param description table {"string"}
----@param credit string
----@param color table {x, y, z}
----@param modelInfo integer Use smlua_model_util_get_id()
----@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
-_G.charSelect.character_add = function(name, description, credit, color, modelInfo, forceChar)
-    if name == nil then name = "Untitled" end
-    name = string_space_to_underscore(name)
-    if description == nil then description = {"No description has been provided"} end
-    if credit == nil then credit = "Unknown" end
-    if color == nil then color = {r = 255, g = 255, b = 255} end
-    if modelInfo == nil then modelInfo = E_MODEL_ARMATURE end
-    if forceChar == nil then forceChar = CT_MARIO end
-
-    characterTable[#characterTable + 1] = {
-        name = name,
-        description = description,
-        credit = credit,
-        color = color,
-        model = modelInfo,
-        forceChar = forceChar,
-    }
-end
-
----@param charNum integer Use _G.charSelect.character_get_number_from_string()
----@param name string Underscores turn into Spaces
----@param description table {"string"}
----@param credit string
----@param color table {x, y, z}
----@param modelInfo integer Use smlua_model_util_get_id()
----@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
-_G.charSelect.character_edit = function(charNum, name, description, credit, color, modelInfo, forceChar)
-    if name == nil then name = characterTable[charNum].name end
-    name = string_space_to_underscore(name)
-    if description == nil then description = characterTable[charNum].description end
-    if credit == nil then credit = characterTable[charNum].credit end
-    if color == nil then color = characterTable[charNum].color end
-    if modelInfo == nil then modelInfo = characterTable[charNum].model end
-    if forceChar == nil then forceChar = characterTable[charNum].forceChar end
-
-    characterTable[charNum] = {
-        name = name,
-        description = description,
-        credit = credit,
-        color = color,
-        model = modelInfo,
-        forceChar = forceChar,
-    }
-end
-
-_G.charSelect.character_get_current_name = function ()
-    local name = ""
-    if currChar > 1 then
-        name = string_underscore_to_space(characterTable[currChar].name)
-    else
-        name = gMarioStates[0].character.name
-    end
-    return name
-end
-
-_G.charSelect.character_get_current_model_number = function ()
-    return currChar
-end
-
----@param name string
-_G.charSelect.character_get_number_from_string = function (name)
-    for i = 2, #characterTable do
-        if characterTable[i].name == name or characterTable[i].name == string_space_to_underscore(name) then
-            return i
+    character_add_voice = function(charNum, clips)
+        if characterTable[charNum] and clips then
+            characterTable[charNum].voice = clips
         end
+    end,
+
+    ---@param charNum integer Use _G.charSelect.character_get_number_from_string() or _G.charSelect.character_add()'s return value
+    ---@param name string Underscores turn into Spaces
+    ---@param description table {"string"}
+    ---@param credit string
+    ---@param color Color {r, g, b}
+    ---@param modelInfo ModelExtendedId|table Use smlua_model_util_get_id()
+    ---@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
+    character_edit = function(charNum, name, description, credit, color, modelInfo, forceChar)
+        characterTable[charNum] = characterTable[charNum] and {
+            name = name and string_space_to_underscore(name) or characterTable[charNum].name,
+            description = description and description or characterTable[charNum].description,
+            credit = credit and credit or characterTable[charNum].credit,
+            color = color and color or characterTable[charNum].color,
+            model = modelInfo and (type(modelInfo) == "table" and modelInfo[1] or modelInfo) or characterTable[charNum].model,
+            capModel = type(modelInfo) == "table" and modelInfo[2] or characterTable[charNum].capModel,
+            forceChar = forceChar and forceChar or characterTable[charNum].forceChar,
+        } or nil
+    end,
+
+    character_get_current_name = function ()
+        return currChar > 1 and string_underscore_to_space(characterTable[currChar].name) or gMarioStates[0].character.name
+    end,
+
+    character_get_current_model_number = function ()
+        return currChar
+    end,
+
+    ---@param name string
+    character_get_number_from_string = function (name)
+        for i = 2, #characterTable do
+            if characterTable[i].name == name or characterTable[i].name == string_space_to_underscore(name) then
+                return i
+            end
+        end
+        return false
+    end,
+
+    ---@param m MarioState
+    character_get_voice = function (m)
+        for i = 2, #characterTable do
+            if characterTable[i].model == gPlayerSyncTable[m.playerIndex].modelId then
+                return characterTable[i].voice and characterTable[i].voice or false
+            end
+        end
+        return false
+    end,
+
+    version_get = function ()
+        return modVersion
+    end,
+
+    is_menu_open = function ()
+        return menu
+    end,
+
+    is_options_open = function ()
+        return options
+    end,
+
+    optionTableRef = optionTableRef,
+
+    ---@param tableNum integer
+    get_status = function (tableNum)
+        return optionTable[tableNum].toggle
     end
-    return false
-end
-
-_G.charSelect.version_get = function ()
-    return modVersion
-end
-
-_G.charSelect.is_menu_open = function ()
-    return menu
-end
-
-_G.charSelect.is_options_open = function ()
-    return options
-end
-
-_G.charSelect.optionTableRef = optionTableRef
-
----@param tableNum integer
-_G.charSelect.get_status = function (tableNum)
-    return optionTable[tableNum].toggle
-end
+}
