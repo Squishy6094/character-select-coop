@@ -37,7 +37,7 @@ Model Information Recieved from `smlua_model_util_get_id()`
 
 Example: `smlua_model_util_get_id("armature_geo")`
 
-Model can also have a hat Model via use of a table
+Model can also have a Hat Model via use of a Table
 
 Example: `{smlua_model_util_get_id("armature_geo"), smlua_model_util_get_id("armature_hat_geo")}`
 
@@ -49,6 +49,77 @@ Example: `CT_MARIO`
 ### Full Example:
 ```
 _G.charSelect.character_add("Custom Model Name", {"Custom Model Description", "Custom Model Description"}, "Custom Model Creator", {r = 255, g = 200, b = 200}, E_MODEL_CUSTOM_MODEL, CT_MARIO)
+```
+
+## _G.charSelect.character_add_voice()
+A function that adds a voice to a character, has 2 inputs
+
+### Model Info:
+Model Information Recieved from `smlua_model_util_get_id()`
+
+Example: `smlua_model_util_get_id("armature_geo")`
+
+### Sound Clip Table:
+A table with you're character's sound file names
+
+Table Example:
+```
+local VOICETABLE_CHAR = {
+    [CHAR_SOUND_ATTACKED] = 'NES-Hit.ogg',
+    [CHAR_SOUND_DOH] = 'NES-Bump.ogg',
+    [CHAR_SOUND_DROWNING] = 'NES-Die.ogg',
+    [CHAR_SOUND_DYING] = 'NES-Die.ogg',
+    [CHAR_SOUND_GROUND_POUND_WAH] = 'NES-Squish.ogg',
+    [CHAR_SOUND_HAHA] = 'NES-1up.ogg',
+    [CHAR_SOUND_HAHA_2] = 'NES-1up.ogg',
+    [CHAR_SOUND_HERE_WE_GO] = 'NES-Flagpole.ogg',
+    [CHAR_SOUND_HOOHOO] = 'NES-Jump.ogg',
+    [CHAR_SOUND_MAMA_MIA] = 'NES-Warp.ogg',
+    [CHAR_SOUND_OKEY_DOKEY] = 'NES-1up.ogg',
+    [CHAR_SOUND_ON_FIRE] = 'NES-Enemy_Fire.ogg',
+    [CHAR_SOUND_OOOF] = 'NES-Hit.ogg',
+    [CHAR_SOUND_OOOF2] = 'NES-Hit.ogg',
+    [CHAR_SOUND_PUNCH_HOO] = 'NES-Kick.ogg',
+    [CHAR_SOUND_PUNCH_WAH] = 'NES-Thwomp.ogg',
+    [CHAR_SOUND_PUNCH_YAH] = 'NES-Thwomp.ogg',
+    [CHAR_SOUND_SO_LONGA_BOWSER] = 'NES-Bowser_Die.ogg',
+    [CHAR_SOUND_TWIRL_BOUNCE] = 'NES-Item.ogg',
+    [CHAR_SOUND_WAAAOOOW] = 'NES-Vine.ogg',
+    [CHAR_SOUND_WAH2] = 'NES-Kick.ogg',
+    [CHAR_SOUND_WHOA] = 'NES-Item.ogg',
+    [CHAR_SOUND_YAHOO] = 'NES-Jump.ogg',
+    [CHAR_SOUND_YAHOO_WAHA_YIPPEE] = 'NES-Jump.ogg',
+    [CHAR_SOUND_YAH_WAH_HOO] = 'NES-Big_Jump.ogg',
+    [CHAR_SOUND_YAWNING] = 'NES-Pause.ogg',
+}
+```
+
+Input Example:
+`VOICETABLE_CHAR`
+
+### Required Code:
+In order for voice clips to work functionally, you require the following code in your script:
+```
+hook_event(HOOK_CHARACTER_SOUND, function (m, sound)
+    if _G.charSelect.character_get_voice(m) == VOICETABLE_CHAR then return _G.charSelect.voice.sound(m, sound) end
+end)
+hook_event(HOOK_MARIO_UPDATE, function (m)
+    if _G.charSelect.character_get_voice(m) == VOICETABLE_CHAR then return _G.charSelect.voice.snore(m) end
+end)
+```
+
+Copy the `if` statements for each character with a voice
+
+Example:
+```
+hook_event(HOOK_CHARACTER_SOUND, function (m, sound)
+    if _G.charSelect.character_get_voice(m) == VOICETABLE_CHAR then return _G.charSelect.voice.sound(m, sound) end
+    if _G.charSelect.character_get_voice(m) == VOICETABLE_UNLOCKABLE_CHAR then return _G.charSelect.voice.sound(m, sound) end
+end)
+hook_event(HOOK_MARIO_UPDATE, function (m)
+    if _G.charSelect.character_get_voice(m) == VOICETABLE_CHAR then return _G.charSelect.voice.snore(m) end
+    if _G.charSelect.character_get_voice(m) == VOICETABLE_UNLOCKABLE_CHAR then return _G.charSelect.voice.snore(m) end
+end)
 ```
 
 ## _G.charSelect.character_edit()

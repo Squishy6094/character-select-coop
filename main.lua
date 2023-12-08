@@ -808,7 +808,7 @@ _G.charSelect = {
 
     ---@param m MarioState
     character_get_voice = function (m)
-         return characterVoices[gPlayerSyncTable[m.playerIndex].modelId]
+        return characterVoices[gPlayerSyncTable[m.playerIndex].modelId]
     end,
 
     version_get = function ()
