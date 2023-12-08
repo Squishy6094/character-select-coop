@@ -1,6 +1,6 @@
 # Character Select API Documantation
 ### Gives full descriptions of all API functions
-We highly recommend messing around with our [Character Select Template](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template.zip) while first reading this doc to get a handle on everything here. And DO NOT modify/add any content within the Character Select mod itself, please use the API and an individual mod when adding characters.
+We highly recommend messing around with our [Character Select Template](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template.zip) or [Character Select Template with Voice](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template-w-voice.zip) while first reading this doc to get a handle on everything here. And DO NOT modify/add any content within the Character Select mod itself, please use the API and an individual mod when adding characters.
 
 #### Note: Some functionalities here are in Development and not featured in version 1.0!
 
@@ -122,6 +122,8 @@ hook_event(HOOK_MARIO_UPDATE, function (m)
 end)
 ```
 
+Examples of these can be found in 
+
 ## _G.charSelect.character_edit()
 A function that Edits an Existing Character, has 7 inputs
 
@@ -171,13 +173,19 @@ _G.charSelect.optionTableRef.localModels   (5)
 _G.charSelect.optionTableRef.prefToDefault (6)
 ```
 
+## _G.charSelect.character_get_voice()
+Returns the current character's Voicetable, Primirily when hooking a character's voice
+
+## _G.charSelect.voice
+Both `_G.charSelect.voice.sound()` and `_G.charSelect.voice.snore()` are used to hook sound functionalities into other mods, allowing Character Select to access sounds from Packs. Both functions have no real use case outside of doing this.
+
 # Tips on API Usage
 ### Helpful info for common API use cases
 
 ## Storing Character Table Positions
-You can store a character's placement in the character table by storing `_G.charSelect.character_get_number_from_string()` to a local variable after adding the character instead of using the function every frame. (Characters will never change positions in the table once added)
+You can store a character's placement in the character table by storing `_G.charSelect.character_get_number_from_string()` or the returned value of `_G.charSelect.character_add()` to a local variable after adding the character instead of using the function every frame. (Characters will never change positions in the table once added)
 
-Example: `local myCharPlacement = _G.charSelect.character_get_number_from_string("Custom Model")`
+Examples: `local myCharPlacement = _G.charSelect.character_get_number_from_string("Custom Model")` or `myCharPlacement = _G.charSelect.character_add(nil, nil, nil, nil, nil, nil)`
 
 This can be used to easily edit your character when necessary.
 
@@ -199,3 +207,8 @@ local function mario_update()
 end
 ```
 This function doesn't loop due to the `unlockableCharPlacement` being set, thus only running once. (Character locations will never be under `2`)
+
+## Muted Character Voice
+A character can have a muted voice by having their input table be `nil``, This can be hooked as usual causing no voicelines to play
+
+Example: `VOICETABLE_CHAR = {nil}`
