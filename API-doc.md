@@ -93,6 +93,7 @@ local VOICETABLE_CHAR = {
     [CHAR_SOUND_YAWNING] = 'NES-Pause.ogg',
 }
 ```
+Refer to [sm64ex-coop's CharacterSound Constants](https://github.com/djoslin0/sm64ex-coop/blob/coop/docs/lua/constants.md#enum-charactersound) for all replacable sounds
 
 Input Example:
 `VOICETABLE_CHAR`
