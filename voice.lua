@@ -149,8 +149,7 @@ local function custom_character_snore(m)
     --Stop the snoring!
     if m.action ~= ACT_SLEEPING then
         if m.isSnoring > 0 then
-            --stop_custom_character_sound(m)
-            play_custom_character_sound(m, 'rien.mp3')
+            stop_custom_character_sound(m)
         end
         return
 

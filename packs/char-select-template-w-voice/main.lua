@@ -1,4 +1,4 @@
--- name: [CS] Model Pack Template
+-- name: [CS] Model w/ Voice Pack Template
 -- description: A Template for Character Select to build off of when making your own pack!\n\n\\#ff7777\\This Mod Requires the Character Select Mod\nto use as a Library!
 
 --[[
