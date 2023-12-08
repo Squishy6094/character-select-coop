@@ -9,7 +9,7 @@
 local E_MODEL_CUSTOM_MODEL = smlua_model_util_get_id("custom_model_geo")
 
 local TEXT_MOD_NAME = "Character Template"
-local VOICETABLE_ARMATURE = {
+local VOICETABLE_CHAR = {
     [CHAR_SOUND_ATTACKED] = 'NES-Hit.ogg',
     [CHAR_SOUND_DOH] = 'NES-Bump.ogg',
     [CHAR_SOUND_DROWNING] = 'NES-Die.ogg',
@@ -38,32 +38,16 @@ local VOICETABLE_ARMATURE = {
     [CHAR_SOUND_YAWNING] = 'NES-Pause.ogg',
 }
 
--- function sample(name)
---     return sample2(name)
--- end
-
--- function stream(name)
---     return stream2(name)
--- end
-
--- function sample2(name)
---     return audio_sample_load(name)
--- end
-
--- function stream2(name)
---     return audio_stream_load(name)
--- end
-
 if _G.charSelectExists then
-    CT_ARMATURE = _G.charSelect.character_add("Custom Model Name", {"Custom Model Description", "Custom Model Description"}, "Custom Model Creator", {r = 255, g = 200, b = 200}, E_MODEL_CUSTOM_MODEL, CT_MARIO)
+    CT_CHAR = _G.charSelect.character_add("Custom Model Name", {"Custom Model Description", "Custom Model Description"}, "Custom Model Creator", {r = 255, g = 200, b = 200}, E_MODEL_CUSTOM_MODEL, CT_MARIO)
 
     -- the following must be hooked for each character added
-    _G.charSelect.character_add_voice(CT_ARMATURE, VOICETABLE_ARMATURE)
+    _G.charSelect.character_add_voice(E_MODEL_CUSTOM_MODEL, VOICETABLE_CHAR)
     hook_event(HOOK_CHARACTER_SOUND, function (m, sound)
-        if _G.charSelect.character_get_voice(m) == VOICETABLE_ARMATURE then return _G.charSelect.voice.sound(m, sound) end
+        if _G.charSelect.character_get_voice(m) == VOICETABLE_CHAR then return _G.charSelect.voice.sound(m, sound) end
     end)
     hook_event(HOOK_MARIO_UPDATE, function (m)
-        if _G.charSelect.character_get_voice(m) == VOICETABLE_ARMATURE then return _G.charSelect.voice.snore(m) end
+        if _G.charSelect.character_get_voice(m) == VOICETABLE_CHAR then return _G.charSelect.voice.snore(m) end
     end)
 else
     djui_popup_create("\\#ffffdc\\\n"..TEXT_MOD_NAME.."\nRequires the Character Select Mod\nto use as a Library!\n\nPlease turn on the Character Select Mod\nand Restart the Room!", 6)

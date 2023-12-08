@@ -33,6 +33,8 @@ local characterTable = {
     },
 }
 
+local characterVoices = {}
+
 local optionTableRef = {
     openInputs = 1,
     menuColor = 2,
@@ -176,12 +178,12 @@ local function string_space_to_underscore(string)
     return s
 end
 
-local function load_prefered_char()
+local function load_preferred_char()
     if mod_storage_load("PrefChar") ~= nil and mod_storage_load("PrefChar") ~= "Default" then
         for i = 2, #characterTable do
             if characterTable[i].name == mod_storage_load("PrefChar") then
                 currChar = i
-                djui_popup_create('Character Select:\nYour Prefered Character\n"'..string_underscore_to_space(characterTable[i].name)..'"\nwas applied successfully!', 4)
+                djui_popup_create('Character Select:\nYour Preferred Character\n"'..string_underscore_to_space(characterTable[i].name)..'"\nwas applied successfully!', 4)
                 break
             end
         end
@@ -221,7 +223,7 @@ local ignored_surfaces = {
 --- @param m MarioState
 local function mario_update(m)
     if stallFrame == 1 then
-        load_prefered_char()
+        load_preferred_char()
         failsafe_options()
         if #characterTable == 1 then
             djui_popup_create("Character Select:\nNo Characters were Found", 2)
@@ -242,13 +244,13 @@ local function mario_update(m)
         end
         if optionTable[optionTableRef.localModels].toggle > 0 then
             gPlayerSyncTable[0].modelId = characterTable[currChar].model
-            gPlayerSyncTable[0].capModelId = characterTable[currChar].capModel
+            gPlayerSyncTable[0].capModels = characterTable[currChar].capModels
             if characterTable[currChar].forceChar ~= nil then
                 gNetworkPlayers[m.playerIndex].overrideModelIndex = characterTable[currChar].forceChar
             end
         else
             gPlayerSyncTable[0].modelId = nil
-            gPlayerSyncTable[0].capModelId = nil
+            gPlayerSyncTable[0].capModels = nil
             gNetworkPlayers[m.playerIndex].overrideModelIndex = characterTable[1].forceChar
         end
 
@@ -291,20 +293,32 @@ local function mario_update(m)
     end
 end
 
-function set_model(o)
+function set_model(o, model)
     if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
         local i = network_local_index_from_global(o.globalPlayerIndex)
         if gPlayerSyncTable[i].modelId ~= nil and obj_has_model_extended(o, gPlayerSyncTable[i].modelId) == 0 then
             obj_set_model_extended(o, gPlayerSyncTable[i].modelId)
+            return
         end
     end
-    if obj_has_behavior_id(o, id_bhvNormalCap) +
-       obj_has_behavior_id(o, id_bhvWingCap) +
-       obj_has_behavior_id(o, id_bhvVanishCap) +
-       obj_has_behavior_id(o, id_bhvMetalCap) ~= 0 then
+    if get_object_list_from_behavior(o.behavior) == OBJ_LIST_LEVEL then
         local i = network_local_index_from_global(o.globalPlayerIndex)
-        if gPlayerSyncTable[i].capModelId ~= nil and obj_has_model_extended(o, gPlayerSyncTable[i].capModelId) == 0 then
-            obj_set_model_extended(o, gPlayerSyncTable[i].capModelId)
+        local capModels = gPlayerSyncTable[i].capModels
+        local capModel = nil
+        if capModels ~= nil then
+            if model == gMarioStates[i].character.capModelId then
+                capModel = capModels.normal
+            elseif model == gMarioStates[i].character.capWingModelId then
+                capModel = capModels.wing
+            elseif model == gMarioStates[i].character.capMetalModelId then
+                capModel = capModels.metal
+            elseif model == gMarioStates[i].character.capMetalWingModelId then
+                capModel = capModels.metalWing
+            end
+            if capModel ~= nil and obj_has_model_extended(o, capModel) == 0 then
+                obj_set_model_extended(o, capModel)
+                return
+            end
         end
     end
 end
@@ -324,7 +338,7 @@ local optionAnimTimerCap = optionAnimTimer
 local TEXT_OPTIONS_HEADER = "Menu Options"
 local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
 local TEXT_DESCRIPTION = "Character Description:"
-local TEXT_PREF_SAVE = "Press A to Set as Prefered Character"
+local TEXT_PREF_SAVE = "Press A to Set as Preferred Character"
 local TEXT_PAUSE_Z_OPEN = "Z Button - Character Select"
 local TEXT_PAUSE_CURR_CHAR = "Current Character: "
 if math_random(100) == 64 then -- Easter Egg if you get lucky loading the mod >v<
@@ -724,6 +738,7 @@ _G.charSelect = {
     ---@param color Color {r, g, b}
     ---@param modelInfo ModelExtendedId|table Use smlua_model_util_get_id()
     ---@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
+    ---@return integer
     character_add = function(name, description, credit, color, modelInfo, forceChar)
         table.insert(characterTable, {
             name = name and string_space_to_underscore(name) or "Untitled",
@@ -731,16 +746,22 @@ _G.charSelect = {
             credit = credit and credit or "Unknown",
             color = color and color or menuColorTable[8],
             model = modelInfo and (type(modelInfo) == "table" and modelInfo[1] or modelInfo) or E_MODEL_ARMATURE,
-            capModel = type(modelInfo) == "table" and modelInfo[2] or nil,
+            capModels = type(modelInfo) == "table" and {
+                normal = modelInfo[2],
+                wing = modelInfo[3],
+                metal = modelInfo[4],
+                metalWing = modelInfo[5]
+            } or nil,
             forceChar = forceChar and forceChar or CT_MARIO,
         })
         return #characterTable
     end,
 
-    character_add_voice = function(charNum, clips)
-        if characterTable[charNum] and clips then
-            characterTable[charNum].voice = clips
-        end
+
+    ---@param modelInfo ModelExtendedId
+    ---@param clips table
+    character_add_voice = function(modelInfo, clips)
+        characterVoices[modelInfo] = clips
     end,
 
     ---@param charNum integer Use _G.charSelect.character_get_number_from_string() or _G.charSelect.character_add()'s return value
@@ -757,7 +778,12 @@ _G.charSelect = {
             credit = credit and credit or characterTable[charNum].credit,
             color = color and color or characterTable[charNum].color,
             model = modelInfo and (type(modelInfo) == "table" and modelInfo[1] or modelInfo) or characterTable[charNum].model,
-            capModel = type(modelInfo) == "table" and modelInfo[2] or characterTable[charNum].capModel,
+            capModels = type(modelInfo) == "table" and {
+                normal = modelInfo[2],
+                wing = modelInfo[3],
+                metal = modelInfo[4],
+                metalWing = modelInfo[5]
+            } or characterTable[charNum].capModel,
             forceChar = forceChar and forceChar or characterTable[charNum].forceChar,
         } or nil
     end,
@@ -782,12 +808,7 @@ _G.charSelect = {
 
     ---@param m MarioState
     character_get_voice = function (m)
-        for i = 2, #characterTable do
-            if characterTable[i].model == gPlayerSyncTable[m.playerIndex].modelId then
-                return characterTable[i].voice and characterTable[i].voice or false
-            end
-        end
-        return false
+         return characterVoices[gPlayerSyncTable[m.playerIndex].modelId]
     end,
 
     version_get = function ()
