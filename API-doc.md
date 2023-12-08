@@ -2,6 +2,8 @@
 ### Gives full descriptions of all API functions
 We highly recommend messing around with our [Character Select Template](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template.zip) while first reading this doc to get a handle on everything here. And DO NOT modify/add any content within the Character Select mod itself, please use the API and an individual mod when adding characters.
 
+#### Note: Some functionalities here are in Development and not featured in version 1.0!
+
 ## _G.charSelectExists
 A Varible checking if the Mod is active, this is useful for preventing script errors when the mod isn't on.
 
@@ -34,6 +36,10 @@ Example: `{r = 255, g = 150, b = 150}`
 Model Information Recieved from `smlua_model_util_get_id()`
 
 Example: `smlua_model_util_get_id("armature_geo")`
+
+Model can also have a hat Model via use of a table
+
+Example: `{smlua_model_util_get_id("armature_geo"), smlua_model_util_get_id("armature_hat_geo")}`
 
 ### Forced Character
 Character Type, Inputs can be `CT_MARIO`, `CT_LUIGI`, `CT_TOAD`, `CT_WALUIGI`, `CT_WARIO`

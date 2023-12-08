@@ -1,5 +1,5 @@
--- name: [CS] Model w/ Voice Pack Template
--- description: A Template for Character Select to build off of when making your own pack!\n\n\\#ff7777\\This Mod Requires the Character Select Mod\nto use as a Library!
+-- name: [CS] Model Pack w/ Voice Template
+-- description: A Template for Character Select to build off of when making your own pack! This version of the template featuring native voice compatibility.\n\n\\#ff7777\\This Mod Requires the Character Select Mod\nto use as a Library!
 
 --[[
     API Documentation for Character Select can be found below:
@@ -9,6 +9,7 @@
 local E_MODEL_CUSTOM_MODEL = smlua_model_util_get_id("custom_model_geo")
 
 local TEXT_MOD_NAME = "Character Template"
+
 local VOICETABLE_CHAR = {
     [CHAR_SOUND_ATTACKED] = 'NES-Hit.ogg',
     [CHAR_SOUND_DOH] = 'NES-Bump.ogg',
