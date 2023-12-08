@@ -562,7 +562,6 @@ end
 
 local inputStallTimer = 0
 local inputStallTo = 15
-local ACT_C_UP = 201327143
 
 local function before_mario_update(m)
     if m.playerIndex ~= 0 then return end
@@ -590,10 +589,14 @@ local function before_mario_update(m)
     local cameraToObject = gMarioStates[0].marioObj.header.gfx.cameraToObject
 
     -- C-up Failsafe (Camera Softlocks)
-    if m.action == ACT_C_UP or (m.prevAction == ACT_C_UP and is_game_paused()) then
+    if m.action == ACT_FIRST_PERSON or (m.prevAction == ACT_FIRST_PERSON and is_game_paused()) then
         menu = false
-    elseif m.prevAction == ACT_C_UP and not is_game_paused() then
+    elseif m.prevAction == ACT_FIRST_PERSON and not is_game_paused() then
         m.prevAction = ACT_WALKING
+    end
+
+    if gNetworkPlayers[0].currActNum == 99 then
+        menu = false
     end
 
     if menu and not options then
