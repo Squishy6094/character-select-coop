@@ -23,11 +23,6 @@ gCustomVoiceSamples = {}
 gCustomVoiceSamplesBackup = {}
 gCustomVoiceStream = nil
 
---Define what triggers the custom voice
-local function use_custom_voice(m)
-    return _G.charSelect.character_get_voice(m) ~= nil and gPlayerSyncTable[m.playerIndex].customVoice and killVoice
-end
-
 --Get the player's sample, stop whatever sound
 --it's playing if it doesn't match the provided sound
 --DON'T MODIFY THIS SINCE IT'S GLOBAL FOR USE BY OTHER MODS!
@@ -113,7 +108,7 @@ end
 --This hook is freely modifiable in case you want to make any specific exceptions
 --- @param m MarioState
 local function custom_character_sound(m, characterSound)
-    if not _G.charSelect.character_get_voice(m) then return end
+    if is_game_paused() then return end
     if characterSound == CHAR_SOUND_SNORING3 then return 0 end
     if characterSound == CHAR_SOUND_HAHA and m.hurtCounter > 0 then return 0 end
 
@@ -135,7 +130,7 @@ local SLEEP_TALK_END = SLEEP_TALK_START + SLEEP_TALK_SNORES
 --Main hook for snoring
 --- @param m MarioState
 local function custom_character_snore(m)
-    if not _G.charSelect.character_get_voice(m) then return end
+    if is_game_paused() then return end
     if gCustomVoiceSamplesBackup[m.playerIndex] ~= nil and not (gCustomVoiceSamples[m.playerIndex] == false) then
         if gCustomVoiceSamples[m.playerIndex].loaded then
             audio_sample_destroy(gCustomVoiceSamples[m.playerIndex])
