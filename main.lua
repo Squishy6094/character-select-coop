@@ -476,9 +476,9 @@ local function on_hud_render()
             djui_hud_set_color(menuColor.r * 0.25, menuColor.g * 0.25, menuColor.b * 0.25, 205 + math_max(-200, optionAnimTimer))
             djui_hud_render_rect(0, 0, width, height)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_render_rect(width*0.5 - 50 * widthScale, 55 + optionAnimTimer * -1, 100 * widthScale, 200)
+            djui_hud_render_rect(width*0.5 - 50 * widthScale, math.min(55 - optionAnimTimer, height - 25 * widthScale), 100 * widthScale, 200)
             djui_hud_set_color(0, 0, 0, 255)
-            djui_hud_render_rect(width*0.5 - 50 * widthScale + 2, 55 + optionAnimTimer * -1 + 2, 100 * widthScale - 4, 196)
+            djui_hud_render_rect(width*0.5 - 50 * widthScale + 2, math.min(55 - optionAnimTimer + 2, height - 25 * widthScale + 2), 100 * widthScale - 4, 196)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_render_rect(width*0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
             djui_hud_set_font(FONT_NORMAL)
@@ -489,7 +489,7 @@ local function on_hud_render()
             for i = 1, #optionTable do
                 local toggleName = optionTable[i].name
                 local scale = 0.5
-                local yOffset = 70 + 10 * math_min(widthScale, 1.8) + i * 9 * math_min(widthScale, 1.8) + optionAnimTimer * -1
+                local yOffset = 70 + 10 * math_min(widthScale, 1.8) + i * 9 * math_min(widthScale, 1.8) - optionAnimTimer
                 if i == currOption then
                     djui_hud_set_font(FONT_NORMAL)
                     scale = 0.3
@@ -508,16 +508,14 @@ local function on_hud_render()
 
             djui_hud_set_font(FONT_TINY)
             djui_hud_print_text(TEXT_OPTIONS_SELECT, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_SELECT)*0.3, height - 20 - optionAnimTimer, 0.6)
-        end
-
-        -- How to open options display
-        if not options or optionAnimTimer < -1 then
+        else
+            -- How to open options display
             local widthScaleUnlimited = widthScale
             local widthScale = math_min(widthScale, 1.42)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_render_rect(widthHalf - 50 * widthScaleUnlimited, height - 25 * widthScale + optionAnimTimer + 200, 100 * widthScaleUnlimited, 26 * widthScale)
+            djui_hud_render_rect(widthHalf - 50 * widthScaleUnlimited, height - 25 * widthScale, 100 * widthScaleUnlimited, 26 * widthScale)
             djui_hud_set_color(0, 0, 0, 255)
-            djui_hud_render_rect(widthHalf - 50 * widthScaleUnlimited + 2, height - 25 * widthScale + optionAnimTimer + 202, 100 * widthScaleUnlimited - 4, 22 * widthScale)
+            djui_hud_render_rect(widthHalf - 50 * widthScaleUnlimited + 2, height - 25 * widthScale + 2, 100 * widthScaleUnlimited - 4, 22 * widthScale)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_render_rect(widthHalf - 50 * widthScaleUnlimited, height - 2, 100 * widthScaleUnlimited, 2)
             djui_hud_set_font(FONT_NORMAL)
