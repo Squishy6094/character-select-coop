@@ -419,6 +419,8 @@ local function on_hud_render()
                 djui_hud_print_text(string_underscore_to_space(characterTable[currChar + i].name), buttonX + 5, y + 5, 0.6)
             end
         end
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_render_rect(0, height-2, x, 2)
 
         -- Scroll Bar
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
@@ -426,7 +428,7 @@ local function on_hud_render()
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(7 * widthScale + 1, 56, 5, 178)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(7 * widthScale + 2, 57 + 176 * ((currChar - 1) / #characterTable) - (buttonScroll/30)*(176/#characterTable), 3, 176/#characterTable)
+        djui_hud_render_rect(7 * widthScale + 2, 57 + 176 * ((currChar - 1) / #characterTable) - (buttonScroll*0.03333333333)*(176/#characterTable), 3, 176/#characterTable)
 
         
         --Character Description
