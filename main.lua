@@ -746,12 +746,7 @@ _G.charSelect = {
             credit = credit and credit or "Unknown",
             color = color and color or menuColorTable[8],
             model = modelInfo and (type(modelInfo) == "table" and modelInfo[1] or modelInfo) or E_MODEL_ARMATURE,
-            capModels = type(modelInfo) == "table" and {
-                normal = modelInfo[2],
-                wing = modelInfo[3],
-                metal = modelInfo[4],
-                metalWing = modelInfo[5]
-            } or nil,
+            capModels = type(modelInfo) == "table" and modelInfo[2] or nil,
             forceChar = forceChar and forceChar or CT_MARIO,
         })
         return #characterTable
@@ -778,12 +773,7 @@ _G.charSelect = {
             credit = credit and credit or characterTable[charNum].credit,
             color = color and color or characterTable[charNum].color,
             model = modelInfo and (type(modelInfo) == "table" and modelInfo[1] or modelInfo) or characterTable[charNum].model,
-            capModels = type(modelInfo) == "table" and {
-                normal = modelInfo[2],
-                wing = modelInfo[3],
-                metal = modelInfo[4],
-                metalWing = modelInfo[5]
-            } or characterTable[charNum].capModel,
+            capModels = type(modelInfo) == "table" and modelInfo[2] or characterTable[charNum].capModels,
             forceChar = forceChar and forceChar or characterTable[charNum].forceChar,
         } or nil
     end,

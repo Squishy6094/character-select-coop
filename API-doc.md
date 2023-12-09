@@ -1,11 +1,11 @@
-# Character Select API Documantation
+# Character Select API Documentation
 ### Gives full descriptions of all API functions
 We highly recommend messing around with our [Character Select Template](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template.zip) or [Character Select Template with Voice](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template-w-voice.zip) while first reading this doc to get a handle on everything here. And DO NOT modify/add any content within the Character Select mod itself, please use the API and an individual mod when adding characters.
 
 #### Note: Some functionalities here are in Development and not featured in version 1.0!
 
 ## _G.charSelectExists
-A Varible checking if the Mod is active, this is useful for preventing script errors when the mod isn't on.
+A Variable checking if the Mod is active, this is useful for preventing script errors when the mod isn't on.
 
 Example: `if not _G.charSelectExists then return end`
 
@@ -33,13 +33,22 @@ Table containing variables r, g, and b. Colors use Decimal Format
 Example: `{r = 255, g = 150, b = 150}`
 
 ### Model Info:
-Model Information Recieved from `smlua_model_util_get_id()`
+Model Information Received from `smlua_model_util_get_id()`
 
 Example: `smlua_model_util_get_id("armature_geo")`
 
-Model can also have a Hat Model via use of a Table
+Alternatively, Model can also have Cap Models via use of a Table
 
-Example: `{smlua_model_util_get_id("armature_geo"), smlua_model_util_get_id("armature_hat_geo")}`
+Example: `{smlua_model_util_get_id("armature_geo"), capModels}`
+
+```lua
+local capModels = {
+    normal = smlua_model_util_get_id("armature_normal_cap_geo"),
+    wing = smlua_model_util_get_id("armature_wing_cap_geo"),
+    metal = smlua_model_util_get_id("armature_metal_cap_geo"),
+    metalWing = smlua_model_util_get_id("armature_metal_wing_cap_geo")
+}
+```
 
 ### Forced Character
 Character Type, Inputs can be `CT_MARIO`, `CT_LUIGI`, `CT_TOAD`, `CT_WALUIGI`, `CT_WARIO`
@@ -47,7 +56,7 @@ Character Type, Inputs can be `CT_MARIO`, `CT_LUIGI`, `CT_TOAD`, `CT_WALUIGI`, `
 Example: `CT_MARIO`
 
 ### Full Example:
-```
+```lua
 _G.charSelect.character_add("Custom Model Name", {"Custom Model Description", "Custom Model Description"}, "Custom Model Creator", {r = 255, g = 200, b = 200}, E_MODEL_CUSTOM_MODEL, CT_MARIO)
 ```
 
@@ -55,7 +64,7 @@ _G.charSelect.character_add("Custom Model Name", {"Custom Model Description", "C
 A function that adds a voice to a character, has 2 inputs
 
 ### Model Info:
-Model Information Recieved from `smlua_model_util_get_id()`
+Model Information Received from `smlua_model_util_get_id()`
 
 Example: `smlua_model_util_get_id("armature_geo")`
 
@@ -63,7 +72,7 @@ Example: `smlua_model_util_get_id("armature_geo")`
 A table with you're character's sound file names
 
 Table Example:
-```
+```lua
 local VOICETABLE_CHAR = {
     [CHAR_SOUND_ATTACKED] = 'NES-Hit.ogg',
     [CHAR_SOUND_DOH] = 'NES-Bump.ogg',
@@ -93,14 +102,14 @@ local VOICETABLE_CHAR = {
     [CHAR_SOUND_YAWNING] = 'NES-Pause.ogg',
 }
 ```
-Refer to [sm64ex-coop's CharacterSound Constants](https://github.com/djoslin0/sm64ex-coop/blob/coop/docs/lua/constants.md#enum-charactersound) for all replacable sounds
+Refer to [sm64ex-coop's CharacterSound Constants](https://github.com/djoslin0/sm64ex-coop/blob/coop/docs/lua/constants.md#enum-charactersound) for all replaceable sounds
 
 Input Example:
 `VOICETABLE_CHAR`
 
 ### Required Code:
 In order for voice clips to work functionally, you require the following code in your script:
-```
+```lua
 hook_event(HOOK_CHARACTER_SOUND, function (m, sound)
     if _G.charSelect.character_get_voice(m) == VOICETABLE_CHAR then return _G.charSelect.voice.sound(m, sound) end
 end)
@@ -112,7 +121,7 @@ end)
 Copy the `if` statements for each character with a voice
 
 Example:
-```
+```lua
 hook_event(HOOK_CHARACTER_SOUND, function (m, sound)
     if _G.charSelect.character_get_voice(m) == VOICETABLE_CHAR then return _G.charSelect.voice.sound(m, sound) end
     if _G.charSelect.character_get_voice(m) == VOICETABLE_UNLOCKABLE_CHAR then return _G.charSelect.voice.sound(m, sound) end
@@ -123,13 +132,13 @@ hook_event(HOOK_MARIO_UPDATE, function (m)
 end)
 ```
 
-Examples of these can be found in 
+Examples of these can be found in [Character Select Template with Voice](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template-w-voice.zip)
 
 ## _G.charSelect.character_edit()
 A function that Edits an Existing Character, has 7 inputs
 
 ### Original Character Number:
-The Number of the Character you want to edit, this can be found using `_G.charSelect.character_get_number_from_string`
+The Number of the Character you want to edit, this can be found using `_G.charSelect.character_get_number_from_string()`
 
 Example: `_G.charSelect.character_get_number_from_string("Custom Model")`
 
@@ -162,7 +171,7 @@ A function that prevents the menu from being opened via boolean
 A function that returns the either True or False if the Menu Options is Open or not.
 
 ## _G.charSelect.get_status()
-A function that returns the status of an inputted value relitive to the option table
+A function that returns the status of an inputted value relative to the option table
 
 Inputs can be the following:
 ```
@@ -175,7 +184,7 @@ _G.charSelect.optionTableRef.prefToDefault (6)
 ```
 
 ## _G.charSelect.character_get_voice()
-Returns the current character's Voicetable, Primirily when hooking a character's voice
+Returns the current character's Voicetable, Primarily when hooking a character's voice
 
 ## _G.charSelect.voice
 Both `_G.charSelect.voice.sound()` and `_G.charSelect.voice.snore()` are used to hook sound functionalities into other mods, allowing Character Select to access sounds from Packs. Both functions have no real use case outside of doing this.
@@ -196,7 +205,7 @@ Example: `_G.charSelect.character_edit(myCharPlacement, nil, nil, nil, nil, nil,
 A character can be "unlockable" by setting a condition and then running `_G.charSelect.character_add()` once.
 
 Example:
-```
+```lua
 local unlockedCharacter = false
 local unlockableCharPlacement = 0
 
@@ -210,6 +219,6 @@ end
 This function doesn't loop due to the `unlockableCharPlacement` being set, thus only running once. (Character locations will never be under `2`)
 
 ## Muted Character Voice
-A character can have a muted voice by having their input table be `nil``, This can be hooked as usual causing no voicelines to play
+A character can have a muted voice by having their input table be `nil`, This can be hooked as usual causing no voicelines to play
 
 Example: `VOICETABLE_CHAR = {nil}`
