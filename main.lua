@@ -331,9 +331,14 @@ hook_event(HOOK_OBJECT_SET_MODEL, set_model)
 ------------------
 
 local buttonAnimTimer = 0
+local buttonScroll = 0
+local buttonScrollCap = 30
 
 local optionAnimTimer = -200
 local optionAnimTimerCap = optionAnimTimer
+
+local inputStallTimer = 0
+local inputStallTo = 15
 
 local TEXT_OPTIONS_HEADER = "Menu Options"
 local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
@@ -388,6 +393,11 @@ local function on_hud_render()
         if optionTable[optionTableRef.anims].toggle > 0 then
             buttonAnimTimer = buttonAnimTimer + 1
         end
+        if optionTable[optionTableRef.anims].toggle == 0 then
+            buttonScroll = 0
+        elseif buttonScroll > 0.1 or buttonScroll < -0.1 then
+            buttonScroll = buttonScroll*0.03*inputStallTo
+        end
 
         local buttonColor = {}
         for i = -1, 4 do
@@ -400,7 +410,7 @@ local function on_hud_render()
                 else
                     if i == 0 then buttonX = buttonX + 10 end
                 end
-                local y = (i + 2) * 30 + 30
+                local y = (i + 3) * 30 + buttonScroll
                 djui_hud_render_rect(buttonX, y, 70, 20)
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_render_rect(buttonX + 1, y + 1, 68, 18)
@@ -416,7 +426,7 @@ local function on_hud_render()
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(7 * widthScale + 1, 56, 5, 178)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(7 * widthScale + 2, 57 + 176 * ((currChar - 1) / #characterTable), 3, 176/#characterTable)
+        djui_hud_render_rect(7 * widthScale + 2, 57 + 176 * ((currChar - 1) / #characterTable) - buttonScroll, 3, 176/#characterTable)
 
         
         --Character Description
@@ -574,9 +584,6 @@ local function on_hud_render()
     end
 end
 
-local inputStallTimer = 0
-local inputStallTo = 15
-
 local function before_mario_update(m)
     if m.playerIndex ~= 0 then return end
     if inputStallTimer > 0 then inputStallTimer = inputStallTimer - 1 end
@@ -618,31 +625,37 @@ local function before_mario_update(m)
             if (m.controller.buttonPressed & D_JPAD) ~= 0 then
                 currChar = currChar + 1
                 inputStallTimer = inputStallTo
+                buttonScroll = buttonScrollCap
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if (m.controller.buttonPressed & U_JPAD) ~= 0 then
                 currChar = currChar - 1
                 inputStallTimer = inputStallTo
+                buttonScroll = -buttonScrollCap
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if (m.controller.buttonPressed & D_CBUTTONS) ~= 0 then
                 currChar = currChar + 1
                 inputStallTimer = inputStallTo*0.6
+                buttonScroll = buttonScrollCap
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if (m.controller.buttonPressed & U_CBUTTONS) ~= 0 then
                 currChar = currChar - 1
                 inputStallTimer = inputStallTo*0.6
+                buttonScroll = -buttonScrollCap
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if m.controller.stickY < -60 then
                 currChar = currChar + 1
                 inputStallTimer = inputStallTo
+                buttonScroll = buttonScrollCap
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if m.controller.stickY > 60 then
                 currChar = currChar - 1
                 inputStallTimer = inputStallTo
+                buttonScroll = -buttonScrollCap
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if (m.controller.buttonPressed & A_BUTTON) ~= 0 then
