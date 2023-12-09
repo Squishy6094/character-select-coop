@@ -426,7 +426,7 @@ local function on_hud_render()
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(7 * widthScale + 1, 56, 5, 178)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(7 * widthScale + 2, 57 + 176 * ((currChar - 1) / #characterTable) - buttonScroll, 3, 176/#characterTable)
+        djui_hud_render_rect(7 * widthScale + 2, 57 + 176 * ((currChar - 1) / #characterTable) - (buttonScroll/30)*(176/#characterTable), 3, 176/#characterTable)
 
         
         --Character Description
