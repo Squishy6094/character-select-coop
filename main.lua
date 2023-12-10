@@ -190,6 +190,9 @@ local function load_preferred_char()
     elseif mod_storage_load("PrefChar") == nil then
         mod_storage_save("PrefChar", "Default")
     end
+    if #characterTable == 1 then
+        djui_popup_create("Character Select:\nNo Characters were Found", 2)
+    end
     TEXT_PREF_LOAD = mod_storage_load("PrefChar")
 end
 
@@ -205,7 +208,25 @@ local function failsafe_options()
             optionTable[i].toggleNames = {"Off", "On"}
         end
     end
+    if optionTable[optionTableRef.openInputs].toggle == 1 and ommActive then
+        djui_popup_create('Character Select:\nYour Open bind has changed to:\nD-pad Down + R\nDue to OMM Rebirth being active!', 4)
+    end
 end
+
+local hasOpenedMenu = false
+
+local function idiot_proof_note()
+    if mod_storage_load("openedmenu") == nil then
+        if #characterTable > 1 then
+            djui_chat_message_create("Character Select is active and has "..(#characterTable - 1).." characters available!\nYou can use \\#ffff00\\/char-select \\#ffffff\\to open the menu!")
+        else
+            djui_chat_message_create("Character Select is active!\nYou can use \\#ffff00\\/char-select \\#ffffff\\to open the menu!")
+        end
+    else
+        hasOpenedMenu = true
+    end
+end
+
 -------------------
 -- Model Handler --
 -------------------
@@ -225,12 +246,7 @@ local function mario_update(m)
     if stallFrame == 1 then
         load_preferred_char()
         failsafe_options()
-        if #characterTable == 1 then
-            djui_popup_create("Character Select:\nNo Characters were Found", 2)
-        end
-        if optionTable[optionTableRef.openInputs].toggle == 1 and ommActive then
-            djui_popup_create('Character Select:\nYour Open bind has changed to:\nD-pad Down + R\nDue to OMM Rebirth being active!', 4)
-        end
+        idiot_proof_note()
     end
 
     if stallFrame < 2 then
@@ -680,6 +696,12 @@ local function before_mario_update(m)
         nullify_inputs(m)
         if is_game_paused() then
             m.controller.buttonPressed = START_BUTTON
+        end
+        
+        -- Idiot Proof Check
+        if not hasOpenedMenu then
+            mod_storage_save("openedmenu", "youdidit")
+            hasOpenedMenu = true
         end
     end
 
