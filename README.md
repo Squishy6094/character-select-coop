@@ -4,7 +4,7 @@
 
  ![menu-preview](images/menu-preview.png)
 
- Our main goal is to make Character Creation on Lua's end as simple as possible, and to move away from the old Skin Pack mod people keep copy/pasting. With this goal in mind we tried to make everything as streamlined as possible throughout the character addition process, While allowing for tons of customizability!
+ Our main goal is to make Character Creation on Lua's end as simple as possible, and to move away from the old Skin Pack mod people keep copying and pasting. With this goal in mind, we tried to make everything as streamlined as possible throughout the character addition process, while allowing for tons of customizability!
 
 ⭐[Download Here](https://github.com/Squishy6094/character-select-coop/releases)⭐
 
@@ -15,8 +15,6 @@ We'll keep an archive of all user-made packs here, as well as our packs included
  - [Squid Sisters](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-squid-sisters.zip) - Frijoles Y Queso
  - [Uncle Grandpa](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-uncle-grandpa.zip) - Garlicker
  - [Yumi Martinez](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-yumi.zip) - Frijoles Y Queso
-
-
 
 ## Resources
  [API Documentation](API-doc.md) - Gives Full Info on the Character Select's API
