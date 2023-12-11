@@ -5,7 +5,7 @@ We highly recommend messing around with our [Character Select Template](https://
 #### Note: Some functionalities here are in Development and not featured in version 1.0!
 
 ## _G.charSelectExists
-A Variable checking if the Mod is active, this is useful for preventing script errors when the mod isn't on.
+A variable checking if the Mod is active, this is useful for preventing script errors when the mod isn't on.
 
 Example: `if not _G.charSelectExists then return end`
 
@@ -37,7 +37,7 @@ Model Information Received from `smlua_model_util_get_id()`
 
 Example: `smlua_model_util_get_id("armature_geo")`
 
-Alternatively, Model can also have Cap Models via use of a Table
+Alternatively, Models can also have Cap Models via use of a Table
 
 Example: `{smlua_model_util_get_id("armature_geo"), capModels}`
 
@@ -55,10 +55,17 @@ Character Type, Inputs can be `CT_MARIO`, `CT_LUIGI`, `CT_TOAD`, `CT_WALUIGI`, `
 
 Example: `CT_MARIO`
 
+### Life Icon
+Texture Information Recieved from `get_texture_info()`
+
+Example: `get_texture_info("armature_icon")`
+
 ### Full Example:
 ```lua
-_G.charSelect.character_add("Custom Model Name", {"Custom Model Description", "Custom Model Description"}, "Custom Model Creator", {r = 255, g = 200, b = 200}, E_MODEL_CUSTOM_MODEL, CT_MARIO)
+_G.charSelect.character_add("Custom Model", {"Custom Model Description", "Custom Model Description"}, "Custom Model Creator", {r = 255, g = 200, b = 200}, E_MODEL_CUSTOM_MODEL, CT_MARIO, get_texture_info("custom-icon"))
 ```
+
+Note that any of these fields can be left as `nil`, and Character Select will fill in the field for you.
 
 ## _G.charSelect.character_add_voice()
 A function that adds a voice to a character, has 2 inputs
@@ -142,7 +149,7 @@ The Number of the Character you want to edit, this can be found using `_G.charSe
 
 Example: `_G.charSelect.character_get_number_from_string("Custom Model")`
 
-**All 6 other inputs are the same as `_G.charSelect.character_add()`**
+**All 6 other inputs are the same as [`_G.charSelect.character_add()`](/API-doc.md#_gcharselectcharacter_add)**
 
 ## _G.charSelect.character_get_current_name()
 A function that returns the Current Character's Name String
@@ -193,7 +200,7 @@ Both `_G.charSelect.voice.sound()` and `_G.charSelect.voice.snore()` are used to
 ### Helpful info for common API use cases
 
 ## Storing Character Table Positions
-You can store a character's placement in the character table by storing `_G.charSelect.character_get_number_from_string()` or the returned value of `_G.charSelect.character_add()` to a local variable after adding the character instead of using the function every frame. (Characters will never change positions in the table once added)
+You can store a character's placement in the character table by storing `_G.charSelect.character_get_number_from_string()` to a local variable after adding the character instead of using the function every frame. (Characters will never change positions in the table once added)
 
 Examples: `local myCharPlacement = _G.charSelect.character_get_number_from_string("Custom Model")` or `myCharPlacement = _G.charSelect.character_add(nil, nil, nil, nil, nil, nil)`
 
@@ -202,7 +209,7 @@ This can be used to easily edit your character when necessary.
 Example: `_G.charSelect.character_edit(myCharPlacement, nil, nil, nil, nil, nil, nil)`
 
 ## Unlockable Characters
-A character can be "unlockable" by setting a condition and then running `_G.charSelect.character_add()` once.
+A character can be "unlockable" by setting a condition and then running [`_G.charSelect.character_add()`](/API-doc.md#_gcharselectcharacter_add) once.
 
 Example:
 ```lua
