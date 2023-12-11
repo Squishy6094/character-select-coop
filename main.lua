@@ -575,6 +575,7 @@ local function on_hud_render()
         optionAnimTimer = optionAnimTimerCap
     end
 
+    -- Info / Z Open Bind on Pause Menu
     if is_game_paused() and not djui_hud_is_pause_menu_created() and gMarioStates[0].action ~= ACT_EXIT_LAND_SAVE_DIALOG then
         local currCharY = 0
         djui_hud_set_resolution(RESOLUTION_DJUI)
@@ -608,6 +609,32 @@ local function on_hud_render()
             djui_hud_set_color(255, 255, 255, 255)
             djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, width - 20, 16 + currCharY, 1)
         end
+    end
+end
+
+-- Custom life icon rendering (Thanks LuigiGamer)
+function on_life_counter_render()
+    if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then return end
+    -- Rendering settings --
+    djui_hud_set_font(FONT_HUD)
+    djui_hud_set_resolution(RESOLUTION_N64)
+    djui_hud_set_color(255, 255, 255, 255);
+  
+    -- Texture scale --
+  
+    -- Texture position --
+    local x = 22
+    local y = 15
+  
+    -- Texture Rendering --
+    if not hud_is_hidden() then
+        local icon = characterTable[currChar].lifeIcon
+        djui_hud_render_texture(icon, x, y, 1/(icon.width/16), 1/(icon.height/16))
+        djui_hud_print_text("@", x + 16, y, 1)
+        djui_hud_print_text(tostring(gMarioStates[0].numLives), x + 32, y, 1)
+        hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) &~ HUD_DISPLAY_FLAG_LIVES) -- Hides the lives counter
+    else
+        hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_FLAG_LIVES) -- Shows the lives counter, use this when you're no longer using a custom character
     end
 end
 
@@ -760,6 +787,7 @@ end
 
 hook_event(HOOK_BEFORE_MARIO_UPDATE, before_mario_update)
 hook_event(HOOK_ON_HUD_RENDER, on_hud_render)
+hook_event(HOOK_ON_HUD_RENDER_BEHIND, on_life_counter_render)
 
 --------------
 -- Commands --
@@ -784,7 +812,7 @@ _G.charSelect = {
     ---@param color Color {r, g, b}
     ---@param modelInfo ModelExtendedId|table Use smlua_model_util_get_id()
     ---@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
-    ---@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
+    ---@param lifeIcon TextureInfo Use get_texture_info()
     ---@return integer
     character_add = function(name, description, credit, color, modelInfo, forceChar, lifeIcon)
         table.insert(characterTable, {
@@ -814,7 +842,8 @@ _G.charSelect = {
     ---@param color Color {r, g, b}
     ---@param modelInfo ModelExtendedId|table Use smlua_model_util_get_id()
     ---@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
-    character_edit = function(charNum, name, description, credit, color, modelInfo, forceChar)
+    ---@param lifeIcon TextureInfo Use get_texture_info()
+    character_edit = function(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon)
         characterTable[charNum] = characterTable[charNum] and {
             name = name and string_space_to_underscore(name) or characterTable[charNum].name,
             description = description and description or characterTable[charNum].description,
@@ -823,6 +852,7 @@ _G.charSelect = {
             model = modelInfo and (type(modelInfo) == "table" and modelInfo[1] or modelInfo) or characterTable[charNum].model,
             capModels = type(modelInfo) == "table" and modelInfo[2] or characterTable[charNum].capModels,
             forceChar = forceChar and forceChar or characterTable[charNum].forceChar,
+            lifeIcon = lifeIcon and lifeIcon or TEX_UNKNOWN_CHAR,
         } or nil
     end,
 
