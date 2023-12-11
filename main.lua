@@ -11,6 +11,7 @@ local currOption = 1
 local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 
 local TEX_HEADER = get_texture_info("char-select-text")
+local TEX_UNKNOWN_CHAR = get_texture_info("unknown-icon")
 
 local TEXT_PREF_LOAD = "Default"
 
@@ -30,6 +31,7 @@ local characterTable = {
         color = {r = 255, g = 50, b = 50},
         model = nil,
         forceChar = nil,
+        lifeIcon = TEX_UNKNOWN_CHAR,
     },
 }
 
@@ -110,6 +112,14 @@ local defaultPlayerColors = {
     [CT_TOAD] = {r = 100,  g = 100,  b = 255},
     [CT_WALUIGI] = {r = 130, g = 25,  b = 130},
     [CT_WARIO] = {r = 255, g = 255, b = 50},
+}
+
+local defaultIcons = {
+    [CT_MARIO] = gTextures.mario_head,
+    [CT_LUIGI] = gTextures.luigi_head,
+    [CT_TOAD] = gTextures.toad_head,
+    [CT_WALUIGI] = gTextures.waluigi_head,
+    [CT_WARIO] = gTextures.wario_head,
 }
 
 local latencyValueTable = {15, 10, 5}
@@ -257,6 +267,7 @@ local function mario_update(m)
         characterTable[1].forceChar = gNetworkPlayers[m.playerIndex].modelIndex
         if currChar == 1 then
             characterTable[1].color = defaultPlayerColors[gNetworkPlayers[m.playerIndex].modelIndex]
+            characterTable[1].lifeIcon = defaultIcons[gNetworkPlayers[m.playerIndex].modelIndex]
         end
         if optionTable[optionTableRef.localModels].toggle > 0 then
             gPlayerSyncTable[0].modelId = characterTable[currChar].model
@@ -773,8 +784,9 @@ _G.charSelect = {
     ---@param color Color {r, g, b}
     ---@param modelInfo ModelExtendedId|table Use smlua_model_util_get_id()
     ---@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
+    ---@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
     ---@return integer
-    character_add = function(name, description, credit, color, modelInfo, forceChar)
+    character_add = function(name, description, credit, color, modelInfo, forceChar, lifeIcon)
         table.insert(characterTable, {
             name = name and string_space_to_underscore(name) or "Untitled",
             description = description and description or {"No description has been provided"},
@@ -783,6 +795,7 @@ _G.charSelect = {
             model = modelInfo and (type(modelInfo) == "table" and modelInfo[1] or modelInfo) or E_MODEL_ARMATURE,
             capModels = type(modelInfo) == "table" and modelInfo[2] or nil,
             forceChar = forceChar and forceChar or CT_MARIO,
+            lifeIcon = lifeIcon and lifeIcon or TEX_UNKNOWN_CHAR,
         })
         return #characterTable
     end,
