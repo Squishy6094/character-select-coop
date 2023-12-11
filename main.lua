@@ -150,6 +150,8 @@ local math_random = math.random
 local play_sound = play_sound
 local mod_storage_save = mod_storage_save
 local mod_storage_load = mod_storage_load
+local string_lower = string.lower
+local table_insert = table.insert
 
 -- Custom Functions --
 local function nullify_inputs(m)
@@ -793,9 +795,21 @@ hook_event(HOOK_ON_HUD_RENDER_BEHIND, on_life_counter_render)
 -- Commands --
 --------------
 
-local function chat_command()
-    menu = not menu
-    return true
+local function chat_command(msg)
+    if msg ~= "" then
+        msg = string_lower(msg)
+        for i = 1, #characterTable do
+            if msg == string_underscore_to_space(string_lower(characterTable[i].name)) then
+                currChar = i
+                return true
+            end
+        end
+        djui_chat_message_create("Character Not Found")
+        return true
+    else
+        menu = not menu
+        return true
+    end
 end
 
 hook_chat_command("char-select", "- Opens the Character Select Menu", chat_command)
@@ -814,8 +828,8 @@ _G.charSelect = {
     ---@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
     ---@param lifeIcon TextureInfo Use get_texture_info()
     ---@return integer
-    character_add = function(name, description, credit, color, modelInfo, forceChar, lifeIcon)
-        table.insert(characterTable, {
+    character_add = function(name, description, credit, color, modelInfo, forceChar)
+        table_insert(characterTable, {
             name = name and string_space_to_underscore(name) or "Untitled",
             description = description and description or {"No description has been provided"},
             credit = credit and credit or "Unknown",
