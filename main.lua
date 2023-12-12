@@ -37,6 +37,8 @@ local characterTable = {
 
 local characterVoices = {}
 
+local allowMenu = {}
+
 local optionTableRef = {
     openInputs = 1,
     menuColor = 2,
@@ -154,14 +156,29 @@ local string_lower = string.lower
 local table_insert = table.insert
 
 -- Custom Functions --
+---@param m MarioState
 local function nullify_inputs(m)
-    m.controller.rawStickY = 0
-    m.controller.rawStickX = 0
-    m.controller.stickX = 0
-    m.controller.stickY = 0
-    m.controller.stickMag = 0
-    m.controller.buttonPressed = 0
-    m.controller.buttonDown = 0
+    local c = m.controller
+    _G.charSelect.controller = {
+        buttonDown = c.buttonDown,
+        buttonPressed = c.buttonPressed & ~_G.charSelect.controller.buttonDown,
+        extStickX = c.extStickX,
+        extStickY = c.extStickY,
+        rawStickX = c.rawStickX,
+        rawStickY = c.rawStickY,
+        stickMag = c.stickMag,
+        stickX = c.stickX,
+        stickY = c.stickY
+    }
+    c.buttonDown = 0
+    c.buttonPressed = 0
+    c.extStickX = 0
+    c.extStickY = 0
+    c.rawStickX = 0
+    c.rawStickY = 0
+    c.stickMag = 0
+    c.stickX = 0
+    c.stickY = 0
 end
 
 local function string_underscore_to_space(string)
@@ -284,6 +301,12 @@ local function mario_update(m)
         end
 
         if menu then
+            for _, func in pairs(allowMenu) do
+                if not func() then
+                    menu = false
+                    return
+                end
+            end
             camera_freeze()
             hud_hide()
             if _G.PersonalStarCounter then
@@ -820,15 +843,15 @@ hook_chat_command("char-select", "- Opens the Character Select Menu", chat_comma
 
 _G.charSelectExists = true -- Ace
 _G.charSelect = {
-    ---@param name string Underscores turn into Spaces
-    ---@param description table {"string"}
-    ---@param credit string
-    ---@param color Color {r, g, b}
-    ---@param modelInfo ModelExtendedId|table Use smlua_model_util_get_id()
-    ---@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
-    ---@param lifeIcon TextureInfo Use get_texture_info()
+    ---@param name string|nil Underscores turn into Spaces
+    ---@param description table|nil {"string"}
+    ---@param credit string|nil
+    ---@param color Color|nil {r, g, b}
+    ---@param modelInfo ModelExtendedId|table|nil Use smlua_model_util_get_id()
+    ---@param forceChar CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
+    ---@param lifeIcon TextureInfo|nil Use get_texture_info()
     ---@return integer
-    character_add = function(name, description, credit, color, modelInfo, forceChar)
+    character_add = function(name, description, credit, color, modelInfo, forceChar, lifeIcon)
         table_insert(characterTable, {
             name = name and string_space_to_underscore(name) or "Untitled",
             description = description and description or {"No description has been provided"},
@@ -843,20 +866,20 @@ _G.charSelect = {
     end,
 
 
-    ---@param modelInfo ModelExtendedId
+    ---@param modelInfo ModelExtendedId|integer
     ---@param clips table
     character_add_voice = function(modelInfo, clips)
         characterVoices[modelInfo] = clips
     end,
 
     ---@param charNum integer Use _G.charSelect.character_get_number_from_string() or _G.charSelect.character_add()'s return value
-    ---@param name string Underscores turn into Spaces
-    ---@param description table {"string"}
-    ---@param credit string
-    ---@param color Color {r, g, b}
-    ---@param modelInfo ModelExtendedId|table Use smlua_model_util_get_id()
-    ---@param forceChar CharacterType CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
-    ---@param lifeIcon TextureInfo Use get_texture_info()
+    ---@param name string|nil Underscores turn into Spaces
+    ---@param description table|nil {"string"}
+    ---@param credit string|nil
+    ---@param color Color|nil {r, g, b}
+    ---@param modelInfo ModelExtendedId|integer|table|nil Use smlua_model_util_get_id()
+    ---@param forceChar CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
+    ---@param lifeIcon TextureInfo|nil Use get_texture_info()
     character_edit = function(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon)
         characterTable[charNum] = characterTable[charNum] and {
             name = name and string_space_to_underscore(name) or characterTable[charNum].name,
@@ -901,11 +924,27 @@ _G.charSelect = {
         return menu
     end,
 
+    hook_allow_menu_open = function (func)
+        table.insert(allowMenu, func)
+    end,
+
     is_options_open = function ()
         return options
     end,
 
     optionTableRef = optionTableRef,
+
+    controller = {
+        buttonDown = 0,
+        buttonPressed = 0,
+        extStickX = 0,
+        extStickY = 0,
+        rawStickX = 0,
+        rawStickY = 0,
+        stickMag = 0,
+        stickX = 0,
+        stickY = 0
+    },
 
     ---@param tableNum integer
     get_status = function (tableNum)

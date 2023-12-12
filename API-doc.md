@@ -171,8 +171,23 @@ A function that returns the current version of the mod in a string format
 ## _G.charSelect.is_menu_open()
 A function that returns the either True or False if the Menu is Open or not.
 
-## _G.charSelect.stop_menu_open()
-A function that prevents the menu from being opened via boolean
+## _G.charSelect.hook_allow_menu_open()
+A function that allows you to hook a function to prevent the menu from opening.
+
+Provide a function you'd like to hook as an argument.
+
+Example:
+```lua
+luigiisdead = true
+c = true
+function allow_menu()
+    if luigiisdead and c then
+        return false
+    end
+end
+
+_G.charSelect.hook_allow_menu_open(allow_menu)
+```
 
 ## _G.charSelect.is_options_open()
 A function that returns the either True or False if the Menu Options is Open or not.
@@ -195,6 +210,9 @@ Returns the current character's Voicetable, Primarily when hooking a character's
 
 ## _G.charSelect.voice
 Both `_G.charSelect.voice.sound()` and `_G.charSelect.voice.snore()` are used to hook sound functionalities into other mods, allowing Character Select to access sounds from Packs. Both functions have no real use case outside of doing this.
+
+## _G.charSelect.controller
+Use this to access controller input while the menu is open.
 
 # Tips on API Usage
 ### Helpful info for common API use cases
