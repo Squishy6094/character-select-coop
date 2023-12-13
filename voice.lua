@@ -3,7 +3,6 @@ for i = 0, MAX_PLAYERS -1, 1 do
 end
 
 local voicecount = 0
-local characterVoices = {}
 
 local SLEEP_TALK_SNORES = 8
 
@@ -79,21 +78,6 @@ function play_custom_character_sound(m, voice)
     return 0
 end
 
--- API functions
-
----@param modelInfo ModelExtendedId|integer
----@param clips table
-local character_add_voice = function(modelInfo, clips)
-    characterVoices[modelInfo] = clips
-end
-
----@param m MarioState
-character_get_voice = function (m)
-    return characterVoices[gPlayerSyncTable[m.playerIndex].modelId]
-end
-
---
-
 --- @param m MarioState
 local function custom_character_sound(m, characterSound)
     if is_game_paused() then return end
@@ -161,12 +145,8 @@ local function custom_character_snore(m)
     end
 end
 
-_G.charSelect = {
-    character_add_voice = character_add_voice,
-    character_get_voice = character_get_voice,
-    voice = {
-        sound = custom_character_sound,
-        snore = custom_character_snore,
-    }
+_G.charSelect.voice = {
+    sound = custom_character_sound,
+    snore = custom_character_snore,
 }
 gPlayerSyncTable[0].customVoice = true

@@ -1,10 +1,13 @@
 
 
+local characterVoices = {}
+
 local TEX_UNKNOWN_CHAR = get_texture_info("unknown-icon")
 
 local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 
 local table_insert = table.insert
+local type = type
 
 ---------
 -- API --
@@ -53,6 +56,12 @@ local character_edit = function(charNum, name, description, credit, color, model
     } or nil
 end
 
+---@param modelInfo ModelExtendedId|integer
+---@param clips table
+local character_add_voice = function(modelInfo, clips)
+    characterVoices[modelInfo] = clips
+end
+
 ---@return integer
 local character_get_current_name = function ()
     return currChar > 1 and string_underscore_to_space(characterTable[currChar].name) or gMarioStates[0].character.name
@@ -72,6 +81,10 @@ local character_get_number_from_string = function (name)
     return false
 end
 
+---@param m MarioState
+local character_get_voice = function (m)
+    return characterVoices[gPlayerSyncTable[m.playerIndex].modelId]
+end
 
 local version_get = function ()
     return modVersion
@@ -111,7 +124,7 @@ local controller = {
 }
 
 ---@param tableNum integer
-get_status = function (tableNum)
+local get_status = function (tableNum)
     return optionTable[tableNum].toggle
 end
 
@@ -123,10 +136,12 @@ _G.charSelect = {
     character_get_current_name = character_get_current_name,
     character_get_current_model_number = character_get_current_model_number,
     character_get_number_from_string = character_get_number_from_string,
+    character_get_voice = character_get_voice,
     version_get = version_get,
     is_menu_open = is_menu_open,
     hook_allow_menu_open = hook_allow_menu_open,
     is_options_open = is_options_open,
+    get_status = get_status,
     optionTableRef = optionTableRef,
     controller = controller,
 }
