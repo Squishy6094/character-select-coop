@@ -1,17 +1,15 @@
 -- name: Character Select
 -- description: A Library / API made to make adding and\nusing Custom Characters as simple as possible!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\\#AAAAFF\\\n\nGithub:\nSquishy6094/character-select-coop
-local modVersion = "1.5 (In-Dev)"
 
-local menu = false
-local options = false
 
-local currChar = 1
+menu = false
+options = false
+
+currChar = 1
 local currOption = 1
 
-local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 
 local TEX_HEADER = get_texture_info("char-select-text")
-local TEX_UNKNOWN_CHAR = get_texture_info("unknown-icon")
 
 local TEXT_PREF_LOAD = "Default"
 
@@ -23,7 +21,7 @@ local ommActive = _G.OmmApi ~= nil
     API to add characters, this ensures your pack is easy
     to use for anyone and low on file space!
 ]]
-local characterTable = {
+characterTable = {
     [1]  = {
         name = "Default",
         description = {"The vanilla cast for sm64ex-coop!", "", "These Characters are swappable", "via the default Options Menu"},
@@ -31,13 +29,9 @@ local characterTable = {
         color = {r = 255, g = 50, b = 50},
         model = nil,
         forceChar = nil,
-        lifeIcon = TEX_UNKNOWN_CHAR,
+        lifeIcon = gTextures.mario_head,
     },
 }
-
-local characterVoices = {}
-
-local allowMenu = {}
 
 local optionTableRef = {
     openInputs = 1,
@@ -48,7 +42,7 @@ local optionTableRef = {
     prefToDefault = 6,
 }
 
-local optionTable = {
+optionTable = {
     [optionTableRef.openInputs] = {
         name = "Open Binds",
         toggle = tonumber(mod_storage_load("MenuInput")),
@@ -96,18 +90,6 @@ local optionTable = {
     },
 }
 
-local menuColorTable = {
-    {r = 255, g = 50,  b = 50 },
-    {r = 255, g = 100, b = 50 },
-    {r = 255, g = 255, b = 50 },
-    {r = 50,  g = 255, b = 50 },
-    {r = 100,  g = 100,  b = 255},
-    {r = 251, g = 148, b = 220},
-    {r = 130, g = 25,  b = 130},
-    {r = 255, g = 255, b = 255},
-    {r = 50,  g = 50,  b = 50 },
-}
-
 local defaultPlayerColors = {
     [CT_MARIO] = {r = 255, g = 50, b = 50},
     [CT_LUIGI] = {r = 50, g = 255, b = 50},
@@ -126,11 +108,6 @@ local defaultIcons = {
 
 local latencyValueTable = {15, 10, 5}
 
----------------
--- Functions --
----------------
-
--- Localized Functions --
 local camera_freeze = camera_freeze
 local camera_unfreeze = camera_unfreeze
 local network_local_index_from_global = network_local_index_from_global
@@ -153,9 +130,7 @@ local play_sound = play_sound
 local mod_storage_save = mod_storage_save
 local mod_storage_load = mod_storage_load
 local string_lower = string.lower
-local table_insert = table.insert
 
--- Custom Functions --
 ---@param m MarioState
 local function nullify_inputs(m)
     local c = m.controller
@@ -179,32 +154,6 @@ local function nullify_inputs(m)
     c.stickMag = 0
     c.stickX = 0
     c.stickY = 0
-end
-
-local function string_underscore_to_space(string)
-    local s = ''
-    for i = 1, #string do
-        local c = string:sub(i,i)
-        if c ~= '_' then
-            s = s .. c
-        else
-            s = s .. " "
-        end
-    end
-    return s
-end
-
-local function string_space_to_underscore(string)
-    local s = ''
-    for i = 1, #string do
-        local c = string:sub(i,i)
-        if c ~= ' ' then
-            s = s .. c
-        else
-            s = s .. "_"
-        end
-    end
-    return s
 end
 
 local function load_preferred_char()
@@ -836,118 +785,3 @@ local function chat_command(msg)
 end
 
 hook_chat_command("char-select", "- Opens the Character Select Menu", chat_command)
-
----------
--- API --
----------
-
-_G.charSelectExists = true -- Ace
-_G.charSelect = {
-    ---@param name string|nil Underscores turn into Spaces
-    ---@param description table|nil {"string"}
-    ---@param credit string|nil
-    ---@param color Color|nil {r, g, b}
-    ---@param modelInfo ModelExtendedId|table|nil Use smlua_model_util_get_id()
-    ---@param forceChar CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
-    ---@param lifeIcon TextureInfo|nil Use get_texture_info()
-    ---@return integer
-    character_add = function(name, description, credit, color, modelInfo, forceChar, lifeIcon)
-        table_insert(characterTable, {
-            name = name and string_space_to_underscore(name) or "Untitled",
-            description = description and description or {"No description has been provided"},
-            credit = credit and credit or "Unknown",
-            color = color and color or menuColorTable[8],
-            model = modelInfo and (type(modelInfo) == "table" and modelInfo[1] or modelInfo) or E_MODEL_ARMATURE,
-            capModels = type(modelInfo) == "table" and modelInfo[2] or nil,
-            forceChar = forceChar and forceChar or CT_MARIO,
-            lifeIcon = lifeIcon and lifeIcon or TEX_UNKNOWN_CHAR,
-        })
-        return #characterTable
-    end,
-
-
-    ---@param modelInfo ModelExtendedId|integer
-    ---@param clips table
-    character_add_voice = function(modelInfo, clips)
-        characterVoices[modelInfo] = clips
-    end,
-
-    ---@param charNum integer Use _G.charSelect.character_get_number_from_string() or _G.charSelect.character_add()'s return value
-    ---@param name string|nil Underscores turn into Spaces
-    ---@param description table|nil {"string"}
-    ---@param credit string|nil
-    ---@param color Color|nil {r, g, b}
-    ---@param modelInfo ModelExtendedId|integer|table|nil Use smlua_model_util_get_id()
-    ---@param forceChar CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
-    ---@param lifeIcon TextureInfo|nil Use get_texture_info()
-    character_edit = function(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon)
-        characterTable[charNum] = characterTable[charNum] and {
-            name = name and string_space_to_underscore(name) or characterTable[charNum].name,
-            description = description and description or characterTable[charNum].description,
-            credit = credit and credit or characterTable[charNum].credit,
-            color = color and color or characterTable[charNum].color,
-            model = modelInfo and (type(modelInfo) == "table" and modelInfo[1] or modelInfo) or characterTable[charNum].model,
-            capModels = type(modelInfo) == "table" and modelInfo[2] or characterTable[charNum].capModels,
-            forceChar = forceChar and forceChar or characterTable[charNum].forceChar,
-            lifeIcon = lifeIcon and lifeIcon or TEX_UNKNOWN_CHAR,
-        } or nil
-    end,
-
-    character_get_current_name = function ()
-        return currChar > 1 and string_underscore_to_space(characterTable[currChar].name) or gMarioStates[0].character.name
-    end,
-
-    character_get_current_model_number = function ()
-        return currChar
-    end,
-
-    ---@param name string
-    character_get_number_from_string = function (name)
-        for i = 2, #characterTable do
-            if characterTable[i].name == name or characterTable[i].name == string_space_to_underscore(name) then
-                return i
-            end
-        end
-        return false
-    end,
-
-    ---@param m MarioState
-    character_get_voice = function (m)
-        return characterVoices[gPlayerSyncTable[m.playerIndex].modelId]
-    end,
-
-    version_get = function ()
-        return modVersion
-    end,
-
-    is_menu_open = function ()
-        return menu
-    end,
-
-    hook_allow_menu_open = function (func)
-        table.insert(allowMenu, func)
-    end,
-
-    is_options_open = function ()
-        return options
-    end,
-
-    optionTableRef = optionTableRef,
-
-    controller = {
-        buttonDown = 0,
-        buttonPressed = 0,
-        extStickX = 0,
-        extStickY = 0,
-        rawStickX = 0,
-        rawStickY = 0,
-        stickMag = 0,
-        stickX = 0,
-        stickY = 0
-    },
-
-    ---@param tableNum integer
-    get_status = function (tableNum)
-        return optionTable[tableNum].toggle
-    end
-}

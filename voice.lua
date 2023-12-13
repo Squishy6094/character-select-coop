@@ -2,9 +2,7 @@ for i = 0, MAX_PLAYERS -1, 1 do
     gPlayerSyncTable[i].customVoice = 0
 end
 
-local killVoice = true
 local voicecount = 0
-local unloadedvoices = {}
 
 local SLEEP_TALK_SNORES = 8
 
@@ -149,7 +147,7 @@ end
 
 _G.charSelect.voice = {
     sound = custom_character_sound,
-    snore = custom_character_snore
+    snore = custom_character_snore,
 }
 
 gPlayerSyncTable[0].customVoice = true
