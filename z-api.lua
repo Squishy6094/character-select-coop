@@ -4,8 +4,6 @@ local TEX_UNKNOWN_CHAR = get_texture_info("unknown-icon")
 
 local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 
-local characterVoices = {}
-
 local table_insert = table.insert
 
 ---------
@@ -53,12 +51,6 @@ local character_edit = function(charNum, name, description, credit, color, model
         forceChar = forceChar and forceChar or characterTable[charNum].forceChar,
         lifeIcon = lifeIcon and lifeIcon or TEX_UNKNOWN_CHAR,
     } or nil
-end
-
----@param modelInfo ModelExtendedId|integer
----@param clips table
-local character_add_voice = function(modelInfo, clips)
-    characterVoices[modelInfo] = clips
 end
 
 ---@return integer

@@ -1,3 +1,7 @@
+----------------------
+-- Global Functions --
+----------------------
+
 function string_underscore_to_space(string)
     local s = ''
     for i = 1, #string do
@@ -24,7 +28,10 @@ function string_space_to_underscore(string)
     return s
 end
 
--- Globals
+----------------------
+-- Global Variables --
+----------------------
+
 modVersion = "1.5 (In-Dev)"
 
 allowMenu = {}
