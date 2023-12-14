@@ -15,36 +15,34 @@ local TEX_FAKE_PEPPINO = get_texture_info("fake-peppino-icon")
 local TEX_PIZZELLE = get_texture_info("pizzelle-icon")
 local TEX_PIZZANO = get_texture_info("pizzano-icon")
 
---[[
 local VOICETABLE_PEPPERMAN = {
-    [CHAR_SOUND_ATTACKED] = 'NES-Hit.ogg',
-    [CHAR_SOUND_DOH] = 'NES-Bump.ogg',
-    [CHAR_SOUND_DROWNING] = 'NES-Die.ogg',
-    [CHAR_SOUND_DYING] = 'NES-Die.ogg',
-    [CHAR_SOUND_GROUND_POUND_WAH] = 'NES-Squish.ogg',
-    [CHAR_SOUND_HAHA] = 'NES-1up.ogg',
-    [CHAR_SOUND_HAHA_2] = 'NES-1up.ogg',
-    [CHAR_SOUND_HERE_WE_GO] = 'NES-Flagpole.ogg',
-    [CHAR_SOUND_HOOHOO] = 'NES-Jump.ogg',
-    [CHAR_SOUND_MAMA_MIA] = 'NES-Warp.ogg',
-    [CHAR_SOUND_OKEY_DOKEY] = 'NES-1up.ogg',
-    [CHAR_SOUND_ON_FIRE] = 'NES-Enemy_Fire.ogg',
-    [CHAR_SOUND_OOOF] = 'NES-Hit.ogg',
-    [CHAR_SOUND_OOOF2] = 'NES-Hit.ogg',
-    [CHAR_SOUND_PUNCH_HOO] = 'NES-Kick.ogg',
-    [CHAR_SOUND_PUNCH_WAH] = 'NES-Thwomp.ogg',
-    [CHAR_SOUND_PUNCH_YAH] = 'NES-Thwomp.ogg',
-    [CHAR_SOUND_SO_LONGA_BOWSER] = 'NES-Bowser_Die.ogg',
-    [CHAR_SOUND_TWIRL_BOUNCE] = 'NES-Item.ogg',
-    [CHAR_SOUND_WAAAOOOW] = 'NES-Vine.ogg',
-    [CHAR_SOUND_WAH2] = 'NES-Kick.ogg',
-    [CHAR_SOUND_WHOA] = 'NES-Item.ogg',
-    [CHAR_SOUND_YAHOO] = 'NES-Jump.ogg',
-    [CHAR_SOUND_YAHOO_WAHA_YIPPEE] = 'NES-Jump.ogg',
-    [CHAR_SOUND_YAH_WAH_HOO] = 'NES-Big_Jump.ogg',
-    [CHAR_SOUND_YAWNING] = 'NES-Pause.ogg',
+    [CHAR_SOUND_ATTACKED] = nil,
+    [CHAR_SOUND_DOH] = nil,
+    [CHAR_SOUND_DROWNING] = nil,
+    [CHAR_SOUND_DYING] = nil,
+    [CHAR_SOUND_GROUND_POUND_WAH] = nil,
+    [CHAR_SOUND_HAHA] = 'PeppermanLaugh.ogg',
+    [CHAR_SOUND_HAHA_2] = 'PeppermanLaugh.ogg',
+    [CHAR_SOUND_HERE_WE_GO] = 'PeppermanLaugh.ogg',
+    [CHAR_SOUND_HOOHOO] = 'PeppermanSnicker.ogg',
+    [CHAR_SOUND_MAMA_MIA] = nil,
+    [CHAR_SOUND_OKEY_DOKEY] = nil,
+    [CHAR_SOUND_ON_FIRE] = nil,
+    [CHAR_SOUND_OOOF] = nil,
+    [CHAR_SOUND_OOOF2] = nil,
+    [CHAR_SOUND_PUNCH_HOO] = nil,
+    [CHAR_SOUND_PUNCH_WAH] = nil,
+    [CHAR_SOUND_PUNCH_YAH] = nil,
+    [CHAR_SOUND_SO_LONGA_BOWSER] = nil,
+    [CHAR_SOUND_TWIRL_BOUNCE] = nil,
+    [CHAR_SOUND_WAAAOOOW] = nil,
+    [CHAR_SOUND_WAH2] = nil,
+    [CHAR_SOUND_WHOA] = nil,
+    [CHAR_SOUND_YAHOO] = nil,
+    [CHAR_SOUND_YAHOO_WAHA_YIPPEE] = nil,
+    [CHAR_SOUND_YAH_WAH_HOO] = nil,
+    [CHAR_SOUND_YAWNING] = nil,
 }
-]]
 
 local TEXT_MOD_NAME = "Pizizito's Pizza Tower Pack"
 
@@ -55,6 +53,14 @@ if _G.charSelectExists then
     _G.charSelect.character_add("Fake Peppino", {"roolF htruoF", "s'rewoT azziP fo enolC onippeP ehT"}, "Pizizito", {r = 253, g = 167, b = 134}, E_MODEL_FAKE_PEPPINO, CT_WALUIGI, TEX_FAKE_PEPPINO)
     _G.charSelect.character_add("Pizzelle", {"A Candy Maker Looting", "The Sugary Spire"}, "Pizizito", {r = 255, g = 255, b = 255}, E_MODEL_PIZZELLE, CT_TOAD, TEX_PIZZELLE)
     _G.charSelect.character_add("Pizzano", {"An immature, eccentric, and", "occasionally rather violent", "TV network host of", "The Sugary Spire"}, "Pizizito", {r = 75, g = 160, b = 253}, E_MODEL_PIZZANO, CT_WARIO, TEX_PIZZANO)
+
+    _G.charSelect.character_add_voice(E_MODEL_PEPPERMAN, VOICETABLE_PEPPERMAN)
+    hook_event(HOOK_CHARACTER_SOUND, function (m, sound)
+        if _G.charSelect.character_get_voice(m) == VOICETABLE_PEPPERMAN then return _G.charSelect.voice.sound(m, sound) end
+    end)
+    hook_event(HOOK_MARIO_UPDATE, function (m)
+        if _G.charSelect.character_get_voice(m) == VOICETABLE_PEPPERMAN then return _G.charSelect.voice.snore(m) end
+    end)
 else
     djui_popup_create("\\#ffffdc\\\n"..TEXT_MOD_NAME.."\nRequires the Character Select Mod\nto use as a Library!\n\nPlease turn on the Character Select Mod\nand Restart the Room!", 6)
 end
