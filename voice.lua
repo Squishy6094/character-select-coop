@@ -24,7 +24,6 @@ function stop_custom_character_sound(m, sound)
         return
     end
     if not voice_sample.loaded then
-        print("rerouting to backup")
         gCustomVoiceSamplesBackup[m.playerIndex] = true
         return
     end
