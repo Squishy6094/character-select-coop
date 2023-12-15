@@ -601,6 +601,7 @@ function on_life_counter_render()
     local y = 15
   
     -- Texture Rendering --
+    if gNetworkPlayers[0].currActNum == 99 then return end
     if not hud_is_hidden() then
         local icon = characterTable[currChar].lifeIcon
         djui_hud_render_texture(icon, x, y, 1/(icon.width/16), 1/(icon.height/16))
