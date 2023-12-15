@@ -45,8 +45,8 @@ local VOICETABLE_CHAR = {
 
 --[[
 
-    Table for Cap Model, this has been noted out due to the template not having these models.
-    You can add these models in your respective actors folder like you would your Character Model
+    Table for Cap Models, this has been noted out due to the template not having these models.
+    You can add these models in your respective actors folder like you would for any Character Model
 
 local capModels = {
     normal = smlua_model_util_get_id("normal_cap_geo"),
