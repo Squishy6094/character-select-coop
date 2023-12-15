@@ -51,34 +51,28 @@ local VOICETABLE_VIGILANTE = {
     [CHAR_SOUND_YAHOO_WAHA_YIPPEE] = 'vigi3.ogg',
 }
 
---[[local VOICETABLE_NOISE = {
-    [CHAR_SOUND_ATTACKED] = nil,
-    [CHAR_SOUND_DOH] = nil,
-    [CHAR_SOUND_DROWNING] = nil,
-    [CHAR_SOUND_DYING] = nil,
-    [CHAR_SOUND_GROUND_POUND_WAH] = nil,
-    [CHAR_SOUND_HAHA] = nil,
-    [CHAR_SOUND_HAHA_2] = nil,
-    [CHAR_SOUND_HERE_WE_GO] = nil,
-    [CHAR_SOUND_HOOHOO] = nil,
-    [CHAR_SOUND_MAMA_MIA] = nil,
-    [CHAR_SOUND_OKEY_DOKEY] = nil,
-    [CHAR_SOUND_ON_FIRE] = nil,
-    [CHAR_SOUND_OOOF] = nil,
-    [CHAR_SOUND_OOOF2] = nil,
-    [CHAR_SOUND_PUNCH_HOO] = nil,
-    [CHAR_SOUND_PUNCH_WAH] = nil,
-    [CHAR_SOUND_PUNCH_YAH] = nil,
-    [CHAR_SOUND_SO_LONGA_BOWSER] = nil,
-    [CHAR_SOUND_TWIRL_BOUNCE] = nil,
-    [CHAR_SOUND_WAAAOOOW] = nil,
-    [CHAR_SOUND_WAH2] = nil,
-    [CHAR_SOUND_WHOA] = nil,
-    [CHAR_SOUND_YAHOO] = nil,
-    [CHAR_SOUND_YAHOO_WAHA_YIPPEE] = nil,
-    [CHAR_SOUND_YAH_WAH_HOO] = nil,
-    [CHAR_SOUND_YAWNING] = nil,
-}]]
+local VOICETABLE_NOISE = {
+    [CHAR_SOUND_ATTACKED] = 'Noise1.ogg',
+    [CHAR_SOUND_GROUND_POUND_WAH] = 'Noise3.ogg',
+    [CHAR_SOUND_HAHA] = {'Noise1.ogg', 'Noise2.ogg', 'Noise3.ogg', 'Noise4.ogg', 'Noise5.ogg', 'Noise6.ogg'},
+    [CHAR_SOUND_HAHA_2] = {'Noise1.ogg', 'Noise2.ogg', 'Noise3.ogg', 'Noise4.ogg', 'Noise5.ogg', 'Noise6.ogg'},
+    [CHAR_SOUND_HERE_WE_GO] = 'Noise4.ogg',
+    [CHAR_SOUND_HOOHOO] = 'Noise3.ogg',
+    [CHAR_SOUND_ON_FIRE] = 'noisescream.ogg',
+    [CHAR_SOUND_OOOF] = 'Noise1.ogg',
+    [CHAR_SOUND_OOOF2] = 'Noise1.ogg',
+    [CHAR_SOUND_PUNCH_HOO] = 'Noise5.ogg',
+    [CHAR_SOUND_PUNCH_WAH] = 'Noise6.ogg',
+    [CHAR_SOUND_PUNCH_YAH] = 'Noise2.ogg',
+    [CHAR_SOUND_SO_LONGA_BOWSER] = 'Noise4.ogg',
+    [CHAR_SOUND_TWIRL_BOUNCE] = 'Noise4.ogg',
+    [CHAR_SOUND_WAAAOOOW] = 'noisescream.ogg',
+    [CHAR_SOUND_WAH2] = 'Noise2.ogg',
+    [CHAR_SOUND_WHOA] = 'Noise1.ogg',
+    [CHAR_SOUND_YAHOO] = {'Noise1.ogg', 'Noise2.ogg', 'Noise3.ogg', 'Noise4.ogg', 'Noise5.ogg', 'Noise6.ogg'},
+    [CHAR_SOUND_YAHOO_WAHA_YIPPEE] = {'Noise1.ogg', 'Noise2.ogg', 'Noise3.ogg', 'Noise4.ogg', 'Noise5.ogg', 'Noise6.ogg'},
+    [CHAR_SOUND_YAH_WAH_HOO] = {'Noise2.ogg', 'Noise5.ogg', 'Noise6.ogg'},
+}
 
 local VOICETABLE_FAKE_PEPPINO = {
     [CHAR_SOUND_ATTACKED] = 'fakepepnegative1.ogg',
@@ -104,8 +98,6 @@ local VOICETABLE_PIZZELLE = {
     [CHAR_SOUND_ON_FIRE] = 'pizzellefireass.ogg', -- Literally her only sfx
 }
 
-local VOICETABLE_PIZZANO = {nil} -- The Italian man don't talk anymore :<
-
 local TEXT_MOD_NAME = "Pizizito's Pizza Tower Pack"
 
 if _G.charSelectExists then
@@ -118,22 +110,24 @@ if _G.charSelectExists then
 
     _G.charSelect.character_add_voice(E_MODEL_PEPPERMAN, VOICETABLE_PEPPERMAN)
     _G.charSelect.character_add_voice(E_MODEL_VIGILANTE, VOICETABLE_VIGILANTE)
+    _G.charSelect.character_add_voice(E_MODEL_NOISE, VOICETABLE_NOISE)
     _G.charSelect.character_add_voice(E_MODEL_FAKE_PEPPINO, VOICETABLE_FAKE_PEPPINO)
     _G.charSelect.character_add_voice(E_MODEL_PIZZELLE, VOICETABLE_PIZZELLE)
-    _G.charSelect.character_add_voice(E_MODEL_PIZZANO, VOICETABLE_PIZZANO)
+    -- _G.charSelect.character_add_voice(E_MODEL_PIZZANO, VOICETABLE_PIZZANO)
+    -- Pizzano is practically just wario, and I can't find any voiceclips kekekekeke
     hook_event(HOOK_CHARACTER_SOUND, function (m, sound)
         if _G.charSelect.character_get_voice(m) == VOICETABLE_PEPPERMAN then return _G.charSelect.voice.sound(m, sound) end
         if _G.charSelect.character_get_voice(m) == VOICETABLE_VIGILANTE then return _G.charSelect.voice.sound(m, sound) end
+        if _G.charSelect.character_get_voice(m) == VOICETABLE_NOISE then return _G.charSelect.voice.sound(m, sound) end
         if _G.charSelect.character_get_voice(m) == VOICETABLE_FAKE_PEPPINO then return _G.charSelect.voice.sound(m, sound) end
         if _G.charSelect.character_get_voice(m) == VOICETABLE_PIZZELLE then return _G.charSelect.voice.sound(m, sound) end
-        if _G.charSelect.character_get_voice(m) == VOICETABLE_PIZZANO then return _G.charSelect.voice.sound(m, sound) end
     end)
     hook_event(HOOK_MARIO_UPDATE, function (m)
         if _G.charSelect.character_get_voice(m) == VOICETABLE_PEPPERMAN then return _G.charSelect.voice.snore(m) end
         if _G.charSelect.character_get_voice(m) == VOICETABLE_VIGILANTE then return _G.charSelect.voice.snore(m) end
+        if _G.charSelect.character_get_voice(m) == VOICETABLE_NOISE then return _G.charSelect.voice.snore(m) end
         if _G.charSelect.character_get_voice(m) == VOICETABLE_FAKE_PEPPINO then return _G.charSelect.voice.snore(m) end
         if _G.charSelect.character_get_voice(m) == VOICETABLE_PIZZELLE then return _G.charSelect.voice.snore(m) end
-        if _G.charSelect.character_get_voice(m) == VOICETABLE_PIZZANO then return _G.charSelect.voice.snore(m) end
     end)
 else
     djui_popup_create("\\#ffffdc\\\n"..TEXT_MOD_NAME.."\nRequires the Character Select Mod\nto use as a Library!\n\nPlease turn on the Character Select Mod\nand Restart the Room!", 6)
