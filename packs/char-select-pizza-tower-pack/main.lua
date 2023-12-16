@@ -20,16 +20,20 @@ local VOICETABLE_PEPPERMAN = {
     [CHAR_SOUND_HAHA] = 'PeppermanLaugh.ogg',
     [CHAR_SOUND_HAHA_2] = 'PeppermanLaugh.ogg',
     [CHAR_SOUND_HERE_WE_GO] = 'PeppermanLaugh.ogg',
+    [CHAR_SOUND_HOOHOO] = 'sfx_jump.ogg',
     [CHAR_SOUND_MAMA_MIA] = 'PeppermanScared.ogg',
     [CHAR_SOUND_OKEY_DOKEY] = 'PeppermanSnicker.ogg',
     [CHAR_SOUND_ON_FIRE] = 'PeppermanScared.ogg',
     [CHAR_SOUND_OOOF] = 'PeppermanScared.ogg',
     [CHAR_SOUND_OOOF2] = 'PeppermanScared.ogg',
+    [CHAR_SOUND_PUNCH_HOO] = 'sfx_jump.ogg',
     [CHAR_SOUND_SO_LONGA_BOWSER] = 'PeppermanLaugh.ogg',
     [CHAR_SOUND_TWIRL_BOUNCE] = 'PeppermanSnicker.ogg',
+    [CHAR_SOUND_WAH2] = 'sfx_jump.ogg',
     [CHAR_SOUND_WHOA] = 'PeppermanScared.ogg',
     [CHAR_SOUND_YAHOO] = 'PeppermanSnicker.ogg',
     [CHAR_SOUND_YAHOO_WAHA_YIPPEE] = 'PeppermanSnicker.ogg',
+    [CHAR_SOUND_YAH_WAH_HOO] = 'sfx_jump.ogg',
 }
 
 local VOICETABLE_VIGILANTE = {
@@ -39,16 +43,19 @@ local VOICETABLE_VIGILANTE = {
     [CHAR_SOUND_HAHA] = {'vigi1.ogg', 'vigi2.ogg', 'vigi3.ogg'},
     [CHAR_SOUND_HAHA_2] = {'vigi1.ogg', 'vigi2.ogg', 'vigi3.ogg'},
     [CHAR_SOUND_HERE_WE_GO] = {'vigi1.ogg', 'vigi2.ogg', 'vigi3.ogg'},
+    [CHAR_SOUND_HOOHOO] = 'sfx_jump.ogg',
     [CHAR_SOUND_MAMA_MIA] = 'vigi2.ogg',
     [CHAR_SOUND_OKEY_DOKEY] = 'vigi3.ogg',
     [CHAR_SOUND_OOOF] = 'vigi2.ogg',
     [CHAR_SOUND_OOOF2] = 'vigi2.ogg',
+    [CHAR_SOUND_PUNCH_HOO] = 'sfx_jump.ogg',
     [CHAR_SOUND_SO_LONGA_BOWSER] = 'vigi1.ogg',
     [CHAR_SOUND_TWIRL_BOUNCE] = 'vigi3.ogg',
     [CHAR_SOUND_WAH2] = 'vigi1.ogg',
     [CHAR_SOUND_WHOA] = {'vigi1.ogg', 'vigi2.ogg',},
     [CHAR_SOUND_YAHOO] = 'vigi1.ogg',
     [CHAR_SOUND_YAHOO_WAHA_YIPPEE] = 'vigi3.ogg',
+    [CHAR_SOUND_YAH_WAH_HOO] = 'sfx_jump.ogg',
 }
 
 local VOICETABLE_NOISE = {
@@ -86,16 +93,25 @@ local VOICETABLE_FAKE_PEPPINO = {
     [CHAR_SOUND_ON_FIRE] = 'fakepepscream.ogg',
     [CHAR_SOUND_OOOF] = 'fakepepnegative1.ogg',
     [CHAR_SOUND_OOOF2] = 'fakepepnegative1.ogg',
+    [CHAR_SOUND_PUNCH_HOO] = 'sfx_jump.ogg',
     [CHAR_SOUND_SO_LONGA_BOWSER] = 'fakepepnegitive2.ogg',
     [CHAR_SOUND_TWIRL_BOUNCE] = {'fakepeppositive1.ogg', 'fakepeppositive2.ogg', 'fakepeppositive3.ogg'},
     [CHAR_SOUND_WAAAOOOW] = 'fakepepscream.ogg',
+    [CHAR_SOUND_WAH2] = 'sfx_jump.ogg',
     [CHAR_SOUND_WHOA] = 'fakepepnegative2.ogg',
     [CHAR_SOUND_YAHOO] = 'fakepeppositive1.ogg',
     [CHAR_SOUND_YAHOO_WAHA_YIPPEE] = {'fakepeppositive1.ogg', 'fakepeppositive2.ogg', 'fakepeppositive3.ogg'},
+    [CHAR_SOUND_YAH_WAH_HOO] = 'sfx_jump.ogg',
 }
 
 local VOICETABLE_PIZZELLE = {
+    [CHAR_SOUND_HOOHOO] = 'sfx_jump.ogg',
     [CHAR_SOUND_ON_FIRE] = 'pizzellefireass.ogg', -- Literally her only sfx
+    [CHAR_SOUND_PUNCH_HOO] = 'sfx_jump.ogg',
+    [CHAR_SOUND_WAH2] = 'sfx_jump.ogg',
+    [CHAR_SOUND_YAHOO] = 'sfx_jump.ogg',
+    [CHAR_SOUND_YAHOO_WAHA_YIPPEE] = 'sfx_jump.ogg',
+    [CHAR_SOUND_YAH_WAH_HOO] = 'sfx_jump.ogg',
 }
 
 local TEXT_MOD_NAME = "Pizizito's Pizza Tower Pack"
