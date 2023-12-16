@@ -52,7 +52,7 @@ local character_edit = function(charNum, name, description, credit, color, model
         model = modelInfo and (type(modelInfo) == "table" and modelInfo[1] or modelInfo) or characterTable[charNum].model,
         capModels = type(modelInfo) == "table" and modelInfo[2] or characterTable[charNum].capModels,
         forceChar = forceChar and forceChar or characterTable[charNum].forceChar,
-        lifeIcon = lifeIcon and lifeIcon or TEX_UNKNOWN_CHAR,
+        lifeIcon = lifeIcon and lifeIcon or characterTable[charNum].lifeIcon,
     } or nil
 end
 
@@ -62,9 +62,11 @@ local character_add_voice = function(modelInfo, clips)
     characterVoices[modelInfo] = clips
 end
 
----@return integer
-local character_get_current_name = function ()
-    return currChar > 1 and string_underscore_to_space(characterTable[currChar].name) or gMarioStates[0].character.name
+---@return table
+local character_get_current_table = function ()
+    local table = characterTable[currChar]
+    table.name = string_underscore_to_space(table.name)
+    return table
 end
 
 local character_get_current_model_number = function ()
@@ -133,7 +135,7 @@ _G.charSelect = {
     character_add = character_add,
     character_edit = character_edit,
     character_add_voice = character_add_voice,
-    character_get_current_name = character_get_current_name,
+    character_get_current_table = character_get_current_table,
     character_get_current_model_number = character_get_current_model_number,
     character_get_number_from_string = character_get_number_from_string,
     character_get_voice = character_get_voice,

@@ -151,8 +151,10 @@ Example: `_G.charSelect.character_get_number_from_string("Custom Model")`
 
 **All 6 other inputs are the same as [`_G.charSelect.character_add()`](/API-doc.md#_gcharselectcharacter_add)**
 
-## _G.charSelect.character_get_current_name()
-A function that returns the Current Character's Name String
+## _G.charSelect.character_get_current_table()
+A function that returns the Current Character's Table, can be used to get name, texture, etc.
+
+Example: `_G.charSelect.character_get_current_table().name`
 
 ## _G.charSelect.character_get_current_model_number
 A function that returns the Current Character's Number in the Character Table
@@ -236,8 +238,7 @@ local unlockableCharPlacement = 0
 
 local function mario_update()
     if unlockedCharacter == true and unlockableCharPlacement == 0 then
-        _G.charSelect.character_add("Unlockable", nil, nil, nil, nil, nil)
-        unlockableCharPlacement = _G.charSelect.character_get_number_from_string("Unlockable")
+        unlockableCharPlacement = _G.charSelect.character_add("Unlockable", nil, nil, nil, nil, nil, nil)
     end
 end
 ```
