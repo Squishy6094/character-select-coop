@@ -64,9 +64,7 @@ end
 
 ---@return table
 local character_get_current_table = function ()
-    local table = characterTable[currChar]
-    table.name = string_underscore_to_space(table.name)
-    return table
+    return characterTable[currChar]
 end
 
 local character_get_current_model_number = function ()
