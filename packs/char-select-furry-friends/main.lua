@@ -1,5 +1,5 @@
 -- name: [CS] Furry Friends
--- description: Models of project owner Yuyake and his friends.\n\nModels by: AngelicMiracles\n\n\\#ff7777\\This Pack requires Character Select\nto use as a Library!
+-- description: Models of project owner Yuyake\nand his friends.\n\nModels by: AngelicMiracles\n\n\\#ff7777\\This Pack requires Character Select\nto use as a Library!
 
 local E_MODEL_LION = smlua_model_util_get_id("yuyake_geo")
 local E_MODEL_ANGEL = smlua_model_util_get_id("yuyake_angel_geo")
