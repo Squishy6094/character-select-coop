@@ -70,7 +70,7 @@ function string_space_to_underscore(string)
 end
 
 function version_coop_dx()
-    if SM64COOPDX_VERSION ~= nil then
+    if SM64COOPDX_VERSION then
         return true
     else
         return false
