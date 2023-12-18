@@ -1,5 +1,5 @@
 -- name: [CS] Yumi Martinez 
--- description: A girl from New York. I wonder what's she's doing here?\n\nModels by: Frijoles Y Queso\n\n\\#ff7777\\This Mod Requires the Character Select Mod\nto use as a Library!
+-- description: A girl from New York. I wonder what\nshe's doing here?\n\nModels by: Frijoles Y Queso\n\n\\#ff7777\\This Pack requires Character Select\nto use as a Library!
 
 local E_MODEL_YUMI = smlua_model_util_get_id("yumi_geo")
 

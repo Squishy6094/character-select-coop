@@ -1,5 +1,5 @@
 -- name: [CS] Squid Sisters
--- description: Splatoon's Callie & Marie in SM64!\nIncludes Full Color Support and Eye States! \n\nModels by: Frijoles Y Queso\n\n\\#ff7777\\This Mod Requires the Character Select Mod\nto use as a Library!
+-- description: Splatoon's Callie & Marie in SM64! Includes Full Color Support and Eye States! \n\nModels by: Frijoles Y Queso\n\n\\#ff7777\\This Pack requires Character Select\nto use as a Library!
 
 local E_MODEL_CALLIE = smlua_model_util_get_id("callie_geo")
 local E_MODEL_MARIE = smlua_model_util_get_id("marie_geo")
