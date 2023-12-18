@@ -1,5 +1,5 @@
 -- name: Character Select
--- description: A Library / API made to make adding and\nusing Custom Characters as simple as possible!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\\#AAAAFF\\\n\nGithub:\nSquishy6094/character-select-coop
+-- description: \\#ffff00\\ ----- Character Select Coop ----- \n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\\#AAAAFF\\\n\nGithub:\nSquishy6094/character-select-coop
 
 
 menu = false
@@ -342,6 +342,10 @@ local inputStallTimer = 0
 local inputStallTo = 15
 
 local TEXT_OPTIONS_HEADER = "Menu Options"
+local TEXT_VERSION = "Version: "..modVersion
+if version_coop_dx() then
+    TEXT_VERSION = TEXT_VERSION.." | CoopDX Detected"
+end
 local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
 local TEXT_DESCRIPTION = "Character Description:"
 local TEXT_PREF_SAVE = "Press A to Set as Preferred Character"
@@ -466,7 +470,7 @@ local function on_hud_render()
         djui_hud_render_texture(TEX_HEADER, widthHalf - 128, 10, 1, 1)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_set_font(FONT_TINY)
-        djui_hud_print_text("Version: "..modVersion, 5, 3, 0.5)
+        djui_hud_print_text(TEXT_VERSION, 5, 3, 0.5)
         --Unsupported Res Warning
         if width < 321.2 or width > 575 then
             djui_hud_print_text(TEXT_RATIO_UNSUPPORTED, 5, 39, 0.5)
