@@ -1,5 +1,5 @@
 -- name: [CS] Furry Friends
--- description: Models of project owner Yuyake\nand his friends.\n\nModels by: AngelicMiracles\n\n\\#ff7777\\This Pack requires Character Select\nto use as a Library!
+-- description: Models of project owner Yuyake and his friends.\n\nModels by: AngelicMiracles\n\n\\#ff7777\\This Pack requires Character Select\nto use as a Library!
 
 local E_MODEL_LION = smlua_model_util_get_id("yuyake_geo")
 local E_MODEL_ANGEL = smlua_model_util_get_id("yuyake_angel_geo")
@@ -11,10 +11,12 @@ local E_MODEL_BABENOOK = smlua_model_util_get_id("mina_geo")
 local E_MODEL_PBEAR = smlua_model_util_get_id("kuma_geo")
 local E_MODEL_TOONNOOK = smlua_model_util_get_id("skipper_geo")
 
-local TEXT_MOD_NAME = "Furry Friends [Unreleased Build]"
+local TEXT_MOD_NAME = "Furry Friends"
 
 if _G.charSelectExists then
-    _G.charSelect.character_add("Yuyake", {" A lion warrior who joined", "the military to fight off", "against the conquerer known", "as Kaizer. Lives in the", "flying islands known as", "Sky Archipelago."}, "AngelicMiracles", {r = 232, g = 54, b = 30}, E_MODEL_LION, CT_MARIO)
+    if not _G.charSelect.character_get_number_from_string("Yuyake") then
+        _G.charSelect.character_add("Yuyake", {" A lion warrior who joined", "the military to fight off", "against the conquerer known", "as Kaizer. Lives in the", "flying islands known as", "Sky Archipelago."}, "AngelicMiracles", {r = 232, g = 54, b = 30}, E_MODEL_LION, CT_MARIO)
+    end
     _G.charSelect.character_add("Angel Yuyake", {" Yuyake's true final form", "that shifts colors depending", "on his emotions."}, "AngelicMiracles", {r = 46, g = 220, b = 225}, E_MODEL_ANGEL, CT_MARIO)
     _G.charSelect.character_add("Brianna", {" A wolf woman who is a", "military commander leading", "the mission on defeating.", "Kaizer."}, "AngelicMiracles", {r = 18, g = 184, b = 71}, E_MODEL_WOLFGIRL, CT_LUIGI)
     _G.charSelect.character_add("Veph", {" A dolphin-fox who hangs", "around with Sonic and co."}, "AngelicMiracles", {r = 242, g = 36, b = 74}, E_MODEL_DOLPHFOX, CT_MARIO)

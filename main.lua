@@ -40,7 +40,7 @@ local optionTableRef = {
     inputLatency = 4,
     localModels = 5,
     prefToDefault = 6,
-    debugInfo = 7
+    --debugInfo = 7
 }
 
 optionTable = {
@@ -89,6 +89,7 @@ optionTable = {
         toggleMax = 1,
         toggleNames = {"", ""},
     },
+    --[[
     [optionTableRef.debugInfo] = {
         name = "Debugging Info",
         toggle = tonumber(mod_storage_load("debuginfo")),
@@ -96,6 +97,7 @@ optionTable = {
         toggleDefault = 0,
         toggleMax = 1,
     },
+    ]]
 }
 
 local defaultPlayerColors = {
@@ -351,6 +353,11 @@ local optionAnimTimerCap = optionAnimTimer
 local inputStallTimer = 0
 local inputStallTo = 15
 
+local FONT_CS_NORMAL = FONT_NORMAL
+if version_coop_dx() then
+    FONT_CS_NORMAL = FONT_ALIASED
+end
+
 local TEXT_OPTIONS_HEADER = "Menu Options"
 local TEXT_VERSION = "Version: "..modVersion
 if version_coop_dx() then
@@ -377,7 +384,7 @@ local menuColor = characterTable[currChar].color
 
 local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
-    djui_hud_set_font(FONT_NORMAL)
+    djui_hud_set_font(FONT_CS_NORMAL)
 
     local width = djui_hud_get_screen_width() + 1.4
     local height = 240
@@ -454,10 +461,10 @@ local function on_hud_render()
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(width - x + 2, 2, x - 4, height - 4)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_set_font(FONT_NORMAL)
+        djui_hud_set_font(FONT_CS_NORMAL)
 
-        if optionTable[optionTableRef.debugInfo].toggle == 0 then -- Actual Description
-            local TEXT_NAME = "Name: "..characterTable[currChar].name
+        --if optionTable[optionTableRef.debugInfo].toggle == 0 then -- Actual Description
+            local TEXT_NAME = characterTable[currChar].name
             local TEXT_CREDIT = "Credit: "..characterTable[currChar].credit
             local TEXT_DESCRIPTION_TABLE = characterTable[currChar].description
             local TEXT_PREF = 'Preferred Character: "'..string_underscore_to_space(TEXT_PREF_LOAD)..'"'
@@ -466,14 +473,15 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_NAME, width - textX - djui_hud_measure_text(TEXT_NAME)*0.3, 55, 0.6)
             djui_hud_set_font(FONT_TINY)
             djui_hud_print_text(TEXT_CREDIT, width - textX - djui_hud_measure_text(TEXT_CREDIT)*0.3, 72, 0.6)
-            djui_hud_set_font(FONT_NORMAL)
+            djui_hud_set_font(FONT_CS_NORMAL)
             djui_hud_print_text(TEXT_DESCRIPTION, width - textX - djui_hud_measure_text(TEXT_DESCRIPTION)*0.2, 85, 0.4)
             for i = 1, #TEXT_DESCRIPTION_TABLE do
                 djui_hud_print_text(TEXT_DESCRIPTION_TABLE[i], width - textX - djui_hud_measure_text(TEXT_DESCRIPTION_TABLE[i])*0.15, 90 + i*9, 0.3)
             end
             djui_hud_print_text(TEXT_PREF, width - textX - djui_hud_measure_text(TEXT_PREF)*0.15, height - 20, 0.3)
             djui_hud_print_text(TEXT_PREF_SAVE, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE)*0.15, height - 30, 0.3)
-        else -- Debugging Info
+        --[[
+        else -- Debugging Info (Unfinished)
             local TEXT_NAME = "Name: "..characterTable[currChar].name
             local TEXT_CREDIT = "Credit: "..characterTable[currChar].credit
             local TEXT_DESCRIPTION_TABLE = characterTable[currChar].description
@@ -491,6 +499,7 @@ local function on_hud_render()
             local descriptionOffset = #TEXT_DESCRIPTION_TABLE * 9
             djui_hud_print_text(TEXT_PREF, width - textX - djui_hud_measure_text(TEXT_PREF)*0.15, 112 + descriptionOffset, 0.3)
         end
+        ]]
 
         --Character Select Header
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
@@ -517,7 +526,7 @@ local function on_hud_render()
             djui_hud_render_rect(width*0.5 - 50 * widthScale + 2, math.min(55 - optionAnimTimer + 2, height - 25 * widthScale + 2), 100 * widthScale - 4, 196)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_render_rect(width*0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
-            djui_hud_set_font(FONT_NORMAL)
+            djui_hud_set_font(FONT_CS_NORMAL)
             djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
             djui_hud_print_text(TEXT_OPTIONS_HEADER, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_HEADER)*0.3*widthScale, 65 + optionAnimTimer * -1, 0.6*widthScale)
 
@@ -527,7 +536,7 @@ local function on_hud_render()
                 local scale = 0.5
                 local yOffset = 70 + 10 * math_min(widthScale, 1.8) + i * 9 * math_min(widthScale, 1.8) - optionAnimTimer
                 if i == currOption then
-                    djui_hud_set_font(FONT_NORMAL)
+                    djui_hud_set_font(FONT_CS_NORMAL)
                     scale = 0.3
                     yOffset = yOffset - 1
                     if optionTable[i].toggleNames[optionTable[i].toggle + 1] ~= "" then
@@ -554,7 +563,7 @@ local function on_hud_render()
             djui_hud_render_rect(widthHalf - 50 * widthScaleUnlimited + 2, height - 25 * widthScale + 2, 100 * widthScaleUnlimited - 4, 22 * widthScale)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_render_rect(widthHalf - 50 * widthScaleUnlimited, height - 2, 100 * widthScaleUnlimited, 2)
-            djui_hud_set_font(FONT_NORMAL)
+            djui_hud_set_font(FONT_CS_NORMAL)
             djui_hud_print_text(TEXT_OPTIONS_OPEN, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_OPEN)*0.175 * widthScale, height - 23 * widthScale + optionAnimTimer + 202, 0.35 * widthScale)
             djui_hud_set_font(FONT_TINY)
             djui_hud_print_text(TEXT_MENU_CLOSE, widthHalf - djui_hud_measure_text(TEXT_MENU_CLOSE)*0.25 * widthScale, height - 13 * widthScale + optionAnimTimer + 202, 0.5 * widthScale)
@@ -591,7 +600,7 @@ local function on_hud_render()
         if optionTable[optionTableRef.openInputs].toggle == 2 then
             currCharY = 27
             local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_Z_OPEN)
-            djui_hud_set_font(FONT_NORMAL)
+            djui_hud_set_font(FONT_CS_NORMAL)
             if not version_coop_dx() then -- Done to match DX not having dropshadow on the "R Button - Options" thingy
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_print_text(TEXT_PAUSE_Z_OPEN, width - 19, 17, 1)
@@ -605,7 +614,7 @@ local function on_hud_render()
             local TEXT_PAUSE_CURR_CHAR_WITH_NAME = TEXT_PAUSE_CURR_CHAR..charName
             local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME)
             local charColor = characterTable[currChar].color
-            djui_hud_set_font(FONT_NORMAL)
+            djui_hud_set_font(FONT_CS_NORMAL)
             if not version_coop_dx() then
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_print_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME, width - 19, 17 + currCharY, 1)
@@ -616,7 +625,7 @@ local function on_hud_render()
             djui_hud_print_text(charName, djui_hud_get_screen_width() - djui_hud_measure_text(charName) - 20, 16 + currCharY, 1)
         else
             local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_LOCAL_MODEL_OFF)
-            djui_hud_set_font(FONT_NORMAL)
+            djui_hud_set_font(FONT_CS_NORMAL)
             if not version_coop_dx() then
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, width - 19, 17 + currCharY, 1)

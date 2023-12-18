@@ -81,7 +81,7 @@ end
 -- Global Variables --
 ----------------------
 
-modVersion = "1.5.1 (DX Fix In-Dev)"
+modVersion = "1.5.1"
 
 allowMenu = {}
 
