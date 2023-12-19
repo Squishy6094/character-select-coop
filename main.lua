@@ -4,10 +4,11 @@
 
 menu = false
 options = false
-
 currChar = 1
 local currOption = 1
 
+local menuCrossFade = 15
+local menuCrossFadeCap = 15
 
 local TEX_HEADER = get_texture_info("char-select-text")
 
@@ -134,6 +135,7 @@ local math_max = math.max
 local math_min = math.min
 local math_sin = math.sin
 local math_random = math.random
+local math_abs = math.abs
 local play_sound = play_sound
 local mod_storage_save = mod_storage_save
 local mod_storage_load = mod_storage_load
@@ -260,7 +262,7 @@ local function mario_update(m)
             gNetworkPlayers[m.playerIndex].overrideModelIndex = characterTable[1].forceChar
         end
 
-        if menu then
+        if menuCrossFade < 0 then
             for _, func in pairs(allowMenu) do
                 if not func() then
                     menu = false
@@ -377,6 +379,8 @@ end
 local TEXT_DEBUGGING = "Character Debug"
 local TEXT_DESCRIPTION_SHORT = "Description:"
 local TEXT_LIFE_ICON = "Life Icon:"
+local TEXT_FORCED_CHAR = "Forced: "
+local TEXT_TABLE_POS = "Table Position: "
 
 --Options Text
 local TEXT_OPTIONS_OPEN = "Press START to open Options"
@@ -384,6 +388,14 @@ local TEXT_MENU_CLOSE = "Press B to Exit Menu"
 local TEXT_OPTIONS_SELECT = "A - Select | B - Exit  "
 local TEXT_LOCAL_MODEL_OFF = "Locally Display Models is Off"
 local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Menu"
+
+local forceCharTable = {
+    [CT_MARIO] = "CT_MARIO",
+    [CT_LUIGI] = "CT_LUIGI",
+    [CT_TOAD] = "CT_TOAD",
+    [CT_WARIO] = "CT_WARIO",
+    [CT_WALUIGI] = "CT_WALUIGI",
+}
 
 local menuColor = characterTable[currChar].color
 
@@ -397,7 +409,7 @@ local function on_hud_render()
     local heightHalf = height*0.5
     local widthScale = math_max(width, 321.4)*0.00311332503
 
-    if menu then
+    if menuCrossFade < 0 then
         if optionTable[optionTableRef.menuColor].toggle ~= 0 then
             menuColor = menuColorTable[optionTable[optionTableRef.menuColor].toggle]
         else
@@ -453,11 +465,13 @@ local function on_hud_render()
 
         -- Scroll Bar
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(7 * widthScale, 55, 7, 180)
+        djui_hud_render_rect(7 * widthScale, 55, 7, 170)
         djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_render_rect(7 * widthScale + 1, 56, 5, 178)
+        djui_hud_render_rect(7 * widthScale + 1, 56, 5, 168)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(7 * widthScale + 2, 57 + 176 * ((currChar - 1) / #characterTable) - (buttonScroll*0.03333333333)*(176/#characterTable), 3, 176/#characterTable)
+        djui_hud_render_rect(7 * widthScale + 2, 57 + 166 * ((currChar - 1) / #characterTable) - (buttonScroll*0.03333333333)*(166/#characterTable), 3, 166/#characterTable)
+        djui_hud_set_font(FONT_TINY)
+        djui_hud_print_text(currChar.."/"..#characterTable, 3 + 1 * widthScale, height - 12, 0.5)
 
         
         --Character Description
@@ -468,10 +482,11 @@ local function on_hud_render()
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_set_font(FONT_CS_NORMAL)
 
+        local character = characterTable[currChar]
         if optionTable[optionTableRef.debugInfo].toggle == 0 then -- Actual Description
-            local TEXT_NAME = characterTable[currChar].name
-            local TEXT_CREDIT = "Credit: "..characterTable[currChar].credit
-            local TEXT_DESCRIPTION_TABLE = characterTable[currChar].description
+            local TEXT_NAME = character.name
+            local TEXT_CREDIT = "Credit: "..character.credit
+            local TEXT_DESCRIPTION_TABLE = character.description
             local TEXT_PREF = 'Preferred Character: "'..string_underscore_to_space(TEXT_PREF_LOAD)..'"'
 
             local textX = x * 0.5
@@ -486,11 +501,11 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_PREF, width - textX - djui_hud_measure_text(TEXT_PREF)*0.15, height - 20, 0.3)
             djui_hud_print_text(TEXT_PREF_SAVE, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE)*0.15, height - 30, 0.3)
         else -- Debugging Info
-            local TEXT_NAME = "Name: "..characterTable[currChar].name
-            local TEXT_CREDIT = "Credit: "..characterTable[currChar].credit
-            local TEXT_DESCRIPTION_TABLE = characterTable[currChar].description
-            local TEXT_COLOR = "Color: R-"..characterTable[currChar].color.r..", G-"..characterTable[currChar].color.g..", B-"..characterTable[currChar].color.b
-            local TEX_ICON = characterTable[currChar].lifeIcon
+            local TEXT_NAME = "Name: "..character.name
+            local TEXT_CREDIT = "Credit: "..character.credit
+            local TEXT_DESCRIPTION_TABLE = character.description
+            local TEXT_COLOR = "Color: R-"..character.color.r..", G-"..character.color.g..", B-"..character.color.b
+            local TEX_ICON = character.lifeIcon
             local TEXT_PREF = "Preferred: "..TEXT_PREF_LOAD
 
             local textX = x * 0.5
@@ -502,17 +517,20 @@ local function on_hud_render()
             local removeLine = 0
             for i = 1, #TEXT_DESCRIPTION_TABLE do
                 if TEXT_DESCRIPTION_TABLE[i] ~= "" then
-                    djui_hud_print_text(TEXT_DESCRIPTION_TABLE[i], width - x + 16, 90 + (i-removeLine)*9, 0.6)
+                    djui_hud_print_text(TEXT_DESCRIPTION_TABLE[i], width - x + 12, 92 + (i-removeLine)*7, 0.5)
                 else
                     removeLine = removeLine + 1
                 end
             end
-            local descriptionOffset = (#TEXT_DESCRIPTION_TABLE - removeLine) * 9
-            djui_hud_print_text(TEXT_COLOR, width - x + 8, 99 + descriptionOffset, 0.6)
-            djui_hud_print_text(TEXT_LIFE_ICON.."    ("..TEX_ICON.width.."x"..TEX_ICON.height..")", width - x + 8, 108 + descriptionOffset, 0.6)
+            local descriptionOffset = (#TEXT_DESCRIPTION_TABLE - removeLine) * 7
+            djui_hud_print_text(TEXT_COLOR, width - x + 8, 100 + descriptionOffset, 0.6)
+            djui_hud_print_text(TEXT_LIFE_ICON.."    ("..TEX_ICON.width.."x"..TEX_ICON.height..")", width - x + 8, 109 + descriptionOffset, 0.6)
             djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_render_texture(TEX_ICON, width - x + 39, 109 + descriptionOffset, 0.5/(TEX_ICON.width/16), 0.5/(TEX_ICON.height/16))
+            djui_hud_render_texture(TEX_ICON, width - x + 38, 110 + descriptionOffset, 0.5/(TEX_ICON.width/16), 0.5/(TEX_ICON.height/16))
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+            djui_hud_print_text(TEXT_FORCED_CHAR..forceCharTable[character.forceChar], width - x + 8, 118 + descriptionOffset, 0.6)
+            djui_hud_print_text(TEXT_TABLE_POS..currChar, width - x + 8, 127 + descriptionOffset, 0.6)
+            djui_hud_print_text(TEXT_PREF, width - x + 8, height - 18, 0.6)
         end
 
         --Character Select Header
@@ -646,23 +664,38 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, width - 20, 16 + currCharY, 1)
         end
     end
+
+    -- Cross fade
+    djui_chat_message_create(tostring(menuCrossFade))
+    if optionTable[optionTableRef.anims].toggle > 0 then
+        if menu and menuCrossFade > -menuCrossFadeCap then
+            menuCrossFade = menuCrossFade - 1
+            if menuCrossFade == 0 then menuCrossFade = menuCrossFade - 1 end
+        end
+        if not menu and menuCrossFade < menuCrossFadeCap then
+            menuCrossFade = menuCrossFade + 1
+            if menuCrossFade == 0 then menuCrossFade = menuCrossFade + 1 end
+        end
+    else
+        if menu then
+            menuCrossFade = -menuCrossFadeCap
+        else
+            menuCrossFade = menuCrossFadeCap
+        end
+    end
+    djui_hud_set_resolution(RESOLUTION_N64)
+    djui_hud_set_color(0, 0, 0, (math_abs(menuCrossFade)) * -17)
+    djui_hud_render_rect(0, 0, width, height)
 end
 
 -- Custom life icon rendering (Thanks LuigiGamer)
 function on_life_counter_render()
     if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then return end
-    -- Rendering settings --
     djui_hud_set_font(FONT_HUD)
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_color(255, 255, 255, 255);
-  
-    -- Texture scale --
-  
-    -- Texture position --
     local x = 22
     local y = 15
-  
-    -- Texture Rendering --
     if gNetworkPlayers[0].currActNum == 99 then return end
     if not hud_is_hidden() then
         local icon = characterTable[currChar].lifeIcon
@@ -711,7 +744,7 @@ local function before_mario_update(m)
         menu = false
     end
 
-    if menu and not options then
+    if menuCrossFade < 0 and not options then
         if inputStallTimer == 0 then
             if (m.controller.buttonPressed & D_JPAD) ~= 0 then
                 currChar = currChar + 1
@@ -831,11 +864,23 @@ hook_event(HOOK_ON_HUD_RENDER_BEHIND, on_life_counter_render)
 --------------
 
 local function chat_command(msg)
-    if msg ~= "" then
+    if msg ~= "" and msg ~= "menu" then
+        -- Name Check
         msg = string_lower(msg)
         for i = 1, #characterTable do
-            if msg == string_underscore_to_space(string_lower(characterTable[i].name)) then
+            if msg == string_underscore_to_space(string_lower(characterTable[i].name)) or msg == string_lower(characterTable[i].name) then
                 currChar = i
+                djui_chat_message_create('Character set to "'..characterTable[i].name..'" Successfully!')
+                return true
+            end
+        end
+        
+        -- Number Check
+        if tonumber(msg) then
+            msg = tonumber(msg)
+            if msg > 0 and msg <= #characterTable then
+                currChar = msg
+                djui_chat_message_create('Character set to "'..characterTable[msg].name..'" Successfully!')
                 return true
             end
         end
