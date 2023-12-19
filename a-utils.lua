@@ -81,7 +81,7 @@ end
 -- Global Variables --
 ----------------------
 
-modVersion = "1.5.1"
+modVersion = "1.5.2 (In-Dev)"
 
 allowMenu = {}
 
