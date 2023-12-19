@@ -481,7 +481,6 @@ local function on_hud_render()
         djui_hud_render_rect(width - x + 2, 2, x - 4, height - 4)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_set_font(FONT_CS_NORMAL)
-
         local character = characterTable[currChar]
         if optionTable[optionTableRef.debugInfo].toggle == 0 then -- Actual Description
             local TEXT_NAME = character.name
@@ -498,8 +497,9 @@ local function on_hud_render()
             for i = 1, #TEXT_DESCRIPTION_TABLE do
                 djui_hud_print_text(TEXT_DESCRIPTION_TABLE[i], width - textX - djui_hud_measure_text(TEXT_DESCRIPTION_TABLE[i])*0.15, 90 + i*9, 0.3)
             end
-            djui_hud_print_text(TEXT_PREF, width - textX - djui_hud_measure_text(TEXT_PREF)*0.15, height - 20, 0.3)
-            djui_hud_print_text(TEXT_PREF_SAVE, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE)*0.15, height - 30, 0.3)
+            djui_hud_print_text(TEXT_PREF, width - textX - djui_hud_measure_text(TEXT_PREF)*0.15, height - 22, 0.3)
+            djui_hud_set_font(FONT_TINY)    
+            djui_hud_print_text(TEXT_PREF_SAVE, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE)*0.25, height - 13, 0.5)
         else -- Debugging Info
             local TEXT_NAME = "Name: "..character.name
             local TEXT_CREDIT = "Credit: "..character.credit
@@ -666,8 +666,7 @@ local function on_hud_render()
     end
 
     -- Cross fade
-    djui_chat_message_create(tostring(menuCrossFade))
-    if optionTable[optionTableRef.anims].toggle > 0 then
+    if optionTable[optionTableRef.anims].toggle == 1 then
         if menu and menuCrossFade > -menuCrossFadeCap then
             menuCrossFade = menuCrossFade - 1
             if menuCrossFade == 0 then menuCrossFade = menuCrossFade - 1 end
@@ -745,7 +744,7 @@ local function before_mario_update(m)
     end
 
     if menuCrossFade < 0 and not options then
-        if inputStallTimer == 0 then
+        if inputStallTimer == 0 and menu then
             if (m.controller.buttonPressed & D_JPAD) ~= 0 then
                 currChar = currChar + 1
                 inputStallTimer = inputStallTo
