@@ -1,14 +1,16 @@
 -- name: Character Select
--- description: \\#ffff00\\ ----- Character Select Coop ----- \n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\\#AAAAFF\\\n\nGithub:\nSquishy6094/character-select-coop
+-- description: \\#ffff00\\ ----- Character Select Coop ----- \n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff00\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\n\n\\#AAAAFF\\Updates and Packs can be found on\nCharacter Select's Github:\n\\#4444FF\\Squishy6094/character-select-coop
 
 
-menu = false
+local menu = false
+menuAndTransition = false
 options = false
 currChar = 1
 local currOption = 1
 
-local menuCrossFade = 15
-local menuCrossFadeCap = 15
+local menuCrossFade = 10
+local menuCrossFadeCap = menuCrossFade
+local menuCrossFadeMath = 255/menuCrossFade
 
 local TEX_HEADER = get_texture_info("char-select-text")
 
@@ -117,6 +119,18 @@ local defaultIcons = {
 
 local latencyValueTable = {15, 10, 5}
 
+local menuColorTable = {
+    {r = 255, g = 50,  b = 50 },
+    {r = 255, g = 100, b = 50 },
+    {r = 255, g = 255, b = 50 },
+    {r = 50,  g = 255, b = 50 },
+    {r = 100,  g = 100,  b = 255},
+    {r = 251, g = 148, b = 220},
+    {r = 130, g = 25,  b = 130},
+    {r = 255, g = 255, b = 255},
+    {r = 50,  g = 50,  b = 50 },
+}
+
 local camera_freeze = camera_freeze
 local camera_unfreeze = camera_unfreeze
 local network_local_index_from_global = network_local_index_from_global
@@ -136,6 +150,7 @@ local math_min = math.min
 local math_sin = math.sin
 local math_random = math.random
 local math_abs = math.abs
+local math_ceil = math.ceil
 local play_sound = play_sound
 local mod_storage_save = mod_storage_save
 local mod_storage_load = mod_storage_load
@@ -203,17 +218,11 @@ local function failsafe_options()
     end
 end
 
-local hasOpenedMenu = false
-
 local function idiot_proof_note()
-    if mod_storage_load("openedmenu") == nil then
-        if #characterTable > 1 then
-            djui_chat_message_create("Character Select is active and has "..(#characterTable - 1).." characters available!\nYou can use \\#ffff00\\/char-select \\#ffffff\\to open the menu!")
-        else
-            djui_chat_message_create("Character Select is active!\nYou can use \\#ffff00\\/char-select \\#ffffff\\to open the menu!")
-        end
+    if #characterTable > 1 then
+        djui_chat_message_create("Character Select is active and has "..(#characterTable - 1).." characters available!\nYou can use \\#ffff00\\/char-select \\#ffffff\\to open the menu!")
     else
-        hasOpenedMenu = true
+        djui_chat_message_create("Character Select is active!\nYou can use \\#ffff00\\/char-select \\#ffffff\\to open the menu!")
     end
 end
 
@@ -262,7 +271,7 @@ local function mario_update(m)
             gNetworkPlayers[m.playerIndex].overrideModelIndex = characterTable[1].forceChar
         end
 
-        if menuCrossFade < 0 then
+        if menuAndTransition then
             for _, func in pairs(allowMenu) do
                 if not func() then
                     menu = false
@@ -409,7 +418,7 @@ local function on_hud_render()
     local heightHalf = height*0.5
     local widthScale = math_max(width, 321.4)*0.00311332503
 
-    if menuCrossFade < 0 then
+    if menuAndTransition then
         if optionTable[optionTableRef.menuColor].toggle ~= 0 then
             menuColor = menuColorTable[optionTable[optionTableRef.menuColor].toggle]
         else
@@ -471,7 +480,8 @@ local function on_hud_render()
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_rect(7 * widthScale + 2, 57 + 166 * ((currChar - 1) / #characterTable) - (buttonScroll*0.03333333333)*(166/#characterTable), 3, 166/#characterTable)
         djui_hud_set_font(FONT_TINY)
-        djui_hud_print_text(currChar.."/"..#characterTable, 3 + 1 * widthScale, height - 12, 0.5)
+        local TEXT_CHAR_COUNT = currChar.."/"..#characterTable
+        djui_hud_print_text(TEXT_CHAR_COUNT, (11 - djui_hud_measure_text(TEXT_CHAR_COUNT)*0.2) * widthScale, height - 12, 0.4)
 
         
         --Character Description
@@ -483,7 +493,7 @@ local function on_hud_render()
         djui_hud_set_font(FONT_CS_NORMAL)
         local character = characterTable[currChar]
         if optionTable[optionTableRef.debugInfo].toggle == 0 then -- Actual Description
-            local TEXT_NAME = character.name
+            local TEXT_NAME = string_underscore_to_space(character.name)
             local TEXT_CREDIT = "Credit: "..character.credit
             local TEXT_DESCRIPTION_TABLE = character.description
             local TEXT_PREF = 'Preferred Character: "'..string_underscore_to_space(TEXT_PREF_LOAD)..'"'
@@ -494,9 +504,24 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_CREDIT, width - textX - djui_hud_measure_text(TEXT_CREDIT)*0.3, 72, 0.6)
             djui_hud_set_font(FONT_CS_NORMAL)
             djui_hud_print_text(TEXT_DESCRIPTION, width - textX - djui_hud_measure_text(TEXT_DESCRIPTION)*0.2, 85, 0.4)
-            for i = 1, #TEXT_DESCRIPTION_TABLE do
-                djui_hud_print_text(TEXT_DESCRIPTION_TABLE[i], width - textX - djui_hud_measure_text(TEXT_DESCRIPTION_TABLE[i])*0.15, 90 + i*9, 0.3)
+            if widthScale < 1.65 then
+                for i = 1, #TEXT_DESCRIPTION_TABLE do
+                    djui_hud_print_text(TEXT_DESCRIPTION_TABLE[i], width - textX - djui_hud_measure_text(TEXT_DESCRIPTION_TABLE[i])*0.15, 90 + i*9, 0.3)
+                end
+            else
+                for i = 1, math_ceil(#TEXT_DESCRIPTION_TABLE*0.5) do
+                    local TablePos = (i * 2) - 1
+                    local TEXT_STRING = ""
+                    if TEXT_DESCRIPTION_TABLE[TablePos] and TEXT_DESCRIPTION_TABLE[TablePos + 1] then
+                        local TEXT_STRING = TEXT_DESCRIPTION_TABLE[TablePos].." "..TEXT_DESCRIPTION_TABLE[TablePos + 1]
+                        djui_hud_print_text(TEXT_STRING, width - textX - djui_hud_measure_text(TEXT_STRING)*0.15, 90 + i*9, 0.3)
+                    elseif TEXT_DESCRIPTION_TABLE[TablePos] then
+                        local TEXT_STRING = TEXT_DESCRIPTION_TABLE[TablePos]
+                        djui_hud_print_text(TEXT_STRING, width - textX - djui_hud_measure_text(TEXT_STRING)*0.15, 90 + i*9, 0.3)
+                    end
+                end
             end
+
             djui_hud_print_text(TEXT_PREF, width - textX - djui_hud_measure_text(TEXT_PREF)*0.15, height - 22, 0.3)
             djui_hud_set_font(FONT_TINY)    
             djui_hud_print_text(TEXT_PREF_SAVE, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE)*0.25, height - 13, 0.5)
@@ -560,13 +585,14 @@ local function on_hud_render()
             djui_hud_render_rect(width*0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
             djui_hud_set_font(FONT_CS_NORMAL)
             djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
-            djui_hud_print_text(TEXT_OPTIONS_HEADER, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_HEADER)*0.3*widthScale, 65 + optionAnimTimer * -1, 0.6*widthScale)
+            djui_hud_print_text(TEXT_OPTIONS_HEADER, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_HEADER)*0.3*math_min(widthScale, 1.5), 65 + optionAnimTimer * -1, 0.6*math_min(widthScale, 1.5))
 
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+            local widthScale = math_min(widthScale, 1.5)
             for i = 1, #optionTable do
                 local toggleName = optionTable[i].name
                 local scale = 0.5
-                local yOffset = 70 + 10 * math_min(widthScale, 1.8) + i * 9 * math_min(widthScale, 1.8) - optionAnimTimer
+                local yOffset = 70 + 10 * widthScale + i * 9 * widthScale - optionAnimTimer
                 if i == currOption then
                     djui_hud_set_font(FONT_CS_NORMAL)
                     scale = 0.3
@@ -579,7 +605,7 @@ local function on_hud_render()
                 else
                     djui_hud_set_font(FONT_TINY)
                 end
-                scale = scale * math_min(widthScale, 1.8)
+                scale = scale * widthScale
                 djui_hud_print_text(toggleName, widthHalf - djui_hud_measure_text(toggleName)*scale*0.5, yOffset, scale)
             end
 
@@ -625,6 +651,33 @@ local function on_hud_render()
         optionAnimTimer = optionAnimTimerCap
     end
 
+    -- Cross fade
+    if optionTable[optionTableRef.anims].toggle == 1 then
+        if menu and menuCrossFade > -menuCrossFadeCap then
+            menuCrossFade = menuCrossFade - 1
+            if menuCrossFade == 0 then menuCrossFade = menuCrossFade - 1 end
+        end
+        if not menu and menuCrossFade < menuCrossFadeCap then
+            menuCrossFade = menuCrossFade + 1
+            if menuCrossFade == 0 then menuCrossFade = menuCrossFade + 1 end
+        end
+        if menuCrossFade < 0 then
+            menuAndTransition = true
+        else
+            menuAndTransition = false
+        end
+    else
+        if menu then
+            menuCrossFade = -menuCrossFadeCap
+        else
+            menuCrossFade = menuCrossFadeCap
+        end
+        menuAndTransition = menu
+    end
+    djui_hud_set_resolution(RESOLUTION_N64)
+    djui_hud_set_color(0, 0, 0, (math_abs(menuCrossFade)) * -menuCrossFadeMath)
+    djui_hud_render_rect(0, 0, width, height)
+
     -- Info / Z Open Bind on Pause Menu
     if is_game_paused() and not djui_hud_is_pause_menu_created() and gMarioStates[0].action ~= ACT_EXIT_LAND_SAVE_DIALOG then
         local currCharY = 0
@@ -664,27 +717,6 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, width - 20, 16 + currCharY, 1)
         end
     end
-
-    -- Cross fade
-    if optionTable[optionTableRef.anims].toggle == 1 then
-        if menu and menuCrossFade > -menuCrossFadeCap then
-            menuCrossFade = menuCrossFade - 1
-            if menuCrossFade == 0 then menuCrossFade = menuCrossFade - 1 end
-        end
-        if not menu and menuCrossFade < menuCrossFadeCap then
-            menuCrossFade = menuCrossFade + 1
-            if menuCrossFade == 0 then menuCrossFade = menuCrossFade + 1 end
-        end
-    else
-        if menu then
-            menuCrossFade = -menuCrossFadeCap
-        else
-            menuCrossFade = menuCrossFadeCap
-        end
-    end
-    djui_hud_set_resolution(RESOLUTION_N64)
-    djui_hud_set_color(0, 0, 0, (math_abs(menuCrossFade)) * -17)
-    djui_hud_render_rect(0, 0, width, height)
 end
 
 -- Custom life icon rendering (Thanks LuigiGamer)
@@ -743,7 +775,7 @@ local function before_mario_update(m)
         menu = false
     end
 
-    if menuCrossFade < 0 and not options then
+    if menuAndTransition and not options then
         if inputStallTimer == 0 and menu then
             if (m.controller.buttonPressed & D_JPAD) ~= 0 then
                 currChar = currChar + 1
@@ -803,12 +835,6 @@ local function before_mario_update(m)
         nullify_inputs(m)
         if is_game_paused() then
             m.controller.buttonPressed = START_BUTTON
-        end
-        
-        -- Idiot Proof Check
-        if not hasOpenedMenu then
-            mod_storage_save("openedmenu", "youdidit")
-            hasOpenedMenu = true
         end
     end
 
