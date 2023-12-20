@@ -14,6 +14,7 @@ We'll keep an archive of all user-made packs here, as well as our packs included
  - [Pizizito's Pizza Tower Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-pizza-tower-pack.zip) - Pizizito
  - [Furry Friends](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-furry-friends.zip) - AngelicMiracles
  - [Squid Sisters](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-squid-sisters.zip) - Frijoles Y Queso
+ - [VL-Tone & Cjes Luigi](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-cjes-and-vl.zip) - Coop DX Team
  - [Uncle Grandpa](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-uncle-grandpa.zip) - Garlicker
  - [Yumi Martinez](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-yumi.zip) - Frijoles Y Queso
 
