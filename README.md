@@ -18,6 +18,9 @@ We'll keep an archive of all user-made packs here, as well as our packs included
  - [Uncle Grandpa](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-uncle-grandpa.zip) - Garlicker
  - [Yumi Martinez](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-yumi.zip) - Frijoles Y Queso
 
+### Pack Installation
+To install and load a pack, Extract the pack into your mods folder and turn it on as if it were an individual mod. Most if not All in-game pack names are prefixed with "[CS]" and will likely be found at the end of your mod list.
+
 ## Resources
  [API Documentation](API-doc.md) - Gives Full Info on the Character Select's API
 
