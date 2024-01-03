@@ -35,6 +35,7 @@ characterTable = {
         lifeIcon = gTextures.mario_head,
     },
 }
+characterCaps = {}
 
 local optionTableRef = {
     openInputs = 1,
@@ -130,31 +131,13 @@ local menuColorTable = {
     {r = 255, g = 255, b = 255},
     {r = 50,  g = 50,  b = 50 },
 }
-
-local camera_freeze = camera_freeze
-local camera_unfreeze = camera_unfreeze
-local network_local_index_from_global = network_local_index_from_global
-local obj_set_model_extended = obj_set_model_extended
-local hud_hide = hud_hide
-local hud_show = hud_show
-local djui_chat_message_create = djui_chat_message_create
-local djui_hud_set_resolution = djui_hud_set_resolution
-local djui_hud_set_font = djui_hud_set_font
-local djui_hud_set_color = djui_hud_set_color
-local djui_hud_get_screen_width = djui_hud_get_screen_width
-local djui_hud_render_rect = djui_hud_render_rect
-local djui_hud_print_text = djui_hud_print_text
-local djui_hud_render_texture = djui_hud_render_texture
-local math_max = math.max
-local math_min = math.min
-local math_sin = math.sin
-local math_random = math.random
-local math_abs = math.abs
-local math_ceil = math.ceil
-local play_sound = play_sound
-local mod_storage_save = mod_storage_save
-local mod_storage_load = mod_storage_load
-local string_lower = string.lower
+-- "localize functions to improve performance" 🔥🔥🔥
+local camera_freeze, camera_unfreeze, network_local_index_from_global, obj_set_model_extended, hud_hide, hud_show, djui_chat_message_create,
+      djui_hud_set_resolution, djui_hud_set_font, djui_hud_set_color, djui_hud_get_screen_width, djui_hud_render_rect, djui_hud_print_text,
+      djui_hud_render_texture, math_max, math_min, math_sin, math_random, math_abs, math_ceil, play_sound, mod_storage_save, mod_storage_load, string_lower =
+      camera_freeze, camera_unfreeze, network_local_index_from_global, obj_set_model_extended, hud_hide, hud_show, djui_chat_message_create,
+      djui_hud_set_resolution, djui_hud_set_font, djui_hud_set_color, djui_hud_get_screen_width, djui_hud_render_rect, djui_hud_print_text,
+      djui_hud_render_texture, math.max, math.min, math.sin, math.random, math.abs, math.ceil, play_sound, mod_storage_save, mod_storage_load, string.lower
 
 ---@param m MarioState
 local function nullify_inputs(m)
@@ -261,13 +244,11 @@ local function mario_update(m)
         end
         if optionTable[optionTableRef.localModels].toggle > 0 then
             gPlayerSyncTable[m.playerIndex].modelId = characterTable[currChar].model
-            gPlayerSyncTable[m.playerIndex].capModels = characterTable[currChar].capModels
             if characterTable[currChar].forceChar ~= nil then
                 gNetworkPlayers[m.playerIndex].overrideModelIndex = characterTable[currChar].forceChar
             end
         else
             gPlayerSyncTable[m.playerIndex].modelId = nil
-            gPlayerSyncTable[m.playerIndex].capModels = nil
             gNetworkPlayers[m.playerIndex].overrideModelIndex = characterTable[1].forceChar
         end
 
@@ -321,27 +302,26 @@ function set_model(o, model)
         local i = network_local_index_from_global(o.globalPlayerIndex)
         if gPlayerSyncTable[i].modelId ~= nil and obj_has_model_extended(o, gPlayerSyncTable[i].modelId) == 0 then
             obj_set_model_extended(o, gPlayerSyncTable[i].modelId)
-            return
-        end
+        return end
     end
     if get_object_list_from_behavior(o.behavior) == OBJ_LIST_LEVEL then
         local i = network_local_index_from_global(o.globalPlayerIndex)
-        local capModels = gPlayerSyncTable[i].capModels
+        local c = gMarioStates[i].character
+        local capModels = characterCaps[gPlayerSyncTable[i].modelId]
         local capModel = nil
         if capModels ~= nil then
-            if model == gMarioStates[i].character.capModelId then
+            if model == c.capModelId then
                 capModel = capModels.normal
-            elseif model == gMarioStates[i].character.capWingModelId then
+            elseif model == c.capWingModelId then
                 capModel = capModels.wing
-            elseif model == gMarioStates[i].character.capMetalModelId then
+            elseif model == c.capMetalModelId then
                 capModel = capModels.metal
-            elseif model == gMarioStates[i].character.capMetalWingModelId then
+            elseif model == c.capMetalWingModelId then
                 capModel = capModels.metalWing
             end
             if capModel ~= nil and obj_has_model_extended(o, capModel) == 0 then
                 obj_set_model_extended(o, capModel)
-                return
-            end
+            return end
         end
     end
 end
@@ -363,17 +343,11 @@ local optionAnimTimerCap = optionAnimTimer
 local inputStallTimer = 0
 local inputStallTo = 15
 
-local FONT_CS_NORMAL = FONT_NORMAL
-if version_coop_dx() then
-    FONT_CS_NORMAL = FONT_ALIASED
-end
+local FONT_CS_NORMAL = version_coop_dx and FONT_ALIASED or FONT_NORMAL
 
 --Basic Menu Text
 local TEXT_OPTIONS_HEADER = "Menu Options"
-local TEXT_VERSION = "Version: "..modVersion
-if version_coop_dx() then
-    TEXT_VERSION = TEXT_VERSION.." | CoopDX Detected"
-end
+local TEXT_VERSION = "Version: "..modVersion..(version_coop_dx and " | CoopDX Detected" or "")
 local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
 local TEXT_DESCRIPTION = "Character Description:"
 local TEXT_PREF_SAVE = "Press A to Set as Preferred Character"
@@ -455,10 +429,12 @@ local function on_hud_render()
                 buttonColor = characterTable[i + currChar].color
                 djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
                 local buttonX = 20 * widthScale
-                if optionTable[optionTableRef.anims].toggle > 0 then
-                    if i == 0 then buttonX = buttonX + math_sin(buttonAnimTimer*0.05)*2.5 + 5 end
-                else
-                    if i == 0 then buttonX = buttonX + 10 end
+                if i == 0 then
+                    if optionTable[optionTableRef.anims].toggle > 0 then
+                        buttonX = buttonX + math_sin(buttonAnimTimer*0.05)*2.5 + 5
+                    else
+                        buttonX = buttonX + 10
+                    end
                 end
                 local y = (i + 3) * 30 + buttonScroll
                 djui_hud_render_rect(buttonX, y, 70, 20)
@@ -686,7 +662,7 @@ local function on_hud_render()
         if optionTable[optionTableRef.openInputs].toggle == 2 then
             currCharY = 27
             local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_Z_OPEN)
-            if not version_coop_dx() then -- Done to match DX not having dropshadow on the "R Button - Options" thingy
+            if not version_coop_dx then -- Done to match DX not having dropshadow on the "R Button - Options" thingy
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_print_text(TEXT_PAUSE_Z_OPEN, width - 19, 17, 1)
             end
@@ -699,7 +675,7 @@ local function on_hud_render()
             local TEXT_PAUSE_CURR_CHAR_WITH_NAME = TEXT_PAUSE_CURR_CHAR..charName
             local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME)
             local charColor = characterTable[currChar].color
-            if not version_coop_dx() then
+            if not version_coop_dx then
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_print_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME, width - 19, 17 + currCharY, 1)
             end
@@ -709,7 +685,7 @@ local function on_hud_render()
             djui_hud_print_text(charName, djui_hud_get_screen_width() - djui_hud_measure_text(charName) - 20, 16 + currCharY, 1)
         else
             local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_LOCAL_MODEL_OFF)
-            if not version_coop_dx() then
+            if not version_coop_dx then
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, width - 19, 17 + currCharY, 1)
             end

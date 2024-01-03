@@ -69,13 +69,7 @@ function string_space_to_underscore(string)
     return s
 end
 
-function version_coop_dx()
-    if SM64COOPDX_VERSION then
-        return true
-    else
-        return false
-    end
-end
+version_coop_dx = SM64COOPDX_VERSION ~= nil
 
 ----------------------
 -- Global Variables --

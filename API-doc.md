@@ -35,19 +35,6 @@ Model Information Received from `smlua_model_util_get_id()`
 
 Example: `smlua_model_util_get_id("armature_geo")`
 
-Alternatively, Models can also have Cap Models via use of a Table
-
-Example: `{smlua_model_util_get_id("armature_geo"), capModels}`
-
-```lua
-local capModels = {
-    normal = smlua_model_util_get_id("armature_normal_cap_geo"),
-    wing = smlua_model_util_get_id("armature_wing_cap_geo"),
-    metal = smlua_model_util_get_id("armature_metal_cap_geo"),
-    metalWing = smlua_model_util_get_id("armature_metal_wing_cap_geo")
-}
-```
-
 ### Forced Character
 Character Type, Inputs can be `CT_MARIO`, `CT_LUIGI`, `CT_TOAD`, `CT_WALUIGI`, `CT_WARIO`
 
@@ -74,7 +61,7 @@ Model Information Received from `smlua_model_util_get_id()`
 Example: `smlua_model_util_get_id("armature_geo")`
 
 ### Sound Clip Table:
-A table with you're character's sound file names
+A table with your character's sound file names
 
 Table Example:
 ```lua
@@ -138,6 +125,27 @@ end)
 ```
 
 Examples of these can be found in [Character Select Template with Voice](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template-w-voice.zip)
+
+## _G.charSelect.character_add_caps()
+A function that adds caps to a character, has 2 inputs
+
+### Model Info:
+Model Information Received from `smlua_model_util_get_id()`
+
+### Cap Table:
+A table with your character's cap models
+
+Example:
+```lua
+local capModels = {
+    normal = smlua_model_util_get_id("armature_normal_cap_geo"),
+    wing = smlua_model_util_get_id("armature_wing_cap_geo"),
+    metal = smlua_model_util_get_id("armature_metal_cap_geo"),
+    metalWing = smlua_model_util_get_id("armature_metal_wing_cap_geo")
+}
+
+_G.charSelect.character_add_caps(E_MODEL_ARMATURE, capModels)
+```
 
 ## _G.charSelect.character_edit()
 A function that Edits an Existing Character, has 7 inputs
