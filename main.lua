@@ -298,15 +298,17 @@ local function mario_update(m)
 end
 
 function set_model(o, model)
+    local i = network_local_index_from_global(o.globalPlayerIndex)
     if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
-        local i = network_local_index_from_global(o.globalPlayerIndex)
         if gPlayerSyncTable[i].modelId ~= nil and obj_has_model_extended(o, gPlayerSyncTable[i].modelId) == 0 then
             obj_set_model_extended(o, gPlayerSyncTable[i].modelId)
         return end
     end
-    if get_object_list_from_behavior(o.behavior) == OBJ_LIST_LEVEL then
-        local i = network_local_index_from_global(o.globalPlayerIndex)
-        local c = gMarioStates[i].character
+    local c = gMarioStates[i].character
+    if model == c.capModelId or
+       model == c.capWingModelId or
+       model == c.capMetalModelId or
+       model == c.capMetalWingModelId then
         local capModels = characterCaps[gPlayerSyncTable[i].modelId]
         local capModel = nil
         if capModels ~= nil then
