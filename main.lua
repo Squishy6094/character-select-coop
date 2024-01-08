@@ -345,11 +345,11 @@ local optionAnimTimerCap = optionAnimTimer
 local inputStallTimer = 0
 local inputStallTo = 15
 
-local FONT_CS_NORMAL = version_coop_dx and FONT_ALIASED or FONT_NORMAL
+local FONT_CS_NORMAL = client_is_coop_dx and FONT_ALIASED or FONT_NORMAL
 
 --Basic Menu Text
 local TEXT_OPTIONS_HEADER = "Menu Options"
-local TEXT_VERSION = "Version: "..modVersion..(version_coop_dx and " | CoopDX Detected" or "")
+local TEXT_VERSION = "Version: "..modVersion..(client_is_coop_dx and " | CoopDX Detected" or "")
 local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
 local TEXT_DESCRIPTION = "Character Description:"
 local TEXT_PREF_SAVE = "Press A to Set as Preferred Character"
@@ -664,7 +664,7 @@ local function on_hud_render()
         if optionTable[optionTableRef.openInputs].toggle == 2 then
             currCharY = 27
             local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_Z_OPEN)
-            if not version_coop_dx then -- Done to match DX not having dropshadow on the "R Button - Options" thingy
+            if not client_is_coop_dx then -- Done to match DX not having dropshadow on the "R Button - Options" thingy
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_print_text(TEXT_PAUSE_Z_OPEN, width - 19, 17, 1)
             end
@@ -677,7 +677,7 @@ local function on_hud_render()
             local TEXT_PAUSE_CURR_CHAR_WITH_NAME = TEXT_PAUSE_CURR_CHAR..charName
             local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME)
             local charColor = characterTable[currChar].color
-            if not version_coop_dx then
+            if not client_is_coop_dx then
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_print_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME, width - 19, 17 + currCharY, 1)
             end
@@ -687,7 +687,7 @@ local function on_hud_render()
             djui_hud_print_text(charName, djui_hud_get_screen_width() - djui_hud_measure_text(charName) - 20, 16 + currCharY, 1)
         else
             local width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_LOCAL_MODEL_OFF)
-            if not version_coop_dx then
+            if not client_is_coop_dx then
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, width - 19, 17 + currCharY, 1)
             end
