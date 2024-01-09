@@ -23,8 +23,6 @@ local E_model_michiru = smlua_model_util_get_id("michiru_geo")
 local E_model_yuuka = smlua_model_util_get_id("yuuka_geo")
 local E_model_hina = smlua_model_util_get_id("hina_geo")
 
-local TEX_CUSTOM_ICON = get_texture_info("exclamation-icon")
-
 local TEXT_MOD_NAME = "Blue Archive Pack"
 --
 local VOICETABLE_momoi = {
@@ -657,22 +655,22 @@ local capModels = {
 ]]
 
 if _G.charSelectExists then
-    CT_CHAR = _G.charSelect.character_add("Momoi", {"Gamer"}, "HerosLight", {r = 255, g = 119, b = 160}, E_model_momoi, CT_MARIO, TEX_CUSTOM_ICON)
-	CT_CHAR = _G.charSelect.character_add("Midori", {"Gamer"}, "HerosLight", {r = 130, g = 255, b = 106}, E_model_midori, CT_MARIO, TEX_CUSTOM_ICON)
-	CT_CHAR = _G.charSelect.character_add("Yuzu", {"Gamer"}, "HerosLight", {r = 233, g = 123, b = 116}, E_model_yuzu, CT_MARIO, TEX_CUSTOM_ICON)
-	CT_CHAR = _G.charSelect.character_add("Alice/Aris", {"Gamer"}, "HerosLight", {r = 132, g = 150, b = 162}, E_model_alice, CT_MARIO, TEX_CUSTOM_ICON)
-	CT_CHAR = _G.charSelect.character_add("Fubuki", {"Sleepy Brat"}, "HerosLight", {r = 122, g = 159, b = 255}, E_model_fubuki, CT_MARIO, TEX_CUSTOM_ICON)
-	CT_CHAR = _G.charSelect.character_add("Mari", {"is a cat"}, "HerosLight", {r = 252, g = 202, b = 165}, E_model_mari, CT_MARIO, TEX_CUSTOM_ICON)
-	CT_CHAR = _G.charSelect.character_add("Mari [Sportswear]", {"is a fox"}, "HerosLight", {r = 252, g = 202, b = 165}, E_model_spmari, CT_MARIO, TEX_CUSTOM_ICON)
-	CT_CHAR = _G.charSelect.character_add("Kazusa", {"Doesn't like cats [She is a cat]"}, "HerosLight", {r = 63, g = 63, b = 93}, E_model_kazusa, CT_MARIO, TEX_CUSTOM_ICON)
-	CT_CHAR = _G.charSelect.character_add("Reisa", {"The Superstar"}, "HerosLight", {r = 229, g = 238, b = 252}, E_model_reisa, CT_MARIO, TEX_CUSTOM_ICON)
-	CT_CHAR = _G.charSelect.character_add("Kokona", {"11"}, "HerosLight", {r = 199, g = 197, b = 196}, E_model_kokona, CT_MARIO, TEX_CUSTOM_ICON)
-	CT_CHAR = _G.charSelect.character_add("Himari", {"Tensai Bishoujo Hacka"}, "HerosLight", {r = 255, g = 255, b = 255}, E_model_himari, CT_MARIO, TEX_CUSTOM_ICON)
-	CT_CHAR = _G.charSelect.character_add("Izuna", {"Nin-nin"}, "HerosLight", {r = 240, g = 38, b = 118}, E_model_izuna, CT_MARIO, TEX_CUSTOM_ICON)
-	CT_CHAR = _G.charSelect.character_add("Tsukuyo", {"Very Tall"}, "HerosLight", {r = 148, g = 130, b = 216}, E_model_tsukuyo, CT_MARIO, TEX_CUSTOM_ICON)
-	CT_CHAR = _G.charSelect.character_add("Michiru", {"Shubabababa"}, "HerosLight", {r = 203, g = 198, b = 193}, E_model_michiru, CT_MARIO, TEX_CUSTOM_ICON)
-	CT_CHAR = _G.charSelect.character_add("Hina", {"I can't think of something to put here"}, "HerosLight", {r = 255, g = 255, b = 255}, E_model_hina, CT_MARIO, TEX_CUSTOM_ICON)
-	CT_CHAR = _G.charSelect.character_add("Yuuka", {"100kg"}, "HerosLight", {r = 87, g = 84, b = 132}, E_model_yuuka, CT_MARIO, TEX_CUSTOM_ICON)
+    CT_CHAR = _G.charSelect.character_add("Momoi", {"Gamer"}, "HerosLight", {r = 255, g = 119, b = 160}, E_model_momoi, CT_MARIO, nil)
+	CT_CHAR = _G.charSelect.character_add("Midori", {"Gamer"}, "HerosLight", {r = 130, g = 255, b = 106}, E_model_midori, CT_MARIO, nil)
+	CT_CHAR = _G.charSelect.character_add("Yuzu", {"Gamer"}, "HerosLight", {r = 233, g = 123, b = 116}, E_model_yuzu, CT_MARIO, nil)
+	CT_CHAR = _G.charSelect.character_add("Alice/Aris", {"Gamer"}, "HerosLight", {r = 132, g = 150, b = 162}, E_model_alice, CT_MARIO, nil)
+	CT_CHAR = _G.charSelect.character_add("Fubuki", {"Sleepy Brat"}, "HerosLight", {r = 122, g = 159, b = 255}, E_model_fubuki, CT_MARIO, nil)
+	CT_CHAR = _G.charSelect.character_add("Mari", {"is a cat"}, "HerosLight", {r = 252, g = 202, b = 165}, E_model_mari, CT_MARIO, nil)
+	CT_CHAR = _G.charSelect.character_add("Mari [Sportswear]", {"is a fox"}, "HerosLight", {r = 252, g = 202, b = 165}, E_model_spmari, CT_MARIO, nil)
+	CT_CHAR = _G.charSelect.character_add("Kazusa", {"Doesn't like cats [She is a cat]"}, "HerosLight", {r = 63, g = 63, b = 93}, E_model_kazusa, CT_MARIO, nil)
+	CT_CHAR = _G.charSelect.character_add("Reisa", {"The Superstar"}, "HerosLight", {r = 229, g = 238, b = 252}, E_model_reisa, CT_MARIO, nil)
+	CT_CHAR = _G.charSelect.character_add("Kokona", {"11"}, "HerosLight", {r = 199, g = 197, b = 196}, E_model_kokona, CT_MARIO, nil)
+	CT_CHAR = _G.charSelect.character_add("Himari", {"Tensai Bishoujo Hacka"}, "HerosLight", {r = 255, g = 255, b = 255}, E_model_himari, CT_MARIO, nil)
+	CT_CHAR = _G.charSelect.character_add("Izuna", {"Nin-nin"}, "HerosLight", {r = 240, g = 38, b = 118}, E_model_izuna, CT_MARIO, nil)
+	CT_CHAR = _G.charSelect.character_add("Tsukuyo", {"Very Tall"}, "HerosLight", {r = 148, g = 130, b = 216}, E_model_tsukuyo, CT_MARIO, nil)
+	CT_CHAR = _G.charSelect.character_add("Michiru", {"Shubabababa"}, "HerosLight", {r = 203, g = 198, b = 193}, E_model_michiru, CT_MARIO, nil)
+	CT_CHAR = _G.charSelect.character_add("Hina", {"I can't think of something to put here"}, "HerosLight", {r = 255, g = 255, b = 255}, E_model_hina, CT_MARIO, nil)
+	CT_CHAR = _G.charSelect.character_add("Yuuka", {"100kg"}, "HerosLight", {r = 87, g = 84, b = 132}, E_model_yuuka, CT_MARIO, nil)
     -- the following must be hooked for each character added
 
     --All Voices
