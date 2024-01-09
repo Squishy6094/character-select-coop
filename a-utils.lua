@@ -76,6 +76,6 @@ network_is_coop_dx = SM64COOPDX_VERSION ~= nil -- Checks if Coop Compatibility i
 -- Global Variables --
 ----------------------
 
-modVersion = "1.5.3"
+modVersion = "1.6 (In-Dev)"
 
 allowMenu = {}
