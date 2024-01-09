@@ -14,7 +14,7 @@ We'll keep an archive of all user-made packs here, as well as our packs included
 - [Pizizito's Pizza Tower Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-pizza-tower-pack.zip) - Pizizito
 - [Furry Friends Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-furry-friends.zip) - AngelicMiracles
 - [Squid Sisters](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-squid-sisters.zip) - Frijoles Y Queso
-- [Blue Archive Characters](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-birdo.zip) - HerosLight
+- [Blue Archive Characters](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-blue-archive.zip) - HerosLight
 - [VL-Tone & Cjes Luigi](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-cjes-and-vl.zip) - Coop DX Team
 - [Extra Characters](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-extra-chars.zip) (Toadette) - Coop DX Team
 - [Birdo Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-birdo.zip) - Melzinoff
