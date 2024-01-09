@@ -39,12 +39,13 @@ characterCaps = {}
 
 local optionTableRef = {
     openInputs = 1,
-    menuColor = 2,
-    anims = 3,
-    inputLatency = 4,
-    localModels = 5,
-    prefToDefault = 6,
-    debugInfo = 7
+    notification = 2,
+    menuColor = 3,
+    anims = 4,
+    inputLatency = 5,
+    localModels = 6,
+    prefToDefault = 7,
+    debugInfo = 8
 }
 
 optionTable = {
@@ -55,6 +56,14 @@ optionTable = {
         toggleDefault = 0,
         toggleMax = 2,
         toggleNames = {"None", ommActive and "D-pad Down + R" or "D-pad Down", "Z (Pause Menu)"},
+    },
+    [optionTableRef.notification] = {
+        name = "Notifications",
+        toggle = tonumber(mod_storage_load("notifs")),
+        toggleSaveName = "notifs",
+        toggleDefault = 1,
+        toggleMax = 2,
+        toggleNames = {"Off", "On", "Pop-ups Only"},
     },
     [optionTableRef.menuColor] = {
         name = "Menu Color",
@@ -170,7 +179,9 @@ local function load_preferred_char()
             if characterTable[i].name == mod_storage_load("PrefChar") then
                 currChar = i
                 if optionTable[optionTableRef.localModels].toggle == 1 then
-                    djui_popup_create('Character Select:\nYour Preferred Character\n"'..string_underscore_to_space(characterTable[i].name)..'"\nwas applied successfully!', 4)
+                    if optionTable[optionTableRef.notification].toggle > 0 then
+                        djui_popup_create('Character Select:\nYour Preferred Character\n"'..string_underscore_to_space(characterTable[i].name)..'"\nwas applied successfully!', 4)
+                    end
                 end
                 break
             end
@@ -179,7 +190,9 @@ local function load_preferred_char()
         mod_storage_save("PrefChar", "Default")
     end
     if #characterTable == 1 then
-        djui_popup_create("Character Select:\nNo Characters were Found", 2)
+        if optionTable[optionTableRef.notification].toggle > 0 then
+            djui_popup_create("Character Select:\nNo Characters were Found", 2)
+        end
     end
     TEXT_PREF_LOAD = mod_storage_load("PrefChar")
 end
@@ -197,11 +210,13 @@ local function failsafe_options()
         end
     end
     if optionTable[optionTableRef.openInputs].toggle == 1 and ommActive then
-        djui_popup_create('Character Select:\nYour Open bind has changed to:\nD-pad Down + R\nDue to OMM Rebirth being active!', 4)
+        if optionTable[optionTableRef.notification].toggle > 0 then
+            djui_popup_create('Character Select:\nYour Open bind has changed to:\nD-pad Down + R\nDue to OMM Rebirth being active!', 4)
+        end
     end
 end
 
-local function idiot_proof_note()
+local function boot_note()
     if #characterTable > 1 then
         djui_chat_message_create("Character Select is active and has "..(#characterTable - 1).." characters available!\nYou can use \\#ffff00\\/char-select \\#ffffff\\to open the menu!")
     else
@@ -228,7 +243,9 @@ local function mario_update(m)
     if stallFrame == 1 then
         load_preferred_char()
         failsafe_options()
-        idiot_proof_note()
+        if optionTable[optionTableRef.notification].toggle == 1 then
+            boot_note()
+        end
     end
 
     if stallFrame < 2 then
@@ -849,7 +866,7 @@ local function before_mario_update(m)
             end
             if (m.controller.buttonPressed & B_BUTTON) ~= 0 then
                 options = false
-                inputStallTimer = inputStallTo
+                inputStallTimer = inputStallTo * 3
             end
         end
         if currOption > #optionTable then currOption = 1 end
