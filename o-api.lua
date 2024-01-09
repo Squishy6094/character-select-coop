@@ -17,7 +17,7 @@ local type = type
 ---@param description table|nil {"string"}
 ---@param credit string|nil
 ---@param color Color|nil {r, g, b}
----@param modelInfo ModelExtendedId|nil Use smlua_model_util_get_id()
+---@param modelInfo ModelExtendedId|integer|nil Use smlua_model_util_get_id()
 ---@param forceChar CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
 ---@param lifeIcon TextureInfo|nil Use get_texture_info()
 ---@return integer
