@@ -37,15 +37,16 @@ characterTable = {
 }
 characterCaps = {}
 
-local optionTableRef = {
+optionTableRef = {
     openInputs = 1,
     notification = 2,
     menuColor = 3,
     anims = 4,
     inputLatency = 5,
     localModels = 6,
-    prefToDefault = 7,
-    debugInfo = 8
+    localVoices = 7,
+    prefToDefault = 8,
+    debugInfo = 9
 }
 
 optionTable = {
@@ -92,6 +93,13 @@ optionTable = {
         name = "Locally Display Models",
         toggle = tonumber(mod_storage_load("localModels")),
         toggleSaveName = "localModels",
+        toggleDefault = 1,
+        toggleMax = 1,
+    },
+    [optionTableRef.localVoices] = {
+        name = "Custom Voices",
+        toggle = tonumber(mod_storage_load("localVoices")),
+        toggleSaveName = "localVoices",
         toggleDefault = 1,
         toggleMax = 1,
     },

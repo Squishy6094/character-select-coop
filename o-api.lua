@@ -106,15 +106,6 @@ local function is_options_open()
     return options
 end
 
-local optionTableRef = {
-    openInputs = 1,
-    menuColor = 2,
-    anims = 3,
-    inputLatency = 4,
-    localModels = 5,
-    prefToDefault = 6,
-}
-
 local controller = {
     buttonDown = 0,
     buttonPressed = 0,
