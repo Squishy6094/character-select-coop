@@ -41,7 +41,7 @@ local VOICETABLE_TOADETTE = {
 local TEX_TOADETTE = get_texture_info("toadette-icon")
 
 if _G.charSelectExists then
-    _G.charSelect.character_add("Toadette", {"A female toad who debutted in", "2003 as a partner for Toad in", "Mario Kart: Double Dash!"}, "Toadette", {r = 255, g = 118, b = 202}, E_MODEL_TOADETTE, CT_TOAD, TEX_TOADETTE)
+    _G.charSelect.character_add("Toadette", {"A female toad who debutted in", "2003 as a partner for Toad in", "Mario Kart: Double Dash!"}, "Coop DX Team", {r = 255, g = 118, b = 202}, E_MODEL_TOADETTE, CT_TOAD, TEX_TOADETTE)
 
     _G.charSelect.character_add_voice(E_MODEL_TOADETTE, VOICETABLE_TOADETTE)
 
