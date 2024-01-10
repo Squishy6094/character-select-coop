@@ -239,6 +239,8 @@ end
 local stallFrame = 0
 local noLoop = false
 
+local CUTSCENE_CS_MENU = 0xFA
+
 -- Respecfully, GO FUCK YOURSELVES. I hate EVERY SINGLE ONE OF YOU. Your lives are NOTHING. You serve ZERO PURPOSE. You should kill yourselves, NOW!
 local ignored_surfaces = {
     SURFACE_BURNING, SURFACE_QUICKSAND, SURFACE_INSTANT_QUICKSAND, SURFACE_INSTANT_MOVING_QUICKSAND, SURFACE_DEEP_MOVING_QUICKSAND, SURFACE_INSTANT_QUICKSAND, SURFACE_DEEP_QUICKSAND, SURFACE_SHALLOW_MOVING_QUICKSAND,
@@ -289,6 +291,7 @@ local function mario_update(m)
             if _G.PersonalStarCounter then
                 _G.PersonalStarCounter.hide_star_counters(true)
             end
+            m.area.camera.cutscene = CUTSCENE_CS_MENU
             local focusPos = {
                 x = m.pos.x,
                 y = m.pos.y + 120,
@@ -310,6 +313,7 @@ local function mario_update(m)
             if _G.PersonalStarCounter then
                 _G.PersonalStarCounter.hide_star_counters(false)
             end
+            m.area.camera.cutscene = CUTSCENE_STOP
             noLoop = true
         end
     end
@@ -435,7 +439,7 @@ local function on_hud_render()
         end
         
         local x = 135 * widthScale * 0.8
-        
+
         --Character Description
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_rect(width - x, 0, x, height)
