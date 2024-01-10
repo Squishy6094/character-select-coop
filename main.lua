@@ -434,58 +434,7 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_LOCAL_MODEL_OFF_OPTIONS, widthHalf - djui_hud_measure_text(TEXT_LOCAL_MODEL_OFF_OPTIONS)*0.1*widthScale, heightHalf + 10*widthScale, 0.2*widthScale)
         end
         
-        --Character Buttons
         local x = 135 * widthScale * 0.8
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(0, 0, x, height)
-        djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_render_rect(2, 2, x - 4, height - 4)
-
-        if optionTable[optionTableRef.anims].toggle > 0 then
-            buttonAnimTimer = buttonAnimTimer + 1
-        end
-        if optionTable[optionTableRef.anims].toggle == 0 then
-            buttonScroll = 0
-        elseif buttonScroll > 0.1 or buttonScroll < -0.1 then
-            buttonScroll = buttonScroll*0.03*inputStallTo
-        end
-
-        local buttonColor = {}
-        for i = -1, 4 do
-            if characterTable[i + currChar] ~= nil then
-                buttonColor = characterTable[i + currChar].color
-                djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
-                local buttonX = 20 * widthScale
-                if i == 0 then
-                    if optionTable[optionTableRef.anims].toggle > 0 then
-                        buttonX = buttonX + math_sin(buttonAnimTimer*0.05)*2.5 + 5
-                    else
-                        buttonX = buttonX + 10
-                    end
-                end
-                local y = (i + 3) * 30 + buttonScroll
-                djui_hud_render_rect(buttonX, y, 70, 20)
-                djui_hud_set_color(0, 0, 0, 255)
-                djui_hud_render_rect(buttonX + 1, y + 1, 68, 18)
-                djui_hud_set_font(FONT_TINY)
-                djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
-                djui_hud_print_text(string_underscore_to_space(characterTable[currChar + i].name), buttonX + 5, y + 5, 0.6)
-            end
-        end
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(0, height-2, x, 2)
-
-        -- Scroll Bar
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(7 * widthScale, 55, 7, 170)
-        djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_render_rect(7 * widthScale + 1, 56, 5, 168)
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(7 * widthScale + 2, 57 + 166 * ((currChar - 1) / #characterTable) - (buttonScroll*0.03333333333)*(166/#characterTable), 3, 166/#characterTable)
-        djui_hud_set_font(FONT_TINY)
-        local TEXT_CHAR_COUNT = currChar.."/"..#characterTable
-        djui_hud_print_text(TEXT_CHAR_COUNT, (11 - djui_hud_measure_text(TEXT_CHAR_COUNT)*0.2) * widthScale, height - 12, 0.4)
-
         
         --Character Description
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
@@ -560,6 +509,57 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_TABLE_POS..currChar, width - x + 8, 127 + descriptionOffset, 0.6)
             djui_hud_print_text(TEXT_PREF, width - x + 8, height - 18, 0.6)
         end
+
+        --Character Buttons
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_render_rect(0, 0, x, height)
+        djui_hud_set_color(0, 0, 0, 255)
+        djui_hud_render_rect(2, 2, x - 4, height - 4)
+
+        if optionTable[optionTableRef.anims].toggle > 0 then
+            buttonAnimTimer = buttonAnimTimer + 1
+        end
+        if optionTable[optionTableRef.anims].toggle == 0 then
+            buttonScroll = 0
+        elseif buttonScroll > 0.1 or buttonScroll < -0.1 then
+            buttonScroll = buttonScroll*0.03*inputStallTo
+        end
+
+        local buttonColor = {}
+        for i = -1, 4 do
+            if characterTable[i + currChar] ~= nil then
+                buttonColor = characterTable[i + currChar].color
+                djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
+                local buttonX = 20 * widthScale
+                if i == 0 then
+                    if optionTable[optionTableRef.anims].toggle > 0 then
+                        buttonX = buttonX + math_sin(buttonAnimTimer*0.05)*2.5 + 5
+                    else
+                        buttonX = buttonX + 10
+                    end
+                end
+                local y = (i + 3) * 30 + buttonScroll
+                djui_hud_render_rect(buttonX, y, 70, 20)
+                djui_hud_set_color(0, 0, 0, 255)
+                djui_hud_render_rect(buttonX + 1, y + 1, 68, 18)
+                djui_hud_set_font(FONT_TINY)
+                djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
+                djui_hud_print_text(string_underscore_to_space(characterTable[currChar + i].name), buttonX + 5, y + 5, 0.6)
+            end
+        end
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_render_rect(0, height-2, x, 2)
+
+        -- Scroll Bar
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_render_rect(7 * widthScale, 55, 7, 170)
+        djui_hud_set_color(0, 0, 0, 255)
+        djui_hud_render_rect(7 * widthScale + 1, 56, 5, 168)
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_render_rect(7 * widthScale + 2, 57 + 166 * ((currChar - 1) / #characterTable) - (buttonScroll*0.03333333333)*(166/#characterTable), 3, 166/#characterTable)
+        djui_hud_set_font(FONT_TINY)
+        local TEXT_CHAR_COUNT = currChar.."/"..#characterTable
+        djui_hud_print_text(TEXT_CHAR_COUNT, (11 - djui_hud_measure_text(TEXT_CHAR_COUNT)*0.2) * widthScale, height - 12, 0.4)
 
         --Character Select Header
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
