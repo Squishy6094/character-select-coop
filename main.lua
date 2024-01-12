@@ -71,8 +71,8 @@ optionTable = {
         toggle = tonumber(mod_storage_load("MenuColor")),
         toggleSaveName = "MenuColor",
         toggleDefault = 0,
-        toggleMax = 9,
-        toggleNames = {"Auto", "Red", "Orange", "Yellow", "Green", "Blue", "Pink", "Purple", "White", "Black"},
+        toggleMax = 10,
+        toggleNames = {"Auto", "Saved", "Red", "Orange", "Yellow", "Green", "Blue", "Pink", "Purple", "White", "Black"},
     },
     [optionTableRef.anims] = {
         name = "Animations",
@@ -142,11 +142,12 @@ local menuColorTable = {
     {r = 255, g = 100, b = 50 },
     {r = 255, g = 255, b = 50 },
     {r = 50,  g = 255, b = 50 },
-    {r = 100,  g = 100,  b = 255},
+    {r = 100, g = 100, b = 255},
     {r = 251, g = 148, b = 220},
     {r = 130, g = 25,  b = 130},
     {r = 255, g = 255, b = 255},
     {r = 50,  g = 50,  b = 50 },
+    {r = 0,   g = 0,   b = 0  }, -- Will be overwriten with pref colors
 }
 -- "localize functions to improve performance" 🔥🔥🔥
 local camera_freeze, camera_unfreeze, network_local_index_from_global, obj_set_model_extended, hud_hide, hud_show, djui_chat_message_create,
@@ -181,6 +182,8 @@ local function nullify_inputs(m)
     c.stickY = 0
 end
 
+local prefCharColor = defaultPlayerColors[CT_MARIO]
+
 local function load_preferred_char()
     if mod_storage_load("PrefChar") ~= nil and mod_storage_load("PrefChar") ~= "Default" then
         for i = 2, #characterTable do
@@ -197,12 +200,30 @@ local function load_preferred_char()
     elseif mod_storage_load("PrefChar") == nil then
         mod_storage_save("PrefChar", "Default")
     end
+    if mod_storage_load("PrefCharColor") ~= "" then
+        local loadColors = string_split(string_underscore_to_space(mod_storage_load("PrefCharColor")))
+        prefCharColor = {
+            r = tonumber(loadColors[1]),
+            g = tonumber(loadColors[2]),
+            b = tonumber(loadColors[3])
+        }
+    else
+        mod_storage_save("PrefCharColor", "255_50_50")
+    end
+
     if #characterTable == 1 then
         if optionTable[optionTableRef.notification].toggle > 0 then
             djui_popup_create("Character Select:\nNo Characters were Found", 2)
         end
     end
     TEXT_PREF_LOAD = mod_storage_load("PrefChar")
+end
+
+local function mod_storage_save_pref_char(charTable)
+    mod_storage_save("PrefChar", charTable.name)
+    mod_storage_save("PrefCharColor", tostring(charTable.color.r).."_"..tostring(charTable.color.g).."_"..tostring(charTable.color.b))
+    TEXT_PREF_LOAD = charTable.name
+    prefCharColor = charTable.color
 end
 
 local function failsafe_options()
@@ -424,8 +445,11 @@ local function on_hud_render()
     local widthScale = math_max(width, 321.4)*0.00311332503
 
     if menuAndTransition then
-        if optionTable[optionTableRef.menuColor].toggle ~= 0 then
-            menuColor = menuColorTable[optionTable[optionTableRef.menuColor].toggle]
+        if optionTable[optionTableRef.menuColor].toggle > 1 then
+            menuColor = menuColorTable[optionTable[optionTableRef.menuColor].toggle - 1]
+        elseif optionTable[optionTableRef.menuColor].toggle == 1 then
+            optionTable[optionTableRef.menuColor].toggleNames[2] = string_underscore_to_space(TEXT_PREF_LOAD).." (Pref)"
+            menuColor = prefCharColor
         else
             menuColor = characterTable[currChar].color
         end
@@ -467,7 +491,6 @@ local function on_hud_render()
             else
                 for i = 1, math_ceil(#TEXT_DESCRIPTION_TABLE*0.5) do
                     local TablePos = (i * 2) - 1
-                    local TEXT_STRING = ""
                     if TEXT_DESCRIPTION_TABLE[TablePos] and TEXT_DESCRIPTION_TABLE[TablePos + 1] then
                         local TEXT_STRING = TEXT_DESCRIPTION_TABLE[TablePos].." "..TEXT_DESCRIPTION_TABLE[TablePos + 1]
                         djui_hud_print_text(TEXT_STRING, width - textX - djui_hud_measure_text(TEXT_STRING)*0.15, 90 + i*9, 0.3)
@@ -822,8 +845,7 @@ local function before_mario_update(m)
             end
             if (m.controller.buttonPressed & A_BUTTON) ~= 0 then
                 if characterTable[currChar] ~= nil then
-                    TEXT_PREF_LOAD = characterTable[currChar].name
-                    mod_storage_save("PrefChar", TEXT_PREF_LOAD)
+                    mod_storage_save_pref_char(characterTable[currChar])
                     inputStallTimer = inputStallTo
                     play_sound(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject)
                 else
