@@ -1,6 +1,5 @@
--- name: [CS] Model Pack Template
--- description: A Template for Character Select to build off of when making your own pack!\n\n\\#ff7777\\This Pack requires Character Select\nto use as a Library!
-
+-- name: [CS] Scott the Woz
+-- description: Hey all, Scott Here!\n\n\\#ff7777\\This Pack requires Character Select\nto use as a Library!
 
 local E_MODEL_SCOTT = smlua_model_util_get_id("scott_geo")
 
