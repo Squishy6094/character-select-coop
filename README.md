@@ -22,6 +22,7 @@ We'll keep an archive of all user-made packs here, as well as our packs included
 - [Peter Griffin](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-peter-griffin.zip) - Trashcam
 - [Uncle Grandpa](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-uncle-grandpa.zip) - Garlicker
 - [Yumi Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-yumi.zip) - Frijoles Y Queso
+- [Scott the Woz](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-scott-the-woz.zip) - ArcyThePuppet
 
 ### Pack Installation
 To install and load a pack, Extract the pack into your mods folder and turn it on as if it were an individual mod. Most if not All in-game pack names are prefixed with "[CS]" and will likely be found at the end of your mod list.
