@@ -82,7 +82,7 @@ local function character_get_number_from_string(name)
             return i
         end
     end
-    return false
+    return nil
 end
 
 ---@param m MarioState
