@@ -1,5 +1,5 @@
 -- name: Character Select
--- description: \\#ffff00\\ Character Select Coop v1.6 (In-Dev)\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff00\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\n\n\\#AAAAFF\\Updates and Packs can be found on\nCharacter Select's Github:\n\\#4444FF\\Squishy6094/character-select-coop
+-- description: \\#ffff00\\ Character Select Coop v1.6 (In-Dev)\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff00\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\n\n\\#AAAAFF\\Updates and Packs can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
 
 
 local menu = false
@@ -250,6 +250,10 @@ local function boot_note()
         djui_chat_message_create("Character Select is active and has "..(#characterTable - 1).." characters available!\nYou can use \\#ffff00\\/char-select \\#ffffff\\to open the menu!")
     else
         djui_chat_message_create("Character Select is active!\nYou can use \\#ffff00\\/char-select \\#ffffff\\to open the menu!")
+    end
+
+    if client_is_coop_dx then
+        djui_chat_message_create("\\#FFAAAA\\Note: Although not required, we highly reccomend\nusing SM64CoopDX when playing Character Select!\n\\#6666FF\\https://sm64coopdx.com")
     end
 end
 
