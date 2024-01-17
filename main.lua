@@ -16,7 +16,14 @@ local TEX_HEADER = get_texture_info("char-select-text")
 
 local TEXT_PREF_LOAD = "Default"
 
-local ommActive = _G.OmmApi ~= nil
+local ommActive = false
+for i in pairs(gActiveMods) do
+    local name = gActiveMods[i].name
+    if (name:find("OMM Rebirth")) then
+        ommActive = true
+        optionTable[optionTableRef.openInputs].toggleNames[2] = "D-pad Down + R"
+    end
+end
 
 --[[
     Note: Do NOT add characters via the characterTable below,
