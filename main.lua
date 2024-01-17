@@ -280,6 +280,25 @@ local ignored_surfaces = {
 }
 -- Yes, floral gave me permission to use this table full of USELESS PIECES OF SHITS
 
+local menuActBlacklist = {
+    -- Star Acts
+    [ACT_FALL_AFTER_STAR_GRAB] = true,
+    [ACT_STAR_DANCE_EXIT] = true,
+    [ACT_STAR_DANCE_NO_EXIT] = true,
+    [ACT_STAR_DANCE_WATER] = true,
+    -- Key Acts
+    [ACT_UNLOCKING_KEY_DOOR] = true,
+    [ACT_UNLOCKING_STAR_DOOR] = true,
+    -- Cutscene Acts
+    [ACT_INTRO_CUTSCENE] = true,
+    [ACT_CREDITS_CUTSCENE] = true,
+    -- Dialog Acts
+    [ACT_READING_NPC_DIALOG] = true,
+    [ACT_WAITING_FOR_DIALOG] = true,
+    [ACT_EXIT_LAND_SAVE_DIALOG] = true,
+    [ACT_READING_AUTOMATIC_DIALOG] = true,
+}
+
 --- @param m MarioState
 local function mario_update(m)
     if stallFrame == 1 then
@@ -323,7 +342,9 @@ local function mario_update(m)
             if _G.PersonalStarCounter then
                 _G.PersonalStarCounter.hide_star_counters(true)
             end
-            m.area.camera.cutscene = CUTSCENE_CS_MENU
+            if m.area.camera.cutscene == nil then
+                m.area.camera.cutscene = CUTSCENE_CS_MENU
+            end
             local focusPos = {
                 x = m.pos.x,
                 y = m.pos.y + 120,
@@ -334,9 +355,9 @@ local function mario_update(m)
             gLakituState.pos.y = m.pos.y + 100
             gLakituState.pos.z = m.pos.z + coss(m.faceAngle.y) * 500
 
-            if m.forwardVel == 0 and m.pos.y == m.floorHeight and not ignored_surfaces[m.floor.type] and m.health > 255 then
+            if m.forwardVel == 0 and m.pos.y == m.floorHeight and not ignored_surfaces[m.floor.type] and m.health > 255 and not menuActBlacklist[m.action] then
                 set_mario_action(m, ACT_IDLE, 0)
-                set_mario_animation(m, MARIO_ANIM_STAR_DANCE)
+                set_mario_animation(m, MARIO_ANIM_FIRST_PERSON)
             end
             noLoop = false
         elseif not noLoop then
@@ -345,7 +366,9 @@ local function mario_update(m)
             if _G.PersonalStarCounter then
                 _G.PersonalStarCounter.hide_star_counters(false)
             end
-            m.area.camera.cutscene = CUTSCENE_STOP
+            if m.area.camera.cutscene == CUTSCENE_CS_MENU then
+                m.area.camera.cutscene = CUTSCENE_STOP
+            end
             noLoop = true
         end
     end
