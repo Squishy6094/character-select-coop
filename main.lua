@@ -16,15 +16,6 @@ local TEX_HEADER = get_texture_info("char-select-text")
 
 local TEXT_PREF_LOAD = "Default"
 
-local ommActive = false
-for i in pairs(gActiveMods) do
-    local name = gActiveMods[i].name
-    if (name:find("OMM Rebirth")) then
-        ommActive = true
-        optionTable[optionTableRef.openInputs].toggleNames[2] = "D-pad Down + R"
-    end
-end
-
 --[[
     Note: Do NOT add characters via the characterTable below,
     We highly reccomend you create your own mod and use the
@@ -125,6 +116,15 @@ optionTable = {
         toggleMax = 1,
     },
 }
+
+local ommActive = false
+for i in pairs(gActiveMods) do
+    local name = gActiveMods[i].name
+    if (name:find("OMM Rebirth")) then
+        ommActive = true
+        optionTable[optionTableRef.openInputs].toggleNames[2] = "D-pad Down + R"
+    end
+end
 
 local defaultPlayerColors = {
     [CT_MARIO] = {r = 255, g = 50, b = 50},
@@ -259,7 +259,7 @@ local function boot_note()
         djui_chat_message_create("Character Select is active!\nYou can use \\#ffff00\\/char-select \\#ffffff\\to open the menu!")
     end
 
-    if client_is_coop_dx then
+    if not client_is_coop_dx then
         djui_chat_message_create("\\#FFAAAA\\Note: Although not required, we highly reccomend\nusing SM64CoopDX when playing Character Select!\n\\#6666FF\\https://sm64coopdx.com")
     end
 end
