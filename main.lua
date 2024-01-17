@@ -342,7 +342,7 @@ local function mario_update(m)
             if _G.PersonalStarCounter then
                 _G.PersonalStarCounter.hide_star_counters(true)
             end
-            if m.area.camera.cutscene == nil then
+            if m.area.camera.cutscene == 0 then
                 m.area.camera.cutscene = CUTSCENE_CS_MENU
             end
             local focusPos = {
