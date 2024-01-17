@@ -352,8 +352,7 @@ local function mario_update(m)
 
     --Set Pref to Default Check
     if optionTable[optionTableRef.prefToDefault].toggle > 0 then
-        mod_storage_save("PrefChar", "Default")
-        TEXT_PREF_LOAD = "Default"
+        mod_storage_save_pref_char(characterTable[1])
         optionTable[optionTableRef.prefToDefault].toggle = 0
     end
 end
