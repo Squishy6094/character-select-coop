@@ -118,13 +118,27 @@ optionTable = {
     },
 }
 
+local latencyValueTable = {15, 10, 5}
+
+local menuColorTable = {
+    {r = 255, g = 50,  b = 50 },
+    {r = 255, g = 100, b = 50 },
+    {r = 255, g = 255, b = 50 },
+    {r = 50,  g = 255, b = 50 },
+    {r = 50,  g = 50,  b = 255},
+    {r = 251, g = 148, b = 220},
+    {r = 130, g = 25,  b = 130},
+    {r = 255, g = 255, b = 255},
+    {r = 50,  g = 50,  b = 50 },
+}
+
 -- Default Player Adjustments
 local defaultPlayerColors = {
-    [CT_MARIO] = {r = 255, g = 50, b = 50},
-    [CT_LUIGI] = {r = 50, g = 255, b = 50},
-    [CT_TOAD] = {r = 100,  g = 100,  b = 255},
-    [CT_WALUIGI] = {r = 130, g = 25,  b = 130},
-    [CT_WARIO] = {r = 255, g = 255, b = 50},
+    [CT_MARIO] = menuColorTable[1],
+    [CT_LUIGI] = menuColorTable[4],
+    [CT_TOAD] =  menuColorTable[5],
+    [CT_WALUIGI] = menuColorTable[7],
+    [CT_WARIO] = menuColorTable[3],
 }
 local forceCharTable = {
     [CT_MARIO] = "CT_MARIO",
@@ -148,19 +162,6 @@ local defaultCamScales = {
     [CT_WARIO] = 1,
 }
 
-local latencyValueTable = {15, 10, 5}
-
-local menuColorTable = {
-    {r = 255, g = 50,  b = 50 },
-    {r = 255, g = 100, b = 50 },
-    {r = 255, g = 255, b = 50 },
-    {r = 50,  g = 255, b = 50 },
-    {r = 100, g = 100, b = 255},
-    {r = 251, g = 148, b = 220},
-    {r = 130, g = 25,  b = 130},
-    {r = 255, g = 255, b = 255},
-    {r = 50,  g = 50,  b = 50 },
-}
 -- "localize functions to improve performance" 🔥🔥🔥
 local camera_freeze, camera_unfreeze, network_local_index_from_global, obj_set_model_extended, hud_hide, hud_show, djui_chat_message_create,
       djui_hud_set_resolution, djui_hud_set_font, djui_hud_set_color, djui_hud_get_screen_width, djui_hud_render_rect, djui_hud_print_text,
@@ -542,7 +543,9 @@ local function on_hud_render()
             local TEXT_DESCRIPTION_TABLE = character.description
             local TEXT_COLOR = "Color: R-"..character.color.r..", G-"..character.color.g..", B-"..character.color.b
             local TEX_ICON = character.lifeIcon
+            local TEX_SCALE = "Camera Scale: "..character.camScale
             local TEXT_PREF = "Preferred: "..TEXT_PREF_LOAD
+            local TEXT_PREF_COLOR = "Preferred Color: R-"..prefCharColor.r..", G-"..prefCharColor.g..", B-"..prefCharColor.b
 
             local textX = x * 0.5
             djui_hud_print_text(TEXT_DEBUGGING, width - textX - djui_hud_measure_text(TEXT_DEBUGGING)*0.3, 55, 0.6)
@@ -566,7 +569,9 @@ local function on_hud_render()
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_print_text(TEXT_FORCED_CHAR..forceCharTable[character.forceChar], width - x + 8, 118 + descriptionOffset, 0.6)
             djui_hud_print_text(TEXT_TABLE_POS..currChar, width - x + 8, 127 + descriptionOffset, 0.6)
-            djui_hud_print_text(TEXT_PREF, width - x + 8, height - 18, 0.6)
+            djui_hud_print_text(TEX_SCALE, width - x + 8, 136 + descriptionOffset, 0.6)
+            djui_hud_print_text(TEXT_PREF, width - x + 8, height - 27, 0.6)
+            djui_hud_print_text(TEXT_PREF_COLOR, width - x + 8, height - 18, 0.6)
         end
 
         --Character Buttons
