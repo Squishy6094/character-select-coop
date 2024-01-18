@@ -7,6 +7,8 @@
 
 local E_MODEL_PETER_MODEL = smlua_model_util_get_id("peter_geo")
 
+local TEX_PETER_ICON = get_texture_info("peter")
+
 local TEXT_MOD_NAME = "Peter Griffin Pack"
 
 local VOICETABLE_PETER = {
@@ -37,7 +39,7 @@ local VOICETABLE_PETER = {
 }
 
 if _G.charSelectExists then
-    _G.charSelect.character_add("Peter Griffin", {"He's the Family Guy!"}, "Trashcam", {r = 255, g = 185, b = 139}, E_MODEL_PETER_MODEL, CT_MARIO, get_texture_info("peter"))
+    _G.charSelect.character_add("Peter Griffin", {"He's the Family Guy!"}, "Trashcam", {r = 255, g = 185, b = 139}, E_MODEL_PETER_MODEL, CT_MARIO, TEX_PETER_ICON, 1.1)
 
     _G.charSelect.character_add_voice(E_MODEL_PETER_MODEL, VOICETABLE_PETER)
     hook_event(HOOK_CHARACTER_SOUND, function (m, sound)

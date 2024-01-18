@@ -21,7 +21,7 @@ if _G.charSelectExists then
     _G.charSelect.character_add("Dirk", {"A husky with the abilities of ice!"}, "AngelicMiracles", {r = 51, g = 38, b = 135}, E_MODEL_HUSKY, CT_MARIO)
     _G.charSelect.character_add("Bradly", {"A wolf man with a sword."}, "AngelicMiracles", {r = 8, g = 104, b = 163}, E_MODEL_WOLFBOY, CT_MARIO)
     _G.charSelect.character_add("Mina", {"A female tanuki! She's energetic!"}, "AngelicMiracles", {r = 82, g = 7, b = 22}, E_MODEL_BABENOOK, CT_LUIGI)
-    _G.charSelect.character_add("Kuma", {"A polar bear who lives in the", "snowy mountains! Loves to make sugar crystals!"} , "AngelicMiracles", {r = 199, g = 18, b = 96}, E_MODEL_PBEAR, CT_WARIO)
+    _G.charSelect.character_add("Kuma", {"A polar bear who lives in the", "snowy mountains! Loves to make sugar crystals!"} , "AngelicMiracles", {r = 199, g = 18, b = 96}, E_MODEL_PBEAR, CT_WARIO, nil, 1.2)
     _G.charSelect.character_add("Skipper", {"A toon tanuki who can fly and", "transform into statues, just like", "Mario does in a Tanooki suit!"}, "AngelicMiracles", {r = 214, g = 15, b = 35}, E_MODEL_TOONNOOK, CT_MARIO)
 else
     djui_popup_create("\\#ffffdc\\\n"..TEXT_MOD_NAME.."\nRequires the Character Select Mod\nto use as a Library!\n\nPlease turn on the Character Select Mod\nand Restart the Room!", 6)        

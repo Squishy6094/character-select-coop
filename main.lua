@@ -31,6 +31,7 @@ characterTable = {
         model = nil,
         forceChar = nil,
         lifeIcon = gTextures.mario_head,
+        camScale = 1.0
     },
 }
 characterCaps = {}
@@ -336,15 +337,16 @@ local function mario_update(m)
             if m.area.camera.cutscene == 0 then
                 m.area.camera.cutscene = CUTSCENE_CS_MENU
             end
+            local camScale = characterTable[currChar].camScale
             local focusPos = {
                 x = m.pos.x,
-                y = m.pos.y + 120,
+                y = m.pos.y + 120 * camScale,
                 z = m.pos.z,
             }
             vec3f_copy(gLakituState.focus, focusPos)
-            gLakituState.pos.x = m.pos.x + sins(m.faceAngle.y) * 500
-            gLakituState.pos.y = m.pos.y + 100
-            gLakituState.pos.z = m.pos.z + coss(m.faceAngle.y) * 500
+            gLakituState.pos.x = m.pos.x + sins(m.faceAngle.y) * 500 * camScale
+            gLakituState.pos.y = m.pos.y + 100 * camScale
+            gLakituState.pos.z = m.pos.z + coss(m.faceAngle.y) * 500 * camScale
 
             if m.forwardVel == 0 and m.pos.y == m.floorHeight and not ignored_surfaces[m.floor.type] and m.health > 255 and not menuActBlacklist[m.action] then
                 set_mario_action(m, ACT_IDLE, 0)
@@ -505,7 +507,7 @@ local function on_hud_render()
             local textX = x * 0.5
             djui_hud_print_text(TEXT_NAME, width - textX - djui_hud_measure_text(TEXT_NAME)*0.3, 55, 0.6)
             djui_hud_set_font(FONT_TINY)
-            djui_hud_print_text(TEXT_CREDIT, width - textX - djui_hud_measure_text(TEXT_CREDIT)*0.3, 72, 0.6)
+            djui_hud_print_text(TEXT_CREDIT, width - textX - djui_hud_measure_text(TEXT_CREDIT)*0.3, 74, 0.6)
             djui_hud_set_font(FONT_CS_NORMAL)
             djui_hud_print_text(TEXT_DESCRIPTION, width - textX - djui_hud_measure_text(TEXT_DESCRIPTION)*0.2, 85, 0.4)
             if widthScale < 1.65 then

@@ -20,8 +20,9 @@ local type = type
 ---@param modelInfo ModelExtendedId|integer|nil Use smlua_model_util_get_id()
 ---@param forceChar CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
 ---@param lifeIcon TextureInfo|nil Use get_texture_info()
+---@param camScale integer|nil Zooms the camera based on a multiplier (Default 1.0)
 ---@return integer
-local function character_add(name, description, credit, color, modelInfo, forceChar, lifeIcon)
+local function character_add(name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
     table_insert(characterTable, {
         name = name and string_space_to_underscore(name) or "Untitled",
         description = description and description or {"No description has been provided"},
@@ -30,6 +31,7 @@ local function character_add(name, description, credit, color, modelInfo, forceC
         model = modelInfo and modelInfo or E_MODEL_ARMATURE,
         forceChar = forceChar and forceChar or CT_MARIO,
         lifeIcon = lifeIcon and lifeIcon or TEX_UNKNOWN_CHAR,
+        camScale = camScale and camScale or (1)
     })
     return #characterTable
 end
@@ -42,7 +44,8 @@ end
 ---@param modelInfo ModelExtendedId|integer|nil Use smlua_model_util_get_id()
 ---@param forceChar CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
 ---@param lifeIcon TextureInfo|nil Use get_texture_info()
-local function character_edit(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon)
+---@param camScale integer|nil Zooms the camera based on a multiplier (Default 1.0)
+local function character_edit(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
     characterTable[charNum] = characterTable[charNum] and {
         name = name and string_space_to_underscore(name) or characterTable[charNum].name,
         description = description and description or characterTable[charNum].description,
@@ -51,6 +54,7 @@ local function character_edit(charNum, name, description, credit, color, modelIn
         model = modelInfo and modelInfo or characterTable[charNum].model,
         forceChar = forceChar and forceChar or characterTable[charNum].forceChar,
         lifeIcon = lifeIcon and lifeIcon or characterTable[charNum].lifeIcon,
+        camScale = camScale and camScale or 1
     } or nil
 end
 
