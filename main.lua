@@ -117,15 +117,6 @@ optionTable = {
     },
 }
 
-local ommActive = false
-for i in pairs(gActiveMods) do
-    local name = gActiveMods[i].name
-    if (name:find("OMM Rebirth")) then
-        ommActive = true
-        optionTable[optionTableRef.openInputs].toggleNames[2] = "D-pad Down + R"
-    end
-end
-
 local defaultPlayerColors = {
     [CT_MARIO] = {r = 255, g = 50, b = 50},
     [CT_LUIGI] = {r = 50, g = 255, b = 50},
@@ -581,7 +572,7 @@ local function on_hud_render()
         end
         if optionTable[optionTableRef.anims].toggle == 0 then
             buttonScroll = 0
-        elseif buttonScroll > 0.1 or buttonScroll < -0.1 then
+        elseif math_abs(buttonScroll) > 0.1 then
             buttonScroll = buttonScroll*0.03*inputStallTo
         end
 

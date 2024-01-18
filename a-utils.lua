@@ -80,6 +80,14 @@ end
 client_is_coop_dx = get_coop_compatibility_enabled ~= nil -- Checks if Client is DX
 network_is_coop_dx = SM64COOPDX_VERSION ~= nil -- Checks if Coop Compatibility is Off
 
+ommActive = false
+for i in pairs(gActiveMods) do
+    local name = gActiveMods[i].name
+    if (name:find("OMM Rebirth")) then
+        ommActive = true
+    end
+end
+
 ----------------------
 -- Global Variables --
 ----------------------
