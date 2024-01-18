@@ -118,6 +118,7 @@ optionTable = {
     },
 }
 
+-- Default Player Adjustments
 local defaultPlayerColors = {
     [CT_MARIO] = {r = 255, g = 50, b = 50},
     [CT_LUIGI] = {r = 50, g = 255, b = 50},
@@ -125,13 +126,26 @@ local defaultPlayerColors = {
     [CT_WALUIGI] = {r = 130, g = 25,  b = 130},
     [CT_WARIO] = {r = 255, g = 255, b = 50},
 }
-
+local forceCharTable = {
+    [CT_MARIO] = "CT_MARIO",
+    [CT_LUIGI] = "CT_LUIGI",
+    [CT_TOAD] = "CT_TOAD",
+    [CT_WARIO] = "CT_WARIO",
+    [CT_WALUIGI] = "CT_WALUIGI",
+}
 local defaultIcons = {
     [CT_MARIO] = gTextures.mario_head,
     [CT_LUIGI] = gTextures.luigi_head,
     [CT_TOAD] = gTextures.toad_head,
     [CT_WALUIGI] = gTextures.waluigi_head,
     [CT_WARIO] = gTextures.wario_head,
+}
+local defaultCamScales = {
+    [CT_MARIO] = 1,
+    [CT_LUIGI] = 1,
+    [CT_TOAD] = 0.8,
+    [CT_WALUIGI] = 1.1,
+    [CT_WARIO] = 1,
 }
 
 local latencyValueTable = {15, 10, 5}
@@ -146,7 +160,6 @@ local menuColorTable = {
     {r = 130, g = 25,  b = 130},
     {r = 255, g = 255, b = 255},
     {r = 50,  g = 50,  b = 50 },
-    {r = 0,   g = 0,   b = 0  }, -- Will be overwriten with pref colors
 }
 -- "localize functions to improve performance" 🔥🔥🔥
 local camera_freeze, camera_unfreeze, network_local_index_from_global, obj_set_model_extended, hud_hide, hud_show, djui_chat_message_create,
@@ -311,6 +324,7 @@ local function mario_update(m)
         if currChar == 1 then
             characterTable[1].color = defaultPlayerColors[modelIndex]
             characterTable[1].lifeIcon = defaultIcons[modelIndex]
+            characterTable[1].camScale = defaultCamScales[modelIndex]
         end
         if optionTable[optionTableRef.localModels].toggle > 0 then
             gPlayerSyncTable[m.playerIndex].modelId = characterTable[currChar].model
@@ -449,14 +463,6 @@ local TEXT_MENU_CLOSE = "Press B to Exit Menu"
 local TEXT_OPTIONS_SELECT = "A - Select | B - Exit  "
 local TEXT_LOCAL_MODEL_OFF = "Locally Display Models is Off"
 local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Menu"
-
-local forceCharTable = {
-    [CT_MARIO] = "CT_MARIO",
-    [CT_LUIGI] = "CT_LUIGI",
-    [CT_TOAD] = "CT_TOAD",
-    [CT_WARIO] = "CT_WARIO",
-    [CT_WALUIGI] = "CT_WALUIGI",
-}
 
 local menuColor = characterTable[currChar].color
 
