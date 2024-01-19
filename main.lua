@@ -519,7 +519,15 @@ local function on_hud_render()
             local TEXT_NAME = string_underscore_to_space(character.name)
             local TEXT_CREDIT = "Credit: "..character.credit
             local TEXT_DESCRIPTION_TABLE = character.description
-            local TEXT_PREF = 'Preferred Character: "'..string_underscore_to_space(TEXT_PREF_LOAD)..'"'
+            local TEXT_PREF = "Preferred Character:"
+            if djui_hud_measure_text(string_underscore_to_space(TEXT_PREF_LOAD)) / widthScale > 110 then
+                TEXT_PREF = "Preferred Char:"
+            end
+            if djui_hud_measure_text(string_underscore_to_space(TEXT_PREF_LOAD)) / widthScale > 164 then
+                TEXT_PREF = "Pref Char:"
+            end
+            djui_chat_message_create(tostring(djui_hud_measure_text(string_underscore_to_space(TEXT_PREF_LOAD))/ widthScale))
+            TEXT_PREF = TEXT_PREF..' "'..string_underscore_to_space(TEXT_PREF_LOAD)..'"'
 
             local textX = x * 0.5
             djui_hud_print_text(TEXT_NAME, width - textX - djui_hud_measure_text(TEXT_NAME)*0.3, 55, 0.6)
@@ -549,6 +557,7 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_PREF_SAVE, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE)*0.25, height - 13, 0.5)
         else -- Debugging Info
             local TEXT_NAME = "Name: "..character.name
+            local TEXT_SAVE_NAME = "Save Name: "..character.saveName
             local TEXT_CREDIT = "Credit: "..character.credit
             local TEXT_DESCRIPTION_TABLE = character.description
             local TEXT_COLOR = "Color: R-"..character.color.r..", G-"..character.color.g..", B-"..character.color.b
@@ -561,25 +570,26 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_DEBUGGING, width - textX - djui_hud_measure_text(TEXT_DEBUGGING)*0.3, 55, 0.6)
             djui_hud_set_font(FONT_TINY)
             djui_hud_print_text(TEXT_NAME, width - x + 8, 72, 0.6)
-            djui_hud_print_text(TEXT_CREDIT, width - x + 8, 81, 0.6)
-            djui_hud_print_text(TEXT_DESCRIPTION_SHORT, width - x + 8, 90, 0.6)
+            djui_hud_print_text(TEXT_SAVE_NAME, width - x + 8, 81, 0.6)
+            djui_hud_print_text(TEXT_CREDIT, width - x + 8, 90, 0.6)
+            djui_hud_print_text(TEXT_DESCRIPTION_SHORT, width - x + 8, 99, 0.6)
             local removeLine = 0
             for i = 1, #TEXT_DESCRIPTION_TABLE do
                 if TEXT_DESCRIPTION_TABLE[i] ~= "" then
-                    djui_hud_print_text(TEXT_DESCRIPTION_TABLE[i], width - x + 12, 92 + (i-removeLine)*7, 0.5)
+                    djui_hud_print_text(TEXT_DESCRIPTION_TABLE[i], width - x + 12, 101 + (i-removeLine)*7, 0.5)
                 else
                     removeLine = removeLine + 1
                 end
             end
             local descriptionOffset = (#TEXT_DESCRIPTION_TABLE - removeLine) * 7
-            djui_hud_print_text(TEXT_COLOR, width - x + 8, 100 + descriptionOffset, 0.6)
-            djui_hud_print_text(TEXT_LIFE_ICON.."    ("..TEX_ICON.width.."x"..TEX_ICON.height..")", width - x + 8, 109 + descriptionOffset, 0.6)
+            djui_hud_print_text(TEXT_COLOR, width - x + 8, 109 + descriptionOffset, 0.6)
+            djui_hud_print_text(TEXT_LIFE_ICON.."    ("..TEX_ICON.width.."x"..TEX_ICON.height..")", width - x + 8, 118 + descriptionOffset, 0.6)
             djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_render_texture(TEX_ICON, width - x + 38, 110 + descriptionOffset, 0.5/(TEX_ICON.width/16), 0.5/(TEX_ICON.height/16))
+            djui_hud_render_texture(TEX_ICON, width - x + 38, 119 + descriptionOffset, 0.5/(TEX_ICON.width/16), 0.5/(TEX_ICON.height/16))
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_print_text(TEXT_FORCED_CHAR..defaultForceChar[character.forceChar], width - x + 8, 118 + descriptionOffset, 0.6)
-            djui_hud_print_text(TEXT_TABLE_POS..currChar, width - x + 8, 127 + descriptionOffset, 0.6)
-            djui_hud_print_text(TEX_SCALE, width - x + 8, 136 + descriptionOffset, 0.6)
+            djui_hud_print_text(TEXT_FORCED_CHAR..defaultForceChar[character.forceChar], width - x + 8, 127 + descriptionOffset, 0.6)
+            djui_hud_print_text(TEXT_TABLE_POS..currChar, width - x + 8, 136 + descriptionOffset, 0.6)
+            djui_hud_print_text(TEX_SCALE, width - x + 8, 145 + descriptionOffset, 0.6)
             djui_hud_print_text(TEXT_PREF, width - x + 8, height - 27, 0.6)
             djui_hud_print_text(TEXT_PREF_COLOR, width - x + 8, height - 18, 0.6)
         end

@@ -42,6 +42,9 @@ local saveableCharacters = {
     ["_"] = true,
     ["-"] = true,
     ["."] = true,
+
+    -- Replace with Underscore
+    [" "] = false,
 }
 
 function string_underscore_to_space(string)
@@ -63,7 +66,7 @@ function string_space_to_underscore(string)
         local c = string:sub(i,i)
         if saveableCharacters[string.lower(c)] then
             s = s .. c
-        else
+        elseif saveableCharacters[string.lower(c)] ~= nil then
             s = s .. "_"
         end
     end
