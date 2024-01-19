@@ -24,7 +24,8 @@ local type = type
 ---@return integer
 local function character_add(name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
     table_insert(characterTable, {
-        name = name and string_space_to_underscore(name) or "Untitled",
+        name = name and name or "Untitled",
+        saveName = name and string_space_to_underscore(name) or "Untitled",
         description = description and description or {"No description has been provided"},
         credit = credit and credit or "Unknown",
         color = color and color or {r = 255, g = 255, b = 255},

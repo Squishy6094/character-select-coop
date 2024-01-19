@@ -25,6 +25,7 @@ local TEXT_PREF_LOAD = "Default"
 characterTable = {
     [1]  = {
         name = "Default",
+        saveName = "Default",
         description = {"The vanilla cast for sm64ex-coop!", "", "These Characters are swappable", "via the default Options Menu"},
         credit = "Nintendo / Coop Team",
         color = {r = 255, g = 50, b = 50},
@@ -133,6 +134,13 @@ local menuColorTable = {
 }
 
 -- Default Player Adjustments
+local defaultNames = {
+    [CT_MARIO] = "Mario",
+    [CT_LUIGI] = "Luigi",
+    [CT_TOAD] = "Toad",
+    [CT_WALUIGI] = "Waluigi",
+    [CT_WARIO] = "Wario",
+}
 local defaultPlayerColors = {
     [CT_MARIO] = menuColorTable[1],
     [CT_LUIGI] = menuColorTable[4],
@@ -140,12 +148,12 @@ local defaultPlayerColors = {
     [CT_WALUIGI] = menuColorTable[7],
     [CT_WARIO] = menuColorTable[3],
 }
-local forceCharTable = {
+local defaultForceChar = {
     [CT_MARIO] = "CT_MARIO",
     [CT_LUIGI] = "CT_LUIGI",
     [CT_TOAD] = "CT_TOAD",
-    [CT_WARIO] = "CT_WARIO",
     [CT_WALUIGI] = "CT_WALUIGI",
+    [CT_WARIO] = "CT_WARIO",
 }
 local defaultIcons = {
     [CT_MARIO] = gTextures.mario_head,
@@ -199,8 +207,9 @@ local prefCharColor = defaultPlayerColors[CT_MARIO]
 
 local function load_preferred_char()
     if mod_storage_load("PrefChar") ~= nil and mod_storage_load("PrefChar") ~= "Default" then
+        local savedChar = mod_storage_load("PrefChar")
         for i = 2, #characterTable do
-            if characterTable[i].name == mod_storage_load("PrefChar") then
+            if characterTable[i].saveName == savedChar then
                 currChar = i
                 if optionTable[optionTableRef.localModels].toggle == 1 then
                     if optionTable[optionTableRef.notification].toggle > 0 then
@@ -233,9 +242,9 @@ local function load_preferred_char()
 end
 
 local function mod_storage_save_pref_char(charTable)
-    mod_storage_save("PrefChar", charTable.name)
+    mod_storage_save("PrefChar", charTable.saveName)
     mod_storage_save("PrefCharColor", tostring(charTable.color.r).."_"..tostring(charTable.color.g).."_"..tostring(charTable.color.b))
-    TEXT_PREF_LOAD = charTable.name
+    TEXT_PREF_LOAD = charTable.saveName
     prefCharColor = charTable.color
 end
 
@@ -323,6 +332,7 @@ local function mario_update(m)
         local modelIndex = gNetworkPlayers[m.playerIndex].modelIndex
         characterTable[1].forceChar = modelIndex
         if currChar == 1 then
+            characterTable[1].name = defaultNames[modelIndex]
             characterTable[1].color = defaultPlayerColors[modelIndex]
             characterTable[1].lifeIcon = defaultIcons[modelIndex]
             characterTable[1].camScale = defaultCamScales[modelIndex]
@@ -567,7 +577,7 @@ local function on_hud_render()
             djui_hud_set_color(255, 255, 255, 255)
             djui_hud_render_texture(TEX_ICON, width - x + 38, 110 + descriptionOffset, 0.5/(TEX_ICON.width/16), 0.5/(TEX_ICON.height/16))
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_print_text(TEXT_FORCED_CHAR..forceCharTable[character.forceChar], width - x + 8, 118 + descriptionOffset, 0.6)
+            djui_hud_print_text(TEXT_FORCED_CHAR..defaultForceChar[character.forceChar], width - x + 8, 118 + descriptionOffset, 0.6)
             djui_hud_print_text(TEXT_TABLE_POS..currChar, width - x + 8, 127 + descriptionOffset, 0.6)
             djui_hud_print_text(TEX_SCALE, width - x + 8, 136 + descriptionOffset, 0.6)
             djui_hud_print_text(TEXT_PREF, width - x + 8, height - 27, 0.6)

@@ -41,6 +41,7 @@ local saveableCharacters = {
     ["z"] = true,
     ["_"] = true,
     ["-"] = true,
+    ["."] = true,
 }
 
 function string_underscore_to_space(string)
