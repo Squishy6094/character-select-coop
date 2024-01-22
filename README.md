@@ -9,7 +9,7 @@
 ⭐[Download Here](https://github.com/Squishy6094/character-select-coop/releases)⭐
 
 ## Packs
-We'll keep an archive of all user-made packs here, as well as our packs included with the initial release!
+We'll keep an archive of all Community Made packs here, as well as our packs included with our initial/future releases!
 
 - [Pizizito's Pizza Tower Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-pizza-tower-pack.zip) - Pizizito
 - [Furry Friends Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-furry-friends.zip) - AngelicMiracles
@@ -33,4 +33,4 @@ To install and load a pack, Extract the pack into your mods folder and turn it o
 
  [Squishy's Server | Discord Server](https://discord.gg/2bg2FnFp6f) - Full Help and Support for those who need it!
 
- [sm64ex-coop](https://github.com/djoslin0/sm64ex-coop) - the repo for sm64ex-coop, the sm64ex fork this mod was built for!
+ [sm64coopdx](https://github.com/coop-deluxe/sm64coopdx) - The Repository for sm64coopdx, Which this mod was partially made for!
