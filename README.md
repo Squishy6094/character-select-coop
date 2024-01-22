@@ -19,6 +19,7 @@ We'll keep an archive of all user-made packs here, as well as our packs included
 - [Extra Characters](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-extra-chars.zip) (Toadette) - Coop DX Team
 - [Birdo Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-birdo.zip) - Melzinoff
 - [Dry-Bones Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-drybones.zip) - Wibblus
+- [Bowser Jr.](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-bowserjr.zip) - Wibblus
 - [Peter Griffin](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-peter-griffin.zip) - Trashcam
 - [Uncle Grandpa](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-uncle-grandpa.zip) - Garlicker
 - [Yumi Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-yumi.zip) - Frijoles Y Queso
