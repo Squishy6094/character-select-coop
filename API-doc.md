@@ -8,42 +8,18 @@ A variable checking if the Mod is active, this is useful for preventing script e
 Example: `if not _G.charSelectExists then return end`
 
 ## _G.charSelect.character_add()
-A function that Adds a Character to the Character Table, has 6 inputs:
+A function that Adds a Character to the Character Table, has 8 inputs:
 
-### Name:
-String (Spaces replace Underscores when Displaying)
-
-Example `"Custom Model"`
-
-### Description:
-Table containing Strings (Recommended 30-33 letters per string)
-
-Example `{"Custom Description", "Custom Description"}`
-
-### Credit:
-String
-
-Example: `Custom Model Creator`
-
-### Color:
-Table containing variables r, g, and b. Colors use Decimal Format
-
-Example: `{r = 255, g = 150, b = 150}`
-
-### Model Info:
-Model Information Received from `smlua_model_util_get_id()`
-
-Example: `smlua_model_util_get_id("armature_geo")`
-
-### Forced Character
-Character Type, Inputs can be `CT_MARIO`, `CT_LUIGI`, `CT_TOAD`, `CT_WALUIGI`, `CT_WARIO`
-
-Example: `CT_MARIO`
-
-### Life Icon
-Texture Information Recieved from `get_texture_info()`
-
-Example: `get_texture_info("armature_icon")`
+| Variable Name | Valid Input Types | Extra Info | Example |
+| ------------- | ------------ | ---------- | ------- |
+| Name | string | Save Name will not contain Special Characters | `"Custom Model"` |
+| Description | table | Table containing Strings (Recommended 30-33 letters per string) | `{"Custom Description", "Custom Description"}` |
+| Credit | string |  | `"Custom Model Creator"` |
+| Color | table | Table containing variables `r`, `g`, and `b`. Colors use Decimal Format | `{r = 255, g = 150, b = 150}` |
+| Model Info | ModelExtendedId | Model Information Received from `smlua_model_util_get_id()` | `smlua_model_util_get_id("armature_geo")` |
+| Forced Character | CharacterType | Character Type, Inputs can be `CT_MARIO`, `CT_LUIGI`, `CT_TOAD`, `CT_WALUIGI`, `CT_WARIO` | `CT_MARIO` |
+| Life Icon | TextureInfo | Texture Information Recieved from `get_texture_info()` | `get_texture_info("armature_icon")` |
+| Camera Scale | integer | Zooms the camera based on a multiplier (Default 1.0) | `1.2` |
 
 ### Full Example:
 ```lua
@@ -55,13 +31,10 @@ Note that any of these fields can be left as `nil`, and Character Select will fi
 ## _G.charSelect.character_add_voice()
 A function that adds a voice to a character, has 2 inputs
 
-### Model Info:
-Model Information Received from `smlua_model_util_get_id()`
-
-Example: `smlua_model_util_get_id("armature_geo")`
-
-### Sound Clip Table:
-A table with your character's sound file names
+| Variable Name | Valid Input Types | Extra Info | Example |
+| ------------- | ------------ | ---------- | ------- |
+| Model Info | ModelExtendedId | Model Information Received from `smlua_model_util_get_id()` | `smlua_model_util_get_id("armature_geo")` |
+| Sound Clip Table | table | A Table with your Character's Sound File Names (Table Shown Below) | `VOICETABLE_CHAR` |
 
 Table Example:
 ```lua
@@ -96,9 +69,6 @@ local VOICETABLE_CHAR = {
 ```
 Refer to [sm64ex-coop's CharacterSound Constants](https://github.com/djoslin0/sm64ex-coop/blob/coop/docs/lua/constants.md#enum-charactersound) for all replaceable sounds
 
-Input Example:
-`VOICETABLE_CHAR`
-
 ### Required Code:
 In order for voice clips to work functionally, you require the following code in your script:
 ```lua
@@ -124,18 +94,17 @@ hook_event(HOOK_MARIO_UPDATE, function (m)
 end)
 ```
 
-Examples of these can be found in [Character Select Template with Voice](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template-w-voice.zip)
+Examples of these can be found in the [Character Select Template](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template.zip)
 
 ## _G.charSelect.character_add_caps()
 A function that adds caps to a character, has 2 inputs
 
-### Model Info:
-Model Information Received from `smlua_model_util_get_id()`
+| Variable Name | Valid Input Types | Extra Info | Example |
+| ------------- | ------------ | ---------- | ------- |
+| Model Info | ModelExtendedId | Model Information Received from `smlua_model_util_get_id()` | `smlua_model_util_get_id("armature_geo")` |
+| Cap Table | table | A Table with your Character's Cap Models (Table Shown Below) | `capModels` |
 
-### Cap Table:
-A table with your character's cap models
-
-Example:
+Table Example:
 ```lua
 local capModels = {
     normal = smlua_model_util_get_id("armature_normal_cap_geo"),
@@ -143,19 +112,22 @@ local capModels = {
     metal = smlua_model_util_get_id("armature_metal_cap_geo"),
     metalWing = smlua_model_util_get_id("armature_metal_wing_cap_geo")
 }
-
-_G.charSelect.character_add_caps(E_MODEL_ARMATURE, capModels)
 ```
 
 ## _G.charSelect.character_edit()
-A function that Edits an Existing Character, has 7 inputs
+A function that Edits an Existing Character, has 1 unique input, all other inputs mimick [`_G.charSelect.character_add()`](/API-doc.md#_gcharselectcharacter_add)
 
-### Original Character Number:
-The Number of the Character you want to edit, this can be found using `_G.charSelect.character_get_number_from_string()`
-
-Example: `_G.charSelect.character_get_number_from_string("Custom Model")`
-
-**All 6 other inputs are the same as [`_G.charSelect.character_add()`](/API-doc.md#_gcharselectcharacter_add)**
+| Variable Name | Valid Input Types | Extra Info | Example |
+| ------------- | ------------ | ---------- | ------- |
+| Original Character Number | integer | The number/table position of the Character you want to edit, this can be found using `_G.charSelect.character_get_number_from_string()` or making a variable equal `_G.charSelect.character_add()` | `_G.charSelect.character_get_number_from_string("Custom Model")` |
+| Name | string | Save Name will not contain Special Characters | `"Custom Model"` |
+| Description | table | Table containing Strings (Recommended 30-33 letters per string) | `{"Custom Description", "Custom Description"}` |
+| Credit | string |  | `"Custom Model Creator"` |
+| Color | table | Table containing variables `r`, `g`, and `b`. Colors use Decimal Format | `{r = 255, g = 150, b = 150}` |
+| Model Info | ModelExtendedId | Model Information Received from `smlua_model_util_get_id()` | `smlua_model_util_get_id("armature_geo")` |
+| Forced Character | CharacterType | Character Type, Inputs can be `CT_MARIO`, `CT_LUIGI`, `CT_TOAD`, `CT_WALUIGI`, `CT_WARIO` | `CT_MARIO` |
+| Life Icon | TextureInfo | Texture Information Recieved from `get_texture_info()` | `get_texture_info("armature_icon")` |
+| Camera Scale | integer | Zooms the camera based on a multiplier (Default 1.0) | `1.2` |
 
 ## _G.charSelect.character_get_current_table()
 A function that returns the Current Character's Table, can be used to get name, texture, etc.
@@ -205,14 +177,16 @@ A function that returns the status of an inputted value relative to the option t
 
 Inputs can be the following:
 ```
-_G.charSelect.optionTableRef.openInputs    (1)
-_G.charSelect.optionTableRef.menuColor     (2)
-_G.charSelect.optionTableRef.anims         (3)
-_G.charSelect.optionTableRef.inputLatency  (4)
-_G.charSelect.optionTableRef.localModels   (5)
-_G.charSelect.optionTableRef.prefToDefault (6)
+_G.charSelect.optionTableRef.openInputs = 1
+_G.charSelect.optionTableRef.notification = 2
+_G.charSelect.optionTableRef.menuColor = 3
+_G.charSelect.optionTableRef.anims = 4
+_G.charSelect.optionTableRef.inputLatency = 5
+_G.charSelect.optionTableRef.localModels = 6
+_G.charSelect.optionTableRef.localVoices = 7
+_G.charSelect.optionTableRef.prefToDefault = 8
+_G.charSelect.optionTableRef.debugInfo = 9
 ```
-
 ## _G.charSelect.character_get_voice()
 Returns the current character's Voicetable, Primarily when hooking a character's voice
 
