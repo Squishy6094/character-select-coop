@@ -526,7 +526,6 @@ local function on_hud_render()
             if djui_hud_measure_text(string_underscore_to_space(TEXT_PREF_LOAD)) / widthScale > 164 then
                 TEXT_PREF = "Pref Char:"
             end
-            djui_chat_message_create(tostring(djui_hud_measure_text(string_underscore_to_space(TEXT_PREF_LOAD))/ widthScale))
             TEXT_PREF = TEXT_PREF..' "'..string_underscore_to_space(TEXT_PREF_LOAD)..'"'
 
             local textX = x * 0.5
