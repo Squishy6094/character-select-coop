@@ -331,8 +331,8 @@ local function mario_update(m)
     if m.playerIndex == 0 and stallFrame > 1 then
         local modelIndex = gNetworkPlayers[m.playerIndex].modelIndex
         characterTable[1].forceChar = modelIndex
+        characterTable[1].name = defaultNames[modelIndex]
         if currChar == 1 then
-            characterTable[1].name = defaultNames[modelIndex]
             characterTable[1].color = defaultPlayerColors[modelIndex]
             characterTable[1].lifeIcon = defaultIcons[modelIndex]
             characterTable[1].camScale = defaultCamScales[modelIndex]
@@ -563,7 +563,7 @@ local function on_hud_render()
             local TEX_ICON = character.lifeIcon
             local TEX_SCALE = "Camera Scale: "..character.camScale
             local TEXT_PREF = "Preferred: "..TEXT_PREF_LOAD
-            local TEXT_PREF_COLOR = "Preferred Color: R-"..prefCharColor.r..", G-"..prefCharColor.g..", B-"..prefCharColor.b
+            local TEXT_PREF_COLOR = "Pref Color: R-"..prefCharColor.r..", G-"..prefCharColor.g..", B-"..prefCharColor.b
 
             local textX = x * 0.5
             djui_hud_print_text(TEXT_DEBUGGING, width - textX - djui_hud_measure_text(TEXT_DEBUGGING)*0.3, 55, 0.6)
@@ -978,7 +978,7 @@ local function chat_command(msg)
         -- Name Check
         msg = string_lower(msg)
         for i = 1, #characterTable do
-            if msg == string_underscore_to_space(string_lower(characterTable[i].name)) or msg == string_lower(characterTable[i].name) then
+            if msg == string_lower(characterTable[i].name) or msg == string_lower(characterTable[i].name) or string_underscore_to_space(string_lower(characterTable[i].saveName)) then
                 currChar = i
                 djui_chat_message_create('Character set to "'..characterTable[i].name..'" Successfully!')
                 return true
