@@ -25,6 +25,7 @@ We'll keep an archive of all Community Made packs here, as well as our packs inc
 - [VL-Tone & Cjes Luigi](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-cjes-and-vl.zip) - Coop DX Team
 - [Extra Characters](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-extra-chars.zip) (Toadette) - Coop DX Team
 - [Birdo Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-birdo.zip) - Melzinoff
+- [Paper Goombas & Koopas](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-paper-goombas-and-koopas.zip) - Melzinoff
 - [Dry-Bones Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-drybones.zip) - Wibblus
 - [Bowser Jr.](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-bowserjr.zip) - Wibblus
 - [Peter Griffin](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-peter-griffin.zip) - Trashcam
