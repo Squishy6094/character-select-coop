@@ -251,7 +251,7 @@ end
 
 local function failsafe_options()
     for i = 1, #optionTable do
-        if optionTable[i].toggle == nil then
+        if optionTable[i].toggle == nil or optionTable[i].toggle == "" then
             optionTable[i].toggle = optionTable[i].toggleDefault
             if optionTable[i].toggleSaveName ~= nil then
                 mod_storage_save(optionTable[i].toggleSaveName, tostring(optionTable[i].toggle))
@@ -261,10 +261,8 @@ local function failsafe_options()
             optionTable[i].toggleNames = {"Off", "On"}
         end
     end
-    if optionTable[optionTableRef.openInputs].toggle == 1 and ommActive then
-        if optionTable[optionTableRef.notification].toggle > 0 then
-            djui_popup_create('Character Select:\nYour Open bind has changed to:\nD-pad Down + R\nDue to OMM Rebirth being active!', 4)
-        end
+    if optionTable[optionTableRef.openInputs].toggle > 0 and ommActive then
+        djui_popup_create('Character Select:\nYour Open bind has changed to:\nD-pad Down + R\nDue to OMM Rebirth being active!', 4)
     end
 end
 
