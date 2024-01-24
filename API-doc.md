@@ -1,6 +1,6 @@
 # Character Select API Documentation
 ### Gives full descriptions of all API functions
-We highly recommend messing around with our [Character Select Template](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template.zip) while first reading this doc to get a handle on everything here. And DO NOT modify/add any content within the Character Select mod itself, please use the API and an individual mod when adding characters.
+We highly recommend messing around with our [Character Select Template](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template.zip) while first reading this doc to get a handle on everything here. And DO NOT modify/add any content within the Character Select mod itself, please use the API and an individual mod when adding characters. If you're confused about anything from outside of the Documentation, Please refer to [SM64CoopDX's Lua Doumentation](https://github.com/coop-deluxe/sm64coopdx/blob/main/docs/lua/lua.md).
 
 ## _G.charSelectExists
 A variable checking if the Mod is active, this is useful for preventing script errors when the mod isn't on.
@@ -67,7 +67,7 @@ local VOICETABLE_CHAR = {
     [CHAR_SOUND_YAWNING] = 'NES-Pause.ogg',
 }
 ```
-Refer to [sm64ex-coop's CharacterSound Constants](https://github.com/djoslin0/sm64ex-coop/blob/coop/docs/lua/constants.md#enum-charactersound) for all replaceable sounds
+Refer to [SM64CoopDX's Character Sound Constants](https://github.com/djoslin0/sm64ex-coop/blob/coop/docs/lua/constants.md#enum-charactersound) for all replaceable sounds
 
 ### Required Code:
 In order for voice clips to work functionally, you require the following code in your script:
@@ -94,7 +94,7 @@ hook_event(HOOK_MARIO_UPDATE, function (m)
 end)
 ```
 
-Examples of these can be found in the [Character Select Template](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template.zip)
+Examples of these can be found in the [Character Select Template](https://github.com/coop-deluxe/sm64coopdx/blob/main/docs/lua/constants.md#enum-CharacterSound)
 
 ## _G.charSelect.character_add_caps()
 A function that adds caps to a character, has 2 inputs
@@ -228,3 +228,32 @@ This function doesn't loop due to the `unlockableCharPlacement` being set, thus 
 A character can have a muted voice by having their input table be `nil`, This can be hooked as usual causing no voicelines to play
 
 Example: `VOICETABLE_CHAR = {nil}`
+
+## Character Movesets
+A Character can have a Moveset Linked directly by looking for if the character is in use. This can be done by seeing if the current character is the desired character, then storing a `true` or a `false` to a Player Sync Table.
+
+Example:
+```lua
+local myCharPlacement = _G.charSelect.character_get_number_from_string("Custom Model")
+
+local function mario_update(m)
+    if m.playerIndex == 0 then
+        if myCharPlacement == _G.charSelect.character_get_current_model_number() then
+            gPlayerSyncTable[m.playerIndex].charMoveset = true
+        else
+            gPlayerSyncTable[m.playerIndex].charMoveset = false
+        end
+    end
+
+    if gPlayerSyncTable[m.playerIndex].charMoveset then
+        -- Moveset Code Here
+    end
+end
+```
+
+If a character already has a command to turn on their moveset, ensure that you remove it when Character Select is Active to prevent bugs.
+```lua
+if not _G.charSelectExists then
+    hook_chat_command("custom-char", "Example", not_real_command_function)
+end
+```
