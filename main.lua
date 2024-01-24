@@ -206,8 +206,8 @@ end
 local prefCharColor = defaultPlayerColors[CT_MARIO]
 
 local function load_preferred_char()
-    if mod_storage_load("PrefChar") ~= nil and mod_storage_load("PrefChar") ~= "Default" then
-        local savedChar = mod_storage_load("PrefChar")
+    local savedChar = mod_storage_load("PrefChar")
+    if savedChar ~= nil and savedChar ~= "Default" then
         for i = 2, #characterTable do
             if characterTable[i].saveName == savedChar then
                 currChar = i
@@ -219,15 +219,16 @@ local function load_preferred_char()
                 break
             end
         end
-    elseif mod_storage_load("PrefChar") == nil then
+    elseif savedChar == nil then
         mod_storage_save("PrefChar", "Default")
     end
-    if mod_storage_load("PrefCharColor") ~= "" then
-        local loadColors = string_split(string_underscore_to_space(mod_storage_load("PrefCharColor")))
+    local savedCharColors = mod_storage_load("PrefCharColor")
+    if savedCharColors ~= nil and savedCharColors ~= "" then
+        local savedCharColorsTable = string_split(string_underscore_to_space(savedCharColors))
         prefCharColor = {
-            r = tonumber(loadColors[1]),
-            g = tonumber(loadColors[2]),
-            b = tonumber(loadColors[3])
+            r = tonumber(savedCharColorsTable[1]),
+            g = tonumber(savedCharColorsTable[2]),
+            b = tonumber(savedCharColorsTable[3])
         }
     else
         mod_storage_save("PrefCharColor", "255_50_50")
@@ -238,7 +239,7 @@ local function load_preferred_char()
             djui_popup_create("Character Select:\nNo Characters were Found", 2)
         end
     end
-    TEXT_PREF_LOAD = mod_storage_load("PrefChar")
+    TEXT_PREF_LOAD = savedChar
 end
 
 local function mod_storage_save_pref_char(charTable)
