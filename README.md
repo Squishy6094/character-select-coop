@@ -1,12 +1,12 @@
 # Character Select
 
- A Mod for sm64ex-coop acting as an overall Skin Selector! With an Extensive API and tons of Support!
+### A Mod for sm64ex-coop acting as an overall Skin Selector! With an Extensive API and tons of Support!
 
- ![menu-preview](images/menu-preview.png)
-
+ <img src="images/menu-preview.png"> <!--width=""-->
+ 
  Our main goal is to make Character Creation on Lua's end as simple as possible, and to move away from the old Skin Pack mod people keep copying and pasting. With this goal in mind, we tried to make everything as streamlined as possible throughout the character addition process, while allowing for tons of customizability!
 
-⭐ [Download Here](https://github.com/Squishy6094/character-select-coop/releases) ⭐
+### ⭐ [Download Here](https://github.com/Squishy6094/character-select-coop/releases) ⭐
 
 ## Resources
  [API Documentation](API-doc.md) - Gives Full Info on the Character Select's API, Including a Model Template
