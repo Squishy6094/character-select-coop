@@ -1,6 +1,6 @@
 # Character Select
 
-### A Mod for sm64ex-coop acting as an overall Skin Selector! With an Extensive API and tons of Support!
+### A Mod for Super Mario 64 Coop Deluxe acting as an overall Model Selector! With an Extensive API and tons of Support!
 
  <img src="images/menu-preview.png"> <!--width=""-->
  
