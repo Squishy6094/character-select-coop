@@ -5,6 +5,7 @@ local E_MODEL_PEPPERMAN = smlua_model_util_get_id("pepperman_geo")
 local E_MODEL_VIGILANTE = smlua_model_util_get_id("vigilante_geo")
 local E_MODEL_NOISE = smlua_model_util_get_id("noise_geo")
 local E_MODEL_FAKE_PEPPINO = smlua_model_util_get_id("fake_peppino_geo")
+local E_MODEL_GUSTAVO = smlua_model_util_get_id("gustavo_geo")
 local E_MODEL_PIZZELLE = smlua_model_util_get_id("pizzelle_geo")
 local E_MODEL_PIZZANO = smlua_model_util_get_id("pizzano_geo")
 
@@ -121,6 +122,7 @@ if _G.charSelectExists then
     _G.charSelect.character_add("Vigilante", {"The Lone Sherrif of Pizza Tower's", "Second Floor"}, "Pizizito", {r = 176, g = 48, b = 0}, E_MODEL_VIGILANTE, CT_MARIO, TEX_VIGILANTE)
     _G.charSelect.character_add("The Noise", {"The Mischievous Gremlin and", "Entertainment of Pizza Tower's", "Third Floor"}, "Pizizito", {r = 216, g = 136, b = 24}, E_MODEL_NOISE, CT_TOAD, TEX_NOISE)
     _G.charSelect.character_add("Fake Peppino", {"roolF htruoF", "s'rewoT azziP fo enolC onippeP ehT"}, "Pizizito", {r = 253, g = 167, b = 134}, E_MODEL_FAKE_PEPPINO, CT_WALUIGI, TEX_FAKE_PEPPINO)
+    _G.charSelect.character_add("Gustavo", nil, "Pizizito", {r = 176, g = 48, b = 0}, E_MODEL_GUSTAVO, CT_MARIO, nil)
     _G.charSelect.character_add("Pizzelle", {"A Candy Maker Looting", "The Sugary Spire"}, "Pizizito", {r = 255, g = 255, b = 255}, E_MODEL_PIZZELLE, CT_TOAD, TEX_PIZZELLE)
     _G.charSelect.character_add("Pizzano", {"An immature, eccentric, and", "occasionally rather violent", "TV network host of", "The Sugary Spire"}, "Pizizito", {r = 75, g = 160, b = 253}, E_MODEL_PIZZANO, CT_WARIO, TEX_PIZZANO)
 
