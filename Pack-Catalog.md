@@ -1,8 +1,28 @@
 # Pack Catalog
 
-Here you can browse almost every Community Made Pack made for Character Select, This page acts as both a Catalog and a Archive and will be updated with any new packs we become aware of!
+Here you can browse almost every Community Made Pack made for Character Select, This page acts as both a Catalog and an Archive and will be updated with any new packs we become aware of!
 
-- [Pizizito's Pizza Tower Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-pizza-tower-pack.zip) - Pizizito
+## Pizizito's Pizza Tower Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-pizza-tower-pack.zip)
+
+<img src="images/pack-preview-pizza-tower-pack.png" width="480">
+
+A handful of Pizza Tower/Sugary Spire Characters in Super Mario 64!
+
+- Creators
+  - Pizizito - Models
+  - KitKat - HUD Icons
+  - Tour de Pizza - Character Sounds
+  - Sugary Spire Team - Character Sounds
+- Characters
+  - Pepperman
+  - Vigilante
+  - The Noise
+  - Fake Peppino
+  - Pizzelle
+  - Pizzano
+
+
+
 - [Furry Friends Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-furry-friends.zip) - AngelicMiracles
 - [Squid Sisters](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-squid-sisters.zip) - Frijoles Y Queso
 - [Blue Archive Characters](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-blue-archive.zip) - HerosLight
