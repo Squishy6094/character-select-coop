@@ -4,15 +4,13 @@ Here you can browse almost every Community Made Pack made for Character Select, 
 
 ## Pizizito's Pizza Tower Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-pizza-tower-pack.zip)
 
-<img src="images/pack-preview-pizza-tower-pack.png" width="480">
+<img src="images/pack-preview-none.png" height="300">
 
 A handful of Pizza Tower/Sugary Spire Characters in Super Mario 64!
 
-- Creators
-  - Pizizito
-  - KitKat
-  - Tour de Pizza
-  - Sugary Spire Team
+- Creator(s)
+  - Pizizito (Models)
+  - KitKat (HUD Icons)
 - Characters
   - Pepperman
   - Vigilante
@@ -21,13 +19,60 @@ A handful of Pizza Tower/Sugary Spire Characters in Super Mario 64!
   - Pizzelle
   - Pizzano
 
+## Furry Friends Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-furry-friends.zip)
 
+<img src="images/pack-preview-none.png" height="300">
 
-[Furry Friends Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-furry-friends.zip) - AngelicMiracles
+A Pack the features characters/sonas of Yuyake's Friends, including Yuyake Himself!
 
-[Squid Sisters](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-squid-sisters.zip) - Frijoles Y Queso
+- Creator(s)
+  - AngelicMiracles
+- Characters
+  - Yuyake
+  - Brianna
+  - Veph
+  - Dirk
+  - Bradly
+  - Mina
+  - Kuma
+  - Skipper
+ 
+## Squid Sisters - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-squid-sisters.zip)
 
-[Blue Archive Characters](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-blue-archive.zip) - HerosLight
+<img src="images/pack-preview-none.png" height="300">
+
+Splatoon's Callie & Marie in SM64! Includes Full Color Support and Eye States!
+
+- Creator(s)
+  - frijoles.z64
+- Characters
+  - Callie
+  - Marie
+
+## Blue Archive Characters - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-blue-archive.zip)
+
+<img src="images/pack-preview-none.png" height="300">
+
+No Description Yet
+
+- Creator(s)
+  - HerosLight
+- Characters
+  - Midori
+  - Yuzu
+  - Alice/Aris
+  - Fubuki
+  - Mari
+  - Mari (Sportswear)
+  - Kazusa
+  - Reisa
+  - Kokona
+  - Himari
+  - Izuna
+  - Tsukuyo
+  - Michiru
+  - Hina
+  - Yuuka
 
 [VL-Tone & Cjes Luigi](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-cjes-and-vl.zip) - Coop DX Team
 
