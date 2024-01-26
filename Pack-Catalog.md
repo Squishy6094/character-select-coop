@@ -2,9 +2,12 @@
 
 Here you can browse almost every Community Made Pack made for Character Select, This page acts as both a Catalog and an Archive and will be updated with any new packs we become aware of!
 
+### Pack Installation
+To install and load a pack, Extract the pack into your mods folder and turn it on as if it were an individual mod. Most if not All in-game pack names are prefixed with "[CS]" and will likely be found at the end of your mod list.
+
 ## Pizizito's Pizza Tower Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-pizza-tower-pack.zip)
 
-<img src="images/pack-preview-none.png" height="300">
+<img src="images/pack-preview-none.png" width="480">
 
 A handful of Pizza Tower/Sugary Spire Characters in Super Mario 64!
 
@@ -21,7 +24,7 @@ A handful of Pizza Tower/Sugary Spire Characters in Super Mario 64!
 
 ## Furry Friends Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-furry-friends.zip)
 
-<img src="images/pack-preview-none.png" height="300">
+<img src="images/pack-preview-none.png" width="480">
 
 A Pack the features characters/sonas of Yuyake's Friends, including Yuyake Himself!
 
@@ -39,19 +42,30 @@ A Pack the features characters/sonas of Yuyake's Friends, including Yuyake Himse
  
 ## Squid Sisters - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-squid-sisters.zip)
 
-<img src="images/pack-preview-none.png" height="300">
+<img src="images/pack-preview-none.png" width="480">
 
 Splatoon's Callie & Marie in SM64! Includes Full Color Support and Eye States!
 
 - Creator(s)
-  - frijoles.z64
+  - Frijoles Y Queso
 - Characters
   - Callie
   - Marie
 
+## Yumi Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-yumi.zip)
+
+<img src="images/pack-preview-none.png" width="480">
+
+A girl from New York, I wonder what she's doing here?
+
+- Creator(s)
+  - Frijoles Y Queso
+- Characters
+  - Yumi
+
 ## Blue Archive Characters - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-blue-archive.zip)
 
-<img src="images/pack-preview-none.png" height="300">
+<img src="images/pack-preview-none.png" width="480">
 
 No Description Yet
 
@@ -74,27 +88,124 @@ No Description Yet
   - Hina
   - Yuuka
 
-[VL-Tone & Cjes Luigi](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-cjes-and-vl.zip) - Coop DX Team
+## VL-Tone & Cjes Luigi - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-cjes-and-vl.zip)
 
-[Extra Characters](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-extra-chars.zip) (Toadette) - Coop DX Team
+<img src="images/pack-preview-none.png" width="480">
 
-[Birdo Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-birdo.zip) - Melzinoff
+Alternate Luigi Models from way-back-when, Reminiscing of a time before L was Real.
 
-[Paper Goombas & Koopas](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-paper-goombas-and-koopas.zip) - Melzinoff
+- Creator(s)
+  - Coop DX Team
+- Characters
+  - VL-Tone Luigi
+  - Cjes Luigi
 
-[Dry-Bones Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-drybones.zip) - Wibblus
+## Extra Characters - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-extra-chars.zip)
 
-[Bowser Jr.](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-bowserjr.zip) - Wibblus
+<img src="images/pack-preview-none.png" width="480">
 
-[Peter Griffin](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-peter-griffin.zip) - Trashcam
+More characters from the Super Mario series!.
 
-[Uncle Grandpa](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-uncle-grandpa.zip) - Garlicker
+- Creator(s)
+  - Coop DX Team
+- Characters
+  - Toadette
 
-[Yumi Pack](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-yumi.zip) - Frijoles Y Queso
+## Birdo Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-birdo.zip)
 
-[Scott the Woz](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-scott-the-woz.zip) - ArcyThePuppet
+<img src="images/pack-preview-none.png" width="480">
 
-[Geno + Mallow](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-scott-the-woz.zip) - Wibblus & Melzinoff
+Birdo made playable using Character Select :]
 
-### Pack Installation
-To install and load a pack, Extract the pack into your mods folder and turn it on as if it were an individual mod. Most if not All in-game pack names are prefixed with "[CS]" and will likely be found at the end of your mod list.
+- Creator(s)
+  - Melzinoff
+- Characters
+  - Birdo
+
+## Paper Goombas & Koopas - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-paper-goombas-and-koopas.zip)
+
+<img src="images/pack-preview-none.png" width="480">
+
+Famous Goombas and Koopas from the Paper Mario Series :]
+
+- Creator(s)
+  - Melzinoff
+- Characters
+  - Goombella
+  - Goombario
+  - Kooper
+  - Koops
+  - Parakarry
+
+## Geno + Mallow - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-smrpg.zip)
+
+<img src="images/pack-preview-none.png" width="480">
+
+Geno and Mallow made playable with Character Select!
+
+- Creator(s)
+  - Wibblus
+  - Melzinoff
+- Characters
+  - Geno
+  - Mallow
+
+## Dry-Bones Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-drybones.zip)
+
+<img src="images/pack-preview-none.png" width="480">
+
+A Dry Bones Player Model!
+
+- Creator(s)
+  - Wibblus
+- Characters
+  - Dry-Bones
+
+## Bowser Jr. - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-bowserjr.zip)
+
+<img src="images/pack-preview-none.png" width="480">
+
+Bowser Jr is Playable!
+
+- Creator(s)
+  - Wibblus
+- Characters
+  - Bowser Jr.
+
+## Peter Griffin - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-peter-griffin.zip)
+
+<img src="images/pack-preview-none.png" width="480">
+
+It seems today...
+
+- Creator(s)
+  - Trashcam
+- Characters
+  - Peter Griffin
+
+## Uncle Grandpa - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-uncle-grandpa.zip)
+
+<img src="images/pack-preview-none.png" width="480">
+
+Good Morning! Uncle Grandpa in Super Mario 64, Stylized to look 2D and Includes Eye States!
+
+- Creator(s)
+  - Garlicker (Modeling)
+  - Dj Khaled/Wahooo (Importing)
+  - Fbell(Importing)
+  - LuigiGamer(Importing)
+- Characters
+  - Uncle Grandpa
+
+## Scott the Woz - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-scott-the-woz.zip)
+
+<img src="images/pack-preview-none.png" width="480">
+
+Hey all, Scott Here!
+
+- Creator(s)
+  - ArcyThePuppet
+- Characters
+  - Scott The Woz
+
+
