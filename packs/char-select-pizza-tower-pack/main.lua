@@ -118,7 +118,7 @@ local VOICETABLE_PIZZELLE = {
 local TEXT_MOD_NAME = "Pizizito's Pizza Tower Pack"
 
 if _G.charSelectExists then
-    _G.charSelect.character_add("Pepperman", {"The Perfect Pepper of Pizza Tower's", "First Floor"}, "Pizizito", {r = 225, g = 47, b = 0}, E_MODEL_PEPPERMAN, CT_WARIO, TEX_PEPPERMAN)
+    _G.charSelect.character_add("Pepperman", {"The Perfect Pepper of Pizza Tower's", "First Floor"}, "Pizizito", {r = 225, g = 47, b = 0}, E_MODEL_PEPPERMAN, CT_WARIO, TEX_PEPPERMAN--[[, 1.2]])
     _G.charSelect.character_add("Vigilante", {"The Lone Sherrif of Pizza Tower's", "Second Floor"}, "Pizizito", {r = 176, g = 48, b = 0}, E_MODEL_VIGILANTE, CT_MARIO, TEX_VIGILANTE)
     _G.charSelect.character_add("The Noise", {"The Mischievous Gremlin and", "Entertainment of Pizza Tower's", "Third Floor"}, "Pizizito", {r = 216, g = 136, b = 24}, E_MODEL_NOISE, CT_TOAD, TEX_NOISE)
     _G.charSelect.character_add("Fake Peppino", {"roolF htruoF", "s'rewoT azziP fo enolC onippeP ehT"}, "Pizizito", {r = 253, g = 167, b = 134}, E_MODEL_FAKE_PEPPINO, CT_WALUIGI, TEX_FAKE_PEPPINO)
