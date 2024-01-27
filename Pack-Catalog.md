@@ -152,7 +152,7 @@ Geno and Mallow made playable with Character Select!
 
 ## Dry-Bones Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-drybones.zip)
 
-<img src="images/pack-preview-none.png" width="480">
+<img src="images/pack-preview-drybones.png" width="480">
 
 A Dry Bones Player Model!
 
@@ -163,7 +163,7 @@ A Dry Bones Player Model!
 
 ## Bowser Jr. - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-bowserjr.zip)
 
-<img src="images/pack-preview-none.png" width="480">
+<img src="images/pack-preview-bowserjr.png" width="480">
 
 Bowser Jr is Playable!
 
