@@ -113,7 +113,7 @@ More characters from the Super Mario series!.
 
 ## Birdo Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-birdo.zip)
 
-<img src="images/pack-preview-none.png" width="480">
+<img src="images/pack-preview-birdo.png" width="480">
 
 Birdo made playable using Character Select :]
 
@@ -124,7 +124,7 @@ Birdo made playable using Character Select :]
 
 ## Paper Goombas & Koopas - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-paper-goombas-and-koopas.zip)
 
-<img src="images/pack-preview-none.png" width="480">
+<img src="images/pack-preview-paper-goombas-and-koopas.png" width="480">
 
 Famous Goombas and Koopas from the Paper Mario Series :]
 
@@ -139,7 +139,7 @@ Famous Goombas and Koopas from the Paper Mario Series :]
 
 ## Geno + Mallow - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-smrpg.zip)
 
-<img src="images/pack-preview-none.png" width="480">
+<img src="images/pack-preview-smrpg.png" width="480">
 
 Geno and Mallow made playable with Character Select!
 
