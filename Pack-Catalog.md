@@ -65,7 +65,7 @@ A girl from New York, I wonder what she's doing here?
   - Yumi
 
 ## Blue Archive Characters - [Gamebanana Page](https://gamebanana.com/mods/478354)
-#### Note: This Pack's Files is Hosted on an External Website, and may not always be available!
+#### Note: This Pack's Files are Hosted on an External Website, and may not always be available!
 
 <img src="https://images.gamebanana.com/img/ss/mods/530-90_658220ab963cb.jpg" width="480">
 
