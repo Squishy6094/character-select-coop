@@ -41,6 +41,23 @@ A Pack the features characters/sonas of Yuyake's Friends, including Yuyake Himse
   - Kuma
   - Skipper
  
+## Travis Touchdown - [Gamebanana Page](https://gamebanana.com/mods/492732)
+#### Note: This Pack is Stored on an External Website, and may not always be available!
+
+<img src="https://images.gamebanana.com/img/ss/mods/530-90_65b6e79d6b87a.jpg" width="480">
+
+It's payback time!
+
+Well, this is my first mod for SM64, so there's definitely gonna be some jank! But hey, Travis is in the Mushroom Kingdom!
+
+So, Travis has expressions, a voice, and a hud icon! But he has no palette support.
+He also will use Luigi's moves if you're using the Character Moveset mod!
+
+- Creator(s)
+  - bbbbbeatle
+- Characters - 1
+  - Travis
+ 
 ## Squid Sisters - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-squid-sisters.zip)
 
 <img src="images/pack-preview-none.png" width="480">
@@ -65,7 +82,7 @@ A girl from New York, I wonder what she's doing here?
   - Yumi
 
 ## Blue Archive Characters - [Gamebanana Page](https://gamebanana.com/mods/478354)
-#### Note: This Pack's Files are Hosted on an External Website, and may not always be available!
+#### Note: This Pack is Stored on an External Website, and may not always be available!
 
 <img src="https://images.gamebanana.com/img/ss/mods/530-90_658220ab963cb.jpg" width="480">
 
