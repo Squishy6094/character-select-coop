@@ -14,13 +14,14 @@ A handful of Pizza Tower/Sugary Spire Characters in Super Mario 64!
 - Creator(s)
   - Pizizito (Models)
   - KitKat (HUD Icons)
-- Characters
+- Characters - 7
   - Pepperman
   - Vigilante
   - The Noise
   - Fake Peppino
   - Pizzelle
   - Pizzano
+  - Gustavo
 
 ## Furry Friends Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-furry-friends.zip)
 
@@ -30,7 +31,7 @@ A Pack the features characters/sonas of Yuyake's Friends, including Yuyake Himse
 
 - Creator(s)
   - AngelicMiracles
-- Characters
+- Characters - 8
   - Yuyake
   - Brianna
   - Veph
@@ -48,7 +49,7 @@ Splatoon's Callie & Marie in SM64! Includes Full Color Support and Eye States!
 
 - Creator(s)
   - Frijoles Y Queso
-- Characters
+- Characters - 2
   - Callie
   - Marie
 
@@ -60,18 +61,20 @@ A girl from New York, I wonder what she's doing here?
 
 - Creator(s)
   - Frijoles Y Queso
-- Characters
+- Characters - 1
   - Yumi
 
-## Blue Archive Characters - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-blue-archive.zip)
+## Blue Archive Characters - [Gamebanana Page](https://gamebanana.com/mods/478354)
+#### Note: This Pack's Files is Hosted on an External Website, and may not always be available!
 
-<img src="images/pack-preview-none.png" width="480">
-
-No Description Yet
+<img src="https://images.gamebanana.com/img/ss/mods/530-90_658220ab963cb.jpg" width="480">
 
 - Creator(s)
   - HerosLight
-- Characters
+  - Hash.py (Made Hare and Hare (Camp))
+  - Anonymous Veritas Scripter (Made the lua script less copy/paste-y & attempting to fix the voice disappearing issue)
+  - Anonymous BA Fan (Helping with Voice mod)
+- Characters - 25
   - Midori
   - Yuzu
   - Alice/Aris
@@ -87,6 +90,16 @@ No Description Yet
   - Michiru
   - Hina
   - Yuuka
+  - Azusa
+  - Azoosa
+  - Hiyori
+  - Hiyori (Lightsaber)
+  - Koyuki
+  - Chise
+  - Junko
+  - Hare
+  - Hare (Camp)
+  - Saya
 
 ## VL-Tone & Cjes Luigi - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-cjes-and-vl.zip)
 
@@ -96,7 +109,7 @@ Alternate Luigi Models from way-back-when, Reminiscing of a time before L was Re
 
 - Creator(s)
   - Coop DX Team
-- Characters
+- Characters - 2
   - VL-Tone Luigi
   - Cjes Luigi
 
@@ -108,7 +121,7 @@ More characters from the Super Mario series!.
 
 - Creator(s)
   - Coop DX Team
-- Characters
+- Characters - 1
   - Toadette
 
 ## Birdo Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-birdo.zip)
@@ -119,7 +132,7 @@ Birdo made playable using Character Select :]
 
 - Creator(s)
   - Melzinoff
-- Characters
+- Characters - 1
   - Birdo
 
 ## Paper Goombas & Koopas - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-paper-goombas-and-koopas.zip)
@@ -130,7 +143,7 @@ Famous Goombas and Koopas from the Paper Mario Series :]
 
 - Creator(s)
   - Melzinoff
-- Characters
+- Characters - 5
   - Goombella
   - Goombario
   - Kooper
@@ -146,7 +159,7 @@ Geno and Mallow made playable with Character Select!
 - Creator(s)
   - Wibblus
   - Melzinoff
-- Characters
+- Characters - 2
   - Geno
   - Mallow
 
@@ -158,7 +171,7 @@ A Dry Bones Player Model!
 
 - Creator(s)
   - Wibblus
-- Characters
+- Characters - 1
   - Dry-Bones
 
 ## Bowser Jr. - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-bowserjr.zip)
@@ -169,7 +182,7 @@ Bowser Jr is Playable!
 
 - Creator(s)
   - Wibblus
-- Characters
+- Characters - 1
   - Bowser Jr.
 
 ## Peter Griffin - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-peter-griffin.zip)
@@ -180,7 +193,7 @@ It seems today...
 
 - Creator(s)
   - Trashcam
-- Characters
+- Characters - 1
   - Peter Griffin
 
 ## Uncle Grandpa - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-uncle-grandpa.zip)
@@ -194,7 +207,7 @@ Good Morning! Uncle Grandpa in Super Mario 64, Stylized to look 2D and Includes 
   - Dj Khaled/Wahooo (Importing)
   - Fbell(Importing)
   - LuigiGamer(Importing)
-- Characters
+- Characters - 1
   - Uncle Grandpa
 
 ## Scott the Woz - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-scott-the-woz.zip)
@@ -205,7 +218,7 @@ Hey all, Scott Here!
 
 - Creator(s)
   - ArcyThePuppet
-- Characters
+- Characters - 1
   - Scott The Woz
 
 
