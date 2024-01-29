@@ -674,24 +674,26 @@ local function on_hud_render()
 
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             local widthScale = math_min(widthScale, 1.5)
-            for i = 1, #optionTable do
-                local toggleName = optionTable[i].name
-                local scale = 0.5
-                local yOffset = 70 + 10 * widthScale + i * 9 * widthScale - optionAnimTimer
-                if i == currOption then
-                    djui_hud_set_font(FONT_CS_NORMAL)
-                    scale = 0.3
-                    yOffset = yOffset - 1
-                    if optionTable[i].toggleNames[optionTable[i].toggle + 1] ~= "" then
-                        toggleName = "> " .. toggleName .. " - " .. optionTable[i].toggleNames[optionTable[i].toggle + 1]
+            for i = currOption - 2, currOption + 2 do
+                if not (i < 1 or i > #optionTable) then 
+                    local toggleName = optionTable[i].name
+                    local scale = 0.5
+                    local yOffset = 100 + 10 * widthScale + (i - currOption) * 9 * widthScale - optionAnimTimer
+                    if i == currOption then
+                        djui_hud_set_font(FONT_CS_NORMAL)
+                        scale = 0.3
+                        yOffset = yOffset - 1
+                        if optionTable[i].toggleNames[optionTable[i].toggle + 1] ~= "" then
+                            toggleName = "> " .. toggleName .. " - " .. optionTable[i].toggleNames[optionTable[i].toggle + 1]
+                        else
+                            toggleName = "> " .. toggleName
+                        end
                     else
-                        toggleName = "> " .. toggleName
+                        djui_hud_set_font(FONT_TINY)
                     end
-                else
-                    djui_hud_set_font(FONT_TINY)
+                    scale = scale * widthScale
+                    djui_hud_print_text(toggleName, widthHalf - djui_hud_measure_text(toggleName)*scale*0.5, yOffset, scale)
                 end
-                scale = scale * widthScale
-                djui_hud_print_text(toggleName, widthHalf - djui_hud_measure_text(toggleName)*scale*0.5, yOffset, scale)
             end
 
             djui_hud_set_font(FONT_TINY)

@@ -82,7 +82,7 @@ function string_split(s)
 end
 
 client_is_coop_dx = get_coop_compatibility_enabled ~= nil -- Checks if Client is DX
-network_is_coop_dx = SM64COOPDX_VERSION ~= nil -- Checks if Coop Compatibility is Off
+-- network_is_coop_dx = SM64COOPDX_VERSION ~= nil -- Checks if Coop Compatibility is Off (As of now unused)
 
 ommActive = false
 for i in pairs(gActiveMods) do
