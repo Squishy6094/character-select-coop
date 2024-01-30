@@ -57,6 +57,7 @@ optionTable = {
         toggleDefault = 0,
         toggleMax = 2,
         toggleNames = {"None", ommActive and "D-pad Down + R" or "D-pad Down", "Z (Pause Menu)"},
+        description = {"Sets a Bind to Open the Menu", "rather than using the command."}
     },
     [optionTableRef.notification] = {
         name = "Notifications",
@@ -65,6 +66,7 @@ optionTable = {
         toggleDefault = 1,
         toggleMax = 2,
         toggleNames = {"Off", "On", "Pop-ups Only"},
+        description = {"Toggles wheather Pop-ups and", "Chat Messages display"}
     },
     [optionTableRef.menuColor] = {
         name = "Menu Color",
@@ -73,6 +75,7 @@ optionTable = {
         toggleDefault = 0,
         toggleMax = 10,
         toggleNames = {"Auto", "Saved", "Red", "Orange", "Yellow", "Green", "Blue", "Pink", "Purple", "White", "Black"},
+        description = {"Toggles the Menu Color"}
     },
     [optionTableRef.anims] = {
         name = "Animations",
@@ -80,6 +83,7 @@ optionTable = {
         toggleSaveName = "Anims",
         toggleDefault = 1,
         toggleMax = 1,
+        description = {"Toggles Animations In-Menu,", "Turning these off may", "Save Performance"}
     },
     [optionTableRef.inputLatency] = {
         name = "Scroll Speed",
@@ -88,6 +92,7 @@ optionTable = {
         toggleDefault = 1,
         toggleMax = 2,
         toggleNames = {"Slow", "Normal", "Fast"},
+        description = {"Sets how fast you scroll", "throughout the Menu"}
     },
     [optionTableRef.localModels] = {
         name = "Locally Display Models",
@@ -95,6 +100,7 @@ optionTable = {
         toggleSaveName = "localModels",
         toggleDefault = 1,
         toggleMax = 1,
+        description = {"Toggles if Custom Models display", "on your client, practically", "disables Character Select if", "Toggled Off"}
     },
     [optionTableRef.localVoices] = {
         name = "Custom Voices",
@@ -102,6 +108,7 @@ optionTable = {
         toggleSaveName = "localVoices",
         toggleDefault = 1,
         toggleMax = 1,
+        description = {"Toggle if Custom Voicelines play", "for Characters who support it"}
     },
     [optionTableRef.prefToDefault] = {
         name = "Set Preference to Default",
@@ -109,6 +116,7 @@ optionTable = {
         toggleDefault = 0,
         toggleMax = 1,
         toggleNames = {"", ""},
+        description = {"Set's your preference to the", "Default Character"}
     },
     [optionTableRef.debugInfo] = {
         name = "Debugging Info",
@@ -116,6 +124,7 @@ optionTable = {
         toggleSaveName = "debuginfo",
         toggleDefault = 0,
         toggleMax = 1,
+        description = {"Replaces the Character", "Description with Character", "Debugging Information"}
     },
 }
 
@@ -676,13 +685,13 @@ local function on_hud_render()
             djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
             djui_hud_print_text(TEXT_OPTIONS_HEADER, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_HEADER)*0.3*math_min(widthScale, 1.5), 65 + optionAnimTimer * -1, 0.6*math_min(widthScale, 1.5))
 
-            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             local widthScale = math_min(widthScale, 1.5)
+            local yOffset = 0
             for i = currOption - 2, currOption + 2 do
                 if not (i < 1 or i > #optionTable) then 
                     local toggleName = optionTable[i].name
                     local scale = 0.5
-                    local yOffset = 100 + 10 * widthScale + (i - currOption) * 9 * widthScale - optionAnimTimer
+                    yOffset = 100 - optionAnimTimer + (i - currOption + 2) * 9 * widthScale
                     if i == currOption then
                         djui_hud_set_font(FONT_CS_NORMAL)
                         scale = 0.3
@@ -692,15 +701,48 @@ local function on_hud_render()
                         else
                             toggleName = toggleName
                         end
+                        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
                     else
                         djui_hud_set_font(FONT_TINY)
+                        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 150)
                     end
                     scale = scale * widthScale
                     djui_hud_print_text(toggleName, widthHalf - djui_hud_measure_text(toggleName)*scale*0.5, yOffset, scale)
                 end
             end
 
+            -- Description
+            if optionTable[currOption].description ~= nil then
+                djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+                for i = 1, #optionTable[currOption].description do
+                    djui_hud_set_font(FONT_CS_NORMAL)
+                    local line = optionTable[currOption].description[i]
+                    djui_hud_print_text(line, widthHalf - djui_hud_measure_text(line)*0.15, yOffset + 15 * widthScale + 8 * i, 0.3)
+                end
+            end
+
+            -- Up Arrow
+            if currOption > 3 then
+                djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+                djui_hud_set_rotation(0x2000, 0.5, 0.5)
+                djui_hud_render_rect(widthHalf - 3, 95 - optionAnimTimer, 5, 5)
+                djui_hud_set_color(0, 0, 0, 255)
+                djui_hud_set_rotation(0x0000, 0.5, 0.5)
+                djui_hud_render_rect(widthHalf - 4, 97 - optionAnimTimer, 8, 5)
+            end
+
+            -- Down Arrow
+            if currOption < #optionTable - 2 then
+                djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+                djui_hud_set_rotation(0x2000, 0.5, 0.5)
+                djui_hud_render_rect(widthHalf - 3, yOffset + 10 * widthScale, 5, 5)
+                djui_hud_set_color(0, 0, 0, 255)
+                djui_hud_set_rotation(0x0000, 0.5, 0.5)
+                djui_hud_render_rect(widthHalf - 4, yOffset + 8 * widthScale, 8, 5)
+            end
+
             djui_hud_set_font(FONT_TINY)
+            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_print_text(TEXT_OPTIONS_SELECT, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_SELECT)*0.3, height - 20 - optionAnimTimer, 0.6)
         else
             -- How to open options display
