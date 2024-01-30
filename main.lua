@@ -686,12 +686,33 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_OPTIONS_HEADER, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_HEADER)*0.3*math_min(widthScale, 1.5), 65 + optionAnimTimer * -1, 0.6*math_min(widthScale, 1.5))
 
             local widthScale = math_min(widthScale, 1.5)
-            local yOffset = 0
+            -- Up Arrow
+            if currOption > 3 then
+                djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+                djui_hud_set_rotation(0x2000, 0.5, 0.5)
+                djui_hud_render_rect(widthHalf - 3, 95 - optionAnimTimer, 5, 5)
+                djui_hud_set_color(0, 0, 0, 255)
+                djui_hud_set_rotation(0x0000, 0.5, 0.5)
+                djui_hud_render_rect(widthHalf - 4, 97 - optionAnimTimer, 8, 4)
+            end
+
+            -- Down Arrow
+            if currOption < #optionTable - 2 then
+                local yOffset = 90 - optionAnimTimer + 5 * 9 * widthScale
+                djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+                djui_hud_set_rotation(0x2000, 0.5, 0.5)
+                djui_hud_render_rect(widthHalf - 3, yOffset + 10, 5, 5)
+                djui_hud_set_color(0, 0, 0, 255)
+                djui_hud_set_rotation(0x0000, 0.5, 0.5)
+                djui_hud_render_rect(widthHalf - 4, yOffset + 9, 8, 4)
+            end
+
+            -- Options 
             for i = currOption - 2, currOption + 2 do
                 if not (i < 1 or i > #optionTable) then 
                     local toggleName = optionTable[i].name
                     local scale = 0.5
-                    yOffset = 100 - optionAnimTimer + (i - currOption + 2) * 9 * widthScale
+                    local yOffset = 100 - optionAnimTimer + (i - currOption + 2) * 9 * widthScale
                     if i == currOption then
                         djui_hud_set_font(FONT_CS_NORMAL)
                         scale = 0.3
@@ -717,30 +738,10 @@ local function on_hud_render()
                 for i = 1, #optionTable[currOption].description do
                     djui_hud_set_font(FONT_CS_NORMAL)
                     local line = optionTable[currOption].description[i]
-                    djui_hud_print_text(line, widthHalf - djui_hud_measure_text(line)*0.15, yOffset + 15 * widthScale + 8 * i, 0.3)
+                    djui_hud_print_text(line, widthHalf - djui_hud_measure_text(line)*0.15, 180 - optionAnimTimer + 15 * widthScale + 8 * i - 8 * #optionTable[currOption].description, 0.3)
                 end
             end
-
-            -- Up Arrow
-            if currOption > 3 then
-                djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-                djui_hud_set_rotation(0x2000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 3, 95 - optionAnimTimer, 5, 5)
-                djui_hud_set_color(0, 0, 0, 255)
-                djui_hud_set_rotation(0x0000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 4, 97 - optionAnimTimer, 8, 4)
-            end
-
-            -- Down Arrow
-            if currOption < #optionTable - 2 then
-                djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-                djui_hud_set_rotation(0x2000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 3, yOffset + 10 * widthScale, 5, 5)
-                djui_hud_set_color(0, 0, 0, 255)
-                djui_hud_set_rotation(0x0000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 4, yOffset + 9 * widthScale, 8, 4)
-            end
-
+            -- Footer
             djui_hud_set_font(FONT_TINY)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_print_text(TEXT_OPTIONS_SELECT, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_SELECT)*0.3, height - 20 - optionAnimTimer, 0.6)
