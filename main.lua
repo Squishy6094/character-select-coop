@@ -8,7 +8,7 @@ options = false
 currChar = 1
 local currOption = 1
 
-local menuCrossFade = 10
+local menuCrossFade = 7
 local menuCrossFadeCap = menuCrossFade
 local menuCrossFadeMath = 255/menuCrossFade
 
@@ -119,7 +119,7 @@ optionTable = {
     },
 }
 
-local latencyValueTable = {15, 10, 5}
+local latencyValueTable = {12, 6, 3}
 
 local menuColorTable = {
     {r = 255, g = 50,  b = 50 },
@@ -442,8 +442,10 @@ local buttonScrollCap = 30
 local optionAnimTimer = -200
 local optionAnimTimerCap = optionAnimTimer
 
-local inputStallTimer = 0
-local inputStallTo = 15
+local inputStallTimerButton = 0
+local inputStallTimerDirectional = 0
+local inputStallToDirectional = 12
+local inputStallToButton = 10
 
 local FONT_CS_NORMAL = client_is_coop_dx and FONT_ALIASED or FONT_NORMAL
 
@@ -473,6 +475,8 @@ local TEXT_MENU_CLOSE = "Press B to Exit Menu"
 local TEXT_OPTIONS_SELECT = "A - Select | B - Exit  "
 local TEXT_LOCAL_MODEL_OFF = "Locally Display Models is Off"
 local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Menu"
+
+local MATH_THIRD = 1/3
 
 local menuColor = characterTable[currChar].color
 
@@ -604,7 +608,7 @@ local function on_hud_render()
         if optionTable[optionTableRef.anims].toggle == 0 then
             buttonScroll = 0
         elseif math_abs(buttonScroll) > 0.1 then
-            buttonScroll = buttonScroll*0.03*inputStallTo
+            buttonScroll = buttonScroll*0.03*inputStallToDirectional
         end
 
         local buttonColor = {}
@@ -828,10 +832,11 @@ end
 
 local function before_mario_update(m)
     if m.playerIndex ~= 0 then return end
-    if inputStallTimer > 0 then inputStallTimer = inputStallTimer - 1 end
+    if inputStallTimerButton > 0 then inputStallTimerButton = inputStallTimerButton - 1 end
+    if inputStallTimerDirectional > 0 then inputStallTimerDirectional = inputStallTimerDirectional - 1 end
     
-    if menu and inputStallTo ~= latencyValueTable[optionTable[optionTableRef.inputLatency].toggle + 1] then
-        inputStallTo = latencyValueTable[optionTable[optionTableRef.inputLatency].toggle + 1]
+    if menu and inputStallToDirectional ~= latencyValueTable[optionTable[optionTableRef.inputLatency].toggle + 1] then
+        inputStallToDirectional = latencyValueTable[optionTable[optionTableRef.inputLatency].toggle + 1]
     end
 
     -- Menu Inputs
@@ -843,7 +848,7 @@ local function before_mario_update(m)
         else
             menu = true
         end
-        inputStallTimer = inputStallTo
+        inputStallTimerDirectional = inputStallToDirectional
     end
     if is_game_paused() and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and (m.controller.buttonPressed & Z_TRIG) ~= 0 and optionTable[optionTableRef.openInputs].toggle == 2 then
         menu = true
@@ -863,57 +868,62 @@ local function before_mario_update(m)
     end
 
     if menuAndTransition and not options then
-        if inputStallTimer == 0 and menu then
-            if (m.controller.buttonPressed & D_JPAD) ~= 0 then
-                currChar = currChar + 1
-                inputStallTimer = inputStallTo
-                buttonScroll = buttonScrollCap
-                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-            end
-            if (m.controller.buttonPressed & U_JPAD) ~= 0 then
-                currChar = currChar - 1
-                inputStallTimer = inputStallTo
-                buttonScroll = -buttonScrollCap
-                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-            end
-            if (m.controller.buttonPressed & D_CBUTTONS) ~= 0 then
-                currChar = currChar + 1
-                inputStallTimer = inputStallTo*0.6
-                buttonScroll = buttonScrollCap
-                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-            end
-            if (m.controller.buttonPressed & U_CBUTTONS) ~= 0 then
-                currChar = currChar - 1
-                inputStallTimer = inputStallTo*0.6
-                buttonScroll = -buttonScrollCap
-                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-            end
-            if m.controller.stickY < -60 then
-                currChar = currChar + 1
-                inputStallTimer = inputStallTo
-                buttonScroll = buttonScrollCap
-                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-            end
-            if m.controller.stickY > 60 then
-                currChar = currChar - 1
-                inputStallTimer = inputStallTo
-                buttonScroll = -buttonScrollCap
-                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-            end
-            if (m.controller.buttonPressed & A_BUTTON) ~= 0 then
-                if characterTable[currChar] ~= nil then
-                    mod_storage_save_pref_char(characterTable[currChar])
-                    inputStallTimer = inputStallTo
-                    play_sound(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject)
-                else
-                    play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
+        if menu then
+            if inputStallTimerDirectional == 0 then
+                if (m.controller.buttonPressed & D_JPAD) ~= 0 then
+                    currChar = currChar + 1
+                    inputStallTimerDirectional = inputStallToDirectional
+                    buttonScroll = buttonScrollCap
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                end
+                if (m.controller.buttonPressed & U_JPAD) ~= 0 then
+                    currChar = currChar - 1
+                    inputStallTimerDirectional = inputStallToDirectional
+                    buttonScroll = -buttonScrollCap
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                end
+                if (m.controller.buttonPressed & D_CBUTTONS) ~= 0 then
+                    currChar = currChar + 1
+                    inputStallTimerDirectional = inputStallToDirectional*MATH_THIRD
+                    buttonScroll = buttonScrollCap
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                end
+                if (m.controller.buttonPressed & U_CBUTTONS) ~= 0 then
+                    currChar = currChar - 1
+                    inputStallTimerDirectional = inputStallToDirectional*MATH_THIRD
+                    buttonScroll = -buttonScrollCap
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                end
+                if m.controller.stickY < -60 then
+                    currChar = currChar + 1
+                    inputStallTimerDirectional = inputStallToDirectional
+                    buttonScroll = buttonScrollCap
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                end
+                if m.controller.stickY > 60 then
+                    currChar = currChar - 1
+                    inputStallTimerDirectional = inputStallToDirectional
+                    buttonScroll = -buttonScrollCap
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                 end
             end
-            if (m.controller.buttonPressed & B_BUTTON) ~= 0 then
-                menu = false
-            end
-            if (m.controller.buttonPressed & START_BUTTON) ~= 0 then
-                options = true
+
+            if inputStallTimerButton == 0 then
+                if (m.controller.buttonPressed & A_BUTTON) ~= 0 then
+                    if characterTable[currChar] ~= nil then
+                        mod_storage_save_pref_char(characterTable[currChar])
+                        inputStallTimerButton = inputStallToButton
+                        play_sound(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject)
+                    else
+                        play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
+                    end
+                end
+                if (m.controller.buttonPressed & B_BUTTON) ~= 0 then
+                    menu = false
+                end
+                if (m.controller.buttonPressed & START_BUTTON) ~= 0 then
+                    options = true
+                end
             end
         end
         if currChar > #characterTable then currChar = 1 end
@@ -925,39 +935,42 @@ local function before_mario_update(m)
     end
 
     if options then
-        if inputStallTimer == 0 then
+        if inputStallTimerDirectional == 0 then
             if (m.controller.buttonPressed & D_JPAD) ~= 0 then
                 currOption = currOption + 1
-                inputStallTimer = inputStallTo
+                inputStallTimerDirectional = inputStallToDirectional
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if (m.controller.buttonPressed & U_JPAD) ~= 0 then
                 currOption = currOption - 1
-                inputStallTimer = inputStallTo
+                inputStallTimerDirectional = inputStallToDirectional
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if m.controller.stickY < -60 then
                 currOption = currOption + 1
-                inputStallTimer = inputStallTo
+                inputStallTimerDirectional = inputStallToDirectional
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
             if m.controller.stickY > 60 then
                 currOption = currOption - 1
-                inputStallTimer = inputStallTo
+                inputStallTimerDirectional = inputStallToDirectional
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
+        end
+
+        if inputStallTimerButton == 0 then
             if (m.controller.buttonPressed & A_BUTTON) ~= 0 then
                 optionTable[currOption].toggle = optionTable[currOption].toggle + 1
                 if optionTable[currOption].toggle > optionTable[currOption].toggleMax then optionTable[currOption].toggle = 0 end
                 if optionTable[currOption].toggleSaveName ~= nil then
                     mod_storage_save(optionTable[currOption].toggleSaveName, tostring(optionTable[currOption].toggle))
                 end
-                inputStallTimer = inputStallTo
+                inputStallTimerButton = inputStallToButton
                 play_sound(SOUND_MENU_CHANGE_SELECT, cameraToObject)
             end
             if (m.controller.buttonPressed & B_BUTTON) ~= 0 then
                 options = false
-                inputStallTimer = inputStallTo * 3
+                inputStallTimerButton = inputStallToButton
             end
         end
         if currOption > #optionTable then currOption = 1 end
