@@ -728,7 +728,7 @@ local function on_hud_render()
                 djui_hud_render_rect(widthHalf - 3, 95 - optionAnimTimer, 5, 5)
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_set_rotation(0x0000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 4, 97 - optionAnimTimer, 8, 5)
+                djui_hud_render_rect(widthHalf - 4, 97 - optionAnimTimer, 8, 4)
             end
 
             -- Down Arrow
@@ -738,7 +738,7 @@ local function on_hud_render()
                 djui_hud_render_rect(widthHalf - 3, yOffset + 10 * widthScale, 5, 5)
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_set_rotation(0x0000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 4, yOffset + 8 * widthScale, 8, 5)
+                djui_hud_render_rect(widthHalf - 4, yOffset + 9 * widthScale, 8, 4)
             end
 
             djui_hud_set_font(FONT_TINY)
