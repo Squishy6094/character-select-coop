@@ -688,9 +688,9 @@ local function on_hud_render()
                         scale = 0.3
                         yOffset = yOffset - 1
                         if optionTable[i].toggleNames[optionTable[i].toggle + 1] ~= "" then
-                            toggleName = "> " .. toggleName .. " - " .. optionTable[i].toggleNames[optionTable[i].toggle + 1]
+                            toggleName = toggleName .. " - " .. optionTable[i].toggleNames[optionTable[i].toggle + 1]
                         else
-                            toggleName = "> " .. toggleName
+                            toggleName = toggleName
                         end
                     else
                         djui_hud_set_font(FONT_TINY)
