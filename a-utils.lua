@@ -1,7 +1,3 @@
-----------------------
--- Global Functions --
-----------------------
-
 local saveableCharacters = {
     ["1"] = true,
     ["2"] = true,
@@ -92,10 +88,6 @@ for i in pairs(gActiveMods) do
     end
 end
 
-----------------------
--- Global Variables --
-----------------------
-
-modVersion = "1.6 (In-Dev)"
+modVersion = "1.6 (Pre-Release)"
 
 allowMenu = {}
