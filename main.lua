@@ -128,6 +128,8 @@ optionTable = {
     },
 }
 
+local optionTableCount = #optionTable
+
 local latencyValueTable = {12, 6, 3}
 
 local menuColorTable = {
@@ -322,6 +324,8 @@ local menuActBlacklist = {
     [ACT_READING_AUTOMATIC_DIALOG] = true,
 }
 
+local faceAngle = 0
+
 --- @param m MarioState
 local function mario_update(m)
     if stallFrame == 1 then
@@ -377,9 +381,9 @@ local function mario_update(m)
                 z = m.pos.z,
             }
             vec3f_copy(gLakituState.focus, focusPos)
-            gLakituState.pos.x = m.pos.x + sins(m.faceAngle.y) * 500 * camScale
+            gLakituState.pos.x = m.pos.x + sins(faceAngle) * 500 * camScale
             gLakituState.pos.y = m.pos.y + 100 * camScale
-            gLakituState.pos.z = m.pos.z + coss(m.faceAngle.y) * 500 * camScale
+            gLakituState.pos.z = m.pos.z + coss(faceAngle) * 500 * camScale
 
             if m.forwardVel == 0 and m.pos.y == m.floorHeight and not ignored_surfaces[m.floor.type] and m.health > 255 and not menuActBlacklist[m.action] then
                 set_mario_action(m, ACT_IDLE, 0)
@@ -456,11 +460,12 @@ local inputStallTimerDirectional = 0
 local inputStallToDirectional = 12
 local inputStallToButton = 10
 
+-- Font Consistency between sm64ex-coop and sm64coopdx
 local FONT_CS_NORMAL = client_is_coop_dx and FONT_ALIASED or FONT_NORMAL
 
 --Basic Menu Text
 local TEXT_OPTIONS_HEADER = "Menu Options"
-local TEXT_VERSION = "Version: "..modVersion..(client_is_coop_dx and " | CoopDX Detected" or "")
+local TEXT_VERSION = "Version: "..modVersion..(client_is_coop_dx and " | sm64coopdx" or " | sm64ex-coop")
 local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
 local TEXT_DESCRIPTION = "Character Description:"
 local TEXT_PREF_SAVE = "Press A to Set as Preferred Character"
@@ -679,8 +684,6 @@ local function on_hud_render()
             djui_hud_render_rect(width*0.5 - 50 * widthScale, math.min(55 - optionAnimTimer, height - 25 * widthScale), 100 * widthScale, 200)
             djui_hud_set_color(0, 0, 0, 255)
             djui_hud_render_rect(width*0.5 - 50 * widthScale + 2, math.min(55 - optionAnimTimer + 2, height - 25 * widthScale + 2), 100 * widthScale - 4, 196)
-            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_render_rect(width*0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
             djui_hud_set_font(FONT_CS_NORMAL)
             djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
             djui_hud_print_text(TEXT_OPTIONS_HEADER, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_HEADER)*0.3*math_min(widthScale, 1.5), 65 + optionAnimTimer * -1, 0.6*math_min(widthScale, 1.5))
@@ -693,23 +696,23 @@ local function on_hud_render()
                 djui_hud_render_rect(widthHalf - 3 * widthScale, 95 - optionAnimTimer, 5  * widthScale, 5  * widthScale)
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_set_rotation(0x0000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 4  * widthScale, 95 - optionAnimTimer + 2 * widthScale, 8 * widthScale, 10)
+                djui_hud_render_rect(widthHalf - 4 * widthScale, 95 - optionAnimTimer + 2 * widthScale, 8 * widthScale, 10)
             end
 
             -- Down Arrow
-            if currOption < #optionTable - 2 then
-                local yOffset = 90 - optionAnimTimer + 5 * 9 * widthScale
+            if currOption < optionTableCount - 2 then
+                local yOffset = 90 - optionAnimTimer + 45 * widthScale
                 djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
                 djui_hud_set_rotation(0x2000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 3, yOffset + 10, 5, 5)
+                djui_hud_render_rect(widthHalf - 3 * widthScale, yOffset + 10, 5 * widthScale, 5 * widthScale)
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_set_rotation(0x0000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 4, yOffset + 9, 8, 4)
+                djui_hud_render_rect(widthHalf - 4 * widthScale, yOffset + 10 - 2 * widthScale, 8 * widthScale, 5 * widthScale)
             end
 
             -- Options 
             for i = currOption - 2, currOption + 2 do
-                if not (i < 1 or i > #optionTable) then 
+                if not (i < 1 or i > optionTableCount) then 
                     local toggleName = optionTable[i].name
                     local scale = 0.5
                     local yOffset = 100 - optionAnimTimer + (i - currOption + 2) * 9 * widthScale
@@ -745,6 +748,8 @@ local function on_hud_render()
             djui_hud_set_font(FONT_TINY)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_print_text(TEXT_OPTIONS_SELECT, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_SELECT)*0.3, height - 20 - optionAnimTimer, 0.6)
+            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+            djui_hud_render_rect(width*0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
         else
             -- How to open options display
             local widthScaleUnlimited = widthScale
@@ -760,6 +765,7 @@ local function on_hud_render()
             djui_hud_set_font(FONT_TINY)
             djui_hud_print_text(TEXT_MENU_CLOSE, widthHalf - djui_hud_measure_text(TEXT_MENU_CLOSE)*0.25 * widthScale, height - 13 * widthScale + optionAnimTimer + 202, 0.5 * widthScale)
         end
+        
 
         -- Anim logic
         if options then
@@ -773,7 +779,7 @@ local function on_hud_render()
         else
             if optionTable[optionTableRef.anims].toggle > 0 then
                 if optionAnimTimer > optionAnimTimerCap then
-                    optionAnimTimer = optionAnimTimer*1.2
+                    optionAnimTimer = optionAnimTimer*1.3
                 end
             else
                 optionAnimTimer = optionAnimTimerCap
@@ -913,39 +919,23 @@ local function before_mario_update(m)
     if menuAndTransition and not options then
         if menu then
             if inputStallTimerDirectional == 0 then
-                if (m.controller.buttonPressed & D_JPAD) ~= 0 then
+                if (m.controller.buttonPressed & D_JPAD) ~= 0 or (m.controller.buttonPressed & D_CBUTTONS) ~= 0 or m.controller.stickY < -60 then
                     currChar = currChar + 1
-                    inputStallTimerDirectional = inputStallToDirectional
+                    if (m.controller.buttonPressed & D_CBUTTONS) == 0 then
+                        inputStallTimerDirectional = inputStallToDirectional
+                    else
+                        inputStallTimerDirectional = 3 -- C-Scrolling
+                    end
                     buttonScroll = buttonScrollCap
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                 end
-                if (m.controller.buttonPressed & U_JPAD) ~= 0 then
+                if (m.controller.buttonPressed & U_JPAD) ~= 0 or (m.controller.buttonPressed & U_CBUTTONS) ~= 0 or m.controller.stickY > 60 then
                     currChar = currChar - 1
-                    inputStallTimerDirectional = inputStallToDirectional
-                    buttonScroll = -buttonScrollCap
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                end
-                if (m.controller.buttonPressed & D_CBUTTONS) ~= 0 then
-                    currChar = currChar + 1
-                    inputStallTimerDirectional = inputStallToDirectional*MATH_THIRD
-                    buttonScroll = buttonScrollCap
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                end
-                if (m.controller.buttonPressed & U_CBUTTONS) ~= 0 then
-                    currChar = currChar - 1
-                    inputStallTimerDirectional = inputStallToDirectional*MATH_THIRD
-                    buttonScroll = -buttonScrollCap
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                end
-                if m.controller.stickY < -60 then
-                    currChar = currChar + 1
-                    inputStallTimerDirectional = inputStallToDirectional
-                    buttonScroll = buttonScrollCap
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                end
-                if m.controller.stickY > 60 then
-                    currChar = currChar - 1
-                    inputStallTimerDirectional = inputStallToDirectional
+                    if (m.controller.buttonPressed & U_CBUTTONS) == 0 then
+                        inputStallTimerDirectional = inputStallToDirectional
+                    else
+                        inputStallTimerDirectional = 3 -- C-Scrolling
+                    end
                     buttonScroll = -buttonScrollCap
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                 end
@@ -969,8 +959,15 @@ local function before_mario_update(m)
                 end
             end
         end
+        -- Wraping Menu
         if currChar > #characterTable then currChar = 1 end
         if currChar < 1 then currChar = #characterTable end
+
+        -- Handles Camera Posistioning
+        faceAngle = m.faceAngle.y
+        if m.controller.buttonPressed & R_CBUTTONS ~= 0 then faceAngle = faceAngle + 0x1000 end
+        if m.controller.buttonPressed & L_CBUTTONS ~= 0 then faceAngle = faceAngle - 0x1000 end
+
         nullify_inputs(m)
         if is_game_paused() then
             m.controller.buttonPressed = START_BUTTON
