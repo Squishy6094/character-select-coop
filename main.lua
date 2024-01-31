@@ -690,10 +690,10 @@ local function on_hud_render()
             if currOption > 3 then
                 djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
                 djui_hud_set_rotation(0x2000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 3, 95 - optionAnimTimer, 5, 5)
+                djui_hud_render_rect(widthHalf - 3 * widthScale, 95 - optionAnimTimer, 5  * widthScale, 5  * widthScale)
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_set_rotation(0x0000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 4, 97 - optionAnimTimer, 8, 4)
+                djui_hud_render_rect(widthHalf - 4  * widthScale, 95 - optionAnimTimer + 2 * widthScale, 8 * widthScale, 10)
             end
 
             -- Down Arrow
