@@ -70,17 +70,6 @@ Splatoon's Callie & Marie in SM64! Includes Full Color Support and Eye States!
   - Callie
   - Marie
 
-## Yumi Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-yumi.zip)
-
-<img src="images/pack-preview-none.png" width="480">
-
-A girl from New York, I wonder what she's doing here?
-
-- Creator(s)
-  - Frijoles Y Queso
-- Characters - 1
-  - Yumi
-
 ## Blue Archive Characters - [Gamebanana Page](https://gamebanana.com/mods/478354)
 #### Note: This Pack is Stored on an External Website, and may not always be available!
 
@@ -201,6 +190,17 @@ Bowser Jr is Playable!
   - Wibblus
 - Characters - 1
   - Bowser Jr.
+
+## Nabbit - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-nabbit.zip)
+
+<video src="images/pack-preview-peter-griffin.mp4" width="480" controls>
+
+Nabbit is playable with Character Select!!
+
+- Creator(s)
+  - Wibblus
+- Characters - 1
+  - Nabbit
 
 ## Peter Griffin - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-peter-griffin.zip)
 
