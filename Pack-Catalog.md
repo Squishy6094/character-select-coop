@@ -204,10 +204,7 @@ Nabbit is playable with Character Select!!
 
 ## Peter Griffin - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-peter-griffin.zip)
 
-<video width="480" controls>
-  <source src="images/pack-preview-peter-griffin.mp4" type="video/mp4">\
-Your browser does not support the video tag.
-</video>
+<img src="images/pack-preview-peter-griffin.png" width="480">
 
 It seems today...
 
