@@ -227,6 +227,17 @@ Good Morning! Uncle Grandpa in Super Mario 64, Stylized to look 2D and Includes 
 - Characters - 1
   - Uncle Grandpa
 
+## Classic Amy - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-amy.zip)
+
+<img src="images/pack-preview-none.png" width="480">
+
+Classic Amy CS pack by flipflop bell!
+
+- Creator(s)
+  - Flipflop Bell
+- Characters - 1
+  - Amy
+
 ## Scott the Woz - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-scott-the-woz.zip)
 
 <img src="images/pack-preview-none.png" width="480">
