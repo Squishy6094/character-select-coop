@@ -193,7 +193,7 @@ Bowser Jr is Playable!
 
 ## Nabbit - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-nabbit.zip)
 
-<video src="images/pack-preview-peter-griffin.mp4" width="480" controls>
+<img src="images/pack-preview-nabbit.png" width="480">
 
 Nabbit is playable with Character Select!!
 
@@ -204,7 +204,10 @@ Nabbit is playable with Character Select!!
 
 ## Peter Griffin - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-peter-griffin.zip)
 
-<img src="images/pack-preview-none.png" width="480">
+<video width="480" controls>
+  <source src="images/pack-preview-peter-griffin.mp4" type="video/mp4">\
+Your browser does not support the video tag.
+</video>
 
 It seems today...
 
