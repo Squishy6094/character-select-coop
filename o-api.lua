@@ -2,7 +2,7 @@
 
 local characterVoices = {}
 
-local TEX_UNKNOWN_CHAR = get_texture_info("unknown-icon")
+local TEX_UNKNOWN_CHAR = nil
 
 local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 
