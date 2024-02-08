@@ -1085,8 +1085,9 @@ local function chat_command(msg)
 
     -- Name Check
     for i = 1, #characterTable do
-        if msg == string_lower(characterTable[i].name) or msg == string_lower(characterTable[i].name) or string_underscore_to_space(string_lower(characterTable[i].saveName)) then
+        if msg == string_lower(characterTable[i].name) or msg == string_underscore_to_space(string_lower(characterTable[i].saveName)) then
             currChar = i
+            djui_chat_message_create(characterTable[i].saveName)
             djui_chat_message_create('Character set to "'..characterTable[i].name..'" Successfully!')
             return true
         end
@@ -1094,7 +1095,7 @@ local function chat_command(msg)
     
     -- Number Check
     if tonumber(msg) then
-        msg = tonumber(msg)
+        local msg = tonumber(msg)
         if msg > 0 and msg <= #characterTable then
             currChar = msg
             djui_chat_message_create('Character set to "'..characterTable[msg].name..'" Successfully!')
