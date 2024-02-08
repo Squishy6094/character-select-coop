@@ -1,5 +1,5 @@
 -- name: Character Select
--- description:\\#ffff00\\Character Select Coop v1.6 (Pre-Release)\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff00\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\n\n\\#AAAAFF\\Updates and Packs can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
+-- description:\\#ffff33\\Character Select Coop v1.6 (Pre-Release)\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\n\n\\#AAAAFF\\Updates and Packs can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
 
 
 local menu = false
@@ -45,8 +45,8 @@ optionTableRef = {
     inputLatency = 5,
     localModels = 6,
     localVoices = 7,
-    prefToDefault = 8,
-    debugInfo = 9
+    debugInfo = 8,
+    resetSaveData = 9,
 }
 
 optionTable = {
@@ -110,14 +110,6 @@ optionTable = {
         toggleMax = 1,
         description = {"Toggle if Custom Voicelines play", "for Characters who support it"}
     },
-    [optionTableRef.prefToDefault] = {
-        name = "Set Preference to Default",
-        toggle = 0,
-        toggleDefault = 0,
-        toggleMax = 1,
-        toggleNames = {"", ""},
-        description = {"Set's your preference to the", "Default Character"}
-    },
     [optionTableRef.debugInfo] = {
         name = "Debugging Info",
         toggle = tonumber(mod_storage_load("debuginfo")),
@@ -125,6 +117,14 @@ optionTable = {
         toggleDefault = 0,
         toggleMax = 1,
         description = {"Replaces the Character", "Description with Character", "Debugging Information"}
+    },
+    [optionTableRef.resetSaveData] = {
+        name = "Reset Save Data",
+        toggle = 0,
+        toggleDefault = 0,
+        toggleMax = 1,
+        toggleNames = {"", ""},
+        description = {"Resets Character Select's", "Save Data"}
     },
 }
 
@@ -277,23 +277,37 @@ local function failsafe_options()
     end
 end
 
-local function reset_options()
-    for i = 1, #optionTable do
-        optionTable[i].toggle = optionTable[i].toggleDefault
-        if optionTable[i].toggleSaveName ~= nil then
-            mod_storage_save(optionTable[i].toggleSaveName, tostring(optionTable[i].toggle))
+local promptedAreYouSure = false
+
+local function reset_options(wasChatTriggered)
+    if not promptedAreYouSure then
+        djui_chat_message_create("\\#ffdcdc\\Are you sure you want to reset your Save Data for Character Select, including your Preferred Character\nand Settings?\n".. (wasChatTriggered and "Type \\#ff3333\\/char-select reset\\#ffdcdc\\ to confirm." or "Press the \\#ff3333\\"..optionTable[optionTableRef.resetSaveData].name.."\\#ffdcdc\\ Option again to confirm." ))
+        promptedAreYouSure = true
+    else
+        djui_chat_message_create("\\#ff3333\\Character Select Save Data Reset!")
+        djui_chat_message_create("Note: If your issue has not been resolved, you may need to manually delete your save data via the directory below:\n\\#dcdcFF\\sm64ex-coop/sav/character-select-coop.sav")
+        for i = 1, #optionTable do
+            optionTable[i].toggle = optionTable[i].toggleDefault
+            if optionTable[i].toggleSaveName ~= nil then
+                mod_storage_save(optionTable[i].toggleSaveName, tostring(optionTable[i].toggle))
+            end
+            if optionTable[i].toggleNames == nil then
+                optionTable[i].toggleNames = {"Off", "On"}
+            end
         end
-        if optionTable[i].toggleNames == nil then
-            optionTable[i].toggleNames = {"Off", "On"}
-        end
+        mod_storage_save_pref_char(characterTable[1])
+        promptedAreYouSure = false
     end
 end
 
+
+
+
 local function boot_note()
     if #characterTable > 1 then
-        djui_chat_message_create("Character Select is active and has "..(#characterTable - 1).." characters available!\nYou can use \\#ffff00\\/char-select \\#ffffff\\to open the menu!")
+        djui_chat_message_create("Character Select has "..(#characterTable - 1).." character"..(#characterTable > 2 and "s" or "").." available!\nYou can use \\#ffff33\\/char-select \\#ffffff\\to open the menu!")
     else
-        djui_chat_message_create("Character Select is active!\nYou can use \\#ffff00\\/char-select \\#ffffff\\to open the menu!")
+        djui_chat_message_create("Character Select is active!\nYou can use \\#ffff33\\/char-select \\#ffffff\\to open the menu!")
     end
 
     if not client_is_coop_dx then
@@ -415,10 +429,10 @@ local function mario_update(m)
         end
     end
 
-    --Set Pref to Default Check
-    if optionTable[optionTableRef.prefToDefault].toggle > 0 then
-        mod_storage_save_pref_char(characterTable[1])
-        optionTable[optionTableRef.prefToDefault].toggle = 0
+    --Reset Save Data Check
+    if optionTable[optionTableRef.resetSaveData].toggle > 0 then
+        reset_options(false)
+        optionTable[optionTableRef.resetSaveData].toggle = 0
     end
 end
 
@@ -1041,44 +1055,50 @@ hook_event(HOOK_ON_HUD_RENDER_BEHIND, on_life_counter_render)
 
 local promptedAreYouSure = false
 
-local function chat_command_reset_options()
-    if not promptedAreYouSure then
-        djui_chat_message_create("Are you sure you want to reset your save data for Character Select?")
-        promptedAreYouSure = true
-    else
-        djui_chat_message_create("Save Data Reset")
-        reset_options()
-        promptedAreYouSure = false
-    end
-end
-
 local function chat_command(msg)
-    if msg ~= "" and msg ~= "menu" then
-        -- Name Check
-        msg = string_lower(msg)
-        for i = 1, #characterTable do
-            if msg == string_lower(characterTable[i].name) or msg == string_lower(characterTable[i].name) or string_underscore_to_space(string_lower(characterTable[i].saveName)) then
-                currChar = i
-                djui_chat_message_create('Character set to "'..characterTable[i].name..'" Successfully!')
-                return true
-            end
-        end
-        
-        -- Number Check
-        if tonumber(msg) then
-            msg = tonumber(msg)
-            if msg > 0 and msg <= #characterTable then
-                currChar = msg
-                djui_chat_message_create('Character set to "'..characterTable[msg].name..'" Successfully!')
-                return true
-            end
-        end
-        djui_chat_message_create("Character Not Found")
-        return true
-    else
+    msg = string_lower(msg)
+
+    -- Open Menu Check
+    if msg == "" or msg == "menu" then
         menu = not menu
         return true
     end
+
+    -- Help Prompt Check
+    if msg == "?" or msg == "help" then
+        djui_chat_message_create("Character Select's Avalible Commands:"..
+        "\n\\#ffff33\\/char-select menu\\#ffffff\\ - Opens the Menu"..
+        "\n\\#ffff33\\/char-select help\\#ffffff\\ - Returns Avalible Commands"..
+        "\n\\#ff3333\\/char-select reset\\#ffffff\\ - Resets your Save Data")
+        return true
+    end
+
+    -- Reset Save Data Check
+    if msg == "reset" or (msg == "confirm" and promptedAreYouSure) then
+        reset_options(true)
+        return true
+    end
+
+    -- Name Check
+    for i = 1, #characterTable do
+        if msg == string_lower(characterTable[i].name) or msg == string_lower(characterTable[i].name) or string_underscore_to_space(string_lower(characterTable[i].saveName)) then
+            currChar = i
+            djui_chat_message_create('Character set to "'..characterTable[i].name..'" Successfully!')
+            return true
+        end
+    end
+    
+    -- Number Check
+    if tonumber(msg) then
+        msg = tonumber(msg)
+        if msg > 0 and msg <= #characterTable then
+            currChar = msg
+            djui_chat_message_create('Character set to "'..characterTable[msg].name..'" Successfully!')
+            return true
+        end
+    end
+    djui_chat_message_create("Character Not Found")
+    return true
 end
 
 hook_chat_command("char-select", "- Opens the Character Select Menu", chat_command)
