@@ -882,7 +882,11 @@ function on_life_counter_render()
     if gNetworkPlayers[0].currActNum == 99 then return end
     if not hud_is_hidden() then
         local icon = characterTable[currChar].lifeIcon
-        djui_hud_render_texture(icon, x, y, 1/(icon.width/16), 1/(icon.height/16))
+        if icon == nil then
+            djui_hud_print_text("?", x, y, 1)
+        else
+            djui_hud_render_texture(icon, x, y, 1/(icon.width/16), 1/(icon.height/16))
+        end
         djui_hud_print_text("@", x + 16, y, 1)
         djui_hud_print_text(tostring(gMarioStates[0].numLives), x + 32, y, 1)
         hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) &~ HUD_DISPLAY_FLAG_LIVES) -- Hides the lives counter
