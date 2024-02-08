@@ -1,5 +1,5 @@
 -- name: Character Select
--- description: \\#ffff00\\ Character Select Coop v1.6 (In-Dev)\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff00\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\n\n\\#AAAAFF\\Updates and Packs can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
+-- description:\\#ffff00\\Character Select Coop v1.6 (Pre-Release)\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff00\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\n\n\\#AAAAFF\\Updates and Packs can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
 
 
 local menu = false
@@ -274,6 +274,18 @@ local function failsafe_options()
     end
     if optionTable[optionTableRef.openInputs].toggle > 0 and ommActive then
         djui_popup_create('Character Select:\nYour Open bind has changed to:\nD-pad Down + R\nDue to OMM Rebirth being active!', 4)
+    end
+end
+
+local function reset_options()
+    for i = 1, #optionTable do
+        optionTable[i].toggle = optionTable[i].toggleDefault
+        if optionTable[i].toggleSaveName ~= nil then
+            mod_storage_save(optionTable[i].toggleSaveName, tostring(optionTable[i].toggle))
+        end
+        if optionTable[i].toggleNames == nil then
+            optionTable[i].toggleNames = {"Off", "On"}
+        end
     end
 end
 
@@ -1026,6 +1038,19 @@ hook_event(HOOK_ON_HUD_RENDER_BEHIND, on_life_counter_render)
 --------------
 -- Commands --
 --------------
+
+local promptedAreYouSure = false
+
+local function chat_command_reset_options()
+    if not promptedAreYouSure then
+        djui_chat_message_create("Are you sure you want to reset your save data for Character Select?")
+        promptedAreYouSure = true
+    else
+        djui_chat_message_create("Save Data Reset")
+        reset_options()
+        promptedAreYouSure = false
+    end
+end
 
 local function chat_command(msg)
     if msg ~= "" and msg ~= "menu" then
