@@ -1071,8 +1071,9 @@ local function chat_command(msg)
     -- Help Prompt Check
     if msg == "?" or msg == "help" then
         djui_chat_message_create("Character Select's Avalible Commands:"..
-        "\n\\#ffff33\\/char-select menu\\#ffffff\\ - Opens the Menu"..
         "\n\\#ffff33\\/char-select help\\#ffffff\\ - Returns Avalible Commands"..
+        "\n\\#ffff33\\/char-select menu\\#ffffff\\ - Opens the Menu"..
+        "\n\\#ffff33\\/char-select [name/num]\\#ffffff\\ - Switches to Character"..
         "\n\\#ff3333\\/char-select reset\\#ffffff\\ - Resets your Save Data")
         return true
     end
