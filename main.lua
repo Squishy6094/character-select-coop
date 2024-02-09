@@ -232,7 +232,9 @@ local function load_preferred_char()
         end
     elseif savedChar == nil then
         mod_storage_save("PrefChar", "Default")
+        savedChar = "Default"
     end
+    
     local savedCharColors = mod_storage_load("PrefCharColor")
     if savedCharColors ~= nil and savedCharColors ~= "" then
         local savedCharColorsTable = string_split(string_underscore_to_space(savedCharColors))
