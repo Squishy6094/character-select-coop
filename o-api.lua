@@ -2,8 +2,6 @@
 
 local characterVoices = {}
 
-local TEX_UNKNOWN_CHAR = nil
-
 local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 
 local table_insert = table.insert
@@ -31,7 +29,7 @@ local function character_add(name, description, credit, color, modelInfo, forceC
         color = color and color or {r = 255, g = 255, b = 255},
         model = modelInfo and modelInfo or E_MODEL_ARMATURE,
         forceChar = forceChar and forceChar or CT_MARIO,
-        lifeIcon = lifeIcon and lifeIcon or TEX_UNKNOWN_CHAR,
+        lifeIcon = lifeIcon and lifeIcon or nil,
         camScale = camScale and camScale or (1)
     })
     return #characterTable

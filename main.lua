@@ -234,7 +234,7 @@ local function load_preferred_char()
         mod_storage_save("PrefChar", "Default")
         savedChar = "Default"
     end
-    
+
     local savedCharColors = mod_storage_load("PrefCharColor")
     if savedCharColors ~= nil and savedCharColors ~= "" then
         local savedCharColorsTable = string_split(string_underscore_to_space(savedCharColors))
@@ -606,6 +606,7 @@ local function on_hud_render()
             local TEXT_DESCRIPTION_TABLE = character.description
             local TEXT_COLOR = "Color: R-"..character.color.r..", G-"..character.color.g..", B-"..character.color.b
             local TEX_ICON = character.lifeIcon
+            local TEXT_ICON_DEFAULT = "?"
             local TEX_SCALE = "Camera Scale: "..character.camScale
             local TEXT_PREF = "Preferred: "..TEXT_PREF_LOAD
             local TEXT_PREF_COLOR = "Pref Color: R-"..prefCharColor.r..", G-"..prefCharColor.g..", B-"..prefCharColor.b
@@ -627,9 +628,17 @@ local function on_hud_render()
             end
             local descriptionOffset = (#TEXT_DESCRIPTION_TABLE - removeLine) * 7
             djui_hud_print_text(TEXT_COLOR, width - x + 8, 109 + descriptionOffset, 0.6)
-            djui_hud_print_text(TEXT_LIFE_ICON.."    ("..TEX_ICON.width.."x"..TEX_ICON.height..")", width - x + 8, 118 + descriptionOffset, 0.6)
-            djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_render_texture(TEX_ICON, width - x + 38, 119 + descriptionOffset, 0.5/(TEX_ICON.width/16), 0.5/(TEX_ICON.height/16))
+            if TEX_ICON ~= nil then
+                djui_hud_print_text(TEXT_LIFE_ICON.."    ("..TEX_ICON.width.."x"..TEX_ICON.height..")", width - x + 8, 118 + descriptionOffset, 0.6)
+                djui_hud_set_color(255, 255, 255, 255)
+                djui_hud_render_texture(TEX_ICON, width - x + 38, 119 + descriptionOffset, 0.5/(TEX_ICON.width/16), 0.5/(TEX_ICON.height/16))
+            else
+                djui_hud_print_text(TEXT_LIFE_ICON.."    (?x?)", width - x + 8, 118 + descriptionOffset, 0.6)
+                djui_hud_set_font(FONT_HUD)
+                djui_hud_set_color(255, 255, 255, 255)
+                djui_hud_print_text(TEXT_ICON_DEFAULT, width - x + 38, 119 + descriptionOffset, 0.5)
+                djui_hud_set_font(FONT_TINY)
+            end
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_print_text(TEXT_FORCED_CHAR..defaultForceChar[character.forceChar], width - x + 8, 127 + descriptionOffset, 0.6)
             djui_hud_print_text(TEXT_TABLE_POS..currChar, width - x + 8, 136 + descriptionOffset, 0.6)
