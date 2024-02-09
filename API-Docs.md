@@ -106,11 +106,11 @@ A function that adds caps to a character, has 2 inputs
 
 Table Example:
 ```lua
-local capModels = {
-    normal = smlua_model_util_get_id("armature_normal_cap_geo"),
-    wing = smlua_model_util_get_id("armature_wing_cap_geo"),
-    metal = smlua_model_util_get_id("armature_metal_cap_geo"),
-    metalWing = smlua_model_util_get_id("armature_metal_wing_cap_geo")
+local CAPTABLE_CHAR = {
+    normal = smlua_model_util_get_id("custom_model_cap_normal_geo"),
+    wing = smlua_model_util_get_id("custom_model_cap_wing_geo"),
+    metal = smlua_model_util_get_id("custom_model_cap_metal_geo"),
+    metalWing = smlua_model_util_get_id("custom_model_cap_wing_geo"),
 }
 ```
 

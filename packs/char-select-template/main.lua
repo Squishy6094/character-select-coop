@@ -43,22 +43,17 @@ local VOICETABLE_CHAR = {
     [CHAR_SOUND_YAWNING] = 'NES-Pause.ogg',
 }
 
---[[
 
-    Table for Cap Models, this has been noted out due to the template not having these models.
-    You can add these models in your respective actors folder like you would for any Character Model
-
-local capModels = {
-    normal = smlua_model_util_get_id("normal_cap_geo"),
-    wing = smlua_model_util_get_id("wing_cap_geo"),
-    metal = smlua_model_util_get_id("metal_cap_geo"),
-    metalWing = smlua_model_util_get_id("metal_wing_cap_geo")
+local CAPTABLE_CHAR = {
+    normal = smlua_model_util_get_id("custom_model_cap_normal_geo"),
+    wing = smlua_model_util_get_id("custom_model_cap_wing_geo"),
+    metal = smlua_model_util_get_id("custom_model_cap_metal_geo"),
+    metalWing = smlua_model_util_get_id("custom_model_cap_wing_geo"),
 }
-
-]]
 
 if _G.charSelectExists then
     CT_CHAR = _G.charSelect.character_add("Custom Model Name", {"Custom Model Description", "Custom Model Description"}, "Custom Model Creator", {r = 255, g = 200, b = 200}, E_MODEL_CUSTOM_MODEL, CT_MARIO, TEX_CUSTOM_ICON)
+    _G.charSelect.character_add_caps(E_MODEL_CUSTOM_MODEL, CAPTABLE_CHAR)
 
     -- the following must be hooked for each character added
     _G.charSelect.character_add_voice(E_MODEL_CUSTOM_MODEL, VOICETABLE_CHAR)
