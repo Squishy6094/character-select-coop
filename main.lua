@@ -516,9 +516,9 @@ local TEXT_OPTIONS_SELECT = "A - Select | B - Exit  "
 local TEXT_LOCAL_MODEL_OFF = "Locally Display Models is Off"
 local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Menu"
 
-local MATH_THIRD = 1/3
-
 local menuColor = characterTable[currChar].color
+
+local MATH_DIVIDE_THREE_HUNDRED_TWENTY = 1/320
 
 local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
@@ -528,7 +528,7 @@ local function on_hud_render()
     local height = 240
     local widthHalf = width*0.5
     local heightHalf = height*0.5
-    local widthScale = math_max(width, 321.4)*0.00311332503
+    local widthScale = math_max(width, 321.4)*MATH_DIVIDE_THREE_HUNDRED_TWENTY
 
     if menuAndTransition then
         if optionTable[optionTableRef.menuColor].toggle > 1 then
@@ -714,26 +714,26 @@ local function on_hud_render()
             djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
             djui_hud_print_text(TEXT_OPTIONS_HEADER, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_HEADER)*0.3*math_min(widthScale, 1.5), 65 + optionAnimTimer * -1, 0.6*math_min(widthScale, 1.5))
 
-            local widthScale = math_min(widthScale, 1.5)
+            local widthScaleLimited = math_min(widthScale, 1.5)
             -- Up Arrow
             if currOption > 3 then
                 djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
                 djui_hud_set_rotation(0x2000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 3 * widthScale, 95 - optionAnimTimer, 5  * widthScale, 5  * widthScale)
+                djui_hud_render_rect(widthHalf - 3 * widthScaleLimited, 95 - optionAnimTimer, 5  * widthScaleLimited, 5  * widthScaleLimited)
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_set_rotation(0x0000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 4 * widthScale, 95 - optionAnimTimer + 2 * widthScale, 8 * widthScale, 10)
+                djui_hud_render_rect(widthHalf - 4 * widthScaleLimited, 95 - optionAnimTimer + 2 * widthScaleLimited, 8 * widthScaleLimited, 10)
             end
 
             -- Down Arrow
             if currOption < optionTableCount - 2 then
-                local yOffset = 90 - optionAnimTimer + 45 * widthScale
+                local yOffset = 90 - optionAnimTimer + 45 * widthScaleLimited
                 djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
                 djui_hud_set_rotation(0x2000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 3 * widthScale, yOffset + 10, 5 * widthScale, 5 * widthScale)
+                djui_hud_render_rect(widthHalf - 3 * widthScaleLimited, yOffset + 10, 5 * widthScaleLimited, 5 * widthScaleLimited)
                 djui_hud_set_color(0, 0, 0, 255)
                 djui_hud_set_rotation(0x0000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 4 * widthScale, yOffset + 10 - 2 * widthScale, 8 * widthScale, 5 * widthScale)
+                djui_hud_render_rect(widthHalf - 4 * widthScaleLimited, yOffset + 10 - 2 * widthScaleLimited, 8 * widthScaleLimited, 5 * widthScaleLimited)
             end
 
             -- Options 
@@ -741,7 +741,7 @@ local function on_hud_render()
                 if not (i < 1 or i > optionTableCount) then 
                     local toggleName = optionTable[i].name
                     local scale = 0.5
-                    local yOffset = 100 - optionAnimTimer + (i - currOption + 2) * 9 * widthScale
+                    local yOffset = 100 - optionAnimTimer + (i - currOption + 2) * 9 * widthScaleLimited
                     if i == currOption then
                         djui_hud_set_font(FONT_CS_NORMAL)
                         scale = 0.3
@@ -756,7 +756,7 @@ local function on_hud_render()
                         djui_hud_set_font(FONT_TINY)
                         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 150)
                     end
-                    scale = scale * widthScale
+                    scale = scale * widthScaleLimited
                     djui_hud_print_text(toggleName, widthHalf - djui_hud_measure_text(toggleName)*scale*0.5, yOffset, scale)
                 end
             end
@@ -767,7 +767,7 @@ local function on_hud_render()
                 for i = 1, #optionTable[currOption].description do
                     djui_hud_set_font(FONT_CS_NORMAL)
                     local line = optionTable[currOption].description[i]
-                    djui_hud_print_text(line, widthHalf - djui_hud_measure_text(line)*0.15, 180 - optionAnimTimer + 15 * widthScale + 8 * i - 8 * #optionTable[currOption].description, 0.3)
+                    djui_hud_print_text(line, widthHalf - djui_hud_measure_text(line)*0.15, 180 - optionAnimTimer + 15 * widthScaleLimited + 8 * i - 8 * #optionTable[currOption].description, 0.3)
                 end
             end
             -- Footer
@@ -778,18 +778,17 @@ local function on_hud_render()
             djui_hud_render_rect(width*0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
         else
             -- How to open options display
-            local widthScaleUnlimited = widthScale
-            local widthScale = math_min(widthScale, 1.42)
+            local widthScaleLimited = math_min(widthScale, 1.42)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_render_rect(widthHalf - 50 * widthScaleUnlimited, height - 25 * widthScale, 100 * widthScaleUnlimited, 26 * widthScale)
+            djui_hud_render_rect(widthHalf - 50 * widthScale, height - 25 * widthScaleLimited, 100 * widthScale, 26 * widthScaleLimited)
             djui_hud_set_color(0, 0, 0, 255)
-            djui_hud_render_rect(widthHalf - 50 * widthScaleUnlimited + 2, height - 25 * widthScale + 2, 100 * widthScaleUnlimited - 4, 22 * widthScale)
+            djui_hud_render_rect(widthHalf - 50 * widthScale + 2, height - 25 * widthScaleLimited + 2, 100 * widthScale - 4, 22 * widthScaleLimited)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_render_rect(widthHalf - 50 * widthScaleUnlimited, height - 2, 100 * widthScaleUnlimited, 2)
+            djui_hud_render_rect(widthHalf - 50 * widthScale, height - 2, 100 * widthScale, 2)
             djui_hud_set_font(FONT_CS_NORMAL)
-            djui_hud_print_text(TEXT_OPTIONS_OPEN, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_OPEN)*0.175 * widthScale, height - 23 * widthScale + optionAnimTimer + 202, 0.35 * widthScale)
+            djui_hud_print_text(TEXT_OPTIONS_OPEN, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_OPEN)*0.175 * widthScaleLimited, height - 23 * widthScaleLimited + optionAnimTimer + 202, 0.35 * widthScaleLimited)
             djui_hud_set_font(FONT_TINY)
-            djui_hud_print_text(TEXT_MENU_CLOSE, widthHalf - djui_hud_measure_text(TEXT_MENU_CLOSE)*0.25 * widthScale, height - 13 * widthScale + optionAnimTimer + 202, 0.5 * widthScale)
+            djui_hud_print_text(TEXT_MENU_CLOSE, widthHalf - djui_hud_measure_text(TEXT_MENU_CLOSE)*0.25 * widthScaleLimited, height - 13 * widthScaleLimited + optionAnimTimer + 202, 0.5 * widthScaleLimited)
         end
         
 
