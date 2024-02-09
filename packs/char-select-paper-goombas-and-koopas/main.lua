@@ -99,7 +99,6 @@ local VOICETABLE_KOOPA = {
     [CHAR_SOUND_OKEY_DOKEY] = 'Kokey_dokey.ogg',
 }
 
---[[
 local capGoombella = {
     normal = smlua_model_util_get_id("goombellas_cap_geo"),
     wing = smlua_model_util_get_id("goombellas_wing_cap_geo"),
@@ -134,7 +133,6 @@ local capParakarry = {
     metal = smlua_model_util_get_id("parakarrys_metal_cap_geo"),
     metalWing = smlua_model_util_get_id("parakarrys_metal_wing_cap_geo")
 }
-]]
 
 if _G.charSelectExists then
     _G.charSelect.character_add("Goombella", {"Goombella is an archeologist!", "A Clever young adventurer who admires Mario.", "GU GOOMBAS FOREVER"}, "Melzinoff", {r = 255, g = 200, b = 200}, E_MODEL_GOOMBELLA, CT_TOAD, TEX_GOOMBELLA)
@@ -143,13 +141,11 @@ if _G.charSelectExists then
 	_G.charSelect.character_add("Koops", {"Koops is a timid Koopa who wants to be tougher.", "Kicking some shell never felt so good."}, "Melzinoff", {r = 255, g = 200, b = 200}, E_MODEL_KOOPS, CT_LUIGI, TEX_KOOPS)
 	_G.charSelect.character_add("Parakarry", {"He's Parakarry, a Paratroopa.", "He's well known for being the slowest mailman around."}, "Melzinoff", {r = 255, g = 200, b = 200}, E_MODEL_PARAKARRY, CT_LUIGI, TEX_PARAKARRY)
 
-    --[[
     _G.charSelect.character_add_caps(E_MODEL_GOOMBELLA, capGoombella)
     _G.charSelect.character_add_caps(E_MODEL_GOOMBARIO, capGoombario)
     _G.charSelect.character_add_caps(E_MODEL_KOOPER, capKooper)
     _G.charSelect.character_add_caps(E_MODEL_KOOPS, capKoops)
     _G.charSelect.character_add_caps(E_MODEL_PARAKARRY, capParakarry)
-    ]]
 
 	_G.charSelect.character_add_voice(E_MODEL_GOOMBELLA, VOICETABLE_GOOMBA)
 	_G.charSelect.character_add_voice(E_MODEL_GOOMBARIO, VOICETABLE_GOOMBA)

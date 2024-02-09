@@ -77,7 +77,6 @@ local VOICETABLE_MALLOW = {
 local cap_popup_timer = 90
 local cap_popup_name = "Frog Coin"
 
---[[
 local MODEL_CAPS_GENO = {
     normal = smlua_model_util_get_id("geno_cap_geo"),
     wing = smlua_model_util_get_id("geno_wing_cap_geo"),
@@ -90,7 +89,6 @@ local MODEL_CAPS_MALLOW = {
     metal = smlua_model_util_get_id("mallow_metal_cap_geo"),
     metalWing = smlua_model_util_get_id("mallow_metal_wing_cap_geo")
 }
-]]
 
 local MODEL_FROG_COIN = smlua_model_util_get_id("frog_coin_geo")
 
@@ -98,8 +96,8 @@ if _G.charSelectExists then
     id_geno = _G.charSelect.character_add("Geno", {"It's Geno!", "he was born yesterday", "(Press [Y] to toggle his gun!)"}, "wibblus", {r = 150, g = 150, b = 255}, E_MODEL_GENO, CT_MARIO, TEX_GENO_ICON)
     id_mallow = _G.charSelect.character_add("Mallow", {"It's Mallow!", "he was born today"}, "Melzinoff", {r = 255, g = 200, b = 230}, E_MODEL_MALLOW, CT_LUIGI, TEX_MALLOW_ICON)
 
-    --_G.charSelect.character_add_caps(E_MODEL_GENO, MODEL_CAPS_GENO)
-    --_G.charSelect.character_add_caps(E_MODEL_MALLOW, MODEL_CAPS_MALLOW)
+    _G.charSelect.character_add_caps(E_MODEL_GENO, MODEL_CAPS_GENO)
+    _G.charSelect.character_add_caps(E_MODEL_MALLOW, MODEL_CAPS_MALLOW)
 
     -- the following must be hooked for each character added
     _G.charSelect.character_add_voice(E_MODEL_GENO, VOICETABLE_GENO)
