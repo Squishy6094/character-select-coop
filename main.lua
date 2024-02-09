@@ -35,6 +35,7 @@ characterTable = {
         camScale = 1.0
     },
 }
+
 characterCaps = {}
 
 optionTableRef = {
@@ -607,7 +608,7 @@ local function on_hud_render()
             local TEXT_COLOR = "Color: R-"..character.color.r..", G-"..character.color.g..", B-"..character.color.b
             local TEX_ICON = character.lifeIcon
             local TEXT_ICON_DEFAULT = "?"
-            local TEX_SCALE = "Camera Scale: "..character.camScale
+            local TEXT_SCALE = "Camera Scale: "..character.camScale
             local TEXT_PREF = "Preferred: "..TEXT_PREF_LOAD
             local TEXT_PREF_COLOR = "Pref Color: R-"..prefCharColor.r..", G-"..prefCharColor.g..", B-"..prefCharColor.b
 
@@ -621,7 +622,15 @@ local function on_hud_render()
             local removeLine = 0
             for i = 1, #TEXT_DESCRIPTION_TABLE do
                 if TEXT_DESCRIPTION_TABLE[i] ~= "" then
-                    djui_hud_print_text(TEXT_DESCRIPTION_TABLE[i], width - x + 12, 101 + (i-removeLine)*7, 0.5)
+                    djui_hud_set_font(FONT_CS_NORMAL)
+                    local TEXT_DESCRIPTION_LINE = TEXT_DESCRIPTION_TABLE[i]
+                    if (djui_hud_measure_text(TEXT_DESCRIPTION_TABLE[i])*0.3 > 90) then
+                        TEXT_DESCRIPTION_LINE = "(!) "..TEXT_DESCRIPTION_LINE
+                    else
+                        TEXT_DESCRIPTION_LINE = "    "..TEXT_DESCRIPTION_LINE
+                    end
+                    djui_hud_set_font(FONT_TINY)
+                    djui_hud_print_text(TEXT_DESCRIPTION_LINE, width - x + 5, 101 + (i-removeLine)*7, 0.5)
                 else
                     removeLine = removeLine + 1
                 end
@@ -642,7 +651,9 @@ local function on_hud_render()
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_print_text(TEXT_FORCED_CHAR..defaultForceChar[character.forceChar], width - x + 8, 127 + descriptionOffset, 0.6)
             djui_hud_print_text(TEXT_TABLE_POS..currChar, width - x + 8, 136 + descriptionOffset, 0.6)
-            djui_hud_print_text(TEX_SCALE, width - x + 8, 145 + descriptionOffset, 0.6)
+            djui_hud_print_text(TEXT_SCALE, width - x + 8, 145 + descriptionOffset, 0.6)
+
+
             djui_hud_print_text(TEXT_PREF, width - x + 8, height - 27, 0.6)
             djui_hud_print_text(TEXT_PREF_COLOR, width - x + 8, height - 18, 0.6)
         end

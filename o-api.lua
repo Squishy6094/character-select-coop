@@ -1,11 +1,8 @@
-
-
 local characterVoices = {}
 
 local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 
 local table_insert = table.insert
-local type = type
 
 ---------
 -- API --
