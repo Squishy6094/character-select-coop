@@ -39,9 +39,8 @@ local function character_add(name, description, credit, color, modelInfo, forceC
         model = modelInfo and modelInfo or E_MODEL_ARMATURE,
         forceChar = forceChar and forceChar or CT_MARIO,
         lifeIcon = lifeIcon and lifeIcon or nil,
-        camScale = camScale and camScale or (1)
-    })
-    saveNameTable[#characterTable] = characterTable[#characterTable].saveName
+        camScale = camScale and camScale or 1
+    }
     return #characterTable
 end
 
