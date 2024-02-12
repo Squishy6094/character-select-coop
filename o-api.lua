@@ -11,7 +11,6 @@
 --- @field public camScale integer
 
 local characterVoices = {}
-local saveNameTable = {}
 
 local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 
@@ -58,7 +57,7 @@ end
 local function character_edit(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
     characterTable[charNum] = characterTable[charNum] and {
         name = name and name or characterTable[charNum].name,
-        saveName = saveNameTable[charNum],
+        saveName = characterTable[charNum].saveName,
         description = description and description or characterTable[charNum].description,
         credit = credit and credit or characterTable[charNum].credit,
         color = color and color or characterTable[charNum].color,
