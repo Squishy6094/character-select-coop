@@ -1,3 +1,15 @@
+
+--- @class CharacterTable
+--- @field public name string
+--- @field public saveName string
+--- @field public description table
+--- @field public credit string
+--- @field public color Color
+--- @field public model ModelExtendedId|integer
+--- @field public forceChar CharacterType
+--- @field public lifeIcon TextureInfo
+--- @field public camScale integer
+
 local characterVoices = {}
 
 local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
@@ -43,7 +55,8 @@ end
 ---@param camScale integer|nil Zooms the camera based on a multiplier (Default 1.0)
 local function character_edit(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
     characterTable[charNum] = characterTable[charNum] and {
-        name = name and string_space_to_underscore(name) or characterTable[charNum].name,
+        name = name and name or characterTable[charNum].name,
+        saveName = name and string_space_to_underscore(name) or characterTable[charNum].saveName,
         description = description and description or characterTable[charNum].description,
         credit = credit and credit or characterTable[charNum].credit,
         color = color and color or characterTable[charNum].color,
@@ -66,7 +79,7 @@ local function character_add_caps(modelInfo, caps)
     characterCaps[modelInfo] = caps
 end
 
----@return table
+---@return CharacterTable
 local function character_get_current_table()
     return characterTable[currChar]
 end
