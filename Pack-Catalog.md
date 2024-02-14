@@ -141,6 +141,18 @@ Birdo made playable using Character Select :]
 - Characters - 1
   - Birdo
 
+## Wapeach - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-wapeach.zip)
+
+<img src="images/pack-preview-wapeach.png" width="480">
+
+Birdo made playable using Character Select :]
+
+- Creator(s)
+  - Melzinoff
+  - SodaVampyr (Voice Actor)
+- Characters - 1
+  - Wapeach
+
 ## Paper Goombas & Koopas - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-paper-goombas-and-koopas.zip)
 
 <img src="images/pack-preview-paper-goombas-and-koopas.png" width="480">
