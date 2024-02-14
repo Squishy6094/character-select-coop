@@ -5,7 +5,7 @@ Here you can browse almost every Community Made Pack made for Character Select, 
 ### Pack Installation
 To install and load a pack, Extract the pack into your mods folder and turn it on as if it were an individual mod. Most if not All in-game pack names are prefixed with "[CS]" and will likely be found at the end of your mod list.
 
-## Pizizito's Pizza Tower Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-pizza-tower-pack.zip)
+## Pizizito's Pizza Tower Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-pizza-tower-pack/download.zip)
 
 <img src="images/pack-preview-none.png" width="480">
 
