@@ -1,6 +1,6 @@
 # Pack Catalog
 
-Here you can browse almost every Community Made Pack made for Character Select, This page acts as both a Catalog and an Archive and will be updated with any new packs we become aware of!
+Here you can browse almost every Community Made Pack made for Character Select! This page acts as both a Catalog and an Archive and will be updated with any new packs we become aware of!
 
 ### Pack Installation
 To install and load a pack, Extract the pack into your mods folder and turn it on as if it were an individual mod. Most if not All in-game pack names are prefixed with "[CS]" and will likely be found at the end of your mod list.

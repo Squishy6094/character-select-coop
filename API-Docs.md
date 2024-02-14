@@ -1,6 +1,6 @@
 # Character Select API Documentation
 ### Gives full descriptions of all API functions
-We highly recommend messing around with our [Character Select Template](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template.zip) while first reading this doc to get a handle on everything here. And DO NOT modify/add any content within the Character Select mod itself, please use the API and an individual mod when adding characters. If you're confused about anything from outside of the Documentation, Please refer to [SM64CoopDX's Lua Doumentation](https://github.com/coop-deluxe/sm64coopdx/blob/main/docs/lua/lua.md).
+We highly recommend messing around with our [Character Select Template](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template/download.zip) while first reading this doc to get a handle on everything here. And DO NOT modify/add any content within the Character Select mod itself, please use the API and an individual mod when adding characters. If you're confused about anything from outside of the Documentation, Please refer to [SM64CoopDX's Lua Doumentation](https://github.com/coop-deluxe/sm64coopdx/blob/main/docs/lua/lua.md).
 
 ## _G.charSelectExists
 A variable checking if the Mod is active, this is useful for preventing script errors when the mod isn't on.
