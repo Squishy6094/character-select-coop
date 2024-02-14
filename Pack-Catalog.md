@@ -7,7 +7,7 @@ To install and load a pack, Extract the pack into your mods folder and turn it o
 
 ## Pizizito's Pizza Tower Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-pizza-tower-pack/download.zip)
 
-<img src="images/pack-preview-none.png" width="480">
+<img src="packs\char-select-template\preview.png" width="480">
 
 A handful of Pizza Tower/Sugary Spire Characters in Super Mario 64!
 
@@ -23,9 +23,9 @@ A handful of Pizza Tower/Sugary Spire Characters in Super Mario 64!
   - Pizzano
   - Gustavo
 
-## Furry Friends Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-furry-friends.zip)
+## Furry Friends Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-furry-friends/download.zip)
 
-<img src="images/pack-preview-none.png" width="480">
+<img src="packs\char-select-template\preview.png" width="480">
 
 A Pack the features characters/sonas of Yuyake's Friends, including Yuyake Himself!
 
@@ -58,9 +58,9 @@ He also will use Luigi's moves if you're using the Character Moveset mod!
 - Characters - 1
   - Travis
  
-## Squid Sisters - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-squid-sisters.zip)
+## Squid Sisters - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-squid-sisters/download.zip)
 
-<img src="images/pack-preview-none.png" width="480">
+<img src="packs\char-select-template\preview.png" width="480">
 
 Splatoon's Callie & Marie in SM64! Includes Full Color Support and Eye States!
 
@@ -107,9 +107,9 @@ Splatoon's Callie & Marie in SM64! Includes Full Color Support and Eye States!
   - Hare (Camp)
   - Saya
 
-## VL-Tone & Cjes Luigi - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-cjes-and-vl.zip)
+## VL-Tone & Cjes Luigi - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-cjes-and-vl/download.zip)
 
-<img src="images/pack-preview-none.png" width="480">
+<img src="packs\char-select-template\preview.png" width="480">
 
 Alternate Luigi Models from way-back-when, Reminiscing of a time before L was Real.
 
@@ -119,9 +119,9 @@ Alternate Luigi Models from way-back-when, Reminiscing of a time before L was Re
   - VL-Tone Luigi
   - Cjes Luigi
 
-## Extra Characters - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-extra-chars.zip)
+## Extra Characters - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-extra-chars/download.zip)
 
-<img src="images/pack-preview-none.png" width="480">
+<img src="packs\char-select-template\preview.png" width="480">
 
 More characters from the Super Mario series!.
 
@@ -130,9 +130,9 @@ More characters from the Super Mario series!.
 - Characters - 1
   - Toadette
 
-## Birdo Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-birdo.zip)
+## Birdo Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-birdo/download.zip)
 
-<img src="images/pack-preview-birdo.png" width="480">
+<img src="packs/char-select-birdo/preview.png" width="480">
 
 Birdo made playable using Character Select :]
 
@@ -141,9 +141,9 @@ Birdo made playable using Character Select :]
 - Characters - 1
   - Birdo
 
-## Wapeach - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-wapeach.zip)
+## Wapeach - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-wapeach/download.zip)
 
-<img src="images/pack-preview-wapeach.png" width="480">
+<img src="packs/char-select-wapeach/preview.png" width="480">
 
 Birdo made playable using Character Select :]
 
@@ -153,9 +153,9 @@ Birdo made playable using Character Select :]
 - Characters - 1
   - Wapeach
 
-## Paper Goombas & Koopas - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-paper-goombas-and-koopas.zip)
+## Paper Goombas & Koopas - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-paper-goombas-and-koopas/download.zip)
 
-<img src="images/pack-preview-paper-goombas-and-koopas.png" width="480">
+<img src="packs/char-select-paper-goombas-and-koopas/preview.png" width="480">
 
 Famous Goombas and Koopas from the Paper Mario Series :]
 
@@ -168,9 +168,9 @@ Famous Goombas and Koopas from the Paper Mario Series :]
   - Koops
   - Parakarry
 
-## Geno + Mallow - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-smrpg.zip)
+## Geno + Mallow - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-smrpg/download.zip)
 
-<img src="images/pack-preview-smrpg.png" width="480">
+<img src="packs/char-select-smrpg/preview.png" width="480">
 
 Geno and Mallow made playable with Character Select!
 
@@ -181,9 +181,9 @@ Geno and Mallow made playable with Character Select!
   - Geno
   - Mallow
 
-## Dry-Bones Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-drybones.zip)
+## Dry-Bones Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-drybones/download.zip)
 
-<img src="images/pack-preview-drybones.png" width="480">
+<img src="packs/char-select-drybones/preview.png" width="480">
 
 A Dry Bones Player Model!
 
@@ -192,9 +192,9 @@ A Dry Bones Player Model!
 - Characters - 1
   - Dry-Bones
 
-## Bowser Jr. - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-bowserjr.zip)
+## Bowser Jr. - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-bowserjr/download.zip)
 
-<img src="images/pack-preview-bowserjr.png" width="480">
+<img src="packs/char-select-bowserjr/preview.png" width="480">
 
 Bowser Jr is Playable!
 
@@ -203,9 +203,9 @@ Bowser Jr is Playable!
 - Characters - 1
   - Bowser Jr.
 
-## Nabbit - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-nabbit.zip)
+## Nabbit - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-nabbit/download.zip)
 
-<img src="images/pack-preview-nabbit.png" width="480">
+<img src="packs/char-select-nabbit/preview.png" width="480">
 
 Nabbit is playable with Character Select!!
 
@@ -214,9 +214,9 @@ Nabbit is playable with Character Select!!
 - Characters - 1
   - Nabbit
 
-## Peter Griffin - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-peter-griffin.zip)
+## Peter Griffin - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-peter-griffin/download.zip)
 
-<img src="images/pack-preview-peter-griffin.png" width="480">
+<img src="packs/char-select-peter-griffin/preview.png" width="480">
 
 It seems today...
 
@@ -225,9 +225,9 @@ It seems today...
 - Characters - 1
   - Peter Griffin
 
-## Uncle Grandpa - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-uncle-grandpa.zip)
+## Uncle Grandpa - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-uncle-grandpa/download.zip)
 
-<img src="images/pack-preview-none.png" width="480">
+<img src="packs\char-select-template\preview.png" width="480">
 
 Good Morning! Uncle Grandpa in Super Mario 64, Stylized to look 2D and Includes Eye States!
 
@@ -239,9 +239,9 @@ Good Morning! Uncle Grandpa in Super Mario 64, Stylized to look 2D and Includes 
 - Characters - 1
   - Uncle Grandpa
 
-## Classic Amy - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-amy.zip)
+## Classic Amy - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-amy/download.zip)
 
-<img src="images/pack-preview-none.png" width="480">
+<img src="packs\char-select-template\preview.png" width="480">
 
 Classic Amy CS pack by flipflop bell!
 
@@ -250,9 +250,9 @@ Classic Amy CS pack by flipflop bell!
 - Characters - 1
   - Amy
 
-## Scott the Woz - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-scott-the-woz.zip)
+## Scott the Woz - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-scott-the-woz/download.zip)
 
-<img src="images/pack-preview-none.png" width="480">
+<img src="packs\char-select-template\preview.png" width="480">
 
 Hey all, Scott Here!
 
