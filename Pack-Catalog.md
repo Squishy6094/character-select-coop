@@ -43,7 +43,7 @@ Birdo made playable using Character Select :]
 
 <img src="packs/char-select-wapeach/preview.png" width="480">
 
-Birdo made playable using Character Select :]
+That famous unused Wapeach!! Here to claim back that throne from Peach!!
 
 - Creator(s)
   - Melzinoff
