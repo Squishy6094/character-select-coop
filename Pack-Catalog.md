@@ -55,7 +55,7 @@ Birdo made playable using Character Select :]
 
 <img src="packs/char-select-paper-partners-64/preview.png" width="480">
 
-Famous Goombas and Koopas from the Paper Mario Series :]
+Skinpack of famous friends from the Paper Mario series!
 
 - Creator(s)
   - Melzinoff
