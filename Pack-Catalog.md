@@ -5,23 +5,130 @@ Here you can browse almost every Community Made Pack made for Character Select! 
 ### Pack Installation
 To install and load a pack, Extract the pack into your mods folder and turn it on as if it were an individual mod. Most if not All in-game pack names are prefixed with "[CS]" and will likely be found at the end of your mod list.
 
-## Pizizito's Pizza Tower Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-pizza-tower-pack/download.zip)
+## VL-Tone & Cjes Luigi - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-cjes-and-vl/download.zip)
 
 <img src="packs\char-select-template\preview.png" width="480">
 
-A handful of Pizza Tower/Sugary Spire Characters in Super Mario 64!
+Alternate Luigi Models from way-back-when, Reminiscing of a time before L was Real.
 
 - Creator(s)
-  - Pizizito (Models)
-  - KitKat (HUD Icons)
-- Characters - 7
-  - Pepperman
-  - Vigilante
-  - The Noise
-  - Fake Peppino
-  - Pizzelle
-  - Pizzano
-  - Gustavo
+  - Coop DX Team
+- Characters - 2
+  - VL-Tone Luigi
+  - Cjes Luigi
+
+## Extra Characters - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-extra-chars/download.zip)
+
+<img src="packs\char-select-template\preview.png" width="480">
+
+More characters from the Super Mario series!.
+
+- Creator(s)
+  - Coop DX Team
+- Characters - 1
+  - Toadette
+
+## Birdo Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-birdo/download.zip)
+
+<img src="packs/char-select-birdo/preview.png" width="480">
+
+Birdo made playable using Character Select :]
+
+- Creator(s)
+  - Melzinoff
+- Characters - 1
+  - Birdo
+
+## Wapeach - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-wapeach/download.zip)
+
+<img src="packs/char-select-wapeach/preview.png" width="480">
+
+Birdo made playable using Character Select :]
+
+- Creator(s)
+  - Melzinoff
+  - SodaVampyr (Voice Actor)
+- Characters - 1
+  - Wapeach
+
+## Paper Partners 64 - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-paper-partners-64/download.zip)
+
+<img src="packs/char-select-paper-partners-64/preview.png" width="480">
+
+Famous Goombas and Koopas from the Paper Mario Series :]
+
+- Creator(s)
+  - Melzinoff
+- Characters - 5
+  - Goombella
+  - Goombario
+  - Kooper
+  - Koops
+  - Parakarry
+  - Bombette
+  - Admiral Bobbery
+  - Watt
+  - Sushie
+  - Lakilester
+  - Lady Bow
+
+## Geno + Mallow - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-smrpg/download.zip)
+
+<img src="packs/char-select-smrpg/preview.png" width="480">
+
+Geno and Mallow made playable with Character Select!
+
+- Creator(s)
+  - Wibblus
+  - Melzinoff
+- Characters - 2
+  - Geno
+  - Mallow
+
+## Dry-Bones Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-drybones/download.zip)
+
+<img src="packs/char-select-drybones/preview.png" width="480">
+
+A Dry Bones Player Model!
+
+- Creator(s)
+  - Wibblus
+- Characters - 1
+  - Dry-Bones
+
+## Bowser Jr. - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-bowserjr/download.zip)
+
+<img src="packs/char-select-bowserjr/preview.png" width="480">
+
+Bowser Jr is Playable!
+
+- Creator(s)
+  - Wibblus
+- Characters - 1
+  - Bowser Jr.
+
+## Nabbit - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-nabbit/download.zip)
+
+<img src="packs/char-select-nabbit/preview.png" width="480">
+
+Nabbit is playable with Character Select!!
+
+- Creator(s)
+  - Wibblus
+- Characters - 1
+  - Nabbit
+
+## Unstoppable Force - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-unstoppable-force/download.zip)
+
+<img src="packs/char-select-unstoppable-force/preview.png" width="480">
+
+mari and rufus from the hit classic game mari's pizzaworld
+
+- Creator(s)
+  - Wibblus
+- Characters - 1
+  - Nabbit
+
 
 ## Furry Friends Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-furry-friends/download.zip)
 
@@ -107,112 +214,23 @@ Splatoon's Callie & Marie in SM64! Includes Full Color Support and Eye States!
   - Hare (Camp)
   - Saya
 
-## VL-Tone & Cjes Luigi - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-cjes-and-vl/download.zip)
+## Pizizito's Pizza Tower Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-pizza-tower-pack/download.zip)
 
 <img src="packs\char-select-template\preview.png" width="480">
 
-Alternate Luigi Models from way-back-when, Reminiscing of a time before L was Real.
+A handful of Pizza Tower/Sugary Spire Characters in Super Mario 64!
 
 - Creator(s)
-  - Coop DX Team
-- Characters - 2
-  - VL-Tone Luigi
-  - Cjes Luigi
-
-## Extra Characters - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-extra-chars/download.zip)
-
-<img src="packs\char-select-template\preview.png" width="480">
-
-More characters from the Super Mario series!.
-
-- Creator(s)
-  - Coop DX Team
-- Characters - 1
-  - Toadette
-
-## Birdo Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-birdo/download.zip)
-
-<img src="packs/char-select-birdo/preview.png" width="480">
-
-Birdo made playable using Character Select :]
-
-- Creator(s)
-  - Melzinoff
-- Characters - 1
-  - Birdo
-
-## Wapeach - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-wapeach/download.zip)
-
-<img src="packs/char-select-wapeach/preview.png" width="480">
-
-Birdo made playable using Character Select :]
-
-- Creator(s)
-  - Melzinoff
-  - SodaVampyr (Voice Actor)
-- Characters - 1
-  - Wapeach
-
-## Paper Goombas & Koopas - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-paper-goombas-and-koopas/download.zip)
-
-<img src="packs/char-select-paper-goombas-and-koopas/preview.png" width="480">
-
-Famous Goombas and Koopas from the Paper Mario Series :]
-
-- Creator(s)
-  - Melzinoff
-- Characters - 5
-  - Goombella
-  - Goombario
-  - Kooper
-  - Koops
-  - Parakarry
-
-## Geno + Mallow - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-smrpg/download.zip)
-
-<img src="packs/char-select-smrpg/preview.png" width="480">
-
-Geno and Mallow made playable with Character Select!
-
-- Creator(s)
-  - Wibblus
-  - Melzinoff
-- Characters - 2
-  - Geno
-  - Mallow
-
-## Dry-Bones Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-drybones/download.zip)
-
-<img src="packs/char-select-drybones/preview.png" width="480">
-
-A Dry Bones Player Model!
-
-- Creator(s)
-  - Wibblus
-- Characters - 1
-  - Dry-Bones
-
-## Bowser Jr. - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-bowserjr/download.zip)
-
-<img src="packs/char-select-bowserjr/preview.png" width="480">
-
-Bowser Jr is Playable!
-
-- Creator(s)
-  - Wibblus
-- Characters - 1
-  - Bowser Jr.
-
-## Nabbit - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-nabbit/download.zip)
-
-<img src="packs/char-select-nabbit/preview.png" width="480">
-
-Nabbit is playable with Character Select!!
-
-- Creator(s)
-  - Wibblus
-- Characters - 1
-  - Nabbit
+  - Pizizito (Models)
+  - KitKat (HUD Icons)
+- Characters - 7
+  - Pepperman
+  - Vigilante
+  - The Noise
+  - Fake Peppino
+  - Pizzelle
+  - Pizzano
+  - Gustavo
 
 ## Peter Griffin - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-peter-griffin/download.zip)
 
