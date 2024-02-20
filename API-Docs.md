@@ -13,7 +13,7 @@ A function that Adds a Character to the Character Table, has 8 inputs:
 | Variable Name | Valid Input Types | Extra Info | Example |
 | ------------- | ------------ | ---------- | ------- |
 | Name | string | Save Name will not contain Special Characters | `"Custom Model"` |
-| Description | table | Table containing Strings (Recommended 30-33 letters per string) | `{"Custom Description", "Custom Description"}` |
+| Description | table/string | Table containing Strings (For manually managing lines) or a single String (Will automatically split into lines) | `{"Custom Description", "Custom Description"}` or `"Custom Description Custom Description"` |
 | Credit | string |  | `"Custom Model Creator"` |
 | Color | table | Table containing variables `r`, `g`, and `b`. Colors use Decimal Format | `{r = 255, g = 150, b = 150}` |
 | Model Info | ModelExtendedId | Model Information Received from `smlua_model_util_get_id()` | `smlua_model_util_get_id("armature_geo")` |
@@ -121,7 +121,7 @@ A function that Edits an Existing Character, has 1 unique input, all other input
 | ------------- | ------------ | ---------- | ------- |
 | Original Character Number | integer | The number/table position of the Character you want to edit, this can be found using `_G.charSelect.character_get_number_from_string()` or making a variable equal `_G.charSelect.character_add()` | `_G.charSelect.character_get_number_from_string("Custom Model")` |
 | Name | string | Save Name will not contain Special Characters | `"Custom Model"` |
-| Description | table | Table containing Strings (Recommended 30-33 letters per string) | `{"Custom Description", "Custom Description"}` |
+| Description | table/string | Table containing Strings (For manually managing lines) or a single String (Will automatically split into lines) | `{"Custom Description", "Custom Description"}` or `"Custom Description Custom Description"` |
 | Credit | string |  | `"Custom Model Creator"` |
 | Color | table | Table containing variables `r`, `g`, and `b`. Colors use Decimal Format | `{r = 255, g = 150, b = 150}` |
 | Model Info | ModelExtendedId | Model Information Received from `smlua_model_util_get_id()` | `smlua_model_util_get_id("armature_geo")` |
