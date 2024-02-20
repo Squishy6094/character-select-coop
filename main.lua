@@ -358,8 +358,8 @@ local faceAngle = 0
 --- @param m MarioState
 local function mario_update(m)
     if stallFrame == 1 then
-        load_preferred_char()
         failsafe_options()
+        load_preferred_char()
         if optionTable[optionTableRef.notification].toggle == 1 then
             boot_note()
         end
@@ -624,7 +624,7 @@ local function on_hud_render()
                 if TEXT_DESCRIPTION_TABLE[i] ~= "" then
                     djui_hud_set_font(FONT_CS_NORMAL)
                     local TEXT_DESCRIPTION_LINE = TEXT_DESCRIPTION_TABLE[i]
-                    if (djui_hud_measure_text(TEXT_DESCRIPTION_TABLE[i])*0.3 > 90) then
+                    if (djui_hud_measure_text(TEXT_DESCRIPTION_TABLE[i])*0.3 > 100) then
                         TEXT_DESCRIPTION_LINE = "(!) "..TEXT_DESCRIPTION_LINE
                     else
                         TEXT_DESCRIPTION_LINE = "    "..TEXT_DESCRIPTION_LINE
@@ -915,6 +915,7 @@ function on_life_counter_render()
     local x = 22
     local y = 15
     if gNetworkPlayers[0].currActNum == 99 then return end
+    if gMarioStates[0].action == ACT_INTRO_CUTSCENE then return end
     if not hud_is_hidden() then
         local icon = characterTable[currChar].lifeIcon
         if icon == nil then
@@ -963,9 +964,8 @@ local function before_mario_update(m)
         m.prevAction = ACT_WALKING
     end
 
-    if gNetworkPlayers[0].currActNum == 99 then
-        menu = false
-    end
+    if gNetworkPlayers[0].currActNum == 99 then menu = false end
+    if m.action == ACT_INTRO_CUTSCENE then menu = false end
 
     if menuAndTransition and not options then
         if menu then

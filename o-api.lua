@@ -16,13 +16,36 @@ local saveNameTable = {}
 local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 
 local table_insert = table.insert
+local type = type
+
+local function split_text_into_lines(text)
+    local words = {}
+    for word in text:gmatch("%S+") do
+        table.insert(words, word)
+    end
+
+    local lines = {}
+    local currentLine = ""
+    for i, word in ipairs(words) do
+        local measuredWidth = djui_hud_measure_text(currentLine .. " " .. word)*0.3
+        if measuredWidth <= 100 then
+            currentLine = currentLine .. " " .. word
+        else
+            table.insert(lines, currentLine)
+            currentLine = word
+        end
+    end
+    table.insert(lines, currentLine) -- add the last line
+
+    return lines
+end
 
 ---------
 -- API --
 ---------
 
 ---@param name string|nil Underscores turn into Spaces
----@param description table|nil {"string"}
+---@param description table|string|nil {"string"}
 ---@param credit string|nil
 ---@param color Color|nil {r, g, b}
 ---@param modelInfo ModelExtendedId|integer|nil Use smlua_model_util_get_id()
@@ -31,6 +54,9 @@ local table_insert = table.insert
 ---@param camScale integer|nil Zooms the camera based on a multiplier (Default 1.0)
 ---@return integer
 local function character_add(name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
+    if type(description) == "string" then
+        description = split_text_into_lines(description)
+    end
     table_insert(characterTable, {
         name = name and name or "Untitled",
         saveName = name and string_space_to_underscore(name) or "Untitled",
@@ -48,7 +74,7 @@ end
 
 ---@param charNum integer Use _G.charSelect.character_get_number_from_string() or _G.charSelect.character_add()'s return value
 ---@param name string|nil Underscores turn into Spaces
----@param description table|nil {"string"}
+---@param description table|string|nil {"string"}
 ---@param credit string|nil
 ---@param color Color|nil {r, g, b}
 ---@param modelInfo ModelExtendedId|integer|nil Use smlua_model_util_get_id()
@@ -56,6 +82,9 @@ end
 ---@param lifeIcon TextureInfo|nil Use get_texture_info()
 ---@param camScale integer|nil Zooms the camera based on a multiplier (Default 1.0)
 local function character_edit(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
+    if type(description) == "string" then
+        description = split_text_into_lines(description)
+    end
     characterTable[charNum] = characterTable[charNum] and {
         name = name and name or characterTable[charNum].name,
         saveName = saveNameTable[charNum],
