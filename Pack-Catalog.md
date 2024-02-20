@@ -59,7 +59,7 @@ Famous Goombas and Koopas from the Paper Mario Series :]
 
 - Creator(s)
   - Melzinoff
-- Characters - 5
+- Characters - 11
   - Goombella
   - Goombario
   - Kooper
@@ -125,9 +125,10 @@ Nabbit is playable with Character Select!!
 mari and rufus from the hit classic game mari's pizzaworld
 
 - Creator(s)
-  - Wibblus
-- Characters - 1
-  - Nabbit
+  - Tyluge
+- Characters - 2
+  - Mari
+  - Rufus
 
 
 ## Furry Friends Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-furry-friends/download.zip)
