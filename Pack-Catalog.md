@@ -134,7 +134,8 @@ mari and rufus from the hit classic game mari's pizzaworld
 
 <img src="packs/char-select-toadbert/preview.png" width="480">
 
-Nabbit is playable with Character Select!!
+It's that one extremely underrated Toad from partners of time.
+"By Boogity" -Toadbert
 
 - Creator(s)
   - xLuigiGamerx
