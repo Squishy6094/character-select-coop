@@ -439,21 +439,36 @@ local function mario_update(m)
     end
 end
 
+local sCapBhvs = {
+    [id_bhvWingCap] = true,
+    [id_bhvVanishCap] = true,
+    [id_bhvMetalCap] = true
+}
+
+--- @param o Object
+--- @param model integer
 function set_model(o, model)
-    local i = network_local_index_from_global(o.globalPlayerIndex)
     if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
+        local i = network_local_index_from_global(o.globalPlayerIndex)
         if gPlayerSyncTable[i].modelId ~= nil and obj_has_model_extended(o, gPlayerSyncTable[i].modelId) == 0 then
             obj_set_model_extended(o, gPlayerSyncTable[i].modelId)
-        return end
+        end
+        return
     end
+
+    if sCapBhvs[get_id_from_behavior(o.behavior)] then
+        o.globalPlayerIndex = nearest_player_to_object(o.parentObj).globalPlayerIndex
+    end
+    local i = network_local_index_from_global(o.globalPlayerIndex)
+
     local c = gMarioStates[i].character
     if model == c.capModelId or
        model == c.capWingModelId or
        model == c.capMetalModelId or
        model == c.capMetalWingModelId then
         local capModels = characterCaps[gPlayerSyncTable[i].modelId]
-        local capModel = nil
         if capModels ~= nil then
+            local capModel = E_MODEL_NONE
             if model == c.capModelId then
                 capModel = capModels.normal
             elseif model == c.capWingModelId then
@@ -463,9 +478,9 @@ function set_model(o, model)
             elseif model == c.capMetalWingModelId then
                 capModel = capModels.metalWing
             end
-            if capModel ~= nil and obj_has_model_extended(o, capModel) == 0 then
+            if capModel ~= E_MODEL_NONE then
                 obj_set_model_extended(o, capModel)
-            return end
+            end
         end
     end
 end
@@ -1109,7 +1124,6 @@ local function chat_command(msg)
     for i = 1, #characterTable do
         if msg == string_lower(characterTable[i].name) or msg == string_underscore_to_space(string_lower(characterTable[i].saveName)) then
             currChar = i
-            djui_chat_message_create(characterTable[i].saveName)
             djui_chat_message_create('Character set to "'..characterTable[i].name..'" Successfully!')
             return true
         end
