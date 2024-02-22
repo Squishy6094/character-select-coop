@@ -28,6 +28,18 @@ More characters from the Super Mario series!.
 - Characters - 1
   - Toadette
 
+## King The Memer (v0.9 Beta) - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/king-in-coop-remake-v0.9/download.zip)
+
+<img src="https://github.com/Squishy6094/character-select-coop/blob/main/packs/char-select-template/preview.png?raw=true" width="480">
+
+King is back again, and this time he has an all new moveset and an entirely new, cleaner model!
+
+- Creator(s)
+  - King the Memer
+- Characters - 2
+  - King the Memer
+  - Old Friend (Unlockable)
+
 ## Birdo Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-birdo/download.zip)
 
 <img src="packs/char-select-birdo/preview.png" width="480">
