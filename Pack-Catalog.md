@@ -72,6 +72,18 @@ Skinpack of famous friends from the Paper Mario series!
   - Lakilester
   - Lady Bow
 
+## Bowser Moveset - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-bowser-moveset/download.zip)
+
+<img src="packs/char-select-bowser-moveset/preview.png" width="480">
+
+Bowser is now playable in SM64ex-coop! This mod works standalone, and has compatibility with Character Select that includes additional features!! Includes a shell spin move (crouch+B, moving), fireball (crouch+B), and various other tweaks and animations!
+
+- Creator(s)
+  - Wibblus
+- Characters - 2
+  - Bowser
+  - Bowser Jr.
+
 ## Geno + Mallow - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-smrpg/download.zip)
 
 <img src="packs/char-select-smrpg/preview.png" width="480">
@@ -95,17 +107,6 @@ A Dry Bones Player Model!
   - Wibblus
 - Characters - 1
   - Dry-Bones
-
-## Bowser Jr. - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-bowserjr/download.zip)
-
-<img src="packs/char-select-bowserjr/preview.png" width="480">
-
-Bowser Jr is Playable!
-
-- Creator(s)
-  - Wibblus
-- Characters - 1
-  - Bowser Jr.
 
 ## Nabbit - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-nabbit/download.zip)
 
