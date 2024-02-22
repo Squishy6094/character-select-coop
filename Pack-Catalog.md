@@ -130,6 +130,18 @@ mari and rufus from the hit classic game mari's pizzaworld
   - Mari
   - Rufus
 
+## Toadbert - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-toadbert/download.zip)
+
+<img src="packs/char-select-toadbert/preview.png" width="480">
+
+Nabbit is playable with Character Select!!
+
+- Creator(s)
+  - xLuigiGamerx
+  - Yuyake (Toadette Blend File)
+- Characters - 1
+  - Toadbert
+
 
 ## Furry Friends Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-furry-friends/download.zip)
 
