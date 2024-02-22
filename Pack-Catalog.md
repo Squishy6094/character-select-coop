@@ -7,7 +7,7 @@ To install and load a pack, Extract the pack into your mods folder and turn it o
 
 ## VL-Tone & Cjes Luigi - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-cjes-and-vl/download.zip)
 
-<img src="packs\char-select-template\preview.png" width="480">
+<img src="https://github.com/Squishy6094/character-select-coop/blob/main/packs/char-select-template/preview.png?raw=true" width="480">
 
 Alternate Luigi Models from way-back-when, Reminiscing of a time before L was Real.
 
@@ -19,7 +19,7 @@ Alternate Luigi Models from way-back-when, Reminiscing of a time before L was Re
 
 ## Extra Characters - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-extra-chars/download.zip)
 
-<img src="packs\char-select-template\preview.png" width="480">
+<img src="https://github.com/Squishy6094/character-select-coop/blob/main/packs/char-select-template/preview.png?raw=true" width="480">
 
 More characters from the Super Mario series!.
 
@@ -133,7 +133,7 @@ mari and rufus from the hit classic game mari's pizzaworld
 
 ## Furry Friends Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-furry-friends/download.zip)
 
-<img src="packs\char-select-template\preview.png" width="480">
+<img src="https://github.com/Squishy6094/character-select-coop/blob/main/packs/char-select-template/preview.png?raw=true" width="480">
 
 A Pack the features characters/sonas of Yuyake's Friends, including Yuyake Himself!
 
@@ -168,7 +168,7 @@ He also will use Luigi's moves if you're using the Character Moveset mod!
  
 ## Squid Sisters - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-squid-sisters/download.zip)
 
-<img src="packs\char-select-template\preview.png" width="480">
+<img src="https://github.com/Squishy6094/character-select-coop/blob/main/packs/char-select-template/preview.png?raw=true" width="480">
 
 Splatoon's Callie & Marie in SM64! Includes Full Color Support and Eye States!
 
@@ -217,7 +217,7 @@ Splatoon's Callie & Marie in SM64! Includes Full Color Support and Eye States!
 
 ## Pizizito's Pizza Tower Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-pizza-tower-pack/download.zip)
 
-<img src="packs\char-select-template\preview.png" width="480">
+<img src="https://github.com/Squishy6094/character-select-coop/blob/main/packs/char-select-template/preview.png?raw=true" width="480">
 
 A handful of Pizza Tower/Sugary Spire Characters in Super Mario 64!
 
@@ -246,7 +246,7 @@ It seems today...
 
 ## Uncle Grandpa - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-uncle-grandpa/download.zip)
 
-<img src="packs\char-select-template\preview.png" width="480">
+<img src="https://github.com/Squishy6094/character-select-coop/blob/main/packs/char-select-template/preview.png?raw=true" width="480">
 
 Good Morning! Uncle Grandpa in Super Mario 64, Stylized to look 2D and Includes Eye States!
 
@@ -260,7 +260,7 @@ Good Morning! Uncle Grandpa in Super Mario 64, Stylized to look 2D and Includes 
 
 ## Classic Amy - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-amy/download.zip)
 
-<img src="packs\char-select-template\preview.png" width="480">
+<img src="https://github.com/Squishy6094/character-select-coop/blob/main/packs/char-select-template/preview.png?raw=true" width="480">
 
 Classic Amy CS pack by flipflop bell!
 
@@ -271,7 +271,7 @@ Classic Amy CS pack by flipflop bell!
 
 ## Scott the Woz - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-scott-the-woz/download.zip)
 
-<img src="packs\char-select-template\preview.png" width="480">
+<img src="https://github.com/Squishy6094/character-select-coop/blob/main/packs/char-select-template/preview.png?raw=true" width="480">
 
 Hey all, Scott Here!
 
