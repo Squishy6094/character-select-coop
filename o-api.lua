@@ -110,10 +110,18 @@ local function character_add_caps(modelInfo, caps)
     characterCaps[modelInfo] = caps
 end
 
---- @param modelInfo ModelExtendedId|integer
---- @param star ModelExtendedId|integer
-local function character_add_celebration_star(modelInfo, star)
-    characterCelebrationStar[modelInfo] = star
+---@param modelInfo ModelExtendedId|integer
+---@param starModel ModelExtendedId|integer 
+---@param starIcon TextureInfo|nil Use get_texture_info()
+local function character_add_celebration_star(modelInfo, starModel, starIcon)
+    characterCelebrationStar[modelInfo] = starModel
+    for i = 2, #characterTable do
+        if characterTable[i].model == modelInfo then
+            characterTable[i].starIcon = starIcon and starIcon or gTextures.star
+            return
+        end
+    end
+    return false
 end
 
 ---@return CharacterTable

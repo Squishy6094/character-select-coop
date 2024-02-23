@@ -33,6 +33,7 @@ characterTable = {
         model = nil,
         forceChar = nil,
         lifeIcon = gTextures.mario_head,
+        starIcon = gTextures.star,
         camScale = 1.0
     },
 }
@@ -941,18 +942,32 @@ function render_hud_mario_lives()
     djui_hud_set_font(FONT_HUD)
 
     hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_LIVES)
+    hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_STAR_COUNT)
 
-    local x = 22
-    local y = 15 -- SCREEN_HEIGHT - 209 - 16
+    local lifeX = 22
+    local lifeY = 15 -- SCREEN_HEIGHT - 209 - 16
+    local starX = djui_hud_get_screen_width() - 77
+    local starY = 15 -- SCREEN_HEIGHT - 209 - 16
 
-    local icon = characterTable[currChar].lifeIcon
-    if icon == nil then
-        djui_hud_print_text("?", x, y, 1)
+    local lifeIcon = characterTable[currChar].lifeIcon
+    local starIcon = characterTable[currChar].starIcon
+    -- Life Icon Rendering
+    if lifeIcon == nil then
+        djui_hud_print_text("?", lifeX, lifeY, 1)
     else
-        djui_hud_render_texture(icon, x, y, 1 / (icon.width * 0.0625), 1 / (icon.height * 0.0625)) -- 0.0625 is 1/16
+        djui_hud_render_texture(lifeIcon, lifeX, lifeY, 1 / (lifeIcon.width * 0.0625), 1 / (lifeIcon.height * 0.0625)) -- 0.0625 is 1/16
     end
-    djui_hud_print_text("@", x + 16, y, 1)
-    djui_hud_print_text(tostring(hud_get_value(HUD_DISPLAY_LIVES)):gsub("-", "M"), x + 32, 15, 1)
+    djui_hud_print_text("@", lifeX + 16, lifeY, 1)
+    djui_hud_print_text(tostring(hud_get_value(HUD_DISPLAY_LIVES)):gsub("-", "M"), lifeX + 32, lifeY, 1)
+    -- Star Icon Rendering
+    local starCount = hud_get_value(HUD_DISPLAY_STARS)
+    djui_hud_render_texture(starIcon, starX, starY, 1 / (starIcon.width * 0.0625), 1 / (starIcon.height * 0.0625)) -- 0.0625 is 1/16
+    if starCount < 100 then
+        djui_hud_print_text("@", starX + 16, starY, 1)
+        djui_hud_print_text(tostring(starCount):gsub("-", "M"), starX + 30, starY, 1)
+    else
+        djui_hud_print_text(tostring(starCount):gsub("-", "M"), starX + 16, starY, 1)
+    end
 end
 
 local function before_mario_update(m)
