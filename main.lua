@@ -933,36 +933,33 @@ local function on_hud_render()
     end
 end
 
--- Custom life icon rendering (Thanks LuigiGamer)
-function on_life_counter_render()
-    if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then return end
-    djui_hud_set_font(FONT_HUD)
+-- custom life icon rendering (Thanks xLuigiGamerx)
+function render_hud_mario_lives()
+    if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil or gNetworkPlayers[0].currActNum == 99 or gMarioStates[0].action == ACT_INTRO_CUTSCENE or hud_is_hidden() then return end
+
     djui_hud_set_resolution(RESOLUTION_N64)
-    djui_hud_set_color(255, 255, 255, 255);
+    djui_hud_set_font(FONT_HUD)
+
+    hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_LIVES)
+
     local x = 22
-    local y = 15
-    if gNetworkPlayers[0].currActNum == 99 then return end
-    if gMarioStates[0].action == ACT_INTRO_CUTSCENE then return end
-    if not hud_is_hidden() then
-        local icon = characterTable[currChar].lifeIcon
-        if icon == nil then
-            djui_hud_print_text("?", x, y, 1)
-        else
-            djui_hud_render_texture(icon, x, y, 1/(icon.width/16), 1/(icon.height/16))
-        end
-        djui_hud_print_text("@", x + 16, y, 1)
-        djui_hud_print_text(tostring(gMarioStates[0].numLives), x + 32, y, 1)
-        hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) &~ HUD_DISPLAY_FLAG_LIVES) -- Hides the lives counter
+    local y = 15 -- SCREEN_HEIGHT - 209 - 16
+
+    local icon = characterTable[currChar].lifeIcon
+    if icon == nil then
+        djui_hud_print_text("?", x, y, 1)
     else
-        hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_FLAG_LIVES) -- Shows the lives counter, use this when you're no longer using a custom character
+        djui_hud_render_texture(icon, x, y, 1 / (icon.width * 0.0625), 1 / (icon.height * 0.0625)) -- 0.0625 is 1/16
     end
+    djui_hud_print_text("@", x + 16, y, 1)
+    djui_hud_print_text(tostring(hud_get_value(HUD_DISPLAY_LIVES)):gsub("-", "M"), x + 32, 15, 1)
 end
 
 local function before_mario_update(m)
     if m.playerIndex ~= 0 then return end
     if inputStallTimerButton > 0 then inputStallTimerButton = inputStallTimerButton - 1 end
     if inputStallTimerDirectional > 0 then inputStallTimerDirectional = inputStallTimerDirectional - 1 end
-    
+
     if menu and inputStallToDirectional ~= latencyValueTable[optionTable[optionTableRef.inputLatency].toggle + 1] then
         inputStallToDirectional = latencyValueTable[optionTable[optionTableRef.inputLatency].toggle + 1]
     end
@@ -1099,7 +1096,7 @@ end
 
 hook_event(HOOK_BEFORE_MARIO_UPDATE, before_mario_update)
 hook_event(HOOK_ON_HUD_RENDER, on_hud_render)
-hook_event(HOOK_ON_HUD_RENDER_BEHIND, on_life_counter_render)
+hook_event(HOOK_ON_HUD_RENDER_BEHIND, render_hud_mario_lives)
 
 --------------
 -- Commands --
