@@ -350,6 +350,11 @@ local menuActBlacklist = {
     -- Cutscene Acts
     [ACT_INTRO_CUTSCENE] = true,
     [ACT_CREDITS_CUTSCENE] = true,
+    [ACT_WARP_DOOR_SPAWN] = true,
+    [ACT_PULLING_DOOR] = true,
+    [ACT_PUSHING_DOOR] = true,
+    [ACT_UNLOCKING_KEY_DOOR] = true,
+    [ACT_UNLOCKING_STAR_DOOR] = true,
     -- Dialog Acts
     [ACT_READING_NPC_DIALOG] = true,
     [ACT_WAITING_FOR_DIALOG] = true,
