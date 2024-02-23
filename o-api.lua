@@ -112,12 +112,8 @@ end
 
 --- @param modelInfo ModelExtendedId|integer
 --- @param star ModelExtendedId|integer
---- @param starIcon TextureInfo|nil
-local function character_add_celebration_star(modelInfo, star, starIcon)
-    characterCelebrationStars[modelInfo] = characterCelebrationStars[modelInfo] and {
-        star = star and star or characterCelebrationStars[modelInfo].star,
-        starIcon = starIcon and starIcon or characterCelebrationStars[modelInfo].starIcon -- Currently Unused
-    } or nil
+local function character_add_celebration_star(modelInfo, star)
+    characterCelebrationStar[modelInfo] = star
 end
 
 ---@return CharacterTable

@@ -39,7 +39,7 @@ characterTable = {
 
 characterCaps = {}
 
-characterCelebrationStars = {}
+characterCelebrationStar = {}
 
 optionTableRef = {
     openInputs = 1,
@@ -461,7 +461,7 @@ function set_model(o, model)
 
     if obj_has_behavior_id(o, id_bhvCelebrationStar) ~= 0 and o.parentObj ~= nil then
         local i = network_local_index_from_global(o.parentObj.globalPlayerIndex)
-        local starModel = characterCelebrationStars[gPlayerSyncTable[i].modelId].star
+        local starModel = characterCelebrationStar[gPlayerSyncTable[i].modelId]
         if gPlayerSyncTable[i].modelId ~= nil and obj_has_model_extended(o, starModel) == 0 then
             obj_set_model_extended(o, starModel)
         end
