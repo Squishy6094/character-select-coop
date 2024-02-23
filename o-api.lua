@@ -110,6 +110,16 @@ local function character_add_caps(modelInfo, caps)
     characterCaps[modelInfo] = caps
 end
 
+--- @param modelInfo ModelExtendedId|integer
+--- @param star ModelExtendedId|integer
+--- @param starIcon TextureInfo|nil
+local function character_add_celebration_star(modelInfo, star, starIcon)
+    characterCelebrationStars[modelInfo] = characterCelebrationStars[modelInfo] and {
+        star = star and star or characterCelebrationStars[modelInfo].star,
+        starIcon = starIcon and starIcon or characterCelebrationStars[modelInfo].starIcon -- Currently Unused
+    } or nil
+end
+
 ---@return CharacterTable
 local function character_get_current_table()
     return characterTable[currChar]
@@ -173,6 +183,7 @@ _G.charSelect = {
     character_edit = character_edit,
     character_add_voice = character_add_voice,
     character_add_caps = character_add_caps,
+    character_add_celebration_star = character_add_celebration_star,
     character_get_current_table = character_get_current_table,
     character_get_current_model_number = character_get_current_model_number,
     character_get_number_from_string = character_get_number_from_string,

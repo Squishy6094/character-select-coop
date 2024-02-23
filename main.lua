@@ -13,6 +13,7 @@ local menuCrossFadeCap = menuCrossFade
 local menuCrossFadeMath = 255/menuCrossFade
 
 local TEX_HEADER = get_texture_info("char-select-text")
+hasStar = false
 
 local TEXT_PREF_LOAD = "Default"
 
@@ -37,6 +38,8 @@ characterTable = {
 }
 
 characterCaps = {}
+
+characterCelebrationStars = {}
 
 optionTableRef = {
     openInputs = 1,
@@ -456,6 +459,15 @@ function set_model(o, model)
         return
     end
 
+    if obj_has_behavior_id(o, id_bhvCelebrationStar) ~= 0 and o.parentObj ~= nil then
+        local i = network_local_index_from_global(o.parentObj.globalPlayerIndex)
+        local starModel = characterCelebrationStars[gPlayerSyncTable[i].modelId].star
+        if gPlayerSyncTable[i].modelId ~= nil and obj_has_model_extended(o, starModel) == 0 then
+            obj_set_model_extended(o, starModel)
+        end
+        return
+    end
+    
     if sCapBhvs[get_id_from_behavior(o.behavior)] then
         o.globalPlayerIndex = nearest_player_to_object(o.parentObj).globalPlayerIndex
     end
