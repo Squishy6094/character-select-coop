@@ -156,6 +156,17 @@ It's that one extremely underrated Toad from partners of time.
 - Characters - 1
   - Toadbert
 
+## Osaka - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-osaka/download.zip)
+
+<img src="packs/char-select-osaka/preview.png" width="480">
+
+OSAKA!!!!! but mario 64ified :3
+
+- Creator(s)
+  - [Nokia](https://twitter.com/Nokiaa__)
+  - [Azumari](https://twitter.com/azumadeline) (Texturing)
+- Characters - 1
+  - Osaka
 
 ## Furry Friends Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-furry-friends/download.zip)
 
