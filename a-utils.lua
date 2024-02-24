@@ -1,3 +1,17 @@
+MOD_VERSION = "1.6.2 (In-Dev)"
+IS_COOPDX = get_coop_compatibility_enabled ~= nil
+
+ommActive = false
+for i in pairs(gActiveMods) do
+    if gActiveMods[i].relativePath == "omm-coop" then
+        ommActive = true
+        break
+    end
+end
+
+-- localize functions to improve performance
+local string_lower,table_insert = string.lower,table.insert
+
 local saveableCharacters = {
     ["1"] = true,
     ["2"] = true,
@@ -76,18 +90,5 @@ function string_split(s)
     end
     return result
 end
-
-client_is_coop_dx = get_coop_compatibility_enabled ~= nil -- Checks if Client is DX
--- network_is_coop_dx = SM64COOPDX_VERSION ~= nil -- Checks if Coop Compatibility is Off (As of now unused)
-
-ommActive = false
-for i in pairs(gActiveMods) do
-    local name = gActiveMods[i].name
-    if (name:find("OMM Rebirth")) then
-        ommActive = true
-    end
-end
-
-modVersion = "1.6.2 (In-Dev)"
 
 allowMenu = {}

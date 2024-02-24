@@ -1,4 +1,3 @@
-
 --- @class CharacterTable
 --- @field public name string
 --- @field public saveName string
@@ -10,13 +9,13 @@
 --- @field public lifeIcon TextureInfo
 --- @field public camScale integer
 
+-- localize functions to improve performance
+local smlua_model_util_get_id,table_insert,djui_hud_measure_text,type = smlua_model_util_get_id,table.insert,djui_hud_measure_text,type
+
 local characterVoices = {}
 local saveNameTable = {}
 
 local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
-
-local table_insert = table.insert
-local type = type
 
 local function split_text_into_lines(text)
     local words = {}
@@ -149,7 +148,7 @@ local function character_get_voice(m)
 end
 
 local function version_get()
-    return modVersion
+    return MOD_VERSION
 end
 
 local function is_menu_open()
