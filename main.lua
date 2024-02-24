@@ -974,8 +974,51 @@ local function render_hud_stars()
     djui_hud_print_text(tostring(hudDisplayStars):gsub("-", "M"), (showX * 14) + x + 16, y, 1)
 end
 
+--- @param localIndex integer
+--- @return TextureInfo
+--- This assumes 2 characters will not have the same model
+local function life_icon_from_local_index(localIndex)
+    for i = 1, #characterTable do
+        if characterTable[i].model == gPlayerSyncTable[localIndex].modelId then
+            return characterTable[i].lifeIcon
+        end
+    end
+
+    return gMarioStates[i].character.hudHeadTexture
+end
+
+function render_act_select_hud()
+    djui_hud_set_resolution(RESOLUTION_N64)
+    if gServerSettings.enablePlayersInLevelDisplay ~= 0 and gNetworkPlayers[0].currCourseNum ~= 0 and obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then
+        local course = gNetworkPlayers[0].currCourseNum
+        local stars = save_file_get_star_flags(get_current_save_file_num() - 1, course - 1)
+        local maxStar = 0
+        
+
+        for i=5,0, -1 do
+            if stars & 2^i ~= 0 then
+                maxStar = i
+                break
+            end
+        end
+
+        for a=1,maxStar+1 do
+            local x = (38 - maxStar * 17 + a * 34) + djui_hud_get_screen_width() * 0.5 - 75
+            for j = 0, MAX_PLAYERS - 1 do
+                np = gNetworkPlayers[j]
+                displayHead = life_icon_from_local_index(j)
+                if np and np.connected and np.currCourseNum == course and np.currActNum == a then
+                    djui_hud_render_rect(x - 4, 17, 16, 16)
+                    djui_hud_render_texture(displayHead, x - 4, 17, 1, 1)
+                end
+            end
+        end
+    end
+end
+
 local function on_hud_render_behind()
-    if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil or gNetworkPlayers[0].currActNum == 99 or gMarioStates[0].action == ACT_INTRO_CUTSCENE or hud_is_hidden() then return end
+    if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then render_act_select_hud() return
+    elseif gNetworkPlayers[0].currActNum == 99 or gMarioStates[0].action == ACT_INTRO_CUTSCENE or hud_is_hidden() then return end
 
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_font(FONT_HUD)
@@ -1127,7 +1170,6 @@ end
 hook_event(HOOK_BEFORE_MARIO_UPDATE, before_mario_update)
 hook_event(HOOK_ON_HUD_RENDER, on_hud_render)
 hook_event(HOOK_ON_HUD_RENDER_BEHIND, on_hud_render_behind)
-
 --------------
 -- Commands --
 --------------
