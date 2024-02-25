@@ -57,38 +57,46 @@ local saveableCharacters = {
     [" "] = false,
 }
 
+--- @param string string
+--- Replaces underscores in the string with spaces
 function string_underscore_to_space(string)
-    local s = ''
-    for i = 1, #string do
-        local c = string:sub(i,i)
-        if c ~= '_' then
-            s = s .. c
-        else
-            s = s .. " "
-        end
-    end
-    return s
+    return string:gsub("_", " ")
 end
 
+--- @param string string
+--- Constructs a new string but only with characters from `saveableCharacters`
+--- * Spaces are the notable character that gets turned into an underscore
 function string_space_to_underscore(string)
     local s = ''
     for i = 1, #string do
         local c = string:sub(i,i)
-        if saveableCharacters[string.lower(c)] then
+        if saveableCharacters[string_lower(c)] then
             s = s .. c
-        elseif saveableCharacters[string.lower(c)] ~= nil then
+        elseif saveableCharacters[string_lower(c)] ~= nil then
             s = s .. "_"
         end
     end
     return s
 end
 
-function string_split(s)
+--- @param string string
+--- Splits a string into a table by spaces
+function string_split(string)
     local result = {}
-    for match in (s):gmatch(string.format("[^%s]+", " ")) do
-        table.insert(result, match)
+    for match in string:gmatch(string.format("[^%s]+", " ")) do
+        table_insert(result, match)
     end
     return result
+end
+
+--- @param param number
+--- @param caseTable table
+--- Switch statement function
+function switch(param, caseTable)
+    local case = caseTable[param]
+    if case then return case() end
+    local def = caseTable['default']
+    return def and def() or nil
 end
 
 allowMenu = {}

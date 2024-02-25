@@ -974,6 +974,46 @@ local function render_hud_stars()
     djui_hud_print_text(tostring(hudDisplayStars):gsub("-", "M"), (showX * 14) + x + 16, y, 1)
 end
 
+local function render_hud_camera_status()
+    if not IS_COOPDX then return end
+
+    hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_CAMERA)
+
+    local x = djui_hud_get_screen_width() - 54
+    local y = 205
+    local cameraHudStatus = hud_get_value(HUD_DISPLAY_CAMERA_STATUS)
+
+    if cameraHudStatus == CAM_STATUS_NONE then return end
+
+    djui_hud_render_texture(gTextures.camera, x, y, 1, 1)
+
+    switch(cameraHudStatus & CAM_STATUS_MODE_GROUP, {
+        [CAM_STATUS_MARIO] = function()
+            local lifeIcon = characterTable[currChar].lifeIcon
+            if lifeIcon == nil then
+                djui_hud_print_text("?", x + 16, y, 1)
+            else
+                djui_hud_render_texture(lifeIcon, x + 16, y, 1, 1)
+            end
+        end,
+        [CAM_STATUS_LAKITU] = function()
+            djui_hud_render_texture(gTextures.lakitu, x + 16, y, 1, 1)
+        end,
+        [CAM_STATUS_FIXED] = function()
+            djui_hud_render_texture(gTextures.no_camera, x + 16, y, 1, 1)
+        end
+    })
+
+    switch(cameraHudStatus & CAM_STATUS_C_MODE_GROUP, {
+        [CAM_STATUS_C_DOWN] = function()
+            djui_hud_render_texture(gTextures.arrow_down, x + 4, y + 16, 1, 1)
+        end,
+        [CAM_STATUS_C_UP] = function()
+            djui_hud_render_texture(gTextures.arrow_up, x + 4, y - 8, 1, 1)
+        end
+    })
+end
+
 --- @param localIndex integer
 --- @return TextureInfo|nil
 --- This assumes multiple characters will not have the same model
@@ -1030,6 +1070,7 @@ local function on_hud_render_behind()
 
     render_hud_mario_lives()
     render_hud_stars()
+    render_hud_camera_status()
 end
 
 local function before_mario_update(m)
