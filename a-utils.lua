@@ -60,6 +60,7 @@ local saveableCharacters = {
 --- @param string string
 --- Replaces underscores in the string with spaces
 function string_underscore_to_space(string)
+    if string == nil then return "" end
     return string:gsub("_", " ")
 end
 
