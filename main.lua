@@ -993,7 +993,7 @@ local function render_hud_camera_status()
             if lifeIcon == nil then
                 djui_hud_print_text("?", x + 16, y, 1)
             else
-                djui_hud_render_texture(lifeIcon, x + 16, y, 1, 1)
+                djui_hud_render_texture(lifeIcon, x + 16, y, 1 / (lifeIcon.width * 0.0625), 1 / (lifeIcon.height * 0.0625)) -- 0.0625 is 1/16
             end
         end,
         [CAM_STATUS_LAKITU] = function()
