@@ -975,7 +975,7 @@ local function render_hud_stars()
 end
 
 --- @param localIndex integer
---- @return TextureInfo
+--- @return TextureInfo|nil
 --- This assumes multiple characters will not have the same model
 local function life_icon_from_local_index(localIndex)
     for i = 1, #characterTable do
@@ -983,8 +983,6 @@ local function life_icon_from_local_index(localIndex)
             return characterTable[i].lifeIcon
         end
     end
-
-    return gMarioStates[localIndex].character.hudHeadTexture
 end
 
 local function render_act_select_hud()
@@ -1005,10 +1003,14 @@ local function render_act_select_hud()
         local x = (38 - maxStar * 17 + a * 34) + djui_hud_get_screen_width() * 0.5 - 75
         for j = 0, MAX_PLAYERS - 1 do
             local np = gNetworkPlayers[j]
-            local displayHead = life_icon_from_local_index(j)
             if np and np.connected and np.currCourseNum == course and np.currActNum == a then
                 djui_hud_render_rect(x - 4, 17, 16, 16)
-                djui_hud_render_texture(displayHead, x - 4, 17, 1, 1)
+                local displayHead = life_icon_from_local_index(j)
+                if displayHead == nil then
+                    djui_hud_print_text("?", x - 4, 17, 1)
+                else
+                    djui_hud_render_texture(displayHead, x - 4, 17, 1 / (displayHead.width * 0.0625), 1 / (displayHead.height * 0.0625)) -- 0.0625 is 1/16
+                end
             end
         end
     end
@@ -1016,6 +1018,7 @@ end
 
 local function on_hud_render_behind()
     djui_hud_set_resolution(RESOLUTION_N64)
+    djui_hud_set_font(FONT_HUD)
     djui_hud_set_color(255, 255, 255, 255)
 
     if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then
@@ -1024,8 +1027,6 @@ local function on_hud_render_behind()
     elseif gNetworkPlayers[0].currActNum == 99 or gMarioStates[0].action == ACT_INTRO_CUTSCENE or hud_is_hidden() then
         return
     end
-
-    djui_hud_set_font(FONT_HUD)
 
     render_hud_mario_lives()
     render_hud_stars()
