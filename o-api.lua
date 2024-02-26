@@ -1,4 +1,3 @@
-
 --- @class CharacterTable
 --- @field public name string
 --- @field public saveName string
@@ -10,13 +9,13 @@
 --- @field public lifeIcon TextureInfo
 --- @field public camScale integer
 
+-- localize functions to improve performance
+local smlua_model_util_get_id,table_insert,djui_hud_measure_text,type = smlua_model_util_get_id,table.insert,djui_hud_measure_text,type
+
 local characterVoices = {}
 local saveNameTable = {}
 
 local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
-
-local table_insert = table.insert
-local type = type
 
 local function split_text_into_lines(text)
     local words = {}
@@ -110,6 +109,20 @@ local function character_add_caps(modelInfo, caps)
     characterCaps[modelInfo] = caps
 end
 
+---@param modelInfo ModelExtendedId|integer
+---@param starModel ModelExtendedId|integer 
+---@param starIcon TextureInfo|nil Use get_texture_info()
+local function character_add_celebration_star(modelInfo, starModel, starIcon)
+    characterCelebrationStar[modelInfo] = starModel
+    for i = 2, #characterTable do
+        if characterTable[i].model == modelInfo then
+            characterTable[i].starIcon = starIcon and starIcon or gTextures.star
+            return
+        end
+    end
+    return false
+end
+
 ---@return CharacterTable
 local function character_get_current_table()
     return characterTable[currChar]
@@ -135,7 +148,7 @@ local function character_get_voice(m)
 end
 
 local function version_get()
-    return modVersion
+    return MOD_VERSION
 end
 
 local function is_menu_open()
@@ -173,6 +186,7 @@ _G.charSelect = {
     character_edit = character_edit,
     character_add_voice = character_add_voice,
     character_add_caps = character_add_caps,
+    character_add_celebration_star = character_add_celebration_star,
     character_get_current_table = character_get_current_table,
     character_get_current_model_number = character_get_current_model_number,
     character_get_number_from_string = character_get_number_from_string,

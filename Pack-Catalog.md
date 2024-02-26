@@ -202,6 +202,23 @@ He also will use Luigi's moves if you're using the Character Moveset mod!
   - bbbbbeatle
 - Characters - 1
   - Travis
+
+## SUPER SPAMTON 64 COOP - [Gamebanana Page](https://gamebanana.com/mods/497381)
+#### Note: This Pack is Stored on an External Website, and may not always be available!
+
+<img src="https://images.gamebanana.com/img/ss/mods/530-90_65d8a8a5c48a2.jpg" width="480">
+
+SPAMTON 64 [With the help of your friends,] IS FINALLY [Help! Release me!] WITH FULL PERMISSION FROM [The one pulling the strings], BWGLite!!!!
+
+WITH THE HELP OF [Character Select Library is required]. EVEN FEATURING CUSTOM MUSIC WITH [Optional DLC]!!!
+
+[Buy Now]!!!
+
+- Creator(s)
+  - Vaporluck
+  - BWGLite (Original Mod)
+- Characters - 1
+  - Spamton
  
 ## Squid Sisters - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-squid-sisters/download.zip)
 
