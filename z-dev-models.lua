@@ -10,7 +10,7 @@
 
     https://github.com/Squishy6094/character-select-coop/blob/main/API-doc.md
 
-    You are free to delete this file in wanted
+    You are free to delete this file, as it will not affect Character Select's Functionality 
 ]]
 
 local ID = tonumber(network_discord_id_from_local_index(0))
