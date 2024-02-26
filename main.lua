@@ -216,6 +216,10 @@ local prefCharColor = defaultPlayerColors[CT_MARIO]
 
 local function load_preferred_char()
     local savedChar = mod_storage_load("PrefChar")
+    if savedChar == nil or savedChar == "" then
+        mod_storage_save("PrefChar", "Default")
+        savedChar = "Default"
+    end
     if savedChar ~= nil and savedChar ~= "Default" then
         for i = 2, #characterTable do
             if characterTable[i].saveName == savedChar then
@@ -228,9 +232,6 @@ local function load_preferred_char()
                 break
             end
         end
-    elseif savedChar == nil then
-        mod_storage_save("PrefChar", "Default")
-        savedChar = "Default"
     end
 
     local savedCharColors = mod_storage_load("PrefCharColor")
@@ -250,7 +251,7 @@ local function load_preferred_char()
             djui_popup_create("Character Select:\nNo Characters were Found", 2)
         end
     end
-    TEXT_PREF_LOAD = savedChar
+    return savedChar
 end
 
 local function mod_storage_save_pref_char(charTable)
@@ -356,7 +357,7 @@ local faceAngle = 0
 local function mario_update(m)
     if stallFrame == 1 then
         failsafe_options()
-        load_preferred_char()
+        TEXT_PREF_LOAD = load_preferred_char()
         if optionTable[optionTableRef.notification].toggle == 1 then
             boot_note()
         end
@@ -586,13 +587,14 @@ local function on_hud_render()
             local TEXT_CREDIT = "Credit: " .. character.credit
             local TEXT_DESCRIPTION_TABLE = character.description
             local TEXT_PREF = "Preferred Character:"
-            if djui_hud_measure_text(string_underscore_to_space(TEXT_PREF_LOAD)) / widthScale > 110 then
+            local TEXT_PREF_LOAD = string_underscore_to_space(TEXT_PREF_LOAD)
+            if djui_hud_measure_text(TEXT_PREF_LOAD) / widthScale > 110 then
                 TEXT_PREF = "Preferred Char:"
             end
-            if djui_hud_measure_text(string_underscore_to_space(TEXT_PREF_LOAD)) / widthScale > 164 then
+            if djui_hud_measure_text(TEXT_PREF_LOAD) / widthScale > 164 then
                 TEXT_PREF = "Pref Char:"
             end
-            TEXT_PREF = TEXT_PREF .. ' "' .. string_underscore_to_space(TEXT_PREF_LOAD) .. '"'
+            TEXT_PREF = TEXT_PREF .. ' "' .. TEXT_PREF_LOAD .. '"'
 
             local textX = x * 0.5
             djui_hud_print_text(TEXT_NAME, width - textX - djui_hud_measure_text(TEXT_NAME) * 0.3, 55, 0.6)
@@ -1070,7 +1072,7 @@ local function on_hud_render_behind()
 
     render_hud_mario_lives()
     render_hud_stars()
-    render_hud_camera_status()
+    --render_hud_camera_status()
 end
 
 local function before_mario_update(m)
