@@ -199,4 +199,5 @@ _G.charSelect = {
     optionTableRef = optionTableRef,
     controller = controller,
     hook_allow_menu_open = hook_allow_menu_open,
+    hook_render_in_menu = hook_render_in_menu,
 }

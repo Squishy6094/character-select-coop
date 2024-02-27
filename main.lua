@@ -550,6 +550,14 @@ local menuColor = characterTable[currChar].color
 local MATH_DIVIDE_THREE_HUNDRED_TWENTY = 1/320
 local MATH_DIVIDE_THIRTY_TWO = 1/32
 
+local renderInMenuTable = {}
+
+function hook_render_in_menu(func)
+    table.insert(renderInMenuTable, {
+        func = func
+    })
+end
+
 local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_font(FONT_CS_NORMAL)
@@ -755,6 +763,13 @@ local function on_hud_render()
         --Unsupported Res Warning
         if width < 321.2 or width > 575 then
             djui_hud_print_text(TEXT_RATIO_UNSUPPORTED, 5, 39, 0.5)
+        end
+
+        -- API Rendering
+        if #renderInMenuTable > 0 then
+            for i = 1, #renderInMenuTable do
+                renderInMenuTable[i].func()
+            end
         end
 
         --Options display
