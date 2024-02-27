@@ -15,6 +15,12 @@ local menuCrossFadeCap = menuCrossFade
 local menuCrossFadeMath = 255 / menuCrossFade
 
 local TEX_HEADER = get_texture_info("char-select-text")
+local TEX_OVERRIDE_HEADER = nil
+
+---@param texture TextureInfo|nil
+function header_set_texture(texture)
+    TEX_OVERRIDE_HEADER = texture
+end
 
 local TEXT_PREF_LOAD = "Default"
 
@@ -542,6 +548,7 @@ local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Men
 local menuColor = characterTable[currChar].color
 
 local MATH_DIVIDE_THREE_HUNDRED_TWENTY = 1/320
+local MATH_DIVIDE_THIRTY_TWO = 1/32
 
 local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
@@ -736,7 +743,11 @@ local function on_hud_render()
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(2, 2, width - 4, 46)
         djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
-        djui_hud_render_texture(TEX_HEADER, widthHalf - 128, 10, 1, 1)
+        if TEX_OVERRIDE_HEADER then -- Render Override Header
+            djui_hud_render_texture(TEX_OVERRIDE_HEADER, widthHalf - 128, 10, 1/(TEX_OVERRIDE_HEADER.height*MATH_DIVIDE_THIRTY_TWO), 1/(TEX_OVERRIDE_HEADER.height*MATH_DIVIDE_THIRTY_TWO))
+        else
+            djui_hud_render_texture(TEX_HEADER, widthHalf - 128, 10, 1, 1)
+        end
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_set_font(FONT_TINY)
         djui_hud_print_text(TEXT_VERSION, 5, 3, 0.5)

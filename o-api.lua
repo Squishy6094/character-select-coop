@@ -193,9 +193,10 @@ _G.charSelect = {
     character_get_voice = character_get_voice,
     version_get = version_get,
     is_menu_open = is_menu_open,
-    hook_allow_menu_open = hook_allow_menu_open,
     is_options_open = is_options_open,
+    header_set_texture = header_set_texture, -- Function located in main.lua
     get_status = get_status,
     optionTableRef = optionTableRef,
     controller = controller,
+    hook_allow_menu_open = hook_allow_menu_open,
 }
