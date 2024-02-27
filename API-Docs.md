@@ -151,11 +151,6 @@ A function that returns the current version of the mod in a string format
 ## _G.charSelect.is_menu_open()
 A function that returns the either True or False if the Menu is Open or not.
 
-## _G.charSelect.hook_allow_menu_open()
-A function that allows you to hook a function to prevent the menu from opening.
-
-Provide a function you'd like to hook as an argument.
-
 Example:
 ```lua
 luigiisdead = true
@@ -195,6 +190,16 @@ Both `_G.charSelect.voice.sound()` and `_G.charSelect.voice.snore()` are used to
 
 ## _G.charSelect.controller
 Use this to access controller input while the menu is open.
+
+## _G.charSelect.hook_allow_menu_open()
+A function that allows you to hook a function to prevent the menu from opening.
+
+Provide a function you'd like to hook as an argument.
+
+## _G.charSelect.hook_render_in_menu()
+A function that allows you to hook a function to render HUD elements behind transitions.
+
+Provide a function you'd like to hook as an argument.
 
 # Tips on API Usage
 ### Helpful info for common API use cases
