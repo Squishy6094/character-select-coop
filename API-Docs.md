@@ -197,7 +197,7 @@ A function that allows you to hook a function to prevent the menu from opening.
 Provide a function you'd like to hook as an argument.
 
 ## _G.charSelect.hook_render_in_menu()
-A function that allows you to hook a function to render HUD elements behind transitions.
+A function that allows you to hook a function to render HUD elements behind transitions and the options menu.
 
 Provide a function you'd like to hook as an argument.
 
