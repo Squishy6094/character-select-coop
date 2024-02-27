@@ -145,6 +145,11 @@ Character's Name String
 
 Example: `"Custom Model"`
 
+## _G.charSelect.header_set_texture()
+A function that set's the Header Texture for the Character Select Menu
+
+Example: `get_texture_info("char-select-text")`
+
 ## _G.charSelect.version_get()
 A function that returns the current version of the mod in a string format
 
