@@ -128,7 +128,7 @@ local function character_get_current_table()
     return characterTable[currChar]
 end
 
-local function character_get_current_model_number()
+local function character_get_current_number()
     return currChar
 end
 
@@ -184,7 +184,7 @@ local function get_status(tableNum)
     return optionTable[tableNum].toggle
 end
 
-_G.charSelectExists = true -- Ace
+_G.charSelectExists = true
 _G.charSelect = {
     character_add = character_add,
     character_edit = character_edit,
@@ -192,9 +192,11 @@ _G.charSelect = {
     character_add_caps = character_add_caps,
     character_add_celebration_star = character_add_celebration_star,
     character_get_current_table = character_get_current_table,
-    character_get_current_model_number = character_get_current_model_number,
+    character_get_current_number = character_get_current_number,
+    character_get_current_model_number --[[Depreiciated Function Name, Not recommended for use]] = character_get_current_number,
     character_get_number_from_string = character_get_number_from_string,
     character_get_voice = character_get_voice,
+    character_get_life_icon = character_get_life_icon_from_local_index,
     header_set_texture = header_set_texture, -- Function located in main.lua
     version_get = version_get,
     is_menu_open = is_menu_open,
