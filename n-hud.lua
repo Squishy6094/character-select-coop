@@ -1,5 +1,17 @@
+------------------------------------------------------
+-- Custom HUD Rendering by Agent X and xLuigiGamerx --
+------------------------------------------------------
 
--- Custom HUD Rendering by Agent X and xLuigiGamerx
+--- @param localIndex integer
+--- @return TextureInfo|nil
+--- This assumes multiple characters will not have the same model
+function character_get_life_icon_from_local_index(localIndex)
+    for i = 1, #characterTable do
+        if characterTable[i].model == gPlayerSyncTable[localIndex].modelId then
+            return characterTable[i].lifeIcon
+        end
+    end
+end
 
 local function render_hud_mario_lives()
     hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_LIVES)

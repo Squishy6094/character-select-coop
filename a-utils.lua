@@ -100,17 +100,6 @@ function switch(param, caseTable)
     return def and def() or nil
 end
 
---- @param localIndex integer
---- @return TextureInfo|nil
---- This assumes multiple characters will not have the same model
-function character_get_life_icon_from_local_index(localIndex)
-    for i = 1, #characterTable do
-        if characterTable[i].model == gPlayerSyncTable[localIndex].modelId then
-            return characterTable[i].lifeIcon
-        end
-    end
-end
-
 allowMenu = {}
 
 renderInMenuTable = {}
