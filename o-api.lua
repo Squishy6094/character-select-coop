@@ -159,6 +159,10 @@ local function hook_allow_menu_open(func)
     table_insert(allowMenu, func)
 end
 
+local function hook_render_in_menu(func)
+    table_insert(renderInMenuTable, func)
+end
+
 local function is_options_open()
     return options
 end

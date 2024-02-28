@@ -101,3 +101,5 @@ function switch(param, caseTable)
 end
 
 allowMenu = {}
+
+renderInMenuTable = {}
