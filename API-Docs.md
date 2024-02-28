@@ -132,42 +132,44 @@ A function that Edits an Existing Character, has 1 unique input, all other input
 ## _G.charSelect.character_get_current_table()
 A function that returns the Current Character's Table, can be used to get name, texture, etc.
 
-Example: `_G.charSelect.character_get_current_table().name`
+Returns the following:
+| Variable | Type | Extra Info | Example |
+| ------------- | ------------ | ---------- | ------- |
+| name | string | Save Name will not contain Special Characters | `"Custom Model"` |
+| saveName | string | Internal Name used for Mod Storage | `"Custom Model"` |
+| description | table/string | Table containing Strings | `{"Custom Description", "Custom Description"}`|
+| credit | string |  | `"Custom Model Creator"` |
+| color | table | Table containing variables `r`, `g`, and `b`. Colors use Decimal Format | `{r = 255, g = 150, b = 150}` |
+| model | ModelExtendedId | Model Information Received from `smlua_model_util_get_id()` |  |
+| forceChar | CharacterType | Character Type, Inputs can be `CT_MARIO`, `CT_LUIGI`, `CT_TOAD`, `CT_WALUIGI`, `CT_WARIO` | `CT_MARIO` |
+| lifeIcon | TextureInfo | Texture Information Recieved from `get_texture_info()` |  |
+| starIcon | TextureInfo | Texture Information Recieved from `get_texture_info()` |  |
+| camscale | integer | Zooms the camera based on a multiplier (Default 1.0) | `1.2` |
 
-## _G.charSelect.character_get_current_model_number
-A function that returns the Current Character's Number in the Character Table
+Usage Example: `_G.charSelect.character_get_current_table().name` or `currCharInfo = _G.charSelect.character_get_current_table()`
+
+## _G.charSelect.character_get_current_number()
+A function that returns the Current Character's Number (integer) in the Character Table
 
 ## _G.charSelect.character_get_number_from_string()
-A function that returns a character's number in the table based off the inputted name string, has 1 input
+A function that returns the Current Character's Number (integer) in the Character Table based off the Input
 
-### Character Name:
-Character's Name String
-
-Example: `"Custom Model"`
+| Variable Name | Valid Input Types | Extra Info | Example |
+| ------------- | ------------ | ---------- | ------- |
+| Name | string | Character's Name you're Searching for | `"Custom Model"` |
 
 ## _G.charSelect.header_set_texture()
 A function that set's the Header Texture for the Character Select Menu
 
-Example: `get_texture_info("char-select-text")`
+| Variable Name | Valid Input Types | Extra Info | Example |
+| ------------- | ------------ | ---------- | ------- |
+| Header Texture | string | Texture of the Header you're using | `get_texture_info("char-select-text")` |
 
 ## _G.charSelect.version_get()
-A function that returns the current version of the mod in a string format
+A function that returns the current version of the mod in string format
 
 ## _G.charSelect.is_menu_open()
 A function that returns the either True or False if the Menu is Open or not.
-
-Example:
-```lua
-luigiisdead = true
-c = true
-function allow_menu()
-    if luigiisdead and c then
-        return false
-    end
-end
-
-_G.charSelect.hook_allow_menu_open(allow_menu)
-```
 
 ## _G.charSelect.is_options_open()
 A function that returns the either True or False if the Menu Options is Open or not.
@@ -190,6 +192,14 @@ _G.charSelect.optionTableRef.resetSaveData = 9
 ## _G.charSelect.character_get_voice()
 Returns the current character's Voicetable, Primarily when hooking a character's voice
 
+## _G.charSelect.character_get_life_icon()
+Returns a Character's Icon from the Local Index based off the Input
+
+
+| Variable Name | Valid Input Types | Extra Info | Example |
+| ------------- | ------------ | ---------- | ------- |
+| Local Index | integer | Local Index of the Player you want to get an Icon from | `1` |
+
 ## _G.charSelect.voice
 Both `_G.charSelect.voice.sound()` and `_G.charSelect.voice.snore()` are used to hook sound functionalities into other mods, allowing Character Select to access sounds from Packs. Both functions have no real use case outside of doing this.
 
@@ -201,13 +211,50 @@ A function that allows you to hook a function to prevent the menu from opening.
 
 Provide a function you'd like to hook as an argument.
 
+Example:
+```lua
+luigiisdead = true
+c = true
+function allow_menu()
+    if luigiisdead and c then
+        return false
+    end
+end
+
+_G.charSelect.hook_allow_menu_open(allow_menu)
+```
+
 ## _G.charSelect.hook_render_in_menu()
 A function that allows you to hook a function to render HUD elements behind transitions and the options menu.
 
 Provide a function you'd like to hook as an argument.
 
+Example:
+```lua
+function allow_menu()
+    djui_hud_set_resolution(RESOLUTION_N64)
+    djui_hud_set_font(FONT_MENU)
+    djui_hud_print_text("API Documentation", 10, 10, 1, 1)
+end
+
+_G.charSelect.hook_allow_menu_open(allow_menu)
+```
+
 # Tips on API Usage
 ### Helpful info for common API use cases
+
+## Localizing Assets
+Before adding most information to a character, you'll want to localize it's assets before adding the character. This ensures that the model will have been loaded on all clients and will properly sync between clients. This is especially important for Unlockable Characters
+
+Example:
+```lua
+local E_MODEL_CUSTOM_MODEL = smlua_model_util_get_id("custom_model_geo")
+local TEX_CUSTOM_ICON = get_texture_info("exclamation-icon")
+
+if _G.charSelectExists then
+    CT_CHAR = _G.charSelect.character_add(nil, nil, nil, nil, E_MODEL_CUSTOM_MODEL, nil, TEX_CUSTOM_ICON)
+end
+```
 
 ## Storing Character Table Positions
 You can store a character's placement in the character table by storing `_G.charSelect.character_get_number_from_string()` to a local variable after adding the character instead of using the function every frame. (Characters will never change positions in the table once added)
