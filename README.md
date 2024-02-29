@@ -9,11 +9,9 @@
 ### ⭐ [Download Here](https://github.com/Squishy6094/character-select-coop/releases) ⭐
 
 ## Resources
- [Pack Catalog](Pack-Catalog.md) - A Browser for Community Made Packs, and a resource for assistance installing!
-
- [API Documentation](API-Docs.md) - Gives Full Information on the Character Select's API, Including a Model Template Pack!
-
- [Squishy's Server | Discord Server](https://discord.gg/2bg2FnFp6f) - Full Help and Support for those who need it!
-
- [sm64coopdx](https://github.com/coop-deluxe/sm64coopdx) - The Repository for sm64coopdx, Which this mod was partially made for!
+- [Pack Catalog](/Pack-Catalog.md) - A Browser for Community Made Packs, and a resource for assistance installing!
+- [Commissions](/Comm-Links.md) - Links for available modelers with open commissions!
+- [API Documentation](/API-Docs.md) - Gives Full Information on the Character Select's API, Including a Model Template Pack!
+- [Squishy's Server | Discord Server](https://discord.gg/2bg2FnFp6f) - Full Help and Support for those who need it!
+- [SM64CoopDX](https://sm64coopdx.com) - The SM64CoopDX Website, Which this project was primarily made for!
 
