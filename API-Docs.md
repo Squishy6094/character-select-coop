@@ -1,9 +1,9 @@
 # Character Select API Documentation
 ### Gives full descriptions of all API functions
-We highly recommend messing around with our [Character Select Template](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template/download.zip) while first reading this doc to get a handle on everything here. And DO NOT modify/add any content within the Character Select mod itself, please use the API and an individual mod when adding characters. If you're confused about anything from outside of the Documentation, Please refer to [SM64CoopDX's Lua Doumentation](https://github.com/coop-deluxe/sm64coopdx/blob/main/docs/lua/lua.md).
+We highly recommend messing around with our [Character Select Template](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-template/download.zip) while first reading this doc to get a handle on everything here. DO NOT modify/add any content within the Character Select mod itself, please use the API and an individual mod when adding characters. If you're confused about anything from outside of the Documentation, Please refer to [SM64CoopDX's Lua Doumentation](https://github.com/coop-deluxe/sm64coopdx/blob/main/docs/lua/lua.md).
 
 ## _G.charSelectExists
-A variable checking if the Mod is active, this is useful for preventing script errors when the mod isn't on.
+A variable checking if the Mod is active, which is useful for preventing script errors when the mod isn't on.
 
 Example: `if not _G.charSelectExists then return end`
 
@@ -18,7 +18,7 @@ A function that Adds a Character to the Character Table, has 8 inputs:
 | Color | table | Table containing variables `r`, `g`, and `b`. Colors use Decimal Format | `{r = 255, g = 150, b = 150}` |
 | Model Info | ModelExtendedId | Model Information Received from `smlua_model_util_get_id()` | `smlua_model_util_get_id("armature_geo")` |
 | Forced Character | CharacterType | Character Type, Inputs can be `CT_MARIO`, `CT_LUIGI`, `CT_TOAD`, `CT_WALUIGI`, `CT_WARIO` | `CT_MARIO` |
-| Life Icon | TextureInfo | Texture Information Recieved from `get_texture_info()` | `get_texture_info("armature_icon")` |
+| Life Icon | TextureInfo | Texture Information Received from `get_texture_info()` | `get_texture_info("armature_icon")` |
 | Camera Scale | integer | Zooms the camera based on a multiplier (Default 1.0) | `1.2` |
 
 ### Full Example:
@@ -70,7 +70,7 @@ local VOICETABLE_CHAR = {
 Refer to [SM64CoopDX's Character Sound Constants](https://github.com/djoslin0/sm64ex-coop/blob/coop/docs/lua/constants.md#enum-charactersound) for all replaceable sounds
 
 ### Required Code:
-In order for voice clips to work functionally, you require the following code in your script:
+For voice clips to work functionally, you require the following code in your script:
 ```lua
 hook_event(HOOK_CHARACTER_SOUND, function (m, sound)
     if _G.charSelect.character_get_voice(m) == VOICETABLE_CHAR then return _G.charSelect.voice.sound(m, sound) end
@@ -115,7 +115,7 @@ local CAPTABLE_CHAR = {
 ```
 
 ## _G.charSelect.character_edit()
-A function that Edits an Existing Character, has 1 unique input, all other inputs mimick [`_G.charSelect.character_add()`](/API-doc.md#_gcharselectcharacter_add)
+A function that Edits an Existing Character, has 1 unique input, all other inputs mimic [`_G.charSelect.character_add()`](/API-doc.md#_gcharselectcharacter_add)
 
 | Variable Name | Valid Input Types | Extra Info | Example |
 | ------------- | ------------ | ---------- | ------- |
@@ -126,7 +126,7 @@ A function that Edits an Existing Character, has 1 unique input, all other input
 | Color | table | Table containing variables `r`, `g`, and `b`. Colors use Decimal Format | `{r = 255, g = 150, b = 150}` |
 | Model Info | ModelExtendedId | Model Information Received from `smlua_model_util_get_id()` | `smlua_model_util_get_id("armature_geo")` |
 | Forced Character | CharacterType | Character Type, Inputs can be `CT_MARIO`, `CT_LUIGI`, `CT_TOAD`, `CT_WALUIGI`, `CT_WARIO` | `CT_MARIO` |
-| Life Icon | TextureInfo | Texture Information Recieved from `get_texture_info()` | `get_texture_info("armature_icon")` |
+| Life Icon | TextureInfo | Texture Information Received from `get_texture_info()` | `get_texture_info("armature_icon")` |
 | Camera Scale | integer | Zooms the camera based on a multiplier (Default 1.0) | `1.2` |
 
 ## _G.charSelect.character_get_current_table()
@@ -142,8 +142,8 @@ Returns the following:
 | color | table | Table containing variables `r`, `g`, and `b`. Colors use Decimal Format | `{r = 255, g = 150, b = 150}` |
 | model | ModelExtendedId | Model Information Received from `smlua_model_util_get_id()` |  |
 | forceChar | CharacterType | Character Type, Inputs can be `CT_MARIO`, `CT_LUIGI`, `CT_TOAD`, `CT_WALUIGI`, `CT_WARIO` | `CT_MARIO` |
-| lifeIcon | TextureInfo | Texture Information Recieved from `get_texture_info()` |  |
-| starIcon | TextureInfo | Texture Information Recieved from `get_texture_info()` |  |
+| lifeIcon | TextureInfo | Texture Information Received from `get_texture_info()` |  |
+| starIcon | TextureInfo | Texture Information Received from `get_texture_info()` |  |
 | camscale | integer | Zooms the camera based on a multiplier (Default 1.0) | `1.2` |
 
 Usage Example: `_G.charSelect.character_get_current_table().name` or `currCharInfo = _G.charSelect.character_get_current_table()`
@@ -152,14 +152,14 @@ Usage Example: `_G.charSelect.character_get_current_table().name` or `currCharIn
 A function that returns the Current Character's Number (integer) in the Character Table
 
 ## _G.charSelect.character_get_number_from_string()
-A function that returns the Current Character's Number (integer) in the Character Table based off the Input
+A function that returns the Current Character's Number (integer) in the Character Table based on the Input
 
 | Variable Name | Valid Input Types | Extra Info | Example |
 | ------------- | ------------ | ---------- | ------- |
 | Name | string | Character's Name you're Searching for | `"Custom Model"` |
 
 ## _G.charSelect.header_set_texture()
-A function that set's the Header Texture for the Character Select Menu
+A function that sets the Header Texture for the Character Select Menu
 
 | Variable Name | Valid Input Types | Extra Info | Example |
 | ------------- | ------------ | ---------- | ------- |
@@ -169,10 +169,10 @@ A function that set's the Header Texture for the Character Select Menu
 A function that returns the current version of the mod in string format
 
 ## _G.charSelect.is_menu_open()
-A function that returns the either True or False if the Menu is Open or not.
+A function that returns either True or False if the Menu is Open or not.
 
 ## _G.charSelect.is_options_open()
-A function that returns the either True or False if the Menu Options is Open or not.
+A function that returns either True or False if the Menu Options is Open or not.
 
 ## _G.charSelect.get_status()
 A function that returns the status of an inputted value relative to the option table
@@ -193,7 +193,7 @@ _G.charSelect.optionTableRef.resetSaveData = 9
 Returns the current character's Voicetable, Primarily when hooking a character's voice
 
 ## _G.charSelect.character_get_life_icon()
-Returns a Character's Icon from the Local Index based off the Input
+Returns a Character's Icon from the Local Index based on the Input
 
 
 | Variable Name | Valid Input Types | Extra Info | Example |
@@ -244,7 +244,7 @@ _G.charSelect.hook_allow_menu_open(allow_menu)
 ### Helpful info for common API use cases
 
 ## Localizing Assets
-Before adding most information to a character, you'll want to localize it's assets before adding the character. This ensures that the model will have been loaded on all clients and will properly sync between clients. This is especially important for Unlockable Characters
+Before adding most information to a character, you'll want to localize its assets before adding the character. This ensures that the model will have been loaded on all clients and will properly sync between clients. This is especially important for Unlockable Characters
 
 Example:
 ```lua
@@ -282,7 +282,7 @@ end
 This function doesn't loop due to the `unlockableCharPlacement` being set, thus only running once. (Character locations will never be under `2`)
 
 ## Muted Character Voice
-A character can have a muted voice by having their input table be `nil`, This can be hooked as usual causing no voicelines to play
+A character can have a muted voice by having their input table be `nil`, This can be hooked as usual causing no voice lines to play
 
 Example: `VOICETABLE_CHAR = {nil}`
 
