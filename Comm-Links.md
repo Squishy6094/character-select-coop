@@ -1,5 +1,5 @@
-# Super Mario 64 Model Commisions
-Here you can find Model/Pack Creators avalible for commissioning! This Page will include their prices, a preview image of their work, and links where you can find them!
+# Super Mario 64 Model Commissions
+Here you can find Model/Pack Creators avalible for commissioning! This Page will include their prices, a preview image of their work/prices, and links where you can find them!
 
 ## Wibblus - 25$ (USD)
 
