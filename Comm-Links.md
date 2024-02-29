@@ -7,8 +7,10 @@ Here you can find Model/Pack Creators available for commissioning! This Page wil
 
 [Original Tumblr Post](https://www.tumblr.com/wibblus/743607049217343488/hi-im-wibbles-3?source=share)
 
+Models featured in the Pack Catalog:
 | [Bowser Moveset](/Pack-Catalog.md#bowser-moveset---download) | [Dry Bones](/Pack-Catalog.md#dry-bones-pack---download) | [Geno & Mallow](/Pack-Catalog.md#geno--mallow---download) | [Nabbit](/Pack-Catalog.md#nabbit---download) |
 | --- | --- | --- | --- |
+| <img src="packs/char-select-bowser-moveset/preview.png" width="200"> | <img src="packs/char-select-drybones/preview.png" width="200"> | <img src="packs/char-select-smrpg/preview.png" width="200"> | <img src="packs/char-select-nabbit/preview.png" width="200"> |
 
 Links:
 - [Commissions Form](https://forms.gle/wYuCozmZAvnyGqHt9)
