@@ -1,6 +1,7 @@
 ---@diagnostic disable: assign-type-mismatch
 
 BOWS_SOUND_SHELL = audio_sample_load('shell_speen.ogg')
+BOWS_SOUND_SCREECH = audio_sample_load('bw_screech.ogg')
 
 local bowsVoiceTable = {
     [CHAR_SOUND_ATTACKED] = 'bw_ouch.ogg',

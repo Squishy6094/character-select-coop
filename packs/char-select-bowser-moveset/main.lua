@@ -80,7 +80,7 @@ if _G.charSelectExists then
 
 
     -- add the guy
-    _G.charSelect.character_add("Bowser", {"The king of the koopas!", "Here to take the power stars!"}, "wibblus", {r = 0, g = 140, b = 0}, E_MODEL_BOWSER_PLAYER, CT_MARIO, TEX_BOWSER_ICON, 1.25)
+    _G.charSelect.character_add("Bowser", {"The king of the koopas!", "Here to take the power stars!", "[+ Bowser Moveset!]"}, "wibblus", {r = 0, g = 140, b = 0}, E_MODEL_BOWSER_PLAYER, CT_MARIO, TEX_BOWSER_ICON, 1.25)
 
     -- bowser moveset functionality
     character_add_shell_model(E_MODEL_BOWSER_PLAYER, E_MODEL_BOWSER_SHELL)
@@ -165,12 +165,8 @@ end
 local function before_mario_update(m)
     if gPlayerSyncTable[m.playerIndex].bowserState == nil then gPlayerSyncTable[m.playerIndex].bowserState = 0 end
 
-    -- default mario hitbox is 37 radius, 160 height
-    m.marioObj.hitboxRadius = 37.0
+    -- default mario hitbox is 160 height
     if has_bowser_flags(m, bowsMoveset.FLAG_LARGE_HITBOX) then
-        if m.heldObj == nil then
-            m.marioObj.hitboxRadius = 85.0
-        end
         if m.action & ACT_FLAG_SHORT_HITBOX ~= 0 then
             m.marioObj.hitboxHeight = 80
         else
@@ -190,7 +186,7 @@ local function on_mario_update(m)
     -- victory grahhh
     if m.action == ACT_EXIT_LAND_SAVE_DIALOG and m.actionState == 3
     and has_bowser_flags(m, bowsMoveset.FLAG_STYLE_ANIMS) and m.marioObj.header.gfx.animInfo.animFrame == 10 then
-        play_character_sound(m, CHAR_SOUND_HAHA)
+        play_bowser_character_sound(m, BOWS_SOUND_SCREECH, 1.0)
     end
 
     if gPlayerSyncTable[m.playerIndex].inShellModel then
@@ -204,10 +200,11 @@ local function on_mario_update(m)
     end
 
     if has_bowser_flags(m, bowsMoveset.FLAG_NO_CAPLESS) then
-        if m.action == ACT_BREATHE_FIRE or m.action == ACT_EXIT_LAND_SAVE_DIALOG then
-            m.marioBodyState.capState = 1 --'capless' head
-        else
+        if m.flags & MARIO_NORMAL_CAP == 0 then
             m.marioBodyState.capState = 0
+        end
+        if m.action == ACT_BREATHE_FIRE then
+            m.marioBodyState.capState = 1 --'capless' head
         end
     end
 
@@ -222,6 +219,12 @@ hook_event(HOOK_MARIO_UPDATE, on_mario_update)
 ---@param m MarioState
 ---@param nextAction integer
 local function before_set_mario_action(m, nextAction)
+    -- default mario hitbox is 37 radius
+    m.marioObj.hitboxRadius = 37.0
+    if has_bowser_flags(m, bowsMoveset.FLAG_LARGE_HITBOX) and m.heldObj == nil then
+        m.marioObj.hitboxRadius = 85.0
+    end
+
     if m.playerIndex ~= 0 then return end
 
     -- setup bowsFlags for selected CS character ; done in this hook for slight performance boost vs mario update babey
@@ -249,6 +252,8 @@ local heavyLandActs = {
     [ACT_GROUND_POUND_LAND] = true,
     [ACT_TRIPLE_JUMP_LAND] = true,
     [ACT_BACKFLIP_LAND] = true,
+    [ACT_AIR_HIT_WALL] = true,
+    [ACT_BACKWARD_AIR_KB] = true,
 }
 
 ---@param m MarioState
@@ -258,7 +263,7 @@ local function on_set_mario_action(m)
         -- forced heavy land sound
         if heavyLandActs[m.action] ~= nil then
             play_sound(SOUND_OBJ_BOWSER_WALK, m.marioObj.header.gfx.cameraToObject)
-        elseif act >= 0x067 and act <= 0x07A then -- landing actions
+        elseif act >= 0x066 and act <= 0x07A then -- landing actions
             -- heavy land vs mid-heavy land based on fall distance
             if m.peakHeight - m.pos.y >= 800 then
                 play_sound(SOUND_OBJ_BOWSER_WALK, m.marioObj.header.gfx.cameraToObject)
@@ -279,30 +284,22 @@ local function allow_interact(m, obj, interactType)
         return false
     end
 end
-hook_event(HOOK_ALLOW_INTERACT, allow_interact)
 
 
---debugging
---[[
-local debugTable = {value="", time=255}
-function set_debug_value(value)
-    if value == nil then
-        debugTable.value = "nil"
-    else
-        debugTable.value = value
+---@param m MarioState
+hook_event(HOOK_ON_PLAYER_CONNECTED, function (m)
+    if m.playerIndex == 0 and network_is_server() then
+        hook_event(HOOK_ALLOW_INTERACT, allow_interact)
     end
-    debugTable.time = 0
-end
-
-hook_event(HOOK_ON_HUD_RENDER, function()
-    ---@type MarioState
-    local m = gMarioStates[0]
-
-    djui_hud_set_color(255, 255, 255, 255)
-    djui_hud_print_text(m.marioObj.header.gfx.animInfo.animID .. " (" .. m.actionTimer .. " : " .. m.actionState .. ", " .. m.actionArg .. ")", 64, 192, 2)
-
-    djui_hud_set_color(200, 255, 255, 255 - debugTable.time)
-    djui_hud_print_text(debugTable.value .. "", 64, 256, 2)
-    debugTable.time = math.min(debugTable.time+3, 255)
 end)
+hook_event(HOOK_JOINED_GAME, function (m)
+    hook_event(HOOK_ALLOW_INTERACT, allow_interact)
+end)
+
+--[[ TODO: this stuff
+---@param gfxNode GraphNodeObject
+local function mirror_mario_render(gfxNode)
+    
+end
+hook_event(HOOK_MIRROR_MARIO_RENDER, mirror_mario_render)
 ]]

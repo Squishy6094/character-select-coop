@@ -35,8 +35,15 @@ local VOICETABLE_JR = {
     [CHAR_SOUND_YAH_WAH_HOO] = {'jr_ya.ogg', 'jr_ha.ogg', 'jr_wuh.ogg'},
 }
 
+local CAPTABLE_KOOP = {
+    normal = smlua_model_util_get_id('koop_cap_geo'),
+    wing = smlua_model_util_get_id('koop_wing_cap_geo'),
+    metal = smlua_model_util_get_id('koop_metal_cap_geo'),
+    metalWing = smlua_model_util_get_id('koop_metal_wing_cap_geo'),
+}
+
 if _G.charSelectExists then
-    _G.charSelect.character_add("Bowser Jr", {"It's Junior!", "Here to bring some chaos!"}, "wibblus", {r = 0, g = 255, b = 50}, E_MODEL_JR, CT_MARIO, TEX_JR_ICON)
+    _G.charSelect.character_add("Bowser Jr", {"It's Junior!", "Here to bring some chaos!", "[+ Bowser Moveset!]"}, "wibblus", {r = 0, g = 255, b = 50}, E_MODEL_JR, CT_MARIO, TEX_JR_ICON)
 
 
     ---- BOWSER MOVESET:
@@ -81,7 +88,7 @@ if _G.charSelectExists then
     -- _G.bowsMoveset.FLAG_ALL
     --- Shorthand to set all flags.
 
-    if bowsMoveset.isActive then
+    if _G.bowsMoveset.isActive then
         -- This function sets up your custom shell model. Feel free to remove this if you aren't using a shell model.
         -- parameters: [your character model], [your shell model]
         _G.bowsMoveset.character_add_shell_model(E_MODEL_JR, E_MODEL_JR_SHELL)
@@ -90,6 +97,9 @@ if _G.charSelectExists then
         _G.bowsMoveset.character_set_bows_flags(E_MODEL_JR, BOWS_FLAGS_JR)
     end
     ----
+
+    _G.charSelect.character_add_caps(E_MODEL_JR, CAPTABLE_KOOP)
+    _G.charSelect.character_add_caps(E_MODEL_BOWSER_PLAYER, CAPTABLE_KOOP)
 
     -- the following must be hooked for each character added
     _G.charSelect.character_add_voice(E_MODEL_JR, VOICETABLE_JR)

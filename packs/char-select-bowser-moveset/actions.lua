@@ -136,7 +136,7 @@ function act_shell_slide_loop(m)
             return 0
         end
         if (step == GROUND_STEP_HIT_WALL and (m.wall ~= nil or gServerSettings.bouncyLevelBounds ~= 1))
-        or (m.ceil ~= nil and m.ceilHeight < m.pos.y - 50) then
+        or (m.ceil ~= nil and m.ceilHeight < m.pos.y + 50) then
             mario_bonk_reflection(m, 0)
         end
         -- rotate based on floor normal; down here because this game is silly
@@ -204,8 +204,8 @@ function act_shell_slide_loop(m)
             m.actionState = 0
             return 0
         end
-        if step == AIR_STEP_HIT_WALL and (m.wall ~= nil or gServerSettings.bouncyLevelBounds ~= 1) 
-        or (m.ceil ~= nil and m.ceilHeight < m.pos.y - 50) then
+        if step == AIR_STEP_HIT_WALL and (m.wall ~= nil or gServerSettings.bouncyLevelBounds ~= 1)
+        or (m.ceil ~= nil and m.ceilHeight < m.pos.y + 50) then
             mario_bonk_reflection(m, 0)
         end
     end
@@ -220,4 +220,4 @@ function act_shell_slide_gravity(m)
         m.vel.y = math.max(m.vel.y - 5.0, -70.0)
     end
 end
-hook_mario_action(ACT_SHELL_SLIDE, {every_frame = act_shell_slide_loop, gravity = act_shell_slide_gravity}, INT_FAST_ATTACK_OR_SHELL)
+hook_mario_action(ACT_SHELL_SLIDE, {every_frame = act_shell_slide_loop, gravity = act_shell_slide_gravity}, INT_SLIDE_KICK)

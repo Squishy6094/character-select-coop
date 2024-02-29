@@ -32,11 +32,14 @@ end
 ---@param target Object
 local function hit_effect_piranhaplant(o, target)
     target.oAction = PIRANHA_PLANT_ACT_ATTACKED
+
+    spawn_mist_particles()
+    obj_mark_for_deletion(o)
 end
 ---@param o Object
 ---@param target Object
 local function hit_effect_kingbobomb(o, target)
-    if target.oAction ~= 8 then
+    if target.oFlags & OBJ_FLAG_HOLDABLE ~= 0 and target.oAction ~= 8 then
         target.oVelY = 30
         target.oForwardVel = 30
         target.oMoveAngleYaw = o.oMoveAngleYaw
@@ -49,10 +52,29 @@ local function hit_effect_kingbobomb(o, target)
 end
 ---@param o Object
 ---@param target Object
-local function hit_effect_destroy(o, target)
-    spawn_mist_particles_with_sound(SOUND_OBJ_DEFAULT_DEATH)
-    obj_mark_for_deletion(target)
+local function hit_effect_bullet(o, target)
+    spawn_mist_particles_with_sound(SOUND_GENERAL2_BOBOMB_EXPLOSION)
+    target.oAction = 3
+
     spawn_mist_particles()
+    obj_mark_for_deletion(o)
+end
+---@param o Object
+---@param target Object
+local function hit_effect_chuckya(o, target)
+    target.oAction = 2
+    target.oVelY = 30
+    target.oMoveAngleYaw = o.oMoveAngleYaw
+    target.oForwardVel = 30
+
+    spawn_mist_particles()
+    obj_mark_for_deletion(o)
+end
+---@param o Object
+---@param target Object
+local function hit_effect_destroy(o, target)
+    spawn_mist_particles_with_sound(SOUND_GENERAL2_BOBOMB_EXPLOSION)
+    obj_mark_for_deletion(target)
     obj_mark_for_deletion(o)
 end
 
@@ -70,29 +92,28 @@ local flameInteractionTable = {
     [id_bhvBooInCastle] = hit_effect_normal,
     [id_bhvBooWithCage] = hit_effect_normal,
     [id_bhvMerryGoRoundBoo] = hit_effect_normal,
-    [id_bhvBalconyBigBoo] = hit_effect_normal,
-    [id_bhvGhostHuntBigBoo] = hit_effect_normal,
-    [id_bhvMerryGoRoundBigBoo] = hit_effect_normal,
     [id_bhvFlyingBookend] = hit_effect_normal,
     [id_bhvSkeeter] = hit_effect_normal,
     [id_bhvMoneybag] = hit_effect_normal,
     [id_bhvSnufit] = hit_effect_normal,
     [id_bhvSwoop] = hit_effect_normal,
-    [id_bhvFirePiranhaPlant] = hit_effect_normal,
     [id_bhvEnemyLakitu] = hit_effect_normal,
     [id_bhvSpiny] = hit_effect_normal,
     [id_bhvPokey] = hit_effect_normal,
     [id_bhvPokeyBodyPart] = hit_effect_normal,
     [id_bhvSkeeter] = hit_effect_normal,
 
+    [id_bhvFirePiranhaPlant] = hit_effect_contact,
+    [id_bhvBalconyBigBoo] = hit_effect_contact,
+    [id_bhvGhostHuntBigBoo] = hit_effect_contact,
+    [id_bhvMerryGoRoundBigBoo] = hit_effect_contact,
     [id_bhvChainChomp] = hit_effect_contact,
     [id_bhvBreakableBox] = hit_effect_contact,
     [id_bhvWigglerHead] = hit_effect_contact,
     [id_bhvEyerokHand] = hit_effect_contact,
     [id_bhvKlepto] = hit_effect_contact,
 
-    [id_bhvBulletBill] = hit_effect_destroy,
-    [id_bhvChuckya] = hit_effect_destroy,
+    [id_bhvHeaveHo] = hit_effect_destroy,
 
     [id_bhvSmallBully] = hit_effect_bully,
     [id_bhvBigBully] = hit_effect_bully,
@@ -100,6 +121,8 @@ local flameInteractionTable = {
     [id_bhvBigChillBully] = hit_effect_bully,
     [id_bhvMrBlizzard] = hit_effect_mrblizzard,
     [id_bhvPiranhaPlant] = hit_effect_piranhaplant,
+    [id_bhvBulletBill] = hit_effect_bullet,
+    [id_bhvChuckya] = hit_effect_chuckya,
 
     [id_bhvKingBobomb] = hit_effect_kingbobomb,
 }
@@ -170,7 +193,7 @@ local function bhv_bowser_player_fireball_loop(obj)
 
     -- targetting
     if targetObj ~= nil and targetDist < 800 then
-        local yaw = approach_s16_symmetric(obj.oFaceAngleYaw, obj_angle_to_object(obj, targetObj), 0x200)
+        local yaw = approach_s16_symmetric(obj.oFaceAngleYaw, obj_angle_to_object(obj, targetObj), 0x280)
         obj.oFaceAngleYaw = yaw
         obj.oMoveAngleYaw = yaw
 
@@ -230,17 +253,32 @@ smlua_anim_util_register_animation('b_shell_spin', 0, 189, 0, 0, 20, {
 	0x0012, 0x0005, 0x0027, 
 })
 
----@param obj Object
-local function obj_transform_to_mario(obj)
-    local m = gMarioStates[network_local_index_from_global(obj.globalPlayerIndex)]
-    local mObj = m.marioObj
+---@type function
+local obj_transform_to_mario
 
-    obj_copy_pos(obj, mObj)
-    obj.header.gfx.throwMatrix = mObj.header.gfx.throwMatrix
-    obj.header.gfx.animInfo.animAccel = mObj.header.gfx.animInfo.animAccel
+if SM64COOPDX_VERSION ~= nil then
+    ---@param obj Object
+    obj_transform_to_mario = function(obj)
+        local m = gMarioStates[network_local_index_from_global(obj.globalPlayerIndex)]
+        local mObj = m.marioObj
 
-    obj_copy_scale(obj, mObj)
+        obj_copy_pos(obj, mObj)
+        obj.header.gfx.throwMatrix = mObj.header.gfx.throwMatrix
+        obj.header.gfx.animInfo.animAccel = mObj.header.gfx.animInfo.animAccel
+        obj_copy_scale(obj, mObj)
+    end
+else
+    ---@param obj Object
+    obj_transform_to_mario = function(obj)
+        local m = gMarioStates[network_local_index_from_global(obj.globalPlayerIndex)]
+        local mObj = m.marioObj
+
+        obj_copy_pos(obj, mObj)
+        obj.header.gfx.animInfo.animAccel = mObj.header.gfx.animInfo.animAccel
+        obj_copy_scale(obj, mObj)
+    end
 end
+
 
 ---@param obj Object
 local function bhv_bowser_player_shell_init(obj)
