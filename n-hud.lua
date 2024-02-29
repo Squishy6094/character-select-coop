@@ -5,7 +5,7 @@
 --- @param localIndex integer
 --- @return TextureInfo|nil
 --- This assumes multiple characters will not have the same model
-function character_get_life_icon_from_local_index(localIndex)
+function life_icon_from_local_index(localIndex)
     for i = 1, #characterTable do
         if characterTable[i].model == gPlayerSyncTable[localIndex].modelId then
             return characterTable[i].lifeIcon
@@ -120,7 +120,7 @@ local function render_act_select_hud()
             local np = gNetworkPlayers[j]
             if np and np.connected and np.currCourseNum == course and np.currActNum == a then
                 djui_hud_render_rect(x - 4, 17, 16, 16)
-                local displayHead = character_get_life_icon_from_local_index(j)
+                local displayHead = life_icon_from_local_index(j)
                 if displayHead == nil then
                     djui_hud_print_text("?", x - 4, 17, 1)
                 else
