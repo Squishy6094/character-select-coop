@@ -170,7 +170,7 @@ OSAKA!!!!! but mario 64ified :3
 
 ## Furry Friends Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-furry-friends/download.zip)
 
-<img src="https://github.com/Squishy6094/character-select-coop/blob/main/packs/char-select-template/preview.png?raw=true" width="480">
+<img src="packs/char-select-furry-friends/preview.png" width="480">
 
 A Pack the features characters/sonas of Yuyake's Friends, including Yuyake Himself!
 
