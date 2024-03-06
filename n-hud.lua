@@ -61,7 +61,7 @@ local function render_hud_stars()
 end
 
 local function render_hud_camera_status()
-    if not IS_COOPDX then return end
+    if not IS_COOPDX or not HUD_DISPLAY_CAMERA_STATUS then return end
 
     hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_CAMERA)
 
@@ -145,7 +145,7 @@ local function on_hud_render_behind()
 
     render_hud_mario_lives()
     render_hud_stars()
-    --render_hud_camera_status()
+    render_hud_camera_status()
 end
 
 
