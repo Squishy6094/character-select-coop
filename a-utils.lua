@@ -1,4 +1,4 @@
-MOD_VERSION = "1.7 (Pre-Release)"
+MOD_VERSION = "1.7"
 IS_COOPDX = get_coop_compatibility_enabled ~= nil
 
 ommActive = false
