@@ -114,6 +114,15 @@ local CAPTABLE_CHAR = {
 }
 ```
 
+## _G.charSelect.character_add_celebration_star()
+A function that adds a celebration star model to a character, has 3 inputs
+
+| Variable Name | Valid Input Types | Extra Info | Example |
+| ------------- | ------------ | ---------- | ------- |
+| Model Info | ModelExtendedId | Model Information Received from `smlua_model_util_get_id()` | `smlua_model_util_get_id("armature_geo")` |
+| Star Model | ModelExtendedId | Model Information Received from `smlua_model_util_get_id()` | `smlua_model_util_get_id("armature_geo")` |
+| Star Icon | TextureInfo | Texture Information Received from `get_texture_info()` | `get_texture_info("armature_icon")` |
+
 ## _G.charSelect.character_edit()
 A function that Edits an Existing Character, has 1 unique input, all other inputs mimic [`_G.charSelect.character_add()`](/API-doc.md#_gcharselectcharacter_add)
 

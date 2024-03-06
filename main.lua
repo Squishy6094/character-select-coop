@@ -94,6 +94,7 @@ optionTable = {
         toggleSaveName = "Anims",
         toggleDefault = 1,
         toggleMax = 1,
+        toggleNames = {"Off", "On"--[[, "On (30 fps)"]]},
         description = {"Toggles Animations In-Menu,", "Turning these off may", "Save Performance"}
     },
     [optionTableRef.inputLatency] = {
