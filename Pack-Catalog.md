@@ -197,6 +197,29 @@ Bowser is now playable in SM64ex-coop! This mod works standalone, and has compat
 </tr>
 </table>
 
+## King - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-king-creepypasta/download.zip)
+
+<table>
+<tr>
+<td width="440">
+
+<img src="packs/char-select-king-creepypasta/preview.png" width="440">
+
+</td>
+<td width="550">
+
+Model commission for springshady's character! Made for Character Select and has compatability with Bowser Moveset!
+
+- Creator(s)
+  - Wibblus
+  - SpringShady (Original Character)
+- Characters - 1
+  - King
+
+</td>
+</tr>
+</table>
+
 ## Geno + Mallow - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-smrpg/download.zip)
 
 <table>
@@ -466,35 +489,6 @@ Splatoon's Callie & Marie in SM64! Includes Full Color Support and Eye States!
 - Characters - Too Many! (20+)
 
 ###### Note: This Pack is Stored on an External Website, and may not always be available!
-
-</td>
-</tr>
-</table>
-
-## Pizizito's Pizza Tower Pack - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-pizza-tower-pack/download.zip)
-
-<table>
-<tr>
-<td width="440">
-
-<img src="https://github.com/Squishy6094/character-select-coop/blob/main/packs/char-select-template/preview.png?raw=true" width="440">
-
-</td>
-<td width="550">
-
-A handful of Pizza Tower/Sugary Spire Characters in Super Mario 64!
-
-- Creator(s)
-  - Pizizito (Models)
-  - KitKat (HUD Icons)
-- Characters - 7
-  - Pepperman
-  - Vigilante
-  - The Noise
-  - Fake Peppino
-  - Pizzelle
-  - Pizzano
-  - Gustavo
 
 </td>
 </tr>
