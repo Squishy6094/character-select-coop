@@ -73,6 +73,28 @@ More characters from the Super Mario series!
 </tr>
 </table>
 
+## Metal Sonic - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/char-select-metal-sonic/download.zip)
+
+<table>
+<tr>
+<td width="440">
+
+<img src="packs/char-select-metal-sonic/preview.png" width="440">
+
+</td>
+<td width="550">
+
+the guy from sonic cd who abuses animals now in sm64
+
+- Creator(s)
+  - Warioplier
+- Characters - 1
+  - Metal Sonic
+
+</td>
+</tr>
+</table>
+
 ## King The Memer (v0.9 Beta) - [Download](https://github.com/Squishy6094/character-select-coop/raw/main/packs/king-in-coop-remake-v0.9/download.zip)
 
 <table>
