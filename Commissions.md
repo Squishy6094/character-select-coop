@@ -1,7 +1,7 @@
 # Super Mario 64 Model Commissions
 Here you can find Model/Pack Creators available for commissioning! This Page will include their prices, a preview image of their work/prices, and links where you can find them!
 
-## Angelic Miracles (CoopDX Team) | $49.99+ (USD) | [Commission](https://twitter.com/sm64coopdx/status/1753241774934687829)
+## AngelicMiracles (CoopDX Team) | $44.99+ (USD) | [Commission](https://twitter.com/sm64coopdx/status/1753241774934687829)
 
 [<img src="https://pbs.twimg.com/media/GFTC9MUasAA88EK?format=jpg&name=small">](https://twitter.com/sm64coopdx/status/1753241774934687829)
 
