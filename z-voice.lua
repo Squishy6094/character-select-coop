@@ -82,11 +82,11 @@ end
 
 --- @param m MarioState
 local function custom_character_sound(m, characterSound)
-    if is_game_paused() or optionTable[optionTableRef.localVoices].toggle == 0 then return end
+    local voice = _G.charSelect.character_get_voice(m)[characterSound]
+    if is_game_paused() or optionTable[optionTableRef.localVoices].toggle == 0 or voice == nil then return end
     if characterSound == CHAR_SOUND_SNORING3 then return 0 end
     if characterSound == CHAR_SOUND_HAHA and m.hurtCounter > 0 then return 0 end
 
-    local voice = _G.charSelect.character_get_voice(m)[characterSound]
     if voice ~= nil then
         return play_custom_character_sound(m, voice)
     end
