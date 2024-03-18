@@ -48,7 +48,6 @@ function play_custom_character_sound(m, voice)
         sound = voice
     end
     if sound == nil then return 0 end
-    if sound then return 0 end
 
     --Get current sample and stop it
     local voice_sample = stop_custom_character_sound(m, sound)
@@ -63,18 +62,14 @@ function play_custom_character_sound(m, voice)
             audio_stream_destroy(gCustomVoiceStream)
         end
         gCustomVoiceStream = audio_stream_load(sound)
-        if gCustomVoiceStream.loaded then
-            audio_stream_play(gCustomVoiceStream, true, 1)
-        end
+        audio_stream_play(gCustomVoiceStream, true, 1)
     else
         if voice_sample == nil then
             voice_sample = audio_sample_load(sound)
 			while not voice_sample.loaded do end
             voicecount = voicecount + 1
         end
-        if voice_sample.loaded then
-            audio_sample_play(voice_sample, m.pos, 1)
-        end
+        audio_sample_play(voice_sample, m.pos, 1)
 
         if gCustomVoiceSamplesBackup[m.playerIndex] ~= nil and not(gCustomVoiceSamples[m.playerIndex] == false) then
             gCustomVoiceSamplesBackup[m.playerIndex] = voice_sample
@@ -87,11 +82,11 @@ end
 
 --- @param m MarioState
 local function custom_character_sound(m, characterSound)
-    local voice = _G.charSelect.character_get_voice(m)[characterSound]
     if is_game_paused() or optionTable[optionTableRef.localVoices].toggle == 0 then return end
     if characterSound == CHAR_SOUND_SNORING3 then return 0 end
     if characterSound == CHAR_SOUND_HAHA and m.hurtCounter > 0 then return 0 end
 
+    local voice = _G.charSelect.character_get_voice(m)[characterSound]
     if voice ~= nil then
         return play_custom_character_sound(m, voice)
     end
