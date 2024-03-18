@@ -192,20 +192,6 @@ local defaultCamScales = {
     [CT_WALUIGI] = 1.1,
     [CT_WARIO] = 1
 }
-local defaultDescriptions = {
-    [CT_MARIO] = {"The iconic italian plumber himself!", "Has a little brother named Luigi!", "", "You can change this character", "via the default options menu."},
-    [CT_LUIGI] = {"The other iconic italian plumber himself!", "Has an older brother named Mario!", "", "You can change this character", "via the default options menu."},
-    [CT_TOAD] = {"Princess Peach's little attendant!", "A friend of Mario and Luigi!", "", "You can change this character", "via the default options menu."},
-    [CT_WALUIGI] = {"The more evil version of Luigi!", "Has an older brother named Wario!", "", "You can change this character", "via the default options menu."},
-    [CT_WARIO] = {"The more evil version of Mario!", "Has a little brother named Waluigi!", "", "You can change this character", "via the default options menu."}
-}
-local defaultCredits = {
-    [CT_MARIO] = "Nintendo | The Coop Team",
-    [CT_LUIGI] = "FluffaMario",
-    [CT_TOAD] = "FluffaMario",
-    [CT_WALUIGI] = "Keeberghrh",
-    [CT_WARIO] = "FluffaMario"
-}
 
 ---@param m MarioState
 local function nullify_inputs(m)
@@ -392,8 +378,6 @@ local function mario_update(m)
         characterTable[1].forceChar = modelIndex
         characterTable[1].name = defaultNames[modelIndex]
         characterTable[1].color = defaultPlayerColors[modelIndex]
-        characterTable[1].description = defaultDescriptions[modelIndex]
-        characterTable[1].credit = defaultCredits[modelIndex]
         if currChar == 1 then
             characterTable[1].lifeIcon = defaultIcons[modelIndex]
             characterTable[1].camScale = defaultCamScales[modelIndex]
