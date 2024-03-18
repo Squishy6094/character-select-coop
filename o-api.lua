@@ -155,6 +155,10 @@ local function is_menu_open()
     return menuAndTransition
 end
 
+local function get_menu_color()
+    return menuColor
+end
+
 local function hook_allow_menu_open(func)
     table_insert(allowMenu, func)
 end
@@ -200,6 +204,7 @@ _G.charSelect = {
     header_set_texture = header_set_texture, -- Function located in main.lua
     version_get = version_get,
     is_menu_open = is_menu_open,
+    get_menu_color = get_menu_color,
     is_options_open = is_options_open,
     get_status = get_status,
     optionTableRef = optionTableRef,

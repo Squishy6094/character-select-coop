@@ -546,7 +546,7 @@ local TEXT_OPTIONS_SELECT = "A - Select | B - Exit  "
 local TEXT_LOCAL_MODEL_OFF = "Locally Display Models is Off"
 local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Menu"
 
-local menuColor = characterTable[currChar].color
+menuColor = characterTable[currChar].color
 
 local MATH_DIVIDE_THREE_HUNDRED_TWENTY = 1/320
 local MATH_DIVIDE_THIRTY_TWO = 1/32
