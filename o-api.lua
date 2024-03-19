@@ -184,7 +184,7 @@ local controller = {
 }
 
 ---@param tableNum integer
-local function get_status(tableNum)
+local function get_options_status(tableNum)
     return optionTable[tableNum].toggle
 end
 
@@ -206,7 +206,7 @@ _G.charSelect = {
     is_menu_open = is_menu_open,
     get_menu_color = get_menu_color,
     is_options_open = is_options_open,
-    get_status = get_status,
+    get_options_status = get_options_status,
     optionTableRef = optionTableRef,
     controller = controller,
     hook_allow_menu_open = hook_allow_menu_open,
