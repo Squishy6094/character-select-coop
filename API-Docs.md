@@ -194,9 +194,8 @@ _G.charSelect.optionTableRef.menuColor = 3
 _G.charSelect.optionTableRef.anims = 4
 _G.charSelect.optionTableRef.inputLatency = 5
 _G.charSelect.optionTableRef.localModels = 6
-_G.charSelect.optionTableRef.localVoices = 7
-_G.charSelect.optionTableRef.debugInfo = 8
-_G.charSelect.optionTableRef.resetSaveData = 9
+_G.charSelect.optionTableRef.debugInfo = 7
+_G.charSelect.optionTableRef.resetSaveData = 8
 ```
 ## _G.charSelect.character_get_voice()
 Returns the current character's Voicetable, Primarily when hooking a character's voice
