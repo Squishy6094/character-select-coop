@@ -1,6 +1,6 @@
- <img src="images/page-header.png" align=center width=640>
+<p align=center> <img src="images/page-header.png"> </p>
 
-### A Mod for Super Mario 64 Coop Deluxe acting as a model selector! With an Extensive API and tons of Support!
+### A Model Selector for SM64CoopDX with an Extensive API and tons of Support!
 
  <img src="images/menu-preview.png"> <!--width=""-->
  
