@@ -183,7 +183,10 @@ A function that returns either True or False if the Menu is Open or not.
 ## _G.charSelect.is_options_open()
 A function that returns either True or False if the Menu Options is Open or not.
 
-## _G.charSelect.get_status()
+## _G.charSelect.get_options_status()
+A function that returns the current menu color in table form `{r, g, b}`
+
+## _G.charSelect.get_options_status()
 A function that returns the status of an inputted value relative to the option table
 
 Inputs can be the following:
