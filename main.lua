@@ -55,9 +55,9 @@ optionTableRef = {
     anims = 4,
     inputLatency = 5,
     localModels = 6,
-    localVoices = 7,
-    debugInfo = 8,
-    resetSaveData = 9
+    --localVoices = 7,
+    debugInfo = 7,
+    resetSaveData = 8
 }
 
 optionTable = {
@@ -114,6 +114,7 @@ optionTable = {
         toggleMax = 1,
         description = {"Toggles if Custom Models display", "on your client, practically", "disables Character Select if", "Toggled Off"}
     },
+    --[[
     [optionTableRef.localVoices] = {
         name = "Custom Voices",
         toggle = tonumber(mod_storage_load("localVoices")),
@@ -122,6 +123,7 @@ optionTable = {
         toggleMax = 1,
         description = {"Toggle if Custom Voicelines play", "for Characters who support it"}
     },
+    ]]
     [optionTableRef.debugInfo] = {
         name = "Debugging Info",
         toggle = tonumber(mod_storage_load("debuginfo")),
