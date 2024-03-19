@@ -10,7 +10,7 @@
 --- @field public camScale integer
 
 -- localize functions to improve performance
-local smlua_model_util_get_id,table_insert,type,split = smlua_model_util_get_id,table.insert,type,split
+local smlua_model_util_get_id,table_insert,type,djui_hud_measure_text = smlua_model_util_get_id,table.insert,type,djui_hud_measure_text
 
 local characterVoices = {}
 local saveNameTable = {}
@@ -20,6 +20,28 @@ local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 ---------
 -- API --
 ---------
+
+local function split_text_into_lines(text)
+    local words = {}
+    for word in text:gmatch("%S+") do
+        table.insert(words, word)
+    end
+
+    local lines = {}
+    local currentLine = ""
+    for i, word in ipairs(words) do
+        local measuredWidth = djui_hud_measure_text(currentLine .. " " .. word)*0.3
+        if measuredWidth <= 100 then
+            currentLine = currentLine .. " " .. word
+        else
+            table.insert(lines, currentLine)
+            currentLine = word
+        end
+    end
+    table.insert(lines, currentLine) -- add the last line
+
+    return lines
+end
 
 ---@param name string|nil Underscores turn into Spaces
 ---@param description table|string|nil {"string"}
@@ -32,7 +54,7 @@ local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 ---@return integer
 local function character_add(name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
     if type(description) == "string" then
-        description = split(description, "\n")
+        description = split_text_into_lines(description)
     end
     table_insert(characterTable, {
         name = name and name or "Untitled",
@@ -60,7 +82,7 @@ end
 ---@param camScale integer|nil Zooms the camera based on a multiplier (Default 1.0)
 local function character_edit(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
     if type(description) == "string" then
-        description = split(description, "\n")
+        description = split_text_into_lines(description)
     end
     characterTable[charNum] = characterTable[charNum] and {
         name = name and name or characterTable[charNum].name,
