@@ -1,4 +1,4 @@
-# <p align=center> Character Select - SM64CoopDX </p>
+ <img src="images/page-header.png" align=center width=640>
 
 ### A Mod for Super Mario 64 Coop Deluxe acting as a model selector! With an Extensive API and tons of Support!
 
