@@ -43,6 +43,11 @@ local function split_text_into_lines(text)
     return lines
 end
 
+local TYPE_INTEGER = "number"
+local TYPE_STRING = "string"
+local TYPE_TABLE = "table"
+local TYPE_FUNCTION = "function"
+
 ---@param name string|nil Underscores turn into Spaces
 ---@param description table|string|nil {"string"}
 ---@param credit string|nil
@@ -53,19 +58,19 @@ end
 ---@param camScale integer|nil Zooms the camera based on a multiplier (Default 1.0)
 ---@return integer
 local function character_add(name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
-    if type(description) == "string" then
+    if type(description) == TYPE_STRING then
         description = split_text_into_lines(description)
     end
     table_insert(characterTable, {
-        name = name and name or "Untitled",
-        saveName = name and string_space_to_underscore(name) or "Untitled",
-        description = description and description or {"No description has been provided"},
-        credit = credit and credit or "Unknown",
-        color = color and color or {r = 255, g = 255, b = 255},
+        name = type(name) == TYPE_STRING and name or "Untitled",
+        saveName = type(name) == TYPE_STRING and string_space_to_underscore(name) or "Untitled",
+        description = type(description) == TYPE_TABLE and description or {"No description has been provided"},
+        credit = type(credit) == TYPE_STRING and credit or "Unknown",
+        color = type(color) == TYPE_TABLE and color or {r = 255, g = 255, b = 255},
         model = modelInfo and modelInfo or E_MODEL_ARMATURE,
-        forceChar = forceChar and forceChar or CT_MARIO,
-        lifeIcon = lifeIcon and lifeIcon or nil,
-        camScale = camScale and camScale or 1
+        forceChar = type(forceChar) == TYPE_INTEGER and forceChar or CT_MARIO,
+        lifeIcon = type(lifeIcon) == TYPE_TABLE and lifeIcon or nil,
+        camScale = type(camScale) == TYPE_INTEGER and camScale or 1
     })
     saveNameTable[#characterTable] = characterTable[#characterTable].saveName
     return #characterTable
@@ -81,32 +86,35 @@ end
 ---@param lifeIcon TextureInfo|nil Use get_texture_info()
 ---@param camScale integer|nil Zooms the camera based on a multiplier (Default 1.0)
 local function character_edit(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
-    if type(description) == "string" then
+    if charNum > #characterTable or charNum < 0 or tonumber(charNum) == nil then return end
+    if type(description) == TYPE_STRING then
         description = split_text_into_lines(description)
     end
+    local tableCache = characterTable[charNum]
     characterTable[charNum] = characterTable[charNum] and {
-        name = name and name or characterTable[charNum].name,
+        name = type(name) == TYPE_STRING and name or tableCache.name,
         saveName = saveNameTable[charNum],
-        description = description and description or characterTable[charNum].description,
-        credit = credit and credit or characterTable[charNum].credit,
-        color = color and color or characterTable[charNum].color,
-        model = modelInfo and modelInfo or characterTable[charNum].model,
-        forceChar = forceChar and forceChar or characterTable[charNum].forceChar,
-        lifeIcon = lifeIcon and lifeIcon or characterTable[charNum].lifeIcon,
-        camScale = camScale and camScale or 1
+        description = type(description) == TYPE_TABLE and description or tableCache.description,
+        credit = type(credit) == TYPE_STRING and credit or tableCache.credit,
+        color = type(color) == TYPE_TABLE and color or tableCache.color,
+        model = modelInfo and modelInfo or tableCache.model,
+        forceChar = type(forceChar) == TYPE_INTEGER and forceChar or tableCache.forceChar,
+        lifeIcon = type(lifeIcon) == TYPE_TABLE and lifeIcon or tableCache.lifeIcon,
+        starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce
+        camScale = type(camScale) == TYPE_INTEGER and camScale or tableCache.camScale,
     } or nil
 end
 
 ---@param modelInfo ModelExtendedId|integer
 ---@param clips table
 local function character_add_voice(modelInfo, clips)
-    characterVoices[modelInfo] = clips
+    characterVoices[modelInfo] = type(clips) == TYPE_TABLE and clips or nil
 end
 
 ---@param modelInfo ModelExtendedId|integer
 ---@param caps table
 local function character_add_caps(modelInfo, caps)
-    characterCaps[modelInfo] = caps
+    characterCaps[modelInfo] = type(caps) == TYPE_TABLE and caps or nil
 end
 
 ---@param modelInfo ModelExtendedId|integer
@@ -116,7 +124,7 @@ local function character_add_celebration_star(modelInfo, starModel, starIcon)
     characterCelebrationStar[modelInfo] = starModel
     for i = 2, #characterTable do
         if characterTable[i].model == modelInfo then
-            characterTable[i].starIcon = starIcon and starIcon or gTextures.star
+            characterTable[i].starIcon = type(starIcon) == TYPE_TABLE and starIcon or gTextures.star
             return
         end
     end
@@ -134,6 +142,7 @@ end
 
 ---@param name string
 local function character_get_number_from_string(name)
+    if type(name) ~= TYPE_STRING then return nil end
     for i = 2, #characterTable do
         if characterTable[i].name == name or characterTable[i].name == string_space_to_underscore(name) then
             return i
@@ -160,10 +169,12 @@ local function get_menu_color()
 end
 
 local function hook_allow_menu_open(func)
+    if type(func) ~= TYPE_FUNCTION then return end
     table_insert(allowMenu, func)
 end
 
 local function hook_render_in_menu(func)
+    if type(func) ~= TYPE_FUNCTION then return end
     table_insert(renderInMenuTable, func)
 end
 
@@ -185,6 +196,7 @@ local controller = {
 
 ---@param tableNum integer
 local function get_options_status(tableNum)
+    if type(tableNum) ~= TYPE_INTEGER then return nil end
     return optionTable[tableNum].toggle
 end
 
