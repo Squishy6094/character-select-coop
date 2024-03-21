@@ -538,6 +538,7 @@ end
 local TEXT_DEBUGGING = "Character Debug"
 local TEXT_DESCRIPTION_SHORT = "Description:"
 local TEXT_LIFE_ICON = "Life Icon:"
+local TEXT_STAR_ICON = "Star Icon:"
 local TEXT_FORCED_CHAR = "Forced: "
 local TEXT_TABLE_POS = "Table Position: "
 
@@ -637,7 +638,8 @@ local function on_hud_render()
             local TEXT_CREDIT = "Credit: " .. character.credit
             local TEXT_DESCRIPTION_TABLE = character.description
             local TEXT_COLOR = "Color: R-" .. character.color.r ..", G-" ..character.color.g ..", B-"..character.color.b
-            local TEX_ICON = character.lifeIcon
+            local TEX_LIFE_ICON = character.lifeIcon
+            local TEX_STAR_ICON = character.starIcon
             local TEXT_ICON_DEFAULT = "?"
             local TEXT_SCALE = "Camera Scale: " .. character.camScale
             local TEXT_PREF = "Preferred: " .. TEXT_PREF_LOAD
@@ -667,11 +669,13 @@ local function on_hud_render()
                 end
             end
             local descriptionOffset = (#TEXT_DESCRIPTION_TABLE - removeLine) * 7
+            djui_hud_set_color(character.color.r, character.color.g, character.color.b, 255)
             djui_hud_print_text(TEXT_COLOR, width - x + 8, 109 + descriptionOffset, 0.6)
-            if TEX_ICON ~= nil then
-                djui_hud_print_text(TEXT_LIFE_ICON .. "    (" .. TEX_ICON.width .. "x" .. TEX_ICON.height .. ")", width - x + 8, 118 + descriptionOffset, 0.6)
+            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+            if TEX_LIFE_ICON ~= nil then
+                djui_hud_print_text(TEXT_LIFE_ICON .. "    (" .. TEX_LIFE_ICON.width .. "x" .. TEX_LIFE_ICON.height .. ")", width - x + 8, 118 + descriptionOffset, 0.6)
                 djui_hud_set_color(255, 255, 255, 255)
-                djui_hud_render_texture(TEX_ICON, width - x + 38, 119 + descriptionOffset, 0.5 / (TEX_ICON.width / 16), 0.5 / (TEX_ICON.height / 16))
+                djui_hud_render_texture(TEX_LIFE_ICON, width - x + 38, 119 + descriptionOffset, 0.5 / (TEX_LIFE_ICON.width / 16), 0.5 / (TEX_LIFE_ICON.height / 16))
             else
                 djui_hud_print_text(TEXT_LIFE_ICON .. "    (?x?)", width - x + 8, 118 + descriptionOffset, 0.6)
                 djui_hud_set_font(FONT_HUD)
@@ -680,12 +684,17 @@ local function on_hud_render()
                 djui_hud_set_font(FONT_TINY)
             end
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_print_text(TEXT_FORCED_CHAR .. defaultForceChar[character.forceChar], width - x + 8, 127 + descriptionOffset, 0.6)
-            djui_hud_print_text(TEXT_TABLE_POS .. currChar, width - x + 8, 136 + descriptionOffset, 0.6)
-            djui_hud_print_text(TEXT_SCALE, width - x + 8, 145 + descriptionOffset, 0.6)
+            djui_hud_print_text(TEXT_STAR_ICON .. "    (" .. TEX_STAR_ICON.width .. "x" .. TEX_STAR_ICON.height .. ")", width - x + 8, 127 + descriptionOffset, 0.6)
+            djui_hud_set_color(255, 255, 255, 255)
+            djui_hud_render_texture(TEX_STAR_ICON, width - x + 40, 128 + descriptionOffset, 0.5 / (TEX_STAR_ICON.width / 16), 0.5 / (TEX_STAR_ICON.height / 16))
+            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+            djui_hud_print_text(TEXT_FORCED_CHAR .. defaultForceChar[character.forceChar], width - x + 8, 136 + descriptionOffset, 0.6)
+            djui_hud_print_text(TEXT_TABLE_POS .. currChar, width - x + 8, 145 + descriptionOffset, 0.6)
+            djui_hud_print_text(TEXT_SCALE, width - x + 8, 154 + descriptionOffset, 0.6)
 
 
             djui_hud_print_text(TEXT_PREF, width - x + 8, height - 27, 0.6)
+            djui_hud_set_color(prefCharColor.r, prefCharColor.g, prefCharColor.b, 255)
             djui_hud_print_text(TEXT_PREF_COLOR, width - x + 8, height - 18, 0.6)
         end
 

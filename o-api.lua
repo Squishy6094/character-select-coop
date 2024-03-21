@@ -70,6 +70,7 @@ local function character_add(name, description, credit, color, modelInfo, forceC
         model = modelInfo and modelInfo or E_MODEL_ARMATURE,
         forceChar = type(forceChar) == TYPE_INTEGER and forceChar or CT_MARIO,
         lifeIcon = type(lifeIcon) == TYPE_TABLE and lifeIcon or nil,
+        starIcon = characterCelebrationStar[modelInfo] and characterCelebrationStar[modelInfo] or gTextures.star,
         camScale = type(camScale) == TYPE_INTEGER and camScale or 1
     })
     saveNameTable[#characterTable] = characterTable[#characterTable].saveName
