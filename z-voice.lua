@@ -75,7 +75,11 @@ function play_custom_character_sound(m, voice)
 			               if lagTimer > 500 then
 			                   lagTimer = 0
 			                   voiceTimeout = true
-			                   djui_chat_message_create("\\#FFAAAA\\Note: Custom Character Voices are unavalible due to\nunreasonable loading times, This is most likely because\nyour client does not support custom audio functionality.")
+			                   if optionTable[optionTableRef.notification].toggle == 1 then
+			                       djui_chat_message_create("\\#FFAAAA\\Note: Custom Character Voices are unavalible due to\ninability to load audio, This is most likely because\nyour client does not support custom audio functionality.")
+			                   elseif optionTable[optionTableRef.notification].toggle == 2 then
+			                       djui_popup_create('Character Select:\nCustom Character Voices\nare unavalible due to\ninability to load audio!', 4)
+                    end
 			                   break
 			               end
 			           end
