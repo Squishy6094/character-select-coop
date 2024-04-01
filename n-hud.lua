@@ -2,15 +2,53 @@
 -- Custom HUD Rendering by Agent X and xLuigiGamerx --
 ------------------------------------------------------
 
---- @param localIndex integer
---- @return TextureInfo|nil
---- This assumes multiple characters will not have the same model
-function life_icon_from_local_index(localIndex)
-    for i = 1, #characterTable do
-        if characterTable[i].model == gPlayerSyncTable[localIndex].modelId then
-            return characterTable[i].lifeIcon
-        end
+gPlayerSyncTable[0].lifeIcon = nil
+gPlayerSyncTable[0].starIcon = gTextures.star
+
+local function update_global_icons()
+    if characterTable[currChar].lifeIcon ~= nil then
+        gPlayerSyncTable[0].lifeIconTex = characterTable[currChar].lifeIcon.texture
+        gPlayerSyncTable[0].lifeIconBitSize = characterTable[currChar].lifeIcon.bitSize
+        gPlayerSyncTable[0].lifeIconWidth = characterTable[currChar].lifeIcon.width
+        gPlayerSyncTable[0].lifeIconHeight = characterTable[currChar].lifeIcon.height
+        gPlayerSyncTable[0].lifeIconExists = true
+    else
+        gPlayerSyncTable[0].lifeIconExists = false
     end
+
+    gPlayerSyncTable[0].starIconTex = characterTable[currChar].starIcon.texture
+    gPlayerSyncTable[0].starIconBitSize = characterTable[currChar].starIcon.bitSize
+    gPlayerSyncTable[0].starIconWidth = characterTable[currChar].starIcon.width
+    gPlayerSyncTable[0].starIconHeight = characterTable[currChar].starIcon.height
+end
+
+--- @param localIndex integer
+--- @return TextureInfo|nil -- If the icon is nil, print a ?
+function life_icon_from_local_index(localIndex)
+    local texture = {
+        texture = gPlayerSyncTable[localIndex].lifeIconTex,
+        bitSize = gPlayerSyncTable[localIndex].lifeIconBitSize,
+        width = gPlayerSyncTable[localIndex].lifeIconWidth,
+        height = gPlayerSyncTable[localIndex].lifeIconHeight,
+    }
+    return texture
+end
+
+--- @param localIndex integer
+--- @return TextureInfo
+function star_icon_from_local_index(localIndex)
+    local texture = {}
+    if gPlayerSyncTable[localIndex].lifeIconExists == true then
+        texture = {
+            texture = gPlayerSyncTable[localIndex].starIconTex,
+            bitSize = gPlayerSyncTable[localIndex].starIconBitSize,
+            width = gPlayerSyncTable[localIndex].starIconWidth,
+            height = gPlayerSyncTable[localIndex].starIconHeight,
+        }
+    else
+        texture = nil
+    end
+    return texture
 end
 
 local function render_hud_mario_lives()
@@ -151,6 +189,6 @@ local function on_hud_render()
     end
 end
 
-
+hook_event(HOOK_UPDATE, update_global_icons)
 hook_event(HOOK_ON_HUD_RENDER_BEHIND, on_hud_render_behind)
 hook_event(HOOK_ON_HUD_RENDER, on_hud_render)
