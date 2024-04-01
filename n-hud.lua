@@ -32,10 +32,7 @@ end
 local function render_hud_stars()
     hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_STAR_COUNT)
 
-    -- the flashing when you exit a painting, uses sm64coopdx exclusive functionality
-    -- v0.1.5
-    --[[
-    if IS_COOPDX then
+    if IS_COOPDX and hud_get_flash ~= nil then
         -- prevent star count from flashing outside of castle
         if gNetworkPlayers[0].currCourseNum ~= COURSE_NONE then hud_set_flash(0) end
 
@@ -43,7 +40,6 @@ local function render_hud_stars()
             return
         end
     end
-    ]]
 
     local x = djui_hud_get_screen_width() - 78
     local y = 15 -- SCREEN_HEIGHT - 209 - 16

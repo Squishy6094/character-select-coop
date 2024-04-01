@@ -317,7 +317,7 @@ local function boot_note()
     end
 
     if not IS_COOPDX then
-        djui_chat_message_create("\\#FFAAAA\\Note: Although not required, we highly reccomend\nusing SM64CoopDX when playing Character Select!\n\\#6666FF\\https://sm64coopdx.com")
+        djui_chat_message_create("\\#FFAAAA\\Note: Although not required, we highly recommend\nusing SM64CoopDX when playing Character Select!\n\\#6666FF\\https://sm64coopdx.com")
     end
 end
 
