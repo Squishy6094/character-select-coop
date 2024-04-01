@@ -135,11 +135,8 @@ local function on_hud_render_behind()
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_font(FONT_HUD)
     djui_hud_set_color(255, 255, 255, 255)
-
-    if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then
-        render_act_select_hud()
-        return
-    elseif gNetworkPlayers[0].currActNum == 99 or gMarioStates[0].action == ACT_INTRO_CUTSCENE or hud_is_hidden() then
+    
+    if gNetworkPlayers[0].currActNum == 99 or gMarioStates[0].action == ACT_INTRO_CUTSCENE or hud_is_hidden() or obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then
         return
     end
 
@@ -148,5 +145,16 @@ local function on_hud_render_behind()
     render_hud_camera_status()
 end
 
+local function on_hud_render()
+    djui_hud_set_resolution(RESOLUTION_N64)
+    djui_hud_set_font(FONT_HUD)
+    djui_hud_set_color(255, 255, 255, 255)
+    
+    if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then
+        render_act_select_hud()
+    end
+end
+
 
 hook_event(HOOK_ON_HUD_RENDER_BEHIND, on_hud_render_behind)
+hook_event(HOOK_ON_HUD_RENDER, on_hud_render)
