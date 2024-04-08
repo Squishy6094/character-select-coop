@@ -47,7 +47,7 @@ end
 local MATH_THIRD_DEFAULT_WIDTH = 4/320
 
 local function render_hud_stars()
-    --hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_STAR_COUNT)
+    hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_STAR_COUNT)
 
     if IS_COOPDX and hud_get_flash ~= nil then
         -- prevent star count from flashing outside of castle
@@ -58,16 +58,18 @@ local function render_hud_stars()
         end
     end
 
-    local x = djui_hud_get_screen_width() - 73 - math.ceil((djui_hud_get_screen_width()*MATH_THIRD_DEFAULT_WIDTH))
-    djui_chat_message_create(tostring(math.ceil((djui_hud_get_screen_width()*MATH_THIRD_DEFAULT_WIDTH))))
-    local y = 15 -- SCREEN_HEIGHT - 209 - 16
+    local x = math.ceil(djui_hud_get_screen_width() - 76)
+    if x % 2 ~= 0 then
+        x = x - 1
+    end
+    local y = math.ceil(djui_hud_get_screen_height() - 209 - 16)
     local starIcon = characterTable[currChar].starIcon and characterTable[currChar].starIcon or gTextures.star
 
     local showX = 0
     local hudDisplayStars = hud_get_value(HUD_DISPLAY_STARS)
     if hudDisplayStars < 100 then showX = 1 end
 
-    djui_hud_render_texture(starIcon, x, y, 1 / (starIcon.width * 0.0625), 1 / (starIcon.height * 0.0625)) -- 0.0625 is 1/16
+    djui_hud_render_texture(starIcon, x, y, 1 / (starIcon.width/16), 1 / (starIcon.height/16)) -- 0.0625 is 1/16 (Just divide by 16 instead please)
     if showX == 1 then
         djui_hud_print_text("@", x + 16, y, 1)
     end
