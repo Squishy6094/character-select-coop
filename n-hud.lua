@@ -44,8 +44,6 @@ local function render_hud_mario_lives()
     djui_hud_print_text(tostring(hud_get_value(HUD_DISPLAY_LIVES)):gsub("-", "M"), x + 32, y, 1)
 end
 
-local MATH_THIRD_DEFAULT_WIDTH = 4/320
-
 local function render_hud_stars()
     hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_STAR_COUNT)
 
