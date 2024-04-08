@@ -4,13 +4,28 @@
 
 --- @param localIndex integer
 --- @return TextureInfo|nil
---- This assumes multiple characters will not have the same model
+--- This assumes multiple characters will not have the same model,
+--- Icons can only be seen by users who have the character avalible to them.
+--- This function can return nil, if this is the case use djui_hud_print_text("?")
 function life_icon_from_local_index(localIndex)
     for i = 1, #characterTable do
         if characterTable[i].model == gPlayerSyncTable[localIndex].modelId then
             return characterTable[i].lifeIcon
         end
     end
+end
+
+--- @param localIndex integer
+--- @return TextureInfo
+--- This assumes multiple characters will not have the same model,
+--- Icons can only be seen by users who have the character avalible to them
+function star_icon_from_local_index(localIndex)
+    for i = 1, #characterTable do
+        if characterTable[i].model == gPlayerSyncTable[localIndex].modelId then
+            return characterTable[i].starIcon
+        end
+    end
+    return gTextures.star
 end
 
 local function render_hud_mario_lives()
@@ -29,8 +44,10 @@ local function render_hud_mario_lives()
     djui_hud_print_text(tostring(hud_get_value(HUD_DISPLAY_LIVES)):gsub("-", "M"), x + 32, y, 1)
 end
 
+local MATH_THIRD_DEFAULT_WIDTH = 4/320
+
 local function render_hud_stars()
-    hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_STAR_COUNT)
+    --hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_STAR_COUNT)
 
     if IS_COOPDX and hud_get_flash ~= nil then
         -- prevent star count from flashing outside of castle
@@ -41,7 +58,8 @@ local function render_hud_stars()
         end
     end
 
-    local x = djui_hud_get_screen_width() - 78
+    local x = djui_hud_get_screen_width() - 73 - math.ceil((djui_hud_get_screen_width()*MATH_THIRD_DEFAULT_WIDTH))
+    djui_chat_message_create(tostring(math.ceil((djui_hud_get_screen_width()*MATH_THIRD_DEFAULT_WIDTH))))
     local y = 15 -- SCREEN_HEIGHT - 209 - 16
     local starIcon = characterTable[currChar].starIcon and characterTable[currChar].starIcon or gTextures.star
 

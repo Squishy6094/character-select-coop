@@ -214,6 +214,7 @@ _G.charSelect = {
     character_get_number_from_string = character_get_number_from_string,
     character_get_voice = character_get_voice,
     character_get_life_icon = life_icon_from_local_index,
+    character_get_star_icon = star_icon_from_local_index,
     header_set_texture = header_set_texture, -- Function located in main.lua
     version_get = version_get,
     is_menu_open = is_menu_open,
