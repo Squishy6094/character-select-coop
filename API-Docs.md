@@ -242,13 +242,13 @@ Provide a function you'd like to hook as an argument.
 
 Example:
 ```lua
-function allow_menu()
+function render_in_menu()
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_font(FONT_MENU)
     djui_hud_print_text("API Documentation", 10, 10, 1, 1)
 end
 
-_G.charSelect.hook_allow_menu_open(allow_menu)
+_G.charSelect.hook_render_in_menu(render_in_menu)
 ```
 
 # Tips on API Usage
