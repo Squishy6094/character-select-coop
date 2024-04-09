@@ -6,7 +6,7 @@
 --- @return TextureInfo|nil
 --- This assumes multiple characters will not have the same model,
 --- Icons can only be seen by users who have the character avalible to them.
---- This function can return nil, if this is the case use djui_hud_print_text("?")
+--- This function can return nil. if this is the case, render `djui_hud_print_text("?", x, y, 1)`
 function life_icon_from_local_index(localIndex)
     for i = 1, #characterTable do
         if characterTable[i].model == gPlayerSyncTable[localIndex].modelId then

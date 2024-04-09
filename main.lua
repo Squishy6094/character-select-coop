@@ -551,8 +551,8 @@ local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Men
 
 menuColor = characterTable[currChar].color
 
-local MATH_DIVIDE_THREE_HUNDRED_TWENTY = 1/320
-local MATH_DIVIDE_THIRTY_TWO = 1/32
+local MATH_DIVIDE_320 = 1/320
+local MATH_DIVIDE_32 = 1/32
 
 local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
@@ -562,7 +562,7 @@ local function on_hud_render()
     local height = 240
     local widthHalf = width * 0.5
     local heightHalf = height * 0.5
-    local widthScale = maxf(width, 321.4) * MATH_DIVIDE_THREE_HUNDRED_TWENTY
+    local widthScale = maxf(width, 321.4) * MATH_DIVIDE_320
 
     if menuAndTransition then
         if optionTable[optionTableRef.menuColor].toggle > 1 then
@@ -756,7 +756,7 @@ local function on_hud_render()
         djui_hud_render_rect(2, 2, width - 4, 46)
         djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
         if TEX_OVERRIDE_HEADER then -- Render Override Header
-            djui_hud_render_texture(TEX_OVERRIDE_HEADER, widthHalf - 128, 10, 1/(TEX_OVERRIDE_HEADER.height*MATH_DIVIDE_THIRTY_TWO), 1/(TEX_OVERRIDE_HEADER.height*MATH_DIVIDE_THIRTY_TWO))
+            djui_hud_render_texture(TEX_OVERRIDE_HEADER, widthHalf - 128, 10, 1/(TEX_OVERRIDE_HEADER.height*MATH_DIVIDE_32), 1/(TEX_OVERRIDE_HEADER.height*MATH_DIVIDE_32))
         else
             djui_hud_render_texture(TEX_HEADER, widthHalf - 128, 10, 1, 1)
         end
