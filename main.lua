@@ -45,8 +45,57 @@ characterTable = {
     },
 }
 
+
+
 characterCaps = {}
 characterCelebrationStar = {}
+characterColorPresets = {
+    [E_MODEL_MARIO] = {
+        [PANTS]  = {r = 0x00, g = 0x00, b = 0xff},
+        [SHIRT]  = {r = 0xff, g = 0x00, b = 0x00},
+        [GLOVES] = {r = 0xff, g = 0xff, b = 0xff},
+        [SHOES]  = {r = 0x72, g = 0x1c, b = 0x0e},
+        [HAIR]   = {r = 0x73, g = 0x06, b = 0x00},
+        [SKIN]   = {r = 0xfe, g = 0xc1, b = 0x79},
+        [CAP]    = {r = 0xff, g = 0x00, b = 0x00},
+    },
+    [E_MODEL_LUIGI] = {
+        [PANTS]  = {r = 0x00, g = 0x00, b = 0xff},
+        [SHIRT]  = {r = 0x00, g = 0x98, b = 0x00},
+        [GLOVES] = {r = 0xff, g = 0xff, b = 0xff},
+        [SHOES]  = {r = 0x72, g = 0x1c, b = 0x0e},
+        [HAIR]   = {r = 0x73, g = 0x06, b = 0x00},
+        [SKIN]   = {r = 0xfe, g = 0xc1, b = 0x79},
+        [CAP]    = {r = 0x00, g = 0x98, b = 0x00},
+    },
+    [E_MODEL_TOAD_PLAYER] = {
+        [PANTS]  = {r = 0xff, g = 0xff, b = 0xff},
+        [SHIRT]  = {r = 0x4c, g = 0x2c, b = 0xd3},
+        [GLOVES] = {r = 0xff, g = 0xff, b = 0xff},
+        [SHOES]  = {r = 0x68, g = 0x40, b = 0x1b},
+        [HAIR]   = {r = 0x73, g = 0x06, b = 0x00},
+        [SKIN]   = {r = 0xfe, g = 0xd5, b = 0xa1},
+        [CAP]    = {r = 0xff, g = 0x00, b = 0x00},
+    },
+    [E_MODEL_WALUIGI] = {
+        [PANTS]  = {r = 0x16, g = 0x16, b = 0x27},
+        [SHIRT]  = {r = 0x61, g = 0x26, b = 0xb0},
+        [GLOVES] = {r = 0xff, g = 0xff, b = 0xff},
+        [SHOES]  = {r = 0xfe, g = 0x76, b = 0x00},
+        [HAIR]   = {r = 0x73, g = 0x53, b = 0x00},
+        [SKIN]   = {r = 0xfe, g = 0xc1, b = 0x79},
+        [CAP]    = {r = 0x61, g = 0x26, b = 0xb0},
+    },
+    [E_MODEL_WARIO] = {
+        [PANTS]  = {r = 0x7f, g = 0x20, b = 0x7a},
+        [SHIRT]  = {r = 0xe3, g = 0xa9, b = 0x01},
+        [GLOVES] = {r = 0xff, g = 0xff, b = 0xff},
+        [SHOES]  = {r = 0x0e, g = 0x72, b = 0x1c},
+        [HAIR]   = {r = 0x73, g = 0x53, b = 0x00},
+        [SKIN]   = {r = 0xfe, g = 0xc1, b = 0x79},
+        [CAP]    = {r = 0xe3, g = 0xa9, b = 0x01},
+    },
+}
 
 optionTableRef = {
     openInputs = 1,
@@ -166,7 +215,7 @@ local defaultNames = {
     [CT_WALUIGI] = "Waluigi",
     [CT_WARIO] = "Wario"
 }
-local defaultPlayerColors = {
+local defaultMenuColors = {
     [CT_MARIO] = menuColorTable[1],
     [CT_LUIGI] = menuColorTable[4],
     [CT_TOAD] =  menuColorTable[5],
@@ -194,6 +243,13 @@ local defaultCamScales = {
     [CT_WALUIGI] = 1.1,
     [CT_WARIO] = 1
 }
+local defaultModels = {
+    [CT_MARIO] = E_MODEL_MARIO,
+    [CT_LUIGI] = E_MODEL_LUIGI,
+    [CT_TOAD] = E_MODEL_TOAD_PLAYER,
+    [CT_WALUIGI] = E_MODEL_WALUIGI,
+    [CT_WARIO] = E_MODEL_WARIO
+}
 
 ---@param m MarioState
 local function nullify_inputs(m)
@@ -220,7 +276,7 @@ local function nullify_inputs(m)
     c.stickY = 0
 end
 
-local prefCharColor = defaultPlayerColors[CT_MARIO]
+local prefCharColor = defaultMenuColors[CT_MARIO]
 
 local function load_preferred_char()
     local savedChar = mod_storage_load("PrefChar")
@@ -361,6 +417,9 @@ local menuActBlacklist = {
 
 local faceAngle = 0
 
+local networkPlayerColors = {}
+local prevPresetPalette = {}
+
 --- @param m MarioState
 local function mario_update(m)
     if stallFrame == 1 then
@@ -376,22 +435,22 @@ local function mario_update(m)
     end
 
     if m.playerIndex == 0 and stallFrame > 1 then
-        local modelIndex = gNetworkPlayers[m.playerIndex].modelIndex
+        local modelIndex = gNetworkPlayers[0].modelIndex
         characterTable[1].forceChar = modelIndex
         characterTable[1].name = defaultNames[modelIndex]
-        characterTable[1].color = defaultPlayerColors[modelIndex]
+        characterTable[1].color = defaultMenuColors[modelIndex]
         if currChar == 1 then
             characterTable[1].lifeIcon = defaultIcons[modelIndex]
             characterTable[1].camScale = defaultCamScales[modelIndex]
         end
         if optionTable[optionTableRef.localModels].toggle > 0 then
-            gPlayerSyncTable[m.playerIndex].modelId = characterTable[currChar].model
+            gPlayerSyncTable[0].modelId = characterTable[currChar].model
             if characterTable[currChar].forceChar ~= nil then
-                gNetworkPlayers[m.playerIndex].overrideModelIndex = characterTable[currChar].forceChar
+                gNetworkPlayers[0].overrideModelIndex = characterTable[currChar].forceChar
             end
         else
-            gPlayerSyncTable[m.playerIndex].modelId = nil
-            gNetworkPlayers[m.playerIndex].overrideModelIndex = characterTable[1].forceChar
+            gPlayerSyncTable[0].modelId = nil
+            gNetworkPlayers[0].overrideModelIndex = characterTable[1].forceChar
         end
 
         if menuAndTransition then
@@ -438,6 +497,59 @@ local function mario_update(m)
         end
     end
 
+    if networkPlayerColors[m.playerIndex] == nil then
+        networkPlayerColors[m.playerIndex] = {
+            [SHIRT] = {r = 0, g = 0, b = 0},
+            [GLOVES] = {r = 0, g = 0, b = 0},
+            [SHOES] = {r = 0, g = 0, b = 0},
+            [HAIR] = {r = 0, g = 0, b = 0},
+            [SKIN] = {r = 0, g = 0, b = 0},
+            [CAP] = {r = 0, g = 0, b = 0},
+            [PANTS] = {r = 0, g = 0, b = 0},
+        }
+    end
+
+    local np = gNetworkPlayers[m.playerIndex]
+    
+    if np.connected and not gPlayerSyncTable[m.playerIndex].presetPalette then
+        network_player_palette_to_color(nil, SHIRT, networkPlayerColors[m.playerIndex][SHIRT])
+        network_player_palette_to_color(nil, GLOVES, networkPlayerColors[m.playerIndex][GLOVES])
+        network_player_palette_to_color(nil, SHOES, networkPlayerColors[m.playerIndex][SHOES])
+        network_player_palette_to_color(nil, HAIR, networkPlayerColors[m.playerIndex][HAIR])
+        network_player_palette_to_color(nil, SKIN, networkPlayerColors[m.playerIndex][SKIN])
+        network_player_palette_to_color(nil, CAP, networkPlayerColors[m.playerIndex][CAP])
+        network_player_palette_to_color(nil, PANTS, networkPlayerColors[m.playerIndex][PANTS])
+    end
+
+    local modelId = gPlayerSyncTable[0].modelId and gPlayerSyncTable[0].modelId or defaultModels[m.character.type]
+    if gPlayerSyncTable[m.playerIndex].presetPalette == nil or characterColorPresets[modelId] == nil then
+        if gPlayerSyncTable[m.playerIndex].presetPalette == nil then
+            prevPresetPalette[m.playerIndex] = false
+        end
+        gPlayerSyncTable[m.playerIndex].presetPalette = false
+    end
+
+    if np.connected and prevPresetPalette[m.playerIndex] ~= gPlayerSyncTable[m.playerIndex].presetPalette then
+        if gPlayerSyncTable[m.playerIndex].presetPalette and characterColorPresets[modelId] then 
+            network_player_color_to_palette(np, SHIRT, characterColorPresets[modelId][SHIRT])
+            network_player_color_to_palette(np, GLOVES, characterColorPresets[modelId][GLOVES])
+            network_player_color_to_palette(np, SHOES, characterColorPresets[modelId][SHOES])
+            network_player_color_to_palette(np, HAIR, characterColorPresets[modelId][HAIR])
+            network_player_color_to_palette(np, SKIN, characterColorPresets[modelId][SKIN])
+            network_player_color_to_palette(np, CAP, characterColorPresets[modelId][CAP])
+            network_player_color_to_palette(np, PANTS, characterColorPresets[modelId][PANTS])
+        else
+            network_player_color_to_palette(np, SHIRT, networkPlayerColors[m.playerIndex][SHIRT])
+            network_player_color_to_palette(np, GLOVES, networkPlayerColors[m.playerIndex][GLOVES])
+            network_player_color_to_palette(np, SHOES, networkPlayerColors[m.playerIndex][SHOES])
+            network_player_color_to_palette(np, HAIR, networkPlayerColors[m.playerIndex][HAIR])
+            network_player_color_to_palette(np, SKIN, networkPlayerColors[m.playerIndex][SKIN])
+            network_player_color_to_palette(np, CAP, networkPlayerColors[m.playerIndex][CAP])
+            network_player_color_to_palette(np, PANTS, networkPlayerColors[m.playerIndex][PANTS])
+        end
+        prevPresetPalette[m.playerIndex] = gPlayerSyncTable[m.playerIndex].presetPalette
+    end
+
     --Reset Save Data Check
     if optionTable[optionTableRef.resetSaveData].toggle > 0 then
         reset_options(false)
@@ -454,6 +566,7 @@ local sCapBhvs = {
 --- @param o Object
 --- @param model integer
 function set_model(o, model)
+    if optionTable[optionTableRef.localModels].toggle == 0 then return end
     if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
         local i = network_local_index_from_global(o.globalPlayerIndex)
         if gPlayerSyncTable[i].modelId ~= nil and obj_has_model_extended(o, gPlayerSyncTable[i].modelId) == 0 then
@@ -596,6 +709,7 @@ local function on_hud_render()
             local TEXT_NAME = string_underscore_to_space(character.name)
             local TEXT_CREDIT = "Credit: " .. character.credit
             local TEXT_DESCRIPTION_TABLE = character.description
+            local TEXT_PRESET = "Preset Color Pallet: "..(gPlayerSyncTable[0].presetPalette and "On" or "Off")
             local TEXT_PREF = "Preferred Character:"
             local TEXT_PREF_LOAD = string_underscore_to_space(TEXT_PREF_LOAD)
             if djui_hud_measure_text(TEXT_PREF_LOAD) / widthScale > 110 then
@@ -629,6 +743,10 @@ local function on_hud_render()
                 end
             end
 
+            local modelId = gPlayerSyncTable[0].modelId and gPlayerSyncTable[0].modelId or defaultModels[gMarioStates[0].character.type]
+            if characterColorPresets[modelId] then
+                djui_hud_print_text(TEXT_PRESET, width - textX - djui_hud_measure_text(TEXT_PRESET) * 0.15, height - 34, 0.3)
+            end
             djui_hud_print_text(TEXT_PREF, width - textX - djui_hud_measure_text(TEXT_PREF) * 0.15, height - 22, 0.3)
             djui_hud_set_font(FONT_TINY)
             djui_hud_print_text(TEXT_PREF_SAVE, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE) * 0.25, height - 13, 0.5)
@@ -1006,6 +1124,7 @@ local function before_mario_update(m)
                     end
                     buttonScroll = buttonScrollCap
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                    gPlayerSyncTable[0].presetPalette = false
                 end
                 if (m.controller.buttonPressed & U_JPAD) ~= 0 or (m.controller.buttonPressed & U_CBUTTONS) ~= 0 or m.controller.stickY > 60 then
                     currChar = currChar - 1
@@ -1016,6 +1135,7 @@ local function before_mario_update(m)
                     end
                     buttonScroll = -buttonScrollCap
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                    gPlayerSyncTable[0].presetPalette = false
                 end
             end
 
@@ -1034,6 +1154,16 @@ local function before_mario_update(m)
                 end
                 if (m.controller.buttonPressed & START_BUTTON) ~= 0 then
                     options = true
+                end
+                local modelId = gPlayerSyncTable[0].modelId and gPlayerSyncTable[0].modelId or defaultModels[m.character.type]
+                if (m.controller.buttonPressed & Y_BUTTON) ~= 0 then
+                    if characterColorPresets[modelId] then
+                        play_sound(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject)
+                        gPlayerSyncTable[0].presetPalette = not gPlayerSyncTable[0].presetPalette
+                        inputStallTimerButton = inputStallToButton
+                    else
+                        play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
+                    end
                 end
             end
         end

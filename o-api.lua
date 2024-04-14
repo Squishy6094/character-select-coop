@@ -132,6 +132,19 @@ local function character_add_celebration_star(modelInfo, starModel, starIcon)
     return false
 end
 
+---@param modelInfo ModelExtendedId|integer
+---@param paletteTable table 
+local function character_add_palette_preset(modelInfo, paletteTable)
+    paletteTable[PANTS] = type(paletteTable[PANTS]) == TYPE_TABLE and paletteTable[PANTS] or {r = 0x00, g = 0x00, b = 0xff}
+    paletteTable[SHIRT] = type(paletteTable[SHIRT]) == TYPE_TABLE and paletteTable[SHIRT] or {r = 0xff, g = 0x00, b = 0x00}
+    paletteTable[GLOVES] = type(paletteTable[GLOVES]) == TYPE_TABLE and paletteTable[GLOVES] or {r = 0xff, g = 0xff, b = 0xff}
+    paletteTable[SHOES] = type(paletteTable[SHOES]) == TYPE_TABLE and paletteTable[SHOES] or {r = 0x72, g = 0x1c, b = 0x0e}
+    paletteTable[HAIR] = type(paletteTable[HAIR]) == TYPE_TABLE and paletteTable[HAIR] or {r = 0x73, g = 0x06, b = 0x00}
+    paletteTable[SKIN] = type(paletteTable[SKIN]) == TYPE_TABLE and paletteTable[SKIN] or {r = 0xfe, g = 0xc1, b = 0x79}
+    paletteTable[CAP] = type(paletteTable[CAP]) == TYPE_TABLE and paletteTable[CAP] or {r = 0xff, g = 0x00, b = 0x00}
+    characterColorPresets[modelInfo] = paletteTable
+end
+
 ---@return CharacterTable
 local function character_get_current_table()
     return characterTable[currChar]
@@ -208,6 +221,7 @@ _G.charSelect = {
     character_add_voice = character_add_voice,
     character_add_caps = character_add_caps,
     character_add_celebration_star = character_add_celebration_star,
+    character_add_palette_preset = character_add_palette_preset,
     character_get_current_table = character_get_current_table,
     character_get_current_number = character_get_current_number,
     character_get_current_model_number --[[Depreiciated Function Name, Not recommended for use]] = character_get_current_number,
