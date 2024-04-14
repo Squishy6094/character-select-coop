@@ -413,6 +413,9 @@ local menuActBlacklist = {
     [ACT_READING_AUTOMATIC_DIALOG] = true,
 }
 
+local network_player_color_to_palette = network_player_color_to_palette
+local network_player_palette_to_color = network_player_palette_to_color
+
 local function network_player_full_color_to_palette(networkPlayer, colorTable)
     network_player_color_to_palette(networkPlayer, SHIRT, colorTable[SHIRT])
     network_player_color_to_palette(networkPlayer, GLOVES, colorTable[GLOVES])
@@ -514,9 +517,16 @@ local function mario_update(m)
             end
             noLoop = true
         end
+
+        --Reset Save Data Check
+        if optionTable[optionTableRef.resetSaveData].toggle > 0 then
+            reset_options(false)
+            optionTable[optionTableRef.resetSaveData].toggle = 0
+        end
     end
     
     local np = gNetworkPlayers[m.playerIndex]
+    local p = gPlayerSyncTable[m.playerIndex]
 
     if networkPlayerColors[m.playerIndex] == nil and np.connected then
         networkPlayerColors[m.playerIndex] = {
@@ -531,41 +541,37 @@ local function mario_update(m)
         network_player_full_palette_to_color(np, networkPlayerColors[m.playerIndex])
     end
 
-    local modelId = gPlayerSyncTable[m.playerIndex].modelId and gPlayerSyncTable[m.playerIndex].modelId or defaultModels[m.character.type]
-    if gPlayerSyncTable[m.playerIndex].presetPalette == nil or characterColorPresets[modelId] == nil then
-        if gPlayerSyncTable[m.playerIndex].presetPalette == nil then
-            prevPresetPalette[m.playerIndex] = false
+    if np.connected then
+        local modelId = p.modelId and p.modelId or defaultModels[m.character.type]
+        if p.presetPalette == nil or characterColorPresets[modelId] == nil then
+            if p.presetPalette == nil then
+                prevPresetPalette[m.playerIndex] = false
+            end
+            p.presetPalette = false
         end
-        gPlayerSyncTable[m.playerIndex].presetPalette = false
-    end
 
-    if np.connected and prevPresetPalette[m.playerIndex] ~= gPlayerSyncTable[m.playerIndex].presetPalette then
-        if gPlayerSyncTable[m.playerIndex].presetPalette and characterColorPresets[modelId] then 
-            network_player_full_color_to_palette(np, characterColorPresets[modelId])
-        else
-            network_player_full_color_to_palette(np, networkPlayerColors[m.playerIndex])
+        if prevPresetPalette[m.playerIndex] ~= p.presetPalette then
+            if p.presetPalette and characterColorPresets[modelId] then 
+                network_player_full_color_to_palette(np, characterColorPresets[modelId])
+            else
+                network_player_full_color_to_palette(np, networkPlayerColors[m.playerIndex])
+            end
+            prevPresetPalette[m.playerIndex] = p.presetPalette
         end
-        prevPresetPalette[m.playerIndex] = gPlayerSyncTable[m.playerIndex].presetPalette
+
+        if not p.presetPalette then
+            network_player_full_palette_to_color(np, networkPlayerColors[m.playerIndex])
+        end
     end
 
-    if np.connected and not gPlayerSyncTable[m.playerIndex].presetPalette then
-        network_player_full_palette_to_color(np, networkPlayerColors[m.playerIndex])
-    end
-
-    if m.playerIndex == 0 then
-        if optionTable[optionTableRef.autoPalette].toggle > 0 and optionTable[optionTableRef.localModels].toggle > 0 and prevChar ~= currChar and not gamemodeActive then
+    if m.playerIndex == 0 and menu or prevChar ~= currChar then
+        if optionTable[optionTableRef.autoPalette].toggle > 0 and optionTable[optionTableRef.localModels].toggle > 0 and not gamemodeActive then
             gPlayerSyncTable[0].presetPalette = true
             prevChar = currChar
         end
         if optionTable[optionTableRef.localModels].toggle == 0 then
             gPlayerSyncTable[0].presetPalette = false
         end
-    end
-
-    --Reset Save Data Check
-    if optionTable[optionTableRef.resetSaveData].toggle > 0 then
-        reset_options(false)
-        optionTable[optionTableRef.resetSaveData].toggle = 0
     end
 end
 
