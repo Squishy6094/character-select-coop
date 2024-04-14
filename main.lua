@@ -103,10 +103,10 @@ optionTableRef = {
     menuColor = 3,
     anims = 4,
     inputLatency = 5,
-    localModels = 6,
-    --localVoices = 7,
-    debugInfo = 7,
-    resetSaveData = 8
+    autoPalette = 6,
+    localModels = 7,
+    debugInfo = 8,
+    resetSaveData = 9
 }
 
 optionTable = {
@@ -155,6 +155,14 @@ optionTable = {
         toggleNames = {"Slow", "Normal", "Fast"},
         description = {"Sets how fast you scroll", "throughout the Menu"}
     },
+    [optionTableRef.autoPalette] = {
+        name = "Auto-Apply Palette",
+        toggle = tonumber(mod_storage_load("autoPalette")),
+        toggleSaveName = "autoPalette",
+        toggleDefault = 0,
+        toggleMax = 1,
+        description = {"If On, Automatically", "sets your palette to the", "Character's Preset if avalible"}
+    },
     [optionTableRef.localModels] = {
         name = "Locally Display Models",
         toggle = tonumber(mod_storage_load("localModels")),
@@ -163,16 +171,6 @@ optionTable = {
         toggleMax = 1,
         description = {"Toggles if Custom Models display", "on your client, practically", "disables Character Select if", "Toggled Off"}
     },
-    --[[
-    [optionTableRef.localVoices] = {
-        name = "Custom Voices",
-        toggle = tonumber(mod_storage_load("localVoices")),
-        toggleSaveName = "localVoices",
-        toggleDefault = 1,
-        toggleMax = 1,
-        description = {"Toggle if Custom Voicelines play", "for Characters who support it"}
-    },
-    ]]
     [optionTableRef.debugInfo] = {
         name = "Debugging Info",
         toggle = tonumber(mod_storage_load("debuginfo")),
@@ -436,6 +434,7 @@ local function network_player_full_palette_to_color(networkPlayer, out)
 end
 
 local faceAngle = 0
+local prevChar = currChar
 
 local networkPlayerColors = {}
 local prevPresetPalette = {}
@@ -551,6 +550,16 @@ local function mario_update(m)
 
     if np.connected and not gPlayerSyncTable[m.playerIndex].presetPalette then
         network_player_full_palette_to_color(np, networkPlayerColors[m.playerIndex])
+    end
+
+    if m.playerIndex == 0 then
+        if optionTable[optionTableRef.autoPalette].toggle > 0 and optionTable[optionTableRef.localModels].toggle > 0 and prevChar ~= currChar and not gamemodeActive then
+            gPlayerSyncTable[0].presetPalette = true
+            prevChar = currChar
+        end
+        if optionTable[optionTableRef.localModels].toggle == 0 then
+            gPlayerSyncTable[0].presetPalette = false
+        end
     end
 
     --Reset Save Data Check
@@ -712,7 +721,7 @@ local function on_hud_render()
             local TEXT_NAME = string_underscore_to_space(character.name)
             local TEXT_CREDIT = "Credit: " .. character.credit
             local TEXT_DESCRIPTION_TABLE = character.description
-            local TEXT_PRESET = "Preset Color Pallet: "..(gPlayerSyncTable[0].presetPalette and "On" or "Off")
+            local TEXT_PRESET = "Preset Color Palette: "..(gPlayerSyncTable[0].presetPalette and "On" or "Off")
             local TEXT_PREF = "Preferred Character:"
             local TEXT_PREF_LOAD = string_underscore_to_space(TEXT_PREF_LOAD)
             if djui_hud_measure_text(TEXT_PREF_LOAD) / widthScale > 110 then
@@ -747,7 +756,7 @@ local function on_hud_render()
             end
 
             local modelId = gPlayerSyncTable[0].modelId and gPlayerSyncTable[0].modelId or defaultModels[gMarioStates[0].character.type]
-            if characterColorPresets[modelId] then
+            if characterColorPresets[modelId] and not gamemodeActive then
                 djui_hud_print_text(TEXT_PRESET, width - textX - djui_hud_measure_text(TEXT_PRESET) * 0.15, height - 34, 0.3)
             end
             djui_hud_print_text(TEXT_PREF, width - textX - djui_hud_measure_text(TEXT_PREF) * 0.15, height - 22, 0.3)
@@ -1160,12 +1169,13 @@ local function before_mario_update(m)
                 end
                 local modelId = gPlayerSyncTable[0].modelId and gPlayerSyncTable[0].modelId or defaultModels[m.character.type]
                 if (m.controller.buttonPressed & Y_BUTTON) ~= 0 then
-                    if characterColorPresets[modelId] then
+                    if characterColorPresets[modelId] and optionTable[optionTableRef.localModels].toggle > 0 and not gamemodeActive then
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject)
                         gPlayerSyncTable[0].presetPalette = not gPlayerSyncTable[0].presetPalette
                         inputStallTimerButton = inputStallToButton
                     else
                         play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
+                        inputStallTimerButton = inputStallToButton
                     end
                 end
             end
