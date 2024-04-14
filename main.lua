@@ -415,6 +415,26 @@ local menuActBlacklist = {
     [ACT_READING_AUTOMATIC_DIALOG] = true,
 }
 
+local function network_player_full_color_to_palette(networkPlayer, colorTable)
+    network_player_color_to_palette(networkPlayer, SHIRT, colorTable[SHIRT])
+    network_player_color_to_palette(networkPlayer, GLOVES, colorTable[GLOVES])
+    network_player_color_to_palette(networkPlayer, SHOES, colorTable[SHOES])
+    network_player_color_to_palette(networkPlayer, HAIR, colorTable[HAIR])
+    network_player_color_to_palette(networkPlayer, SKIN, colorTable[SKIN])
+    network_player_color_to_palette(networkPlayer, CAP, colorTable[CAP])
+    network_player_color_to_palette(networkPlayer, PANTS, colorTable[PANTS])
+end
+
+local function network_player_full_palette_to_color(networkPlayer, out)
+    network_player_palette_to_color(networkPlayer, SHIRT, out[SHIRT])
+    network_player_palette_to_color(networkPlayer, GLOVES, out[GLOVES])
+    network_player_palette_to_color(networkPlayer, SHOES, out[SHOES])
+    network_player_palette_to_color(networkPlayer, HAIR, out[HAIR])
+    network_player_palette_to_color(networkPlayer, SKIN, out[SKIN])
+    network_player_palette_to_color(networkPlayer, CAP, out[CAP])
+    network_player_palette_to_color(networkPlayer, PANTS, out[PANTS])
+end
+
 local faceAngle = 0
 
 local networkPlayerColors = {}
@@ -496,8 +516,10 @@ local function mario_update(m)
             noLoop = true
         end
     end
+    
+    local np = gNetworkPlayers[m.playerIndex]
 
-    if networkPlayerColors[m.playerIndex] == nil then
+    if networkPlayerColors[m.playerIndex] == nil and np.connected then
         networkPlayerColors[m.playerIndex] = {
             [SHIRT] = {r = 0, g = 0, b = 0},
             [GLOVES] = {r = 0, g = 0, b = 0},
@@ -507,21 +529,10 @@ local function mario_update(m)
             [CAP] = {r = 0, g = 0, b = 0},
             [PANTS] = {r = 0, g = 0, b = 0},
         }
+        network_player_full_palette_to_color(np, networkPlayerColors[m.playerIndex])
     end
 
-    local np = gNetworkPlayers[m.playerIndex]
-    
-    if np.connected and not gPlayerSyncTable[m.playerIndex].presetPalette then
-        network_player_palette_to_color(nil, SHIRT, networkPlayerColors[m.playerIndex][SHIRT])
-        network_player_palette_to_color(nil, GLOVES, networkPlayerColors[m.playerIndex][GLOVES])
-        network_player_palette_to_color(nil, SHOES, networkPlayerColors[m.playerIndex][SHOES])
-        network_player_palette_to_color(nil, HAIR, networkPlayerColors[m.playerIndex][HAIR])
-        network_player_palette_to_color(nil, SKIN, networkPlayerColors[m.playerIndex][SKIN])
-        network_player_palette_to_color(nil, CAP, networkPlayerColors[m.playerIndex][CAP])
-        network_player_palette_to_color(nil, PANTS, networkPlayerColors[m.playerIndex][PANTS])
-    end
-
-    local modelId = gPlayerSyncTable[0].modelId and gPlayerSyncTable[0].modelId or defaultModels[m.character.type]
+    local modelId = gPlayerSyncTable[m.playerIndex].modelId and gPlayerSyncTable[m.playerIndex].modelId or defaultModels[m.character.type]
     if gPlayerSyncTable[m.playerIndex].presetPalette == nil or characterColorPresets[modelId] == nil then
         if gPlayerSyncTable[m.playerIndex].presetPalette == nil then
             prevPresetPalette[m.playerIndex] = false
@@ -531,23 +542,15 @@ local function mario_update(m)
 
     if np.connected and prevPresetPalette[m.playerIndex] ~= gPlayerSyncTable[m.playerIndex].presetPalette then
         if gPlayerSyncTable[m.playerIndex].presetPalette and characterColorPresets[modelId] then 
-            network_player_color_to_palette(np, SHIRT, characterColorPresets[modelId][SHIRT])
-            network_player_color_to_palette(np, GLOVES, characterColorPresets[modelId][GLOVES])
-            network_player_color_to_palette(np, SHOES, characterColorPresets[modelId][SHOES])
-            network_player_color_to_palette(np, HAIR, characterColorPresets[modelId][HAIR])
-            network_player_color_to_palette(np, SKIN, characterColorPresets[modelId][SKIN])
-            network_player_color_to_palette(np, CAP, characterColorPresets[modelId][CAP])
-            network_player_color_to_palette(np, PANTS, characterColorPresets[modelId][PANTS])
+            network_player_full_color_to_palette(np, characterColorPresets[modelId])
         else
-            network_player_color_to_palette(np, SHIRT, networkPlayerColors[m.playerIndex][SHIRT])
-            network_player_color_to_palette(np, GLOVES, networkPlayerColors[m.playerIndex][GLOVES])
-            network_player_color_to_palette(np, SHOES, networkPlayerColors[m.playerIndex][SHOES])
-            network_player_color_to_palette(np, HAIR, networkPlayerColors[m.playerIndex][HAIR])
-            network_player_color_to_palette(np, SKIN, networkPlayerColors[m.playerIndex][SKIN])
-            network_player_color_to_palette(np, CAP, networkPlayerColors[m.playerIndex][CAP])
-            network_player_color_to_palette(np, PANTS, networkPlayerColors[m.playerIndex][PANTS])
+            network_player_full_color_to_palette(np, networkPlayerColors[m.playerIndex])
         end
         prevPresetPalette[m.playerIndex] = gPlayerSyncTable[m.playerIndex].presetPalette
+    end
+
+    if np.connected and not gPlayerSyncTable[m.playerIndex].presetPalette then
+        network_player_full_palette_to_color(np, networkPlayerColors[m.playerIndex])
     end
 
     --Reset Save Data Check
