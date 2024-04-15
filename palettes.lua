@@ -75,11 +75,11 @@ local function network_player_full_palette_to_color(networkPlayer, out)
     network_player_palette_to_color(networkPlayer, SKIN, out[SKIN])
     network_player_palette_to_color(networkPlayer, CAP, out[CAP])
     network_player_palette_to_color(networkPlayer, PANTS, out[PANTS])
-    djui_chat_message_create("buh")
 end
 
 local prevChar = currChar
 local connectedIndex = 0
+local updatePaletteTimer = 0
 
 local networkPlayerColors = {}
 local prevPresetPalette = {}
@@ -91,6 +91,11 @@ local function mario_update(m)
     
     if m.playerIndex == 0 and not p.isUpdating then
         p.isUpdating = true
+
+        for i = 1, MAX_PLAYERS - 1 do
+            prevPresetPalette[i] = gPlayerSyncTable[i].presetPalette
+            prevModel[i] = gPlayerSyncTable[i].modelId and gPlayerSyncTable[i].modelId or defaultModels[gMarioStates[i].character.type]
+        end
     end
 
     if networkPlayerColors[m.playerIndex] == nil and np.connected then
@@ -117,17 +122,14 @@ local function mario_update(m)
 
         if prevPresetPalette[m.playerIndex] ~= p.presetPalette or prevModel[m.playerIndex] ~= modelId then
             if p.presetPalette and characterColorPresets[modelId] then 
+                network_player_full_palette_to_color(np, networkPlayerColors[m.playerIndex])
                 network_player_full_color_to_palette(np, characterColorPresets[modelId])
             else
                 network_player_full_color_to_palette(np, networkPlayerColors[m.playerIndex])
             end
         end
-
-        if not p.presetPalette and prevPresetPalette[m.playerIndex] ~= p.presetPalette then
-            network_player_full_palette_to_color(np, networkPlayerColors[m.playerIndex])
-        end
-        
         prevPresetPalette[m.playerIndex] = p.presetPalette
+        prevModel[m.playerIndex] = modelId
     else
         if p.isUpdating then
             p.isUpdating = false
@@ -156,7 +158,6 @@ local function mario_update(m)
             colorString = networkString
         }
         network_send(true, data)
-        djui_chat_message_create(tostring(data.colorString))
     end
 end
 
@@ -181,7 +182,6 @@ local function on_packet_receive(data)
             networkPlayerColors[dataIndex][playerPart].b = tonumber(colorTable[i])
         end
     end
-    djui_chat_message_create("Gotcha!")
 end
 
 hook_event(HOOK_MARIO_UPDATE, mario_update)
