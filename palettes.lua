@@ -122,7 +122,9 @@ local function mario_update(m)
 
         if prevPresetPalette[m.playerIndex] ~= p.presetPalette or prevModel[m.playerIndex] ~= modelId then
             if p.presetPalette and characterColorPresets[modelId] then 
-                network_player_full_palette_to_color(np, networkPlayerColors[m.playerIndex])
+                if prevModel[m.playerIndex] == modelId then
+                    network_player_full_palette_to_color(np, networkPlayerColors[m.playerIndex])
+                end
                 network_player_full_color_to_palette(np, characterColorPresets[modelId])
             else
                 network_player_full_color_to_palette(np, networkPlayerColors[m.playerIndex])
