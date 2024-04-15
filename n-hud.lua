@@ -2,6 +2,14 @@
 -- Custom HUD Rendering by Agent X and xLuigiGamerx --
 ------------------------------------------------------
 
+local defaultIcons = {
+    [CT_MARIO] = gTextures.mario_head,
+    [CT_LUIGI] = gTextures.luigi_head,
+    [CT_TOAD] = gTextures.toad_head,
+    [CT_WALUIGI] = gTextures.waluigi_head,
+    [CT_WARIO] = gTextures.wario_head
+}
+
 --- @param localIndex integer
 --- @return TextureInfo|nil
 --- This assumes multiple characters will not have the same model,
@@ -9,6 +17,9 @@
 --- This function can return nil. if this is the case, render `djui_hud_print_text("?", x, y, 1)`
 function life_icon_from_local_index(localIndex)
     for i = 1, #characterTable do
+        if i == 1 and characterTable[i].model == gPlayerSyncTable[localIndex].modelId then
+            return defaultIcons[gMarioStates[localIndex].character.type]
+        end
         if characterTable[i].model == gPlayerSyncTable[localIndex].modelId then
             return characterTable[i].lifeIcon
         end
