@@ -49,53 +49,6 @@ characterTable = {
 
 characterCaps = {}
 characterCelebrationStar = {}
-characterColorPresets = {
-    [E_MODEL_MARIO] = {
-        [PANTS]  = {r = 0x00, g = 0x00, b = 0xff},
-        [SHIRT]  = {r = 0xff, g = 0x00, b = 0x00},
-        [GLOVES] = {r = 0xff, g = 0xff, b = 0xff},
-        [SHOES]  = {r = 0x72, g = 0x1c, b = 0x0e},
-        [HAIR]   = {r = 0x73, g = 0x06, b = 0x00},
-        [SKIN]   = {r = 0xfe, g = 0xc1, b = 0x79},
-        [CAP]    = {r = 0xff, g = 0x00, b = 0x00},
-    },
-    [E_MODEL_LUIGI] = {
-        [PANTS]  = {r = 0x00, g = 0x00, b = 0xff},
-        [SHIRT]  = {r = 0x00, g = 0x98, b = 0x00},
-        [GLOVES] = {r = 0xff, g = 0xff, b = 0xff},
-        [SHOES]  = {r = 0x72, g = 0x1c, b = 0x0e},
-        [HAIR]   = {r = 0x73, g = 0x06, b = 0x00},
-        [SKIN]   = {r = 0xfe, g = 0xc1, b = 0x79},
-        [CAP]    = {r = 0x00, g = 0x98, b = 0x00},
-    },
-    [E_MODEL_TOAD_PLAYER] = {
-        [PANTS]  = {r = 0xff, g = 0xff, b = 0xff},
-        [SHIRT]  = {r = 0x4c, g = 0x2c, b = 0xd3},
-        [GLOVES] = {r = 0xff, g = 0xff, b = 0xff},
-        [SHOES]  = {r = 0x68, g = 0x40, b = 0x1b},
-        [HAIR]   = {r = 0x73, g = 0x06, b = 0x00},
-        [SKIN]   = {r = 0xfe, g = 0xd5, b = 0xa1},
-        [CAP]    = {r = 0xff, g = 0x00, b = 0x00},
-    },
-    [E_MODEL_WALUIGI] = {
-        [PANTS]  = {r = 0x16, g = 0x16, b = 0x27},
-        [SHIRT]  = {r = 0x61, g = 0x26, b = 0xb0},
-        [GLOVES] = {r = 0xff, g = 0xff, b = 0xff},
-        [SHOES]  = {r = 0xfe, g = 0x76, b = 0x00},
-        [HAIR]   = {r = 0x73, g = 0x53, b = 0x00},
-        [SKIN]   = {r = 0xfe, g = 0xc1, b = 0x79},
-        [CAP]    = {r = 0x61, g = 0x26, b = 0xb0},
-    },
-    [E_MODEL_WARIO] = {
-        [PANTS]  = {r = 0x7f, g = 0x20, b = 0x7a},
-        [SHIRT]  = {r = 0xe3, g = 0xa9, b = 0x01},
-        [GLOVES] = {r = 0xff, g = 0xff, b = 0xff},
-        [SHOES]  = {r = 0x0e, g = 0x72, b = 0x1c},
-        [HAIR]   = {r = 0x73, g = 0x53, b = 0x00},
-        [SKIN]   = {r = 0xfe, g = 0xc1, b = 0x79},
-        [CAP]    = {r = 0xe3, g = 0xa9, b = 0x01},
-    },
-}
 
 optionTableRef = {
     openInputs = 1,
@@ -413,34 +366,7 @@ local menuActBlacklist = {
     [ACT_READING_AUTOMATIC_DIALOG] = true,
 }
 
-local network_player_color_to_palette = network_player_color_to_palette
-local network_player_palette_to_color = network_player_palette_to_color
-
-local function network_player_full_color_to_palette(networkPlayer, colorTable)
-    network_player_color_to_palette(networkPlayer, SHIRT, colorTable[SHIRT])
-    network_player_color_to_palette(networkPlayer, GLOVES, colorTable[GLOVES])
-    network_player_color_to_palette(networkPlayer, SHOES, colorTable[SHOES])
-    network_player_color_to_palette(networkPlayer, HAIR, colorTable[HAIR])
-    network_player_color_to_palette(networkPlayer, SKIN, colorTable[SKIN])
-    network_player_color_to_palette(networkPlayer, CAP, colorTable[CAP])
-    network_player_color_to_palette(networkPlayer, PANTS, colorTable[PANTS])
-end
-
-local function network_player_full_palette_to_color(networkPlayer, out)
-    network_player_palette_to_color(networkPlayer, SHIRT, out[SHIRT])
-    network_player_palette_to_color(networkPlayer, GLOVES, out[GLOVES])
-    network_player_palette_to_color(networkPlayer, SHOES, out[SHOES])
-    network_player_palette_to_color(networkPlayer, HAIR, out[HAIR])
-    network_player_palette_to_color(networkPlayer, SKIN, out[SKIN])
-    network_player_palette_to_color(networkPlayer, CAP, out[CAP])
-    network_player_palette_to_color(networkPlayer, PANTS, out[PANTS])
-end
-
 local faceAngle = 0
-local prevChar = currChar
-
-local networkPlayerColors = {}
-local prevPresetPalette = {}
 
 --- @param m MarioState
 local function mario_update(m)
@@ -522,55 +448,6 @@ local function mario_update(m)
         if optionTable[optionTableRef.resetSaveData].toggle > 0 then
             reset_options(false)
             optionTable[optionTableRef.resetSaveData].toggle = 0
-        end
-    end
-    
-    local np = gNetworkPlayers[m.playerIndex]
-    local p = gPlayerSyncTable[m.playerIndex]
-
-    if networkPlayerColors[m.playerIndex] == nil and np.connected then
-        networkPlayerColors[m.playerIndex] = {
-            [SHIRT] = {r = 0, g = 0, b = 0},
-            [GLOVES] = {r = 0, g = 0, b = 0},
-            [SHOES] = {r = 0, g = 0, b = 0},
-            [HAIR] = {r = 0, g = 0, b = 0},
-            [SKIN] = {r = 0, g = 0, b = 0},
-            [CAP] = {r = 0, g = 0, b = 0},
-            [PANTS] = {r = 0, g = 0, b = 0},
-        }
-        network_player_full_palette_to_color(np, networkPlayerColors[m.playerIndex])
-    end
-
-    if np.connected then
-        local modelId = p.modelId and p.modelId or defaultModels[m.character.type]
-        if p.presetPalette == nil or characterColorPresets[modelId] == nil then
-            if p.presetPalette == nil then
-                prevPresetPalette[m.playerIndex] = false
-            end
-            p.presetPalette = false
-        end
-
-        if prevPresetPalette[m.playerIndex] ~= p.presetPalette then
-            if p.presetPalette and characterColorPresets[modelId] then 
-                network_player_full_color_to_palette(np, characterColorPresets[modelId])
-            else
-                network_player_full_color_to_palette(np, networkPlayerColors[m.playerIndex])
-            end
-            prevPresetPalette[m.playerIndex] = p.presetPalette
-        end
-
-        if not p.presetPalette then
-            network_player_full_palette_to_color(np, networkPlayerColors[m.playerIndex])
-        end
-    end
-
-    if m.playerIndex == 0 and menu or prevChar ~= currChar then
-        if optionTable[optionTableRef.autoPalette].toggle > 0 and optionTable[optionTableRef.localModels].toggle > 0 and not gamemodeActive then
-            gPlayerSyncTable[0].presetPalette = true
-            prevChar = currChar
-        end
-        if optionTable[optionTableRef.localModels].toggle == 0 then
-            gPlayerSyncTable[0].presetPalette = false
         end
     end
 end
