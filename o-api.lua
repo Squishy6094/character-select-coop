@@ -135,14 +135,23 @@ end
 ---@param modelInfo ModelExtendedId|integer
 ---@param paletteTable table 
 local function character_add_palette_preset(modelInfo, paletteTable)
-    paletteTable[PANTS] = type(paletteTable[PANTS]) == TYPE_TABLE and paletteTable[PANTS] or {r = 0x00, g = 0x00, b = 0xff}
-    paletteTable[SHIRT] = type(paletteTable[SHIRT]) == TYPE_TABLE and paletteTable[SHIRT] or {r = 0xff, g = 0x00, b = 0x00}
-    paletteTable[GLOVES] = type(paletteTable[GLOVES]) == TYPE_TABLE and paletteTable[GLOVES] or {r = 0xff, g = 0xff, b = 0xff}
-    paletteTable[SHOES] = type(paletteTable[SHOES]) == TYPE_TABLE and paletteTable[SHOES] or {r = 0x72, g = 0x1c, b = 0x0e}
-    paletteTable[HAIR] = type(paletteTable[HAIR]) == TYPE_TABLE and paletteTable[HAIR] or {r = 0x73, g = 0x06, b = 0x00}
-    paletteTable[SKIN] = type(paletteTable[SKIN]) == TYPE_TABLE and paletteTable[SKIN] or {r = 0xfe, g = 0xc1, b = 0x79}
-    paletteTable[CAP] = type(paletteTable[CAP]) == TYPE_TABLE and paletteTable[CAP] or {r = 0xff, g = 0x00, b = 0x00}
-    characterColorPresets[modelInfo] = paletteTable
+    local paletteTableOut = {}
+    local defaultColors = characterColorPresets[E_MODEL_MARIO]
+    for i = 0, 6 do
+        local color = paletteTable[i]
+        paletteTableOut[i] = {r = 0, g = 0, b = 0}
+        if type(color) == TYPE_STRING then
+            paletteTableOut[i].r = tonumber(color:sub(1,2), 16) and tonumber(color:sub(1,2), 16) or defaultColors[i].r
+            paletteTableOut[i].g = tonumber(color:sub(3,4), 16) and tonumber(color:sub(3,4), 16) or defaultColors[i].g
+            paletteTableOut[i].b = tonumber(color:sub(5,6), 16) and tonumber(color:sub(5,6), 16) or defaultColors[i].b
+        end
+        if type(color) == TYPE_TABLE then
+            paletteTableOut[i].r = (type(color) == TYPE_TABLE and color.r ~= nil) and color.r or defaultColors[i].r
+            paletteTableOut[i].g = (type(color) == TYPE_TABLE and color.g ~= nil) and color.g or defaultColors[i].g
+            paletteTableOut[i].b = (type(color) == TYPE_TABLE and color.b ~= nil) and color.b or defaultColors[i].b
+        end
+    end
+    characterColorPresets[modelInfo] = paletteTableOut
 end
 
 ---@return CharacterTable
