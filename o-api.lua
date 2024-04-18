@@ -256,7 +256,7 @@ _G.charSelect = {
     optionTableRef = optionTableRef,
     controller = controller,
 
-    -- Custom Hooks
+    -- Custom Hooks --
     hook_allow_menu_open = hook_allow_menu_open,
     hook_render_in_menu = hook_render_in_menu,
 }
