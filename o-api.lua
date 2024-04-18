@@ -187,8 +187,14 @@ local function is_menu_open()
     return menuAndTransition
 end
 
+---@param bool boolean|nil Sets if the menu is open
+local function set_menu_open(bool)
+    if bool == nil then bool = true end
+    menu = bool
+end
+
 local function get_menu_color()
-    return menuColor
+    return update_menu_color()
 end
 
 local function hook_allow_menu_open(func)
@@ -225,6 +231,7 @@ end
 
 _G.charSelectExists = true
 _G.charSelect = {
+    -- Character Functions --
     character_add = character_add,
     character_edit = character_edit,
     character_add_voice = character_add_voice,
@@ -233,19 +240,23 @@ _G.charSelect = {
     character_add_palette_preset = character_add_palette_preset,
     character_get_current_table = character_get_current_table,
     character_get_current_number = character_get_current_number,
-    character_get_current_model_number --[[Depreiciated Function Name, Not recommended for use]] = character_get_current_number,
     character_get_number_from_string = character_get_number_from_string,
     character_get_voice = character_get_voice,
     character_get_life_icon = life_icon_from_local_index, -- Function located in n-hud.lua
     character_get_star_icon = star_icon_from_local_index, -- Function located in n-hud.lua
+
+    -- Menu Functions --
     header_set_texture = header_set_texture, -- Function located in main.lua
     version_get = version_get,
     is_menu_open = is_menu_open,
+    set_menu_open = set_menu_open,
     is_options_open = is_options_open,
     get_menu_color = get_menu_color,
     get_options_status = get_options_status,
     optionTableRef = optionTableRef,
     controller = controller,
+
+    -- Custom Hooks
     hook_allow_menu_open = hook_allow_menu_open,
     hook_render_in_menu = hook_render_in_menu,
 }

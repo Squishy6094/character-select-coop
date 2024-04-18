@@ -4,7 +4,7 @@
 -- localize functions to improve performance
 local mod_storage_load,tonumber,djui_popup_create,mod_storage_save,tostring,djui_chat_message_create,camera_freeze,hud_hide,vec3f_copy,set_mario_action,set_mario_animation,camera_unfreeze,hud_show,obj_has_behavior_id,network_local_index_from_global,obj_has_model_extended,obj_set_model_extended,get_id_from_behavior,nearest_player_to_object,math_random,djui_hud_set_resolution,djui_hud_set_font,djui_hud_get_screen_width,maxf,djui_hud_set_color,djui_hud_render_rect,djui_hud_measure_text,djui_hud_print_text,math_ceil,math_abs,math_sin,min,math_min,minf,djui_hud_set_rotation,djui_hud_is_pause_menu_created,is_game_paused,hud_is_hidden,obj_get_first_with_behavior_id,hud_get_value,hud_set_value,play_sound,string_lower = mod_storage_load,tonumber,djui_popup_create,mod_storage_save,tostring,djui_chat_message_create,camera_freeze,hud_hide,vec3f_copy,set_mario_action,set_mario_animation,camera_unfreeze,hud_show,obj_has_behavior_id,network_local_index_from_global,obj_has_model_extended,obj_set_model_extended,get_id_from_behavior,nearest_player_to_object,math.random,djui_hud_set_resolution,djui_hud_set_font,djui_hud_get_screen_width,maxf,djui_hud_set_color,djui_hud_render_rect,djui_hud_measure_text,djui_hud_print_text,math.ceil,math.abs,math.sin,min,math.min,minf,djui_hud_set_rotation,djui_hud_is_pause_menu_created,is_game_paused,hud_is_hidden,obj_get_first_with_behavior_id,hud_get_value,hud_set_value,play_sound,string.lower
 
-local menu = false
+menu = false
 menuAndTransition = false
 options = false
 currChar = 1
@@ -562,6 +562,18 @@ menuColor = characterTable[currChar].color
 local MATH_DIVIDE_320 = 1/320
 local MATH_DIVIDE_32 = 1/32
 
+function update_menu_color()
+    if optionTable[optionTableRef.menuColor].toggle > 1 then
+        menuColor = menuColorTable[optionTable[optionTableRef.menuColor].toggle - 1]
+    elseif optionTable[optionTableRef.menuColor].toggle == 1 then
+        optionTable[optionTableRef.menuColor].toggleNames[2] = string_underscore_to_space(TEXT_PREF_LOAD) .. " (Pref)"
+        menuColor = prefCharColor
+    else
+        menuColor = characterTable[currChar].color
+    end
+    return menuColor
+end
+
 local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_font(FONT_CS_NORMAL)
@@ -573,14 +585,7 @@ local function on_hud_render()
     local widthScale = maxf(width, 321.4) * MATH_DIVIDE_320
 
     if menuAndTransition then
-        if optionTable[optionTableRef.menuColor].toggle > 1 then
-            menuColor = menuColorTable[optionTable[optionTableRef.menuColor].toggle - 1]
-        elseif optionTable[optionTableRef.menuColor].toggle == 1 then
-            optionTable[optionTableRef.menuColor].toggleNames[2] = string_underscore_to_space(TEXT_PREF_LOAD) .. " (Pref)"
-            menuColor = prefCharColor
-        else
-            menuColor = characterTable[currChar].color
-        end
+        update_menu_color()
 
         if optionTable[optionTableRef.localModels].toggle == 0 then
             djui_hud_set_color(0, 0, 0, 200)
