@@ -152,7 +152,7 @@ local function mario_update(m)
         if stallTimer > 0 then
             stallTimer = stallTimer - 1
         elseif stallTimer == 0 then
-            if characterColorPresets[p.modelId and p.modelId or defaultModels[m.character.type]] and optionTable[optionTableRef.autoPalette].toggle > 0 then
+            if characterColorPresets[p.modelId and p.modelId or defaultModels[m.character.type]] and optionTable[optionTableRef.autoPalette].toggle > 0 and optionTable[optionTableRef.localModels].toggle > 0 then
                 gPlayerSyncTable[0].presetPalette = true
             end
             stallTimer = stallTimer - 1

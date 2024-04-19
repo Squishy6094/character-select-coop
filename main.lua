@@ -67,9 +67,9 @@ optionTable = {
         name = "Open Binds",
         toggle = tonumber(mod_storage_load("MenuInput")),
         toggleSaveName = "MenuInput",
-        toggleDefault = 0,
+        toggleDefault = 1,
         toggleMax = 2,
-        toggleNames = {"None", ommActive and "D-pad Down + R" or "D-pad Down", "Z (Pause Menu)"},
+        toggleNames = {"None", "Z (Pause Menu)", ommActive and "D-pad Down + R" or "D-pad Down"},
         description = {"Sets a Bind to Open the Menu", "rather than using the command."}
     },
     [optionTableRef.notification] = {
@@ -288,7 +288,7 @@ local function failsafe_options()
             optionTable[i].toggleNames = {"Off", "On"}
         end
     end
-    if optionTable[optionTableRef.openInputs].toggle > 0 and ommActive then
+    if optionTable[optionTableRef.openInputs].toggle == 2 and ommActive then
         djui_popup_create('Character Select:\nYour Open bind has changed to:\nD-pad Down + R\nDue to OMM Rebirth being active!', 4)
     end
 end
@@ -399,6 +399,7 @@ local function mario_update(m)
         else
             gPlayerSyncTable[0].modelId = nil
             gNetworkPlayers[0].overrideModelIndex = characterTable[1].forceChar
+            currChar = 1
         end
 
         if menuAndTransition then
@@ -940,7 +941,7 @@ local function on_hud_render()
         local currCharY = 0
         djui_hud_set_resolution(RESOLUTION_DJUI)
         djui_hud_set_font(FONT_NORMAL)
-        if optionTable[optionTableRef.openInputs].toggle == 2 then
+        if optionTable[optionTableRef.openInputs].toggle == 1 then
             currCharY = 27
             width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_Z_OPEN)
             if not IS_COOPDX then -- Done to match DX not having dropshadow on the "R Button - Options" thingy
@@ -986,7 +987,10 @@ local function before_mario_update(m)
     end
 
     -- Menu Inputs
-    if not menu and (m.controller.buttonDown & D_JPAD) ~= 0 and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and optionTable[optionTableRef.openInputs].toggle == 1 then
+    if is_game_paused() and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and (m.controller.buttonPressed & Z_TRIG) ~= 0 and optionTable[optionTableRef.openInputs].toggle == 1 then
+        menu = true
+    end
+    if not menu and (m.controller.buttonDown & D_JPAD) ~= 0 and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and optionTable[optionTableRef.openInputs].toggle == 2 then
         if ommActive then
             if (m.controller.buttonDown & R_TRIG) ~= 0 then
                 menu = true
@@ -995,9 +999,6 @@ local function before_mario_update(m)
             menu = true
         end
         inputStallTimerDirectional = inputStallToDirectional
-    end
-    if is_game_paused() and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and (m.controller.buttonPressed & Z_TRIG) ~= 0 and optionTable[optionTableRef.openInputs].toggle == 2 then
-        menu = true
     end
 
     local cameraToObject = gMarioStates[0].marioObj.header.gfx.cameraToObject
@@ -1014,7 +1015,7 @@ local function before_mario_update(m)
 
     if menuAndTransition and not options then
         if menu then
-            if inputStallTimerDirectional == 0 then
+            if inputStallTimerDirectional == 0 and optionTable[optionTableRef.localModels].toggle ~= 0 then
                 if (m.controller.buttonPressed & D_JPAD) ~= 0 or (m.controller.buttonPressed & D_CBUTTONS) ~= 0 or m.controller.stickY < -60 then
                     currChar = currChar + 1
                     if (m.controller.buttonPressed & D_CBUTTONS) == 0 then
