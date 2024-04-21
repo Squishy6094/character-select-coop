@@ -645,7 +645,7 @@ local function on_hud_render()
             end
 
             local modelId = gPlayerSyncTable[0].modelId and gPlayerSyncTable[0].modelId or defaultModels[gMarioStates[0].character.type]
-            if characterColorPresets[modelId] and not gamemodeActive then
+            if characterColorPresets[modelId] and not stopPalettes then
                 djui_hud_print_text(TEXT_PRESET, width - textX - djui_hud_measure_text(TEXT_PRESET) * 0.15, height - 34, 0.3)
             end
             djui_hud_print_text(TEXT_PREF, width - textX - djui_hud_measure_text(TEXT_PREF) * 0.15, height - 22, 0.3)
@@ -1058,7 +1058,7 @@ local function before_mario_update(m)
                 end
                 local modelId = gPlayerSyncTable[0].modelId and gPlayerSyncTable[0].modelId or defaultModels[m.character.type]
                 if (m.controller.buttonPressed & Y_BUTTON) ~= 0 then
-                    if characterColorPresets[modelId] and optionTable[optionTableRef.localModels].toggle > 0 and not gamemodeActive then
+                    if characterColorPresets[modelId] and optionTable[optionTableRef.localModels].toggle > 0 and not stopPalettes then
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject)
                         gPlayerSyncTable[0].presetPalette = not gPlayerSyncTable[0].presetPalette
                         inputStallTimerButton = inputStallToButton

@@ -179,10 +179,12 @@ local function character_get_voice(m)
     return characterVoices[gPlayerSyncTable[m.playerIndex].modelId]
 end
 
+---@return string
 local function version_get()
     return MOD_VERSION
 end
 
+---@return boolean
 local function is_menu_open()
     return menuAndTransition
 end
@@ -193,6 +195,7 @@ local function set_menu_open(bool)
     menu = bool
 end
 
+---@return table
 local function get_menu_color()
     return update_menu_color()
 end
@@ -202,13 +205,21 @@ local function hook_allow_menu_open(func)
     table_insert(allowMenu, func)
 end
 
+---@param func function
 local function hook_render_in_menu(func)
     if type(func) ~= TYPE_FUNCTION then return end
     table_insert(renderInMenuTable, func)
 end
 
+---@return boolean
 local function is_options_open()
     return options
+end
+
+---@param bool boolean
+local function restrict_palettes(bool)
+    if bool == nil then bool = true end
+    stopPalettes = bool
 end
 
 local controller = {
@@ -253,6 +264,9 @@ _G.charSelect = {
     is_options_open = is_options_open,
     get_menu_color = get_menu_color,
     get_options_status = get_options_status,
+    restrict_palettes = restrict_palettes,
+
+    -- Tables --
     optionTableRef = optionTableRef,
     controller = controller,
 
