@@ -536,6 +536,7 @@ local TEXT_VERSION = "Version: " .. MOD_VERSION .. (IS_COOPDX and " | sm64coopdx
 local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
 local TEXT_DESCRIPTION = "Character Description:"
 local TEXT_PREF_SAVE = "Press A to Set as Preferred Character"
+local TEXT_PREF_SAVE_AND_PALETTE = "A - Set Preference | Y - Toggle Palette"
 local TEXT_PAUSE_Z_OPEN = "Z Button - Character Select"
 local TEXT_PAUSE_CURR_CHAR = "Current Character: "
 if math_random(100) == 64 then -- Easter Egg if you get lucky loading the mod >v<
@@ -610,7 +611,7 @@ local function on_hud_render()
             local TEXT_NAME = string_underscore_to_space(character.name)
             local TEXT_CREDIT = "Credit: " .. character.credit
             local TEXT_DESCRIPTION_TABLE = character.description
-            local TEXT_PRESET = "Preset Color Palette: "..(gPlayerSyncTable[0].presetPalette and "On" or "Off")
+            local TEXT_PRESET = "Preset Character Palette: "..(gPlayerSyncTable[0].presetPalette and "On" or "Off")
             local TEXT_PREF = "Preferred Character:"
             local TEXT_PREF_LOAD = string_underscore_to_space(TEXT_PREF_LOAD)
             if djui_hud_measure_text(TEXT_PREF_LOAD) / widthScale > 110 then
@@ -645,12 +646,15 @@ local function on_hud_render()
             end
 
             local modelId = gPlayerSyncTable[0].modelId and gPlayerSyncTable[0].modelId or defaultModels[gMarioStates[0].character.type]
-            if characterColorPresets[modelId] and not stopPalettes then
-                djui_hud_print_text(TEXT_PRESET, width - textX - djui_hud_measure_text(TEXT_PRESET) * 0.15, height - 34, 0.3)
-            end
             djui_hud_print_text(TEXT_PREF, width - textX - djui_hud_measure_text(TEXT_PREF) * 0.15, height - 22, 0.3)
-            djui_hud_set_font(FONT_TINY)
-            djui_hud_print_text(TEXT_PREF_SAVE, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE) * 0.25, height - 13, 0.5)
+            if characterColorPresets[modelId] and not stopPalettes then
+                djui_hud_print_text(TEXT_PRESET, width - textX - djui_hud_measure_text(TEXT_PRESET) * 0.15, height - 31, 0.3)
+                djui_hud_set_font(FONT_TINY)
+                djui_hud_print_text(TEXT_PREF_SAVE_AND_PALETTE, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE_AND_PALETTE) * 0.25, height - 13, 0.5)
+            else
+                djui_hud_set_font(FONT_TINY)
+                djui_hud_print_text(TEXT_PREF_SAVE, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE) * 0.25, height - 13, 0.5)
+            end
         else -- Debugging Info
             local TEXT_NAME = "Name: " .. character.name
             local TEXT_SAVE_NAME = "Save Name: " .. character.saveName
