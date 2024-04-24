@@ -671,10 +671,15 @@ local function on_hud_render()
             local textX = x * 0.5
             djui_hud_print_text(TEXT_DEBUGGING, width - textX - djui_hud_measure_text(TEXT_DEBUGGING) * 0.3, 55, 0.6)
             djui_hud_set_font(FONT_TINY)
-            djui_hud_print_text(TEXT_NAME, width - x + 8, 72, 0.6)
-            djui_hud_print_text(TEXT_SAVE_NAME, width - x + 8, 81, 0.6)
-            djui_hud_print_text(TEXT_CREDIT, width - x + 8, 90, 0.6)
-            djui_hud_print_text(TEXT_DESCRIPTION_SHORT, width - x + 8, 99, 0.6)
+            local y = 72
+            djui_hud_print_text(TEXT_NAME, width - x + 8, y, 0.5)
+            y = y + 7
+            djui_hud_print_text(TEXT_SAVE_NAME, width - x + 8, y, 0.5)
+            y = y + 7
+            djui_hud_print_text(TEXT_CREDIT, width - x + 8, y, 0.5)
+            y = y + 7
+            djui_hud_print_text(TEXT_DESCRIPTION_SHORT, width - x + 8, y, 0.5)
+            y = y + 2
             local removeLine = 0
             for i = 1, #TEXT_DESCRIPTION_TABLE do
                 if TEXT_DESCRIPTION_TABLE[i] ~= "" then
@@ -686,34 +691,40 @@ local function on_hud_render()
                         TEXT_DESCRIPTION_LINE = "    " .. TEXT_DESCRIPTION_LINE
                     end
                     djui_hud_set_font(FONT_TINY)
-                    djui_hud_print_text(TEXT_DESCRIPTION_LINE, width - x + 5, 101 + (i-removeLine) * 7, 0.5)
+                    djui_hud_print_text(TEXT_DESCRIPTION_LINE, width - x + 5, y + (i-removeLine) * 5, 0.4)
                 else
                     removeLine = removeLine + 1
                 end
             end
-            local descriptionOffset = (#TEXT_DESCRIPTION_TABLE - removeLine) * 7
+            local descriptionOffset = (#TEXT_DESCRIPTION_TABLE - removeLine) * 5
+            y = y + 5 + descriptionOffset
             djui_hud_set_color(character.color.r, character.color.g, character.color.b, 255)
-            djui_hud_print_text(TEXT_COLOR, width - x + 8, 109 + descriptionOffset, 0.6)
+            djui_hud_print_text(TEXT_COLOR, width - x + 8, y, 0.5)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+            y = y + 7
             if TEX_LIFE_ICON ~= nil then
-                djui_hud_print_text(TEXT_LIFE_ICON .. "    (" .. TEX_LIFE_ICON.width .. "x" .. TEX_LIFE_ICON.height .. ")", width - x + 8, 118 + descriptionOffset, 0.6)
+                djui_hud_print_text(TEXT_LIFE_ICON .. "    (" .. TEX_LIFE_ICON.width .. "x" .. TEX_LIFE_ICON.height .. ")", width - x + 8, y, 0.5)
                 djui_hud_set_color(255, 255, 255, 255)
-                djui_hud_render_texture(TEX_LIFE_ICON, width - x + 38, 119 + descriptionOffset, 0.5 / (TEX_LIFE_ICON.width / 16), 0.5 / (TEX_LIFE_ICON.height / 16))
+                djui_hud_render_texture(TEX_LIFE_ICON, width - x + 33, y + 1, 0.4 / (TEX_LIFE_ICON.width / 16), 0.4 / (TEX_LIFE_ICON.height / 16))
             else
-                djui_hud_print_text(TEXT_LIFE_ICON .. "    (?x?)", width - x + 8, 118 + descriptionOffset, 0.6)
+                djui_hud_print_text(TEXT_LIFE_ICON .. "    (?x?)", width - x + 8, y, 0.5)
                 djui_hud_set_font(FONT_HUD)
                 djui_hud_set_color(255, 255, 255, 255)
-                djui_hud_print_text(TEXT_ICON_DEFAULT, width - x + 38, 119 + descriptionOffset, 0.5)
+                djui_hud_print_text(TEXT_ICON_DEFAULT, width - x + 33, y + 1, 0.5)
                 djui_hud_set_font(FONT_TINY)
             end
+            y = y + 7
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_print_text(TEXT_STAR_ICON .. "    (" .. TEX_STAR_ICON.width .. "x" .. TEX_STAR_ICON.height .. ")", width - x + 8, 127 + descriptionOffset, 0.6)
+            djui_hud_print_text(TEXT_STAR_ICON .. "    (" .. TEX_STAR_ICON.width .. "x" .. TEX_STAR_ICON.height .. ")", width - x + 8, y, 0.5)
             djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_render_texture(TEX_STAR_ICON, width - x + 40, 128 + descriptionOffset, 0.5 / (TEX_STAR_ICON.width / 16), 0.5 / (TEX_STAR_ICON.height / 16))
+            djui_hud_render_texture(TEX_STAR_ICON, width - x + 35, y + 1, 0.4 / (TEX_STAR_ICON.width / 16), 0.4 / (TEX_STAR_ICON.height / 16))
+            y = y + 7
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_print_text(TEXT_FORCED_CHAR .. defaultForceChar[character.forceChar], width - x + 8, 136 + descriptionOffset, 0.6)
-            djui_hud_print_text(TEXT_TABLE_POS .. currChar, width - x + 8, 145 + descriptionOffset, 0.6)
-            djui_hud_print_text(TEXT_SCALE, width - x + 8, 154 + descriptionOffset, 0.6)
+            djui_hud_print_text(TEXT_FORCED_CHAR .. defaultForceChar[character.forceChar], width - x + 8, y, 0.5)
+            y = y + 7
+            djui_hud_print_text(TEXT_TABLE_POS .. currChar, width - x + 8, y, 0.5)
+            y = y + 7
+            djui_hud_print_text(TEXT_SCALE, width - x + 8, y, 0.5)
 
 
             djui_hud_print_text(TEXT_PREF, width - x + 8, height - 27, 0.6)
