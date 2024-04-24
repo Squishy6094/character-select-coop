@@ -58,23 +58,15 @@ local network_player_color_to_palette = network_player_color_to_palette
 local network_player_palette_to_color = network_player_palette_to_color
 
 local function network_player_full_color_to_palette(networkPlayer, colorTable)
-    network_player_color_to_palette(networkPlayer, SHIRT, colorTable[SHIRT])
-    network_player_color_to_palette(networkPlayer, GLOVES, colorTable[GLOVES])
-    network_player_color_to_palette(networkPlayer, SHOES, colorTable[SHOES])
-    network_player_color_to_palette(networkPlayer, HAIR, colorTable[HAIR])
-    network_player_color_to_palette(networkPlayer, SKIN, colorTable[SKIN])
-    network_player_color_to_palette(networkPlayer, CAP, colorTable[CAP])
-    network_player_color_to_palette(networkPlayer, PANTS, colorTable[PANTS])
+    for i = 0, #characterColorPresets[E_MODEL_MARIO] do
+        network_player_color_to_palette(networkPlayer, i, colorTable[i])
+    end
 end
 
 local function network_player_full_palette_to_color(networkPlayer, out)
-    network_player_palette_to_color(networkPlayer, SHIRT, out[SHIRT])
-    network_player_palette_to_color(networkPlayer, GLOVES, out[GLOVES])
-    network_player_palette_to_color(networkPlayer, SHOES, out[SHOES])
-    network_player_palette_to_color(networkPlayer, HAIR, out[HAIR])
-    network_player_palette_to_color(networkPlayer, SKIN, out[SKIN])
-    network_player_palette_to_color(networkPlayer, CAP, out[CAP])
-    network_player_palette_to_color(networkPlayer, PANTS, out[PANTS])
+    for i = 0, #characterColorPresets[E_MODEL_MARIO] do
+        network_player_palette_to_color(networkPlayer, i, out[i])
+    end
 end
 
 local prevChar = currChar

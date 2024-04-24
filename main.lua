@@ -34,7 +34,7 @@ characterTable = {
     [1] = {
         name = "Default",
         saveName = "Default",
-        description = {"The vanilla cast for sm64ex-coop!", "", "These Characters are swappable", "via the default Options Menu"},
+        description = {"The vanilla cast for sm64coopdx!", "", "These Characters are swappable", "via the default Options Menu"},
         credit = "Nintendo / Coop Team",
         color = {r = 255, g = 50, b = 50},
         model = nil,
@@ -49,6 +49,7 @@ characterTable = {
 
 characterCaps = {}
 characterCelebrationStar = {}
+characterColorPresets = {}
 
 optionTableRef = {
     openInputs = 1,
@@ -666,6 +667,7 @@ local function on_hud_render()
             local TEX_STAR_ICON = character.starIcon
             local TEXT_ICON_DEFAULT = "?"
             local TEXT_SCALE = "Camera Scale: " .. character.camScale
+            local TEXT_PRESET = "Preset Palette: "..(gPlayerSyncTable[0].presetPalette and "On" or "Off")
             local TEXT_PREF = "Preferred: " .. TEXT_PREF_LOAD
             local TEXT_PREF_COLOR = "Pref Color: R-" .. prefCharColor.r .. ", G-" .. prefCharColor.g .. ", B-" .. prefCharColor.b
 
@@ -679,26 +681,28 @@ local function on_hud_render()
             y = y + 7
             djui_hud_print_text(TEXT_CREDIT, width - x + 8, y, 0.5)
             y = y + 7
-            djui_hud_print_text(TEXT_DESCRIPTION_SHORT, width - x + 8, y, 0.5)
-            y = y + 2
-            local removeLine = 0
-            for i = 1, #TEXT_DESCRIPTION_TABLE do
-                if TEXT_DESCRIPTION_TABLE[i] ~= "" then
-                    djui_hud_set_font(FONT_CS_NORMAL)
-                    local TEXT_DESCRIPTION_LINE = TEXT_DESCRIPTION_TABLE[i]
-                    if (djui_hud_measure_text(TEXT_DESCRIPTION_TABLE[i]) * 0.3 > 100) then
-                        TEXT_DESCRIPTION_LINE = "(!) " .. TEXT_DESCRIPTION_LINE
+            if TEXT_DESCRIPTION_TABLE[1] ~= "No description has been provided" then
+                djui_hud_print_text(TEXT_DESCRIPTION_SHORT, width - x + 8, y, 0.5)
+                y = y + 2
+                local removeLine = 0
+                for i = 1, #TEXT_DESCRIPTION_TABLE do
+                    if TEXT_DESCRIPTION_TABLE[i] ~= "" then
+                        djui_hud_set_font(FONT_CS_NORMAL)
+                        local TEXT_DESCRIPTION_LINE = TEXT_DESCRIPTION_TABLE[i]
+                        if (djui_hud_measure_text(TEXT_DESCRIPTION_TABLE[i]) * 0.3 > 100) then
+                            TEXT_DESCRIPTION_LINE = "(!) " .. TEXT_DESCRIPTION_LINE
+                        else
+                            TEXT_DESCRIPTION_LINE = "    " .. TEXT_DESCRIPTION_LINE
+                        end
+                        djui_hud_set_font(FONT_TINY)
+                        djui_hud_print_text(TEXT_DESCRIPTION_LINE, width - x + 5, y + (i-removeLine) * 5, 0.4)
                     else
-                        TEXT_DESCRIPTION_LINE = "    " .. TEXT_DESCRIPTION_LINE
+                        removeLine = removeLine + 1
                     end
-                    djui_hud_set_font(FONT_TINY)
-                    djui_hud_print_text(TEXT_DESCRIPTION_LINE, width - x + 5, y + (i-removeLine) * 5, 0.4)
-                else
-                    removeLine = removeLine + 1
                 end
+                local descriptionOffset = (#TEXT_DESCRIPTION_TABLE - removeLine) * 5
+                y = y + 5 + descriptionOffset
             end
-            local descriptionOffset = (#TEXT_DESCRIPTION_TABLE - removeLine) * 5
-            y = y + 5 + descriptionOffset
             djui_hud_set_color(character.color.r, character.color.g, character.color.b, 255)
             djui_hud_print_text(TEXT_COLOR, width - x + 8, y, 0.5)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
@@ -732,17 +736,19 @@ local function on_hud_render()
                 djui_hud_print_text(TEXT_PALETTE, width - x + 8, y, 0.5)
                 local x = x - djui_hud_measure_text(TEXT_PALETTE)*0.5
                 for i = 0, #characterColorPresets[modelId] do
-                    djui_hud_set_color(255, 255, 255, 255)
-                    djui_hud_render_rect(width - x + 9 + (8 * i), y + 1, 7, 7)
+                    djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+                    djui_hud_render_rect(width - x + 6.5 + (6.5 * i), y + 1.5, 6, 6)
                     djui_hud_set_color(characterColorPresets[modelId][i].r, characterColorPresets[modelId][i].g, characterColorPresets[modelId][i].g, 255)
-                    djui_hud_render_rect(width - x + 10 + (8 * i), y + 2, 5, 5)
+                    djui_hud_render_rect(width - x + 7 + (6.5 * i), y + 2, 5, 5)
                 end
             end
 
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_print_text(TEXT_PREF, width - x + 8, height - 27, 0.6)
+            djui_hud_print_text(TEXT_PRESET, width - x + 8, height - 29, 0.5)
+            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+            djui_hud_print_text(TEXT_PREF, width - x + 8, height - 22, 0.5)
             djui_hud_set_color(prefCharColor.r, prefCharColor.g, prefCharColor.b, 255)
-            djui_hud_print_text(TEXT_PREF_COLOR, width - x + 8, height - 18, 0.6)
+            djui_hud_print_text(TEXT_PREF_COLOR, width - x + 8, height - 15, 0.5)
         end
 
         --Character Buttons
