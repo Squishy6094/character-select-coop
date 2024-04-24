@@ -551,6 +551,7 @@ local TEXT_LIFE_ICON = "Life Icon:"
 local TEXT_STAR_ICON = "Star Icon:"
 local TEXT_FORCED_CHAR = "Forced: "
 local TEXT_TABLE_POS = "Table Position: "
+local TEXT_PALETTE = "Palette: "
 
 --Options Text
 local TEXT_OPTIONS_OPEN = "Press START to open Options"
@@ -725,8 +726,20 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_TABLE_POS .. currChar, width - x + 8, y, 0.5)
             y = y + 7
             djui_hud_print_text(TEXT_SCALE, width - x + 8, y, 0.5)
+            local modelId = gPlayerSyncTable[0].modelId and gPlayerSyncTable[0].modelId or defaultModels[gMarioStates[0].character.type]
+            if characterColorPresets[modelId] ~= nil then
+                y = y + 7
+                djui_hud_print_text(TEXT_PALETTE, width - x + 8, y, 0.5)
+                local x = x - djui_hud_measure_text(TEXT_PALETTE)*0.5
+                for i = 0, #characterColorPresets[modelId] do
+                    djui_hud_set_color(255, 255, 255, 255)
+                    djui_hud_render_rect(width - x + 9 + (8 * i), y + 1, 7, 7)
+                    djui_hud_set_color(characterColorPresets[modelId][i].r, characterColorPresets[modelId][i].g, characterColorPresets[modelId][i].g, 255)
+                    djui_hud_render_rect(width - x + 10 + (8 * i), y + 2, 5, 5)
+                end
+            end
 
-
+            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_print_text(TEXT_PREF, width - x + 8, height - 27, 0.6)
             djui_hud_set_color(prefCharColor.r, prefCharColor.g, prefCharColor.b, 255)
             djui_hud_print_text(TEXT_PREF_COLOR, width - x + 8, height - 18, 0.6)
