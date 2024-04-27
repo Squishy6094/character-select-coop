@@ -71,7 +71,7 @@ end
 
 local prevChar = currChar
 local connectedIndex = 0
-local stallTimer = 3
+local stallTimer = 1
 
 local networkPlayerColors = {}
 local prevPresetPalette = {}
@@ -142,7 +142,10 @@ local function mario_update(m)
         end
         
         if stallTimer > 0 then
-            stallTimer = stallTimer - 1
+            if network_player_connected_count() == 1 or gPlayerSyncTable[network_local_index_from_global(0)].isUpdating then
+                stallTimer = stallTimer - 1
+                djui_chat_message_create(tostring(network_player_connected_count()))
+            end
         elseif stallTimer == 0 then
             if characterColorPresets[p.modelId and p.modelId or defaultModels[m.character.type]] and optionTable[optionTableRef.autoPalette].toggle > 0 and optionTable[optionTableRef.localModels].toggle > 0 and not stopPalettes then
                 gPlayerSyncTable[0].presetPalette = true
