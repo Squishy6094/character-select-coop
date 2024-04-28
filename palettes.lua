@@ -154,7 +154,7 @@ local function mario_update(m)
     
     if m.playerIndex == 0 then
         if (menuAndTransition or prevChar ~= currChar) and stallTimer == 0 then
-            if optionTable[optionTableRef.autoPalette].toggle > 0 and optionTable[optionTableRef.localModels].toggle > 0 and prevChar ~= currChar and not stopPalettes then
+            if optionTable[optionTableRef.autoPalette].toggle > 0 and optionTable[optionTableRef.localModels].toggle > 0 and prevChar ~= currChar and currChar ~= 1 and not stopPalettes then
                 p.presetPalette = true
                 prevChar = currChar
             end
