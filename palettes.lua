@@ -69,9 +69,24 @@ local function network_player_full_palette_to_color(networkPlayer, out)
     end
 end
 
+local function network_prep_packet(localPlayerColors, setDefault)
+    local networkString = ""
+    for i = 0, 6 do -- Goes through all palette parts
+        local playerPart = localPlayerColors[i]
+        networkString = networkString..tostring(playerPart.r).." "..tostring(playerPart.g).." "..tostring(playerPart.b).." "
+    end
+    local data = {
+        index = network_global_index_from_local(0),
+        colorString = networkString,
+        setDefault = setDefault
+    }
+    return data
+end
+
 local prevChar = currChar
 local connectedIndex = 0
 local stallTimer = 5
+local paletteNote = false
 
 local networkPlayerColors = {}
 local prevPresetPalette = {}
@@ -83,7 +98,6 @@ local function mario_update(m)
     
     if m.playerIndex == 0 and not p.isUpdating then
         p.isUpdating = true
-
         for i = 1, MAX_PLAYERS - 1 do
             prevPresetPalette[i] = gPlayerSyncTable[i].presetPalette
             prevModel[i] = gPlayerSyncTable[i].modelId and gPlayerSyncTable[i].modelId or defaultModels[gMarioStates[i].character.type]
@@ -117,13 +131,21 @@ local function mario_update(m)
                 if prevModel[m.playerIndex] == modelId then
                     network_player_full_palette_to_color(np, networkPlayerColors[m.playerIndex])
                 end
-                network_player_full_color_to_palette(np, characterColorPresets[modelId])
             else
-                network_player_full_color_to_palette(np, networkPlayerColors[m.playerIndex])
+                if m.playerIndex == 0 then
+                    network_player_full_palette_to_color(nil, networkPlayerColors[m.playerIndex])
+                    network_player_full_color_to_palette(np, networkPlayerColors[0])
+                    network_send(true, network_prep_packet(networkPlayerColors[0], true))
+                end
             end
         end
+
         prevPresetPalette[m.playerIndex] = p.presetPalette
         prevModel[m.playerIndex] = modelId
+
+        if p.presetPalette and characterColorPresets[modelId] then
+            network_player_full_color_to_palette(np, characterColorPresets[modelId])
+        end
     else
         if p.isUpdating then
             p.isUpdating = false
@@ -148,16 +170,7 @@ local function mario_update(m)
 
     if connectedIndex ~= 0 and gPlayerSyncTable[connectedIndex].isUpdating then
         connectedIndex = 0
-        local networkString = ""
-        for i = 0, 6 do -- Goes through all palette parts
-            local playerPart = networkPlayerColors[0][i]
-            networkString = networkString..tostring(playerPart.r).." "..tostring(playerPart.g).." "..tostring(playerPart.b).." "
-        end
-        local data = {
-            index = network_global_index_from_local(0),
-            colorString = networkString
-        }
-        network_send(true, data)
+        network_send(true, network_prep_packet(networkPlayerColors[0]))
     end
 end
 
@@ -181,6 +194,9 @@ local function on_packet_receive(data)
         if i%3 == 0 then
             networkPlayerColors[dataIndex][playerPart].b = tonumber(colorTable[i])
         end
+    end
+    if data.setDefault then
+        network_player_full_color_to_palette(gNetworkPlayers[dataIndex], networkPlayerColors[dataIndex])
     end
 end
 
