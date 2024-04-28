@@ -139,8 +139,10 @@ local function mario_update(m)
             else
                 if m.playerIndex == 0 then
                     network_player_full_palette_to_color(nil, networkPlayerColors[0]) -- Gets palette data from Config
-                    network_player_full_color_to_palette(np, networkPlayerColors[0]) -- Applies Config Locally
-                    network_send(true, network_prep_packet(networkPlayerColors[0], true)) -- Networks and Applies Config on other Clients
+                    if not stopPalettes then
+                        network_player_full_color_to_palette(np, networkPlayerColors[0]) -- Applies Config Locally
+                    end
+                    network_send(true, network_prep_packet(networkPlayerColors[0], not stopPalettes)) -- Networks and Applies Config on other Clients
                 end
             end
         end
@@ -148,7 +150,7 @@ local function mario_update(m)
         prevPresetPalette[m.playerIndex] = p.presetPalette
         prevModel[m.playerIndex] = modelId
 
-        if p.presetPalette and characterColorPresets[modelId] then
+        if p.presetPalette and characterColorPresets[modelId] and not stopPalettes then
             network_player_full_color_to_palette(np, characterColorPresets[modelId])
         end
     else

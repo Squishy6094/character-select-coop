@@ -502,7 +502,7 @@ function set_model(o, model)
             elseif model == c.capMetalWingModelId then
                 capModel = capModels.metalWing
             end
-            if capModel ~= E_MODEL_NONE then
+            if capModel ~= E_MODEL_NONE and capModel ~= nil then
                 obj_set_model_extended(o, capModel)
             end
         end
