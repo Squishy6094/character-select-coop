@@ -56,6 +56,12 @@ local defaultModels = {
 
 local network_player_color_to_palette = network_player_color_to_palette
 local network_player_palette_to_color = network_player_palette_to_color
+local network_send = network_send
+local network_global_index_from_local = network_global_index_from_local
+local network_local_index_from_global = network_local_index_from_global
+local tostring = tostring
+local tonumber = tonumber
+local math_floor = math.floor
 
 local function network_player_full_color_to_palette(networkPlayer, colorTable)
     for i = 0, #characterColorPresets[E_MODEL_MARIO] do
@@ -86,7 +92,6 @@ end
 local prevChar = currChar
 local connectedIndex = 0
 local stallTimer = 5
-local paletteNote = false
 
 local networkPlayerColors = {}
 local prevPresetPalette = {}
@@ -133,9 +138,9 @@ local function mario_update(m)
                 end
             else
                 if m.playerIndex == 0 then
-                    network_player_full_palette_to_color(nil, networkPlayerColors[m.playerIndex])
-                    network_player_full_color_to_palette(np, networkPlayerColors[0])
-                    network_send(true, network_prep_packet(networkPlayerColors[0], true))
+                    network_player_full_palette_to_color(nil, networkPlayerColors[0]) -- Gets palette data from Config
+                    network_player_full_color_to_palette(np, networkPlayerColors[0]) -- Applies Config Locally
+                    network_send(true, network_prep_packet(networkPlayerColors[0], true)) -- Networks and Applies Config on other Clients
                 end
             end
         end
@@ -184,7 +189,7 @@ local function on_packet_receive(data)
     local dataIndex = network_local_index_from_global(data.index)
     local colorTable = string_split(data.colorString)
     for i = 1, #colorTable do -- Goes through all palettes
-        local playerPart = math.floor((i-1)*MATH_DIVIDE_3)
+        local playerPart = math_floor((i-1)*MATH_DIVIDE_3)
         if i%3 == 1 then
             networkPlayerColors[dataIndex][playerPart].r = tonumber(colorTable[i])
         end
