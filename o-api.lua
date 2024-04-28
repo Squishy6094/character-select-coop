@@ -51,7 +51,7 @@ local TYPE_FUNCTION = "function"
 ---@param name string|nil Underscores turn into Spaces
 ---@param description table|string|nil {"string"}
 ---@param credit string|nil
----@param color Color|nil {r, g, b}
+---@param color Color|string|nil {r, g, b}
 ---@param modelInfo ModelExtendedId|integer|nil Use smlua_model_util_get_id()
 ---@param forceChar CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
 ---@param lifeIcon TextureInfo|nil Use get_texture_info()
@@ -60,6 +60,9 @@ local TYPE_FUNCTION = "function"
 local function character_add(name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
     if type(description) == TYPE_STRING then
         description = split_text_into_lines(description)
+    end
+    if type(color) == TYPE_STRING then
+        color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
     table_insert(characterTable, {
         name = type(name) == TYPE_STRING and name or "Untitled",
@@ -90,6 +93,9 @@ local function character_edit(charNum, name, description, credit, color, modelIn
     if charNum > #characterTable or charNum < 0 or tonumber(charNum) == nil then return end
     if type(description) == TYPE_STRING then
         description = split_text_into_lines(description)
+    end
+    if type(color) == TYPE_STRING then
+        color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
     local tableCache = characterTable[charNum]
     characterTable[charNum] = characterTable[charNum] and {
