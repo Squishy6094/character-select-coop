@@ -128,20 +128,21 @@ end
 local function render_act_select_hud()
     local course = gNetworkPlayers[0].currCourseNum
     if gServerSettings.enablePlayersInLevelDisplay == 0 or course == 0 or obj_get_first_with_behavior_id(id_bhvActSelector) == nil then return end
-
     local stars = save_file_get_star_flags(get_current_save_file_num() - 1, course - 1)
     local maxStar = 0
+    local wasLastActBeat = true -- True by default to account for 0 stars collected not needing an offset
 
     for i = 5, 0, -1 do
         if stars & 2 ^ i ~= 0 then
             maxStar = i
+            wasLastActBeat = stars & 2^(i-1) ~= 0
             break
         end
     end
 
     for a = 1, maxStar + 1 do
-        local x = (38 - maxStar * 17 + a * 34) + djui_hud_get_screen_width() * 0.5 - 75
-        for j = 0, MAX_PLAYERS - 1 do
+        local x = (139 - (maxStar - (wasLastActBeat and 1 or 0) - (maxStar < 5 and 0 or 1) - (maxStar < 1 and 1 or 0)) * 17 + (a - (wasLastActBeat and 1 or 0)) * 34) + (djui_hud_get_screen_width()/2) - 176
+        for j = 1, MAX_PLAYERS - 1 do -- 0 is not needed due to the due to the fact that you are never supposed to see yourself in the act
             local np = gNetworkPlayers[j]
             if np and np.connected and np.currCourseNum == course and np.currActNum == a then
                 djui_hud_render_rect(x - 4, 17, 16, 16)
@@ -149,8 +150,9 @@ local function render_act_select_hud()
                 if displayHead == nil then
                     djui_hud_print_text("?", x - 4, 17, 1)
                 else
-                    djui_hud_render_texture(displayHead, x - 4, 17, 1 / (displayHead.width * 0.0625), 1 / (displayHead.height * 0.0625)) -- 0.0625 is 1/16
+                    djui_hud_render_texture(displayHead, x - 4, 17, 1 / (displayHead.width/16), 1 / (displayHead.height/16)) -- 0.0625 is 1/16
                 end
+                break
             end
         end
     end
@@ -160,7 +162,7 @@ local function on_hud_render_behind()
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_font(FONT_HUD)
     djui_hud_set_color(255, 255, 255, 255)
-    
+
     if gNetworkPlayers[0].currActNum == 99 or gMarioStates[0].action == ACT_INTRO_CUTSCENE or hud_is_hidden() or obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then
         return
     end
@@ -174,7 +176,7 @@ local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_font(FONT_HUD)
     djui_hud_set_color(255, 255, 255, 255)
-    
+
     if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then
         render_act_select_hud()
     end
