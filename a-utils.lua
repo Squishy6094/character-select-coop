@@ -1,4 +1,4 @@
-MOD_VERSION = "1.8 (In-Dev)"
+MOD_VERSION = "1.8"
 IS_COOPDX = get_coop_compatibility_enabled ~= nil
 
 ommActive = false
