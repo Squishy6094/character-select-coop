@@ -160,9 +160,11 @@ local function character_add_palette_preset(modelInfo, paletteTable)
     characterColorPresets[modelInfo] = paletteTableOut
 end
 
+---@param tablePos integer|nil
 ---@return CharacterTable
-local function character_get_current_table()
-    return characterTable[currChar]
+local function character_get_current_table(tablePos)
+    tablePos = tablePos and tablePos or currChar
+    return characterTable[tablePos]
 end
 
 local function character_get_current_number()
