@@ -54,14 +54,7 @@ local defaultModels = {
     [CT_WARIO] = E_MODEL_WARIO
 }
 
-local network_player_color_to_palette = network_player_color_to_palette
-local network_player_palette_to_color = network_player_palette_to_color
-local network_send = network_send
-local network_global_index_from_local = network_global_index_from_local
-local network_local_index_from_global = network_local_index_from_global
-local tostring = tostring
-local tonumber = tonumber
-local math_floor = math.floor
+local network_player_color_to_palette, network_player_palette_to_color, network_send, network_global_index_from_local, network_local_index_from_global, tostring, tonumber, math_floor = network_player_color_to_palette, network_player_palette_to_color, network_send, network_global_index_from_local, network_local_index_from_global, tostring, tonumber, math.floor
 
 local function network_player_full_color_to_palette(networkPlayer, colorTable)
     for i = 0, #characterColorPresets[E_MODEL_MARIO] do
