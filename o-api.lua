@@ -70,7 +70,7 @@ local function character_add(name, description, credit, color, modelInfo, forceC
         description = type(description) == TYPE_TABLE and description or {"No description has been provided"},
         credit = type(credit) == TYPE_STRING and credit or "Unknown",
         color = type(color) == TYPE_TABLE and color or {r = 255, g = 255, b = 255},
-        model = modelInfo and modelInfo or E_MODEL_ARMATURE,
+        model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or E_MODEL_ARMATURE,
         forceChar = type(forceChar) == TYPE_INTEGER and forceChar or CT_MARIO,
         lifeIcon = type(lifeIcon) == TYPE_TABLE and lifeIcon or nil,
         starIcon = characterCelebrationStar[modelInfo] and characterCelebrationStar[modelInfo] or gTextures.star,
@@ -104,7 +104,7 @@ local function character_edit(charNum, name, description, credit, color, modelIn
         description = type(description) == TYPE_TABLE and description or tableCache.description,
         credit = type(credit) == TYPE_STRING and credit or tableCache.credit,
         color = type(color) == TYPE_TABLE and color or tableCache.color,
-        model = modelInfo and modelInfo or tableCache.model,
+        model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model,
         forceChar = type(forceChar) == TYPE_INTEGER and forceChar or tableCache.forceChar,
         lifeIcon = type(lifeIcon) == TYPE_TABLE and lifeIcon or tableCache.lifeIcon,
         starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce
