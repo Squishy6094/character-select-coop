@@ -10,6 +10,8 @@ local defaultIcons = {
     [CT_WARIO] = gTextures.wario_head
 }
 
+local MATH_DIVIDE_16 = 1/16
+
 --- @param localIndex integer
 --- @return TextureInfo|nil
 --- This assumes multiple characters will not have the same model,
@@ -49,7 +51,7 @@ local function render_hud_mario_lives()
     if lifeIcon == nil then
         djui_hud_print_text("?", x, y, 1)
     else
-        djui_hud_render_texture(lifeIcon, x, y, 1 / (lifeIcon.width * 0.0625), 1 / (lifeIcon.height * 0.0625)) -- 0.0625 is 1/16
+        djui_hud_render_texture(lifeIcon, x, y, 1 / (lifeIcon.width * MATH_DIVIDE_16), 1 / (lifeIcon.height * MATH_DIVIDE_16))
     end
     djui_hud_print_text("@", x + 16, y, 1)
     djui_hud_print_text(tostring(hud_get_value(HUD_DISPLAY_LIVES)):gsub("-", "M"), x + 32, y, 1)
@@ -78,7 +80,7 @@ local function render_hud_stars()
     local hudDisplayStars = hud_get_value(HUD_DISPLAY_STARS)
     if hudDisplayStars < 100 then showX = 1 end
 
-    djui_hud_render_texture(starIcon, x, y, 1 / (starIcon.width/16), 1 / (starIcon.height/16)) -- 0.0625 is 1/16 (Just divide by 16 instead please)
+    djui_hud_render_texture(starIcon, x, y, 1 / (starIcon.width*MATH_DIVIDE_16), 1 / (starIcon.height*MATH_DIVIDE_16))
     if showX == 1 then
         djui_hud_print_text("@", x + 16, y, 1)
     end
@@ -104,7 +106,7 @@ local function render_hud_camera_status()
             if lifeIcon == nil then
                 djui_hud_print_text("?", x + 16, y, 1)
             else
-                djui_hud_render_texture(lifeIcon, x + 16, y, 1 / (lifeIcon.width * 0.0625), 1 / (lifeIcon.height * 0.0625)) -- 0.0625 is 1/16
+                djui_hud_render_texture(lifeIcon, x + 16, y, 1 / (lifeIcon.width * MATH_DIVIDE_16), 1 / (lifeIcon.height * MATH_DIVIDE_16))
             end
         end,
         [CAM_STATUS_LAKITU] = function()
@@ -150,7 +152,7 @@ local function render_act_select_hud()
                 if displayHead == nil then
                     djui_hud_print_text("?", x - 4, 17, 1)
                 else
-                    djui_hud_render_texture(displayHead, x - 4, 17, 1 / (displayHead.width/16), 1 / (displayHead.height/16)) -- 0.0625 is 1/16
+                    djui_hud_render_texture(displayHead, x - 4, 17, 1 / (displayHead.width/16), 1 / (displayHead.height * MATH_DIVIDE_16))
                 end
                 break
             end

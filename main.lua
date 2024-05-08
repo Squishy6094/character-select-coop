@@ -536,12 +536,15 @@ local TEXT_OPTIONS_HEADER = "Menu Options"
 local TEXT_VERSION = "Version: " .. MOD_VERSION .. (IS_COOPDX and " | sm64coopdx" or " | sm64ex-coop")
 local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
 local TEXT_DESCRIPTION = "Character Description:"
+local TEXT_SCROLL_1 = "Press Up/Down to"
+local TEXT_SCROLL_2 = "Change Character"
 local TEXT_PREF_SAVE = "Press A to Set as Preferred Character"
 local TEXT_PREF_SAVE_AND_PALETTE = "A - Set Preference | Y - Toggle Palette"
 local TEXT_PAUSE_Z_OPEN = "Z Button - Character Select"
 local TEXT_PAUSE_CURR_CHAR = "Current Character: "
-if math_random(100) == 64 then -- Easter Egg if you get lucky loading the mod >v<
-    TEXT_PAUSE_Z_OPEN = "Z - DynOS" -- Referencing the original sm64ex DynOS options
+if math_random(100) == 64 then
+    -- Easter Egg if you get lucky loading the mod Referencing the original sm64ex DynOS options by PeachyPeach >v<
+    TEXT_PAUSE_Z_OPEN = "Z - DynOS"
     TEXT_PAUSE_CURR_CHAR = "Model: "
 end
 
@@ -565,6 +568,8 @@ menuColor = characterTable[currChar].color
 
 local MATH_DIVIDE_320 = 1/320
 local MATH_DIVIDE_32 = 1/32
+local MATH_DIVIDE_30 = 1/30
+local MATH_DIVIDE_16 = 1/16
 
 function update_menu_color()
     if optionTable[optionTableRef.menuColor].toggle > 1 then
@@ -710,7 +715,7 @@ local function on_hud_render()
             if TEX_LIFE_ICON ~= nil then
                 djui_hud_print_text(TEXT_LIFE_ICON .. "    (" .. TEX_LIFE_ICON.width .. "x" .. TEX_LIFE_ICON.height .. ")", width - x + 8, y, 0.5)
                 djui_hud_set_color(255, 255, 255, 255)
-                djui_hud_render_texture(TEX_LIFE_ICON, width - x + 33, y + 1, 0.4 / (TEX_LIFE_ICON.width / 16), 0.4 / (TEX_LIFE_ICON.height / 16))
+                djui_hud_render_texture(TEX_LIFE_ICON, width - x + 33, y + 1, 0.4 / (TEX_LIFE_ICON.width * MATH_DIVIDE_16), 0.4 / (TEX_LIFE_ICON.height * MATH_DIVIDE_16))
             else
                 djui_hud_print_text(TEXT_LIFE_ICON .. "    (?x?)", width - x + 8, y, 0.5)
                 djui_hud_set_font(FONT_HUD)
@@ -722,7 +727,7 @@ local function on_hud_render()
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_print_text(TEXT_STAR_ICON .. "    (" .. TEX_STAR_ICON.width .. "x" .. TEX_STAR_ICON.height .. ")", width - x + 8, y, 0.5)
             djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_render_texture(TEX_STAR_ICON, width - x + 35, y + 1, 0.4 / (TEX_STAR_ICON.width / 16), 0.4 / (TEX_STAR_ICON.height / 16))
+            djui_hud_render_texture(TEX_STAR_ICON, width - x + 35, y + 1, 0.4 / (TEX_STAR_ICON.width * MATH_DIVIDE_16), 0.4 / (TEX_STAR_ICON.height * MATH_DIVIDE_16))
             y = y + 7
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_print_text(TEXT_FORCED_CHAR .. defaultForceChar[character.forceChar], width - x + 8, y, 0.5)
@@ -763,41 +768,50 @@ local function on_hud_render()
         if optionTable[optionTableRef.anims].toggle == 0 then
             buttonScroll = 0
         elseif math_abs(buttonScroll) > 0.1 then
-            buttonScroll = buttonScroll * 0.03 * inputStallToDirectional
+            buttonScroll = buttonScroll * 0.05 * inputStallToDirectional
         end
 
         local buttonColor = {}
+        local buttonX = 20 * widthScale
+        local buttonAnimX = buttonX + math_sin(buttonAnimTimer * 0.05) * 2.5 + 5
         for i = -1, 4 do
             if characterTable[i + currChar] ~= nil then
                 buttonColor = characterTable[i + currChar].color
                 djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
-                local buttonX = 20 * widthScale
+                local x = buttonX
                 if i == 0 then
                     if optionTable[optionTableRef.anims].toggle > 0 then
-                        buttonX = buttonX + math_sin(buttonAnimTimer * 0.05) * 2.5 + 5
+                        x = buttonAnimX
                     else
-                        buttonX = buttonX + 10
+                        x = buttonX + 10
                     end
                 end
                 local y = (i + 3) * 30 + buttonScroll
-                djui_hud_render_rect(buttonX, y, 70, 20)
+                djui_hud_render_rect(x, y, 70, 20)
                 djui_hud_set_color(0, 0, 0, 255)
-                djui_hud_render_rect(buttonX + 1, y + 1, 68, 18)
+                djui_hud_render_rect(x + 1, y + 1, 68, 18)
                 djui_hud_set_font(FONT_TINY)
                 djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
-                djui_hud_print_text(string_underscore_to_space(characterTable[currChar + i].name), buttonX + 5, y + 5, 0.6)
+                djui_hud_print_text(characterTable[currChar + i].name, x + 5, y + 5, 0.6)
             end
         end
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        if currChar == 1 or (currChar == 2 and buttonScroll > 0.1) then
+            local y = 60 + buttonScroll + (buttonScroll > 0.1 and -30 or 0)
+            djui_hud_set_font(FONT_CS_NORMAL)
+            djui_hud_print_text(TEXT_SCROLL_1, buttonX + 3, y - 4, 0.4)
+            djui_hud_print_text(TEXT_SCROLL_2, buttonX + 3, y + 7, 0.4)
+        end
         djui_hud_render_rect(0, height-2, x, 2)
 
         -- Scroll Bar
+        local MATH_DIVIDE_CHARACTERS = 1/#characterTable
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_rect(7 * widthScale, 55, 7, 170)
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(7 * widthScale + 1, 56, 5, 168)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(7 * widthScale + 2, 57 + 166 * ((currChar - 1) / #characterTable) - (buttonScroll * 0.03333333333) * (166 / #characterTable), 3, 166 / #characterTable)
+        djui_hud_render_rect(7 * widthScale + 2, 57 + 166 * ((currChar - 1) * MATH_DIVIDE_CHARACTERS) - (buttonScroll * MATH_DIVIDE_30) * (166 * MATH_DIVIDE_CHARACTERS), 3, 166 * MATH_DIVIDE_CHARACTERS)
         djui_hud_set_font(FONT_TINY)
         local TEXT_CHAR_COUNT = currChar .. "/" .. #characterTable
         djui_hud_print_text(TEXT_CHAR_COUNT, (11 - djui_hud_measure_text(TEXT_CHAR_COUNT) * 0.2) * widthScale, height - 12, 0.4)
@@ -809,7 +823,7 @@ local function on_hud_render()
         djui_hud_render_rect(2, 2, width - 4, 46)
         djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
         if TEX_OVERRIDE_HEADER then -- Render Override Header
-            djui_hud_render_texture(TEX_OVERRIDE_HEADER, widthHalf - 128, 10, 1/(TEX_OVERRIDE_HEADER.height*MATH_DIVIDE_32), 1/(TEX_OVERRIDE_HEADER.height*MATH_DIVIDE_32))
+            djui_hud_render_texture(TEX_OVERRIDE_HEADER, widthHalf - 128, 10, 1 / (TEX_OVERRIDE_HEADER.height*MATH_DIVIDE_32), 1 / (TEX_OVERRIDE_HEADER.height*MATH_DIVIDE_32))
         else
             djui_hud_render_texture(TEX_HEADER, widthHalf - 128, 10, 1, 1)
         end
@@ -923,7 +937,7 @@ local function on_hud_render()
         if options then
             if optionTable[optionTableRef.anims].toggle > 0 then
                 if optionAnimTimer < -1 then
-                    optionAnimTimer = optionAnimTimer / 1.1
+                    optionAnimTimer = optionAnimTimer * 0.9
                 end
             else
                 optionAnimTimer = -1
@@ -1057,7 +1071,11 @@ local function before_mario_update(m)
                     else
                         inputStallTimerDirectional = 3 -- C-Scrolling
                     end
-                    buttonScroll = buttonScrollCap
+                    if currChar > #characterTable then
+                        buttonScroll = -buttonScrollCap * #characterTable
+                    else
+                        buttonScroll = buttonScrollCap
+                    end
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                     gPlayerSyncTable[0].presetPalette = false
                 end
@@ -1068,7 +1086,11 @@ local function before_mario_update(m)
                     else
                         inputStallTimerDirectional = 3 -- C-Scrolling
                     end
-                    buttonScroll = -buttonScrollCap
+                    if currChar < 1 then
+                        buttonScroll = buttonScrollCap * (#characterTable - 1)
+                    else
+                        buttonScroll = -buttonScrollCap
+                    end
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                     gPlayerSyncTable[0].presetPalette = false
                 end
