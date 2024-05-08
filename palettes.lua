@@ -154,13 +154,14 @@ local function mario_update(m)
     
     if m.playerIndex == 0 then
         if (menuAndTransition or prevChar ~= currChar) and stallTimer == 0 then
-            if optionTable[optionTableRef.autoPalette].toggle > 0 and optionTable[optionTableRef.localModels].toggle > 0 and currChar ~= 1 or prevChar == 1 and not stopPalettes then
+            local modelId = p.modelId and p.modelId or defaultModels[m.character.type]
+            if optionTable[optionTableRef.autoPalette].toggle > 0 and optionTable[optionTableRef.localModels].toggle > 0 and (currChar ~= 1 and prevChar ~= currChar and not p.presetPalette) and characterColorPresets[modelId] and not stopPalettes then
                 p.presetPalette = true
-                prevChar = currChar
             end
             if optionTable[optionTableRef.localModels].toggle == 0 then
                 p.presetPalette = false
             end
+            prevChar = currChar
         end
 
         if stallTimer > 0 then
