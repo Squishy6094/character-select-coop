@@ -797,10 +797,10 @@ local function on_hud_render()
         end
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         if currChar == 1 or (currChar == 2 and buttonScroll > 0.1) then
-            local y = 60 + buttonScroll + (buttonScroll > 0.1 and -30 or 0)
+            local y = 60 + buttonScroll*1.5 + (buttonScroll > 0.1 and -30 or 0)
             djui_hud_set_font(FONT_CS_NORMAL)
-            djui_hud_print_text(TEXT_SCROLL_1, buttonX + 3, y - 4, 0.4)
-            djui_hud_print_text(TEXT_SCROLL_2, buttonX + 3, y + 7, 0.4)
+            djui_hud_print_text(TEXT_SCROLL_1, buttonX + 3, y - 2, 0.4)
+            djui_hud_print_text(TEXT_SCROLL_2, buttonX + 3, y + 9, 0.4)
         end
         djui_hud_render_rect(0, height-2, x, 2)
 
