@@ -90,7 +90,7 @@ end
 ---@param lifeIcon TextureInfo|nil Use get_texture_info()
 ---@param camScale integer|nil Zooms the camera based on a multiplier (Default 1.0)
 local function character_edit(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
-    if charNum > #characterTable or charNum < 0 or tonumber(charNum) == nil then return end
+    if tonumber(charNum) == nil or charNum > #characterTable or charNum < 0 then return end
     if type(description) == TYPE_STRING then
         description = split_text_into_lines(description)
     end
