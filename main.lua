@@ -600,12 +600,30 @@ local function on_hud_render()
 
         local x = 135 * widthScale * 0.8
 
-        --Character Description
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(width - x, 0, x, height)
+        -- Render All Black Squares Behind Below API
+        -- Description
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(width - x + 2, 2, x - 4, height - 4)
+        -- Buttons
+        djui_hud_set_color(0, 0, 0, 255)
+        djui_hud_render_rect(2, 2, x - 4, height - 4)
+        -- Header
+        djui_hud_set_color(0, 0, 0, 255)
+        djui_hud_render_rect(2, 2, width - 4, 46)
+
+
+        -- API Rendering (Below Text)
+        if #renderInMenuTable.back > 0 then
+            for i = 1, #renderInMenuTable.back do
+                renderInMenuTable.back[i]()
+            end
+        end
+
+        --Character Description
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_render_rect(width - x, 50, 2, height - 50)
+        djui_hud_render_rect(width - x, height - 2, x, 2)
+        djui_hud_render_rect(width - 2, 50, 2, height - 50)
         djui_hud_set_font(FONT_CS_NORMAL)
         local character = characterTable[currChar]
         if optionTable[optionTableRef.debugInfo].toggle == 0 then -- Actual Description
@@ -754,9 +772,9 @@ local function on_hud_render()
 
         --Character Buttons
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(0, 0, x, height)
-        djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_render_rect(2, 2, x - 4, height - 4)
+        djui_hud_render_rect(0, 50, 2, height - 50)
+        djui_hud_render_rect(x - 2, 50, 2, height - 50)
+        djui_hud_render_rect(0, height - 2, x, 2)
 
         if optionTable[optionTableRef.anims].toggle > 0 then
             buttonAnimTimer = buttonAnimTimer + 1
@@ -783,8 +801,11 @@ local function on_hud_render()
                     end
                 end
                 local y = (i + 3) * 30 + buttonScroll
-                djui_hud_render_rect(x, y, 70, 20)
-                djui_hud_set_color(0, 0, 0, 255)
+                djui_hud_render_rect(x, y, 1, 20)
+                djui_hud_render_rect(x, y, 70, 1)
+                djui_hud_render_rect(x + 69, y, 1, 20)
+                djui_hud_render_rect(x, y + 19, 70, 1)
+                djui_hud_set_color(0, 0, 0, 200)
                 djui_hud_render_rect(x + 1, y + 1, 68, 18)
                 djui_hud_set_font(FONT_TINY)
                 djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
@@ -802,21 +823,23 @@ local function on_hud_render()
 
         -- Scroll Bar
         local MATH_DIVIDE_CHARACTERS = 1/#characterTable
+        local MATH_7_WIDTHSCALE = 7 * widthScale
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(7 * widthScale, 55, 7, 170)
-        djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_render_rect(7 * widthScale + 1, 56, 5, 168)
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(7 * widthScale + 2, 57 + 166 * ((currChar - 1) * MATH_DIVIDE_CHARACTERS) - (buttonScroll * MATH_DIVIDE_30) * (166 * MATH_DIVIDE_CHARACTERS), 3, 166 * MATH_DIVIDE_CHARACTERS)
+        djui_hud_render_rect(MATH_7_WIDTHSCALE, 55, 1, 170)
+        djui_hud_render_rect(MATH_7_WIDTHSCALE, 55, 7, 1)
+        djui_hud_render_rect(MATH_7_WIDTHSCALE + 6, 55, 1, 170)
+        djui_hud_render_rect(MATH_7_WIDTHSCALE, 224, 7, 1)
+        djui_hud_render_rect(MATH_7_WIDTHSCALE + 2, 57 + 166 * ((currChar - 1) * MATH_DIVIDE_CHARACTERS) - (buttonScroll * MATH_DIVIDE_30) * (166 * MATH_DIVIDE_CHARACTERS), 3, 166 * MATH_DIVIDE_CHARACTERS)
         djui_hud_set_font(FONT_TINY)
         local TEXT_CHAR_COUNT = currChar .. "/" .. #characterTable
         djui_hud_print_text(TEXT_CHAR_COUNT, (11 - djui_hud_measure_text(TEXT_CHAR_COUNT) * 0.2) * widthScale, height - 12, 0.4)
 
         --Character Select Header
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(0, 0, width, 50)
-        djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_render_rect(2, 2, width - 4, 46)
+        djui_hud_render_rect(0, 0, width, 2)
+        djui_hud_render_rect(0, 0, 2, 50)
+        djui_hud_render_rect(0, 48, width, 2)
+        djui_hud_render_rect(width - 2, 0, 2, 50)
         djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
         if TEX_OVERRIDE_HEADER then -- Render Override Header
             djui_hud_render_texture(TEX_OVERRIDE_HEADER, widthHalf - 128, 10, 1 / (TEX_OVERRIDE_HEADER.height*MATH_DIVIDE_32), 1 / (TEX_OVERRIDE_HEADER.height*MATH_DIVIDE_32))
@@ -832,10 +855,10 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_RATIO_UNSUPPORTED, 5, 39, 0.5)
         end
 
-        -- API Rendering
-        if #renderInMenuTable > 0 then
-            for i = 1, #renderInMenuTable do
-                renderInMenuTable[i]()
+        -- API Rendering (Above Text)
+        if #renderInMenuTable.front > 0 then
+            for i = 1, #renderInMenuTable.front do
+                renderInMenuTable.front[i]()
             end
         end
 

@@ -231,9 +231,13 @@ local function hook_allow_menu_open(func)
 end
 
 ---@param func function
-local function hook_render_in_menu(func)
+local function hook_render_in_menu(func, underText)
     if type(func) ~= TYPE_FUNCTION then return end
-    table_insert(renderInMenuTable, func)
+    if underText then
+        table_insert(renderInMenuTable.back, func)
+    else
+        table_insert(renderInMenuTable.front, func)
+    end
 end
 
 ---@return boolean

@@ -102,7 +102,10 @@ end
 
 allowMenu = {}
 
-renderInMenuTable = {}
+renderInMenuTable = {
+    front = {},
+    back = {},
+}
 
 stopPalettes = false
 for i in pairs(gActiveMods) do
