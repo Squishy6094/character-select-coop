@@ -126,9 +126,10 @@ local function character_add_caps(modelInfo, caps)
     characterCaps[modelInfo] = type(caps) == TYPE_TABLE and caps or nil
 end
 
----@param charNum ModelExtendedId|integer
+---@param charNum integer
 ---@param healthTexture table|nil
 local function character_add_health_meter(charNum, healthTexture)
+    if type(charNum) ~= TYPE_INTEGER or charNum == nil then return end
     characterTable[charNum].healthTexture = type(healthTexture) == TYPE_TABLE and healthTexture or nil
     return false
 end

@@ -40,6 +40,7 @@ function star_icon_from_local_index(localIndex)
     end
     return gTextures.star
 end
+
 local pieTextureNames = {
     "one_segments",
     "two_segments",
