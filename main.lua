@@ -404,12 +404,6 @@ local function mario_update(m)
         end
 
         if menuAndTransition then
-            for _, func in pairs(allowMenu) do
-                if not func() then
-                    menu = false
-                    return
-                end
-            end
             camera_freeze()
             hud_hide()
             if _G.PersonalStarCounter then
@@ -1049,6 +1043,13 @@ local function before_mario_update(m)
             menu = true
         end
         inputStallTimerDirectional = inputStallToDirectional
+    end
+
+    for _, func in pairs(allowMenu) do
+        if not func() then
+            menu = false
+            return
+        end
     end
 
     local cameraToObject = gMarioStates[0].marioObj.header.gfx.cameraToObject
