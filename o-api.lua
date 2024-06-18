@@ -73,8 +73,9 @@ local function character_add(name, description, credit, color, modelInfo, forceC
         model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or E_MODEL_ARMATURE,
         forceChar = type(forceChar) == TYPE_INTEGER and forceChar or CT_MARIO,
         lifeIcon = type(lifeIcon) == TYPE_TABLE and lifeIcon or nil,
-        starIcon = characterCelebrationStar[modelInfo] and characterCelebrationStar[modelInfo] or gTextures.star,
-        camScale = type(camScale) == TYPE_INTEGER and camScale or 1
+        starIcon = gTextures.star,
+        camScale = type(camScale) == TYPE_INTEGER and camScale or 1,
+        healthTexture = nil,
     })
     saveNameTable[#characterTable] = characterTable[#characterTable].saveName
     return #characterTable
@@ -109,6 +110,7 @@ local function character_edit(charNum, name, description, credit, color, modelIn
         lifeIcon = type(lifeIcon) == TYPE_TABLE and lifeIcon or tableCache.lifeIcon,
         starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce
         camScale = type(camScale) == TYPE_INTEGER and camScale or tableCache.camScale,
+        healthTexture = tableCache.healthTexture,
     } or nil
 end
 
@@ -122,6 +124,13 @@ end
 ---@param caps table
 local function character_add_caps(modelInfo, caps)
     characterCaps[modelInfo] = type(caps) == TYPE_TABLE and caps or nil
+end
+
+---@param charNum ModelExtendedId|integer
+---@param healthTexture table|nil
+local function character_add_health_meter(charNum, healthTexture)
+    characterTable[charNum].healthTexture = type(healthTexture) == TYPE_TABLE and healthTexture or nil
+    return false
 end
 
 ---@param modelInfo ModelExtendedId|integer
@@ -214,6 +223,7 @@ local function get_menu_color()
     return update_menu_color()
 end
 
+---@param func function
 local function hook_allow_menu_open(func)
     if type(func) ~= TYPE_FUNCTION then return end
     table_insert(allowMenu, func)
@@ -262,6 +272,7 @@ _G.charSelect = {
     character_add_voice = character_add_voice,
     character_add_caps = character_add_caps,
     character_add_celebration_star = character_add_celebration_star,
+    character_add_health_meter = character_add_health_meter,
     character_add_palette_preset = character_add_palette_preset,
     character_get_current_table = character_get_current_table,
     character_get_current_number = character_get_current_number,

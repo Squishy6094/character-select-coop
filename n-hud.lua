@@ -40,6 +40,37 @@ function star_icon_from_local_index(localIndex)
     end
     return gTextures.star
 end
+local pieTextureNames = {
+    "one_segments",
+    "two_segments",
+    "three_segments",
+    "four_segments",
+    "five_segments",
+    "six_segments",
+    "seven_segments",
+    "full",
+}
+
+local function render_hud_health()
+	local textureTable = characterTable[currChar].healthTexture
+	if textureTable then -- sets health HUD to custom textures
+		if textureTable.label.left and textureTable.label.right then -- if left and right label textures exist. BOTH have to exist to be set!
+			texture_override_set("texture_power_meter_left_side", textureTable.label.left)
+			texture_override_set("texture_power_meter_right_side", textureTable.label.right)
+		end
+		
+		for i = 1, 8 do
+			texture_override_set("texture_power_meter_" .. pieTextureNames[i], textureTable.pie[i])
+		end
+	else -- resets the health HUD
+		texture_override_reset("texture_power_meter_left_side")
+		texture_override_reset("texture_power_meter_right_side")
+		
+		for i = 1, 8 do
+			texture_override_reset("texture_power_meter_" .. pieTextureNames[i])
+		end
+	end
+end
 
 local function render_hud_mario_lives()
     hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_LIVES)
@@ -172,6 +203,7 @@ local function on_hud_render_behind()
     render_hud_mario_lives()
     render_hud_stars()
     render_hud_camera_status()
+    render_hud_health()
 end
 
 local function on_hud_render()
