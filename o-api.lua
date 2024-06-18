@@ -171,6 +171,12 @@ local function character_get_current_number()
     return currChar
 end
 
+---@param charNum integer|nil
+local function character_set_current_number(charNum)
+    if type(charNum) ~= TYPE_INTEGER or charNum == nil then return end
+    currChar = charNum
+end
+
 ---@param name string
 local function character_get_number_from_string(name)
     if type(name) ~= TYPE_STRING then return nil end
@@ -259,6 +265,7 @@ _G.charSelect = {
     character_add_palette_preset = character_add_palette_preset,
     character_get_current_table = character_get_current_table,
     character_get_current_number = character_get_current_number,
+    character_set_current_number = character_set_current_number,
     character_get_number_from_string = character_get_number_from_string,
     character_get_voice = character_get_voice,
     character_get_life_icon = life_icon_from_local_index, -- Function located in n-hud.lua
