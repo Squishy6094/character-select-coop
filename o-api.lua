@@ -277,14 +277,17 @@ end
 ---@param description table|nil Table of Strings {"This toggle allows your", "character to feel everything."}
 ---@return number
 local function add_option(name, toggleDefault, toggleMax, toggleNames, description)
+    local saveName = string_space_to_underscore(name)
     table_insert(optionTable, {
         name = type(name) == TYPE_STRING and name or "Unknown Toggle",
-        toggle = type(toggleDefault) == TYPE_INTEGER and toggleDefault or 0,
+        toggle = nil, -- Set as nil for Failsafe to Catch
+        toggleSaveName = saveName,
         toggleDefault = type(toggleDefault) == TYPE_INTEGER and toggleDefault or 0,
         toggleMax = type(toggleMax) == TYPE_INTEGER and toggleMax or 1,
         toggleNames = type(toggleNames) == TYPE_TABLE and toggleNames or {"Off", "On"},
         description = type(description) == TYPE_TABLE and description or {""},
     })
+    queueStorageFailsafe = true -- Used variable trigger to not save/load in the external mod
     return #optionTable
 end
 

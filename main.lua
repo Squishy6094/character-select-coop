@@ -275,10 +275,14 @@ local function mod_storage_save_pref_char(charTable)
     prefCharColor = charTable.color
 end
 
-local function failsafe_options()
+function failsafe_options()
     for i = 1, #optionTable do
         if optionTable[i].toggle == nil or optionTable[i].toggle == "" then
-            optionTable[i].toggle = optionTable[i].toggleDefault
+            local load = mod_storage_load(optionTable[i].toggleSaveName)
+            if load == "" then
+                load = nil
+            end
+            optionTable[i].toggle = load and tonumber(load) or optionTable[i].toggleDefault
             if optionTable[i].toggleSaveName ~= nil then
                 mod_storage_save(optionTable[i].toggleSaveName, tostring(optionTable[i].toggle))
             end
@@ -369,12 +373,15 @@ local faceAngle = 0
 
 --- @param m MarioState
 local function mario_update(m)
-    if stallFrame == 1 then
+    if stallFrame == 1 or queueStorageFailsafe then
         failsafe_options()
-        TEXT_PREF_LOAD = load_preferred_char()
-        if optionTable[optionTableRef.notification].toggle == 1 then
-            boot_note()
+        if not queueStorageFailsafe then
+            TEXT_PREF_LOAD = load_preferred_char()
+            if optionTable[optionTableRef.notification].toggle == 1 then
+                boot_note()
+            end
         end
+        queueStorageFailsafe = false
     end
 
     if stallFrame < 2 then
