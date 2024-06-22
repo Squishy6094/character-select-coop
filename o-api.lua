@@ -264,9 +264,28 @@ local controller = {
 }
 
 ---@param tableNum integer
+---@return number|nil
 local function get_options_status(tableNum)
     if type(tableNum) ~= TYPE_INTEGER then return nil end
     return optionTable[tableNum].toggle
+end
+
+---@param name string
+---@param toggleDefault number|nil Defaults to 0
+---@param toggleMax number|nil Defaults to 1
+---@param toggleNames table|nil Table of Strings {"Off", "On"}
+---@param description table|nil Table of Strings {"This toggle allows your", "character to feel everything."}
+---@return number
+local function add_option(name, toggleDefault, toggleMax, toggleNames, description)
+    table_insert(optionTable, {
+        name = type(name) == TYPE_STRING and name or "Unknown Toggle",
+        toggle = type(toggleDefault) == TYPE_INTEGER and toggleDefault or 0,
+        toggleDefault = type(toggleDefault) == TYPE_INTEGER and toggleDefault or 0,
+        toggleMax = type(toggleMax) == TYPE_INTEGER and toggleMax or 1,
+        toggleNames = type(toggleNames) == TYPE_TABLE and toggleNames or {"Off", "On"},
+        description = type(description) == TYPE_TABLE and description or {""},
+    })
+    return #optionTable
 end
 
 _G.charSelectExists = true
@@ -296,6 +315,7 @@ _G.charSelect = {
     is_options_open = is_options_open,
     get_menu_color = get_menu_color,
     get_options_status = get_options_status,
+    add_option = add_option,
     restrict_palettes = restrict_palettes,
 
     -- Tables --

@@ -143,8 +143,6 @@ optionTable = {
     },
 }
 
-local optionTableCount = #optionTable
-
 local latencyValueTable = {12, 6, 3}
 
 local menuColorTable = {
@@ -863,6 +861,7 @@ local function on_hud_render()
         end
 
         --Options display
+        local optionTableCount = #optionTable
         if options or optionAnimTimer > optionAnimTimerCap then
             djui_hud_set_color(menuColor.r * 0.25, menuColor.g * 0.25, menuColor.b * 0.25, 205 + maxf(-200, optionAnimTimer))
             djui_hud_render_rect(0, 0, width, height)
@@ -906,8 +905,10 @@ local function on_hud_render()
                         djui_hud_set_font(FONT_CS_NORMAL)
                         scale = 0.3
                         yOffset = yOffset - 1
-                        if optionTable[i].toggleNames[optionTable[i].toggle + 1] ~= "" then
-                            toggleName = toggleName .. " - " .. optionTable[i].toggleNames[optionTable[i].toggle + 1]
+                        local currToggleName = optionTable[i].toggleNames[optionTable[i].toggle + 1]
+                        currToggleName = currToggleName and currToggleName or "???"
+                        if currToggleName ~= "" then
+                            toggleName = toggleName .. " - " .. currToggleName
                         else
                             toggleName = toggleName
                         end
