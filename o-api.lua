@@ -281,6 +281,7 @@ _G.charSelect = {
     character_add_palette_preset = character_add_palette_preset,
     character_get_current_table = character_get_current_table,
     character_get_current_number = character_get_current_number,
+    character_get_current_model_number = character_get_current_number, -- Outdated function name, Not recommended for use
     character_set_current_number = character_set_current_number,
     character_get_number_from_string = character_get_number_from_string,
     character_get_voice = character_get_voice,
