@@ -331,6 +331,15 @@ local function boot_note()
     end
 end
 
+local function menu_is_allowed()
+    for _, func in pairs(allowMenu) do
+        if not func() then
+            return false
+        end
+    end
+    return true
+end
+
 -------------------
 -- Model Handler --
 -------------------
@@ -540,6 +549,7 @@ local TEXT_SCROLL_2 = "Change Character"
 local TEXT_PREF_SAVE = "Press A to Set as Preferred Character"
 local TEXT_PREF_SAVE_AND_PALETTE = "A - Set Preference | Y - Toggle Palette"
 local TEXT_PAUSE_Z_OPEN = "Z Button - Character Select"
+local TEXT_PAUSE_UNAVALIBLE = "Character Select is Unavalible"
 local TEXT_PAUSE_CURR_CHAR = "Current Character: "
 if math_random(100) == 64 then
     -- Easter Egg if you get lucky loading the mod Referencing the original sm64ex DynOS options by PeachyPeach >v<
@@ -1018,13 +1028,14 @@ local function on_hud_render()
         djui_hud_set_font(FONT_NORMAL)
         if optionTable[optionTableRef.openInputs].toggle == 1 then
             currCharY = 27
-            width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_Z_OPEN)
+            local text = menu_is_allowed() and TEXT_PAUSE_Z_OPEN or TEXT_PAUSE_UNAVALIBLE
+            width = djui_hud_get_screen_width() - djui_hud_measure_text(text)
             if not IS_COOPDX then -- Done to match DX not having dropshadow on the "R Button - Options" thingy
                 djui_hud_set_color(0, 0, 0, 255)
-                djui_hud_print_text(TEXT_PAUSE_Z_OPEN, width - 19, 17, 1)
+                djui_hud_print_text(text, width - 19, 17, 1)
             end
             djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_print_text(TEXT_PAUSE_Z_OPEN, width - 20, 16, 1)
+            djui_hud_print_text(text, width - 20, 16, 1)
         end
 
         if optionTable[optionTableRef.localModels].toggle == 1 then
@@ -1076,11 +1087,9 @@ local function before_mario_update(m)
         inputStallTimerDirectional = inputStallToDirectional
     end
 
-    for _, func in pairs(allowMenu) do
-        if not func() then
-            menu = false
-            return
-        end
+    if not menu_is_allowed() then
+        menu = false
+        return
     end
 
     local cameraToObject = gMarioStates[0].marioObj.header.gfx.cameraToObject
@@ -1250,6 +1259,12 @@ local function chat_command(msg)
     -- Reset Save Data Check
     if msg == "reset" or (msg == "confirm" and promptedAreYouSure) then
         reset_options(true)
+        return true
+    end
+
+    -- Stop Character checks if API disallows it 
+    if not menu_is_allowed() then
+        djui_chat_message_create("Character Cannot be Changed")
         return true
     end
 

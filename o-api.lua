@@ -317,8 +317,8 @@ _G.charSelect = {
     set_menu_open = set_menu_open,
     is_options_open = is_options_open,
     get_menu_color = get_menu_color,
-    get_options_status = get_options_status,
     add_option = add_option,
+    get_options_status = get_options_status,
     restrict_palettes = restrict_palettes,
 
     -- Tables --
