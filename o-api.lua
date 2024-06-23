@@ -183,7 +183,7 @@ end
 
 ---@param charNum integer|nil
 local function character_set_current_number(charNum)
-    if type(charNum) ~= TYPE_INTEGER or charNum == nil then return end
+    if type(charNum) ~= TYPE_INTEGER or characterTable[charNum] == nil then return end
     currChar = charNum
     charBeingSet = true
 end
@@ -264,13 +264,6 @@ local controller = {
     stickY = 0
 }
 
----@param tableNum integer
----@return number|nil
-local function get_options_status(tableNum)
-    if type(tableNum) ~= TYPE_INTEGER then return nil end
-    return optionTable[tableNum].toggle
-end
-
 ---@param name string
 ---@param toggleDefault number|nil Defaults to 0
 ---@param toggleMax number|nil Defaults to 1
@@ -290,6 +283,13 @@ local function add_option(name, toggleDefault, toggleMax, toggleNames, descripti
     })
     queueStorageFailsafe = true -- Used variable trigger to not save/load in the external mod
     return #optionTable
+end
+
+---@param tableNum integer
+---@return number|nil
+local function get_options_status(tableNum)
+    if type(tableNum) ~= TYPE_INTEGER then return nil end
+    return optionTable[tableNum].toggle
 end
 
 _G.charSelectExists = true
