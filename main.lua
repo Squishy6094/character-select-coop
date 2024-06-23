@@ -278,7 +278,7 @@ end
 function failsafe_options()
     for i = 1, #optionTable do
         if optionTable[i].toggle == nil or optionTable[i].toggle == "" then
-            local load = mod_storage_load(optionTable[i].toggleSaveName)
+            local load = optionTable[i].toggleSaveName and mod_storage_load(optionTable[i].toggleSaveName) or nil
             if load == "" then
                 load = nil
             end

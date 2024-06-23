@@ -269,13 +269,15 @@ local controller = {
 ---@param toggleMax number|nil Defaults to 1
 ---@param toggleNames table|nil Table of Strings {"Off", "On"}
 ---@param description table|nil Table of Strings {"This toggle allows your", "character to feel everything."}
+---@param save boolean|nil Defaults to true
 ---@return number
-local function add_option(name, toggleDefault, toggleMax, toggleNames, description)
+local function add_option(name, toggleDefault, toggleMax, toggleNames, description, save)
+    if save == nil then save = true end
     local saveName = string_space_to_underscore(name)
     table_insert(optionTable, {
         name = type(name) == TYPE_STRING and name or "Unknown Toggle",
         toggle = nil, -- Set as nil for Failsafe to Catch
-        toggleSaveName = saveName,
+        toggleSaveName = save and saveName or nil,
         toggleDefault = type(toggleDefault) == TYPE_INTEGER and toggleDefault or 0,
         toggleMax = type(toggleMax) == TYPE_INTEGER and toggleMax or 1,
         toggleNames = type(toggleNames) == TYPE_TABLE and toggleNames or {"Off", "On"},
