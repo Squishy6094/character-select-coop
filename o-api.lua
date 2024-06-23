@@ -185,6 +185,7 @@ end
 local function character_set_current_number(charNum)
     if type(charNum) ~= TYPE_INTEGER or charNum == nil then return end
     currChar = charNum
+    charBeingSet = true
 end
 
 ---@param name string

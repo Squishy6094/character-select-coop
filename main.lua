@@ -459,6 +459,7 @@ local function mario_update(m)
             reset_options(false)
             optionTable[optionTableRef.resetSaveData].toggle = 0
         end
+        charBeingSet = false
     end
 end
 
@@ -1106,7 +1107,7 @@ local function before_mario_update(m)
 
     if menuAndTransition and not options then
         if menu then
-            if inputStallTimerDirectional == 0 and optionTable[optionTableRef.localModels].toggle ~= 0 then
+            if inputStallTimerDirectional == 0 and optionTable[optionTableRef.localModels].toggle ~= 0 and not charBeingSet then
                 if (m.controller.buttonPressed & D_JPAD) ~= 0 or (m.controller.buttonPressed & D_CBUTTONS) ~= 0 or m.controller.stickY < -60 then
                     currChar = currChar + 1
                     if (m.controller.buttonPressed & D_CBUTTONS) == 0 then
@@ -1263,7 +1264,7 @@ local function chat_command(msg)
     end
 
     -- Stop Character checks if API disallows it 
-    if not menu_is_allowed() then
+    if not menu_is_allowed() or charBeingSet then
         djui_chat_message_create("Character Cannot be Changed")
         return true
     end

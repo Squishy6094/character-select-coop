@@ -109,6 +109,8 @@ renderInMenuTable = {
 
 queueStorageFailsafe = false
 
+charBeingSet = false
+
 stopPalettes = false
 for i in pairs(gActiveMods) do
     if (gActiveMods[i].incompatible ~= nil and gActiveMods[i].incompatible:find("gamemode")) and not (gActiveMods[i].name:find("Personal Star Counter EX+")) then
