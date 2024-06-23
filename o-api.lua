@@ -286,6 +286,13 @@ local function add_option(name, toggleDefault, toggleMax, toggleNames, descripti
 end
 
 ---@param tableNum integer
+---@return table|nil
+local function get_option(tableNum)
+    if type(tableNum) ~= TYPE_INTEGER then return nil end
+    return optionTable[tableNum]
+end
+
+---@param tableNum integer
 ---@return number|nil
 local function get_options_status(tableNum)
     if type(tableNum) ~= TYPE_INTEGER then return nil end
@@ -319,6 +326,7 @@ _G.charSelect = {
     is_options_open = is_options_open,
     get_menu_color = get_menu_color,
     add_option = add_option,
+    get_option = get_option,
     get_options_status = get_options_status,
     restrict_palettes = restrict_palettes,
 
