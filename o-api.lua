@@ -301,6 +301,15 @@ local function get_options_status(tableNum)
     return optionTable[tableNum].toggle
 end
 
+---@param tableNum integer
+---@param toggle integer
+local function set_options_status(tableNum, toggle)
+    local currOption = optionTable[tableNum]
+    if currOption == nil or type(toggle) ~= TYPE_INTEGER or toggle > currOption.toggleMax or toggle < 1 then return end
+    optionTable[tableNum].toggle = toggle
+    optionTable[tableNum].optionBeingSet = true
+end
+
 _G.charSelectExists = true
 _G.charSelect = {
     -- Character Functions --
@@ -330,6 +339,7 @@ _G.charSelect = {
     add_option = add_option,
     get_option = get_option,
     get_options_status = get_options_status,
+    set_options_status = set_options_status,
     restrict_palettes = restrict_palettes,
 
     -- Tables --
