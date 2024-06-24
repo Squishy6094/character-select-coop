@@ -560,8 +560,6 @@ local TEXT_OPTIONS_HEADER_API = "API Options"
 local TEXT_VERSION = "Version: " .. MOD_VERSION .. (IS_COOPDX and " | sm64coopdx" or " | sm64ex-coop")
 local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
 local TEXT_DESCRIPTION = "Character Description:"
-local TEXT_SCROLL_1 = "Press Up/Down to"
-local TEXT_SCROLL_2 = "Change Character"
 local TEXT_PREF_SAVE = "Press A to Set as Preferred Character"
 local TEXT_PREF_SAVE_AND_PALETTE = "A - Set Preference | Y - Toggle Palette"
 local TEXT_PAUSE_Z_OPEN = "Z Button - Character Select"
@@ -843,14 +841,6 @@ local function on_hud_render()
                 djui_hud_print_text(characterTable[currChar + i].name, x + 5, y + 5, 0.6)
             end
         end
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        if currChar == 1 or (currChar == 2 and buttonScroll > 0.1) then
-            local y = 60 + buttonScroll*1.5 + (buttonScroll > 0.1 and -30 or 0)
-            djui_hud_set_font(FONT_CS_NORMAL)
-            djui_hud_print_text(TEXT_SCROLL_1, buttonX + 3, y - 2, 0.4)
-            djui_hud_print_text(TEXT_SCROLL_2, buttonX + 3, y + 9, 0.4)
-        end
-        djui_hud_render_rect(0, height-2, x, 2)
 
         -- Scroll Bar
         local MATH_DIVIDE_CHARACTERS = 1/#characterTable
