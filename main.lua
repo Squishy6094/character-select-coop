@@ -59,8 +59,9 @@ optionTableRef = {
     inputLatency = 5,
     autoPalette = 6,
     localModels = 7,
-    debugInfo = 8,
-    resetSaveData = 9
+    localVoices = 8,
+    debugInfo = 9,
+    resetSaveData = 10
 }
 
 optionTable = {
@@ -113,7 +114,7 @@ optionTable = {
         name = "Auto-Apply Palette",
         toggle = tonumber(mod_storage_load("autoPalette")),
         toggleSaveName = "autoPalette",
-        toggleDefault = 0,
+        toggleDefault = 1,
         toggleMax = 1,
         description = {"If On, Automatically", "sets your palette to the", "Character's Preset if avalible"}
     },
@@ -124,6 +125,14 @@ optionTable = {
         toggleDefault = 1,
         toggleMax = 1,
         description = {"Toggles if Custom Models display", "on your client, practically", "disables Character Select if", "Toggled Off"}
+    },
+    [optionTableRef.localVoices] = {
+        name = "Custom Voices",
+        toggle = tonumber(mod_storage_load("localVoices")),
+        toggleSaveName = "localVoices",
+        toggleDefault = 1,
+        toggleMax = 1,
+        description = {"Toggle if Custom Voicelines play", "for Characters who support it"}
     },
     [optionTableRef.debugInfo] = {
         name = "Debugging Info",
@@ -142,6 +151,8 @@ optionTable = {
         description = {"Resets Character Select's", "Save Data"}
     },
 }
+
+local defaultOptionCount = #optionTable
 
 local latencyValueTable = {12, 6, 3}
 
@@ -460,6 +471,9 @@ local function mario_update(m)
             optionTable[optionTableRef.resetSaveData].toggle = 0
         end
         charBeingSet = false
+        for i = 1, #optionTable do
+            optionTable[i].optionBeingSet = false
+        end
     end
 end
 
@@ -542,6 +556,7 @@ local FONT_CS_NORMAL = IS_COOPDX and FONT_ALIASED or FONT_NORMAL
 
 --Basic Menu Text
 local TEXT_OPTIONS_HEADER = "Menu Options"
+local TEXT_OPTIONS_HEADER_API = "API Options"
 local TEXT_VERSION = "Version: " .. MOD_VERSION .. (IS_COOPDX and " | sm64coopdx" or " | sm64ex-coop")
 local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
 local TEXT_DESCRIPTION = "Character Description:"
@@ -889,7 +904,11 @@ local function on_hud_render()
             djui_hud_render_rect(width * 0.5 - 50 * widthScale + 2, minf(55 - optionAnimTimer + 2, height - 25 * widthScale + 2), 100 * widthScale - 4, 196)
             djui_hud_set_font(FONT_CS_NORMAL)
             djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
-            djui_hud_print_text(TEXT_OPTIONS_HEADER, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_HEADER) * 0.3 * minf(widthScale, 1.5), 65 + optionAnimTimer * -1, 0.6 * minf(widthScale, 1.5))
+            local text = TEXT_OPTIONS_HEADER
+            if currOption > defaultOptionCount then
+                text = TEXT_OPTIONS_HEADER_API
+            end
+            djui_hud_print_text(text, widthHalf - djui_hud_measure_text(text) * 0.3 * minf(widthScale, 1.5), 65 + optionAnimTimer * -1, 0.6 * minf(widthScale, 1.5))
 
             local widthScaleLimited = minf(widthScale, 1.5)
             -- Up Arrow
@@ -1209,7 +1228,7 @@ local function before_mario_update(m)
         end
 
         if inputStallTimerButton == 0 then
-            if (m.controller.buttonPressed & A_BUTTON) ~= 0 then
+            if (m.controller.buttonPressed & A_BUTTON) ~= 0 and not optionTable[currOption].optionBeingSet then
                 optionTable[currOption].toggle = optionTable[currOption].toggle + 1
                 if optionTable[currOption].toggle > optionTable[currOption].toggleMax then optionTable[currOption].toggle = 0 end
                 if optionTable[currOption].toggleSaveName ~= nil then

@@ -72,7 +72,7 @@ end
 
 --- @param m MarioState
 local function custom_character_sound(m, characterSound)
-    if is_game_paused() or voiceTimeout then return 0 end
+    if is_game_paused() or voiceTimeout or optionTable[optionTableRef.localVoices].toggle == 0 then return 0 end
     if characterSound == CHAR_SOUND_SNORING3 then return 0 end
     if characterSound == CHAR_SOUND_HAHA and m.hurtCounter > 0 then return 0 end
 
@@ -89,7 +89,7 @@ local SLEEP_TALK_END = SLEEP_TALK_START + SLEEP_TALK_SNORES
 
 --- @param m MarioState
 local function custom_character_snore(m)
-    if is_game_paused() or voiceTimeout then return end
+    if is_game_paused() or voiceTimeout or optionTable[optionTableRef.localVoices].toggle == 0 then return end
 
     local SNORE3_TABLE = _G.charSelect.character_get_voice(m)[CHAR_SOUND_SNORING3]
 
