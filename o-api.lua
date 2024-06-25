@@ -153,7 +153,7 @@ end
 local function character_add_palette_preset(modelInfo, paletteTable)
     local paletteTableOut = {}
     local defaultColors = characterColorPresets[E_MODEL_MARIO]
-    for i = 0, 6 do
+    for i = 0, 7 do
         local color = paletteTable[i]
         paletteTableOut[i] = {r = 0, g = 0, b = 0}
         if type(color) == TYPE_STRING then

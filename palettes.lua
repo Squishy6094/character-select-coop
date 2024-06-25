@@ -7,6 +7,7 @@ characterColorPresets = {
         [HAIR]   = {r = 0x73, g = 0x06, b = 0x00},
         [SKIN]   = {r = 0xfe, g = 0xc1, b = 0x79},
         [CAP]    = {r = 0xff, g = 0x00, b = 0x00},
+        [EMBLEM] = {r = 0xff, g = 0x00, b = 0x00},
     },
     [E_MODEL_LUIGI] = {
         [PANTS]  = {r = 0x00, g = 0x00, b = 0xff},
@@ -16,6 +17,7 @@ characterColorPresets = {
         [HAIR]   = {r = 0x73, g = 0x06, b = 0x00},
         [SKIN]   = {r = 0xfe, g = 0xc1, b = 0x79},
         [CAP]    = {r = 0x00, g = 0xff, b = 0x00},
+        [EMBLEM] = {r = 0x00, g = 0xff, b = 0x00},
     },
     [E_MODEL_TOAD_PLAYER] = {
         [PANTS]  = {r = 0xff, g = 0xff, b = 0xff},
@@ -25,6 +27,7 @@ characterColorPresets = {
         [HAIR]   = {r = 0x73, g = 0x06, b = 0x00},
         [SKIN]   = {r = 0xfe, g = 0xd5, b = 0xa1},
         [CAP]    = {r = 0xff, g = 0x00, b = 0x00},
+        [EMBLEM] = {r = 0xff, g = 0x00, b = 0x00},
     },
     [E_MODEL_WALUIGI] = {
         [PANTS]  = {r = 0x16, g = 0x16, b = 0x27},
@@ -34,6 +37,7 @@ characterColorPresets = {
         [HAIR]   = {r = 0x73, g = 0x53, b = 0x00},
         [SKIN]   = {r = 0xfe, g = 0xc1, b = 0x79},
         [CAP]    = {r = 0x61, g = 0x26, b = 0xb0},
+        [EMBLEM]  = {r = 0x4c, g = 0x2c, b = 0xd3},
     },
     [E_MODEL_WARIO] = {
         [PANTS]  = {r = 0x7f, g = 0x20, b = 0x7a},
@@ -43,6 +47,7 @@ characterColorPresets = {
         [HAIR]   = {r = 0x73, g = 0x53, b = 0x00},
         [SKIN]   = {r = 0xfe, g = 0xc1, b = 0x79},
         [CAP]    = {r = 0xe3, g = 0xa9, b = 0x01},
+        [EMBLEM]  = {r = 0x61, g = 0x26, b = 0xb0},
     },
 }
 
@@ -54,23 +59,25 @@ local defaultModels = {
     [CT_WARIO] = E_MODEL_WARIO
 }
 
+local paletteLoop = #characterColorPresets[E_MODEL_MARIO]
+
 local network_player_color_to_palette, network_player_palette_to_color, network_send, network_global_index_from_local, network_local_index_from_global, tostring, tonumber, math_floor = network_player_color_to_palette, network_player_palette_to_color, network_send, network_global_index_from_local, network_local_index_from_global, tostring, tonumber, math.floor
 
 local function network_player_full_color_to_palette(networkPlayer, colorTable)
-    for i = 0, #characterColorPresets[E_MODEL_MARIO] do
+    for i = 0, paletteLoop do
         network_player_color_to_palette(networkPlayer, i, colorTable[i])
     end
 end
 
 local function network_player_full_palette_to_color(networkPlayer, out)
-    for i = 0, #characterColorPresets[E_MODEL_MARIO] do
+    for i = 0, paletteLoop do
         network_player_palette_to_color(networkPlayer, i, out[i])
     end
 end
 
 local function network_prep_packet(localPlayerColors, setDefault)
     local networkString = ""
-    for i = 0, 6 do -- Goes through all palette parts
+    for i = 0, paletteLoop do -- Goes through all palette parts
         local playerPart = localPlayerColors[i]
         networkString = networkString..tostring(playerPart.r).." "..tostring(playerPart.g).." "..tostring(playerPart.b).." "
     end
@@ -104,13 +111,14 @@ local function mario_update(m)
 
     if networkPlayerColors[m.playerIndex] == nil and np.connected then
         networkPlayerColors[m.playerIndex] = {
-            [SHIRT] = {r = 0, g = 0, b = 0},
+            [SHIRT]  = {r = 0, g = 0, b = 0},
             [GLOVES] = {r = 0, g = 0, b = 0},
-            [SHOES] = {r = 0, g = 0, b = 0},
-            [HAIR] = {r = 0, g = 0, b = 0},
-            [SKIN] = {r = 0, g = 0, b = 0},
-            [CAP] = {r = 0, g = 0, b = 0},
-            [PANTS] = {r = 0, g = 0, b = 0},
+            [SHOES]  = {r = 0, g = 0, b = 0},
+            [HAIR]   = {r = 0, g = 0, b = 0},
+            [SKIN]   = {r = 0, g = 0, b = 0},
+            [CAP]    = {r = 0, g = 0, b = 0},
+            [PANTS]  = {r = 0, g = 0, b = 0},
+            [EMBLEM] = {r = 0, g = 0, b = 0},
         }
         network_player_full_palette_to_color(np, networkPlayerColors[m.playerIndex])
     end
