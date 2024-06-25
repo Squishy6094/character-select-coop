@@ -12,7 +12,7 @@ local audio_sample_stop,audio_sample_destroy,type,math_random,audio_stream_stop,
 function stop_custom_character_sound(m, sound)
     local voice_sample = gCustomVoiceSamples[m.playerIndex]
     if voice_sample == nil or not voice_sample.loaded then
-        return
+        return nil
     end
 
     audio_sample_stop(voice_sample)
@@ -20,6 +20,9 @@ function stop_custom_character_sound(m, sound)
         return voice_sample
     end
     audio_sample_destroy(voice_sample)
+    gCustomVoiceSamples[m.playerIndex] = nil -- prevent this from pointing to another sample or possibly garbage data
+
+    return nil
 end
 
 --- @param m MarioState
