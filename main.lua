@@ -38,14 +38,12 @@ characterTable = {
         credit = "Nintendo / Coop Team",
         color = {r = 255, g = 50, b = 50},
         model = nil,
-        forceChar = nil,
+        offset = 0,
         lifeIcon = gTextures.mario_head,
         starIcon = gTextures.star,
         camScale = 1.0
     },
 }
-
-
 
 characterCaps = {}
 characterCelebrationStar = {}
@@ -410,7 +408,6 @@ local function mario_update(m)
 
     if m.playerIndex == 0 and stallFrame > 1 then
         local modelIndex = gNetworkPlayers[0].modelIndex
-        characterTable[1].forceChar = modelIndex
         characterTable[1].name = defaultNames[modelIndex]
         characterTable[1].color = defaultMenuColors[modelIndex]
         if currChar == 1 then
@@ -419,12 +416,11 @@ local function mario_update(m)
         end
         if optionTable[optionTableRef.localModels].toggle > 0 then
             gPlayerSyncTable[0].modelId = characterTable[currChar].model
-            if characterTable[currChar].forceChar ~= nil then
-                gNetworkPlayers[0].overrideModelIndex = characterTable[currChar].forceChar
-            end
+            gNetworkPlayers[0].overrideModelIndex = CT_MARIO
+            m.marioObj.hookRender = 1
         else
             gPlayerSyncTable[0].modelId = nil
-            gNetworkPlayers[0].overrideModelIndex = characterTable[1].forceChar
+            gNetworkPlayers[0].overrideModelIndex = modelIndex
             currChar = 1
         end
 
@@ -473,6 +469,31 @@ local function mario_update(m)
         charBeingSet = false
         for i = 1, #optionTable do
             optionTable[i].optionBeingSet = false
+        end
+    end
+end
+
+local altOffsetActs = {
+    [ACT_CROUCH_SLIDE] = true,
+    [ACT_READING_AUTOMATIC_DIALOG] = true,
+    [ACT_DEATH_EXIT_LAND] = true,
+    [ACT_SLIDE_KICK] = false,
+    [ACT_SLIDE_KICK_SLIDE] = false,
+    [ACT_GROUND_POUND] = true,
+}
+
+-- Vertical Offsets
+local function on_object_render(obj)
+    if get_id_from_behavior(obj.behavior) ~= id_bhvMario then
+        return
+    end
+    
+    for i=0, MAX_PLAYERS-1 do
+        local m = gMarioStates[i]
+        if characterTable[currChar].offset ~= 0 then
+            if altOffsetActs[m.action] ~= false then
+                m.marioObj.header.gfx.pos.y = (altOffsetActs[m.action] and m.pos.y or m.marioObj.header.gfx.pos.y) + characterTable[currChar].offset
+            end
         end
     end
 end
@@ -534,6 +555,7 @@ end
 
 hook_event(HOOK_MARIO_UPDATE, mario_update)
 hook_event(HOOK_OBJECT_SET_MODEL, set_model)
+hook_event(HOOK_ON_OBJECT_RENDER, on_object_render)
 
 ------------------
 -- Menu Handler --
@@ -576,7 +598,7 @@ local TEXT_DEBUGGING = "Character Debug"
 local TEXT_DESCRIPTION_SHORT = "Description:"
 local TEXT_LIFE_ICON = "Life Icon:"
 local TEXT_STAR_ICON = "Star Icon:"
-local TEXT_FORCED_CHAR = "Forced: "
+local TEXT_OFFSET = "Offset: "
 local TEXT_TABLE_POS = "Table Position: "
 local TEXT_PALETTE = "Palette: "
 
@@ -773,7 +795,7 @@ local function on_hud_render()
             djui_hud_render_texture(TEX_STAR_ICON, width - x + 35, y + 1, 0.4 / (TEX_STAR_ICON.width * MATH_DIVIDE_16), 0.4 / (TEX_STAR_ICON.height * MATH_DIVIDE_16))
             y = y + 7
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_print_text(TEXT_FORCED_CHAR .. defaultForceChar[character.forceChar], width - x + 8, y, 0.5)
+            djui_hud_print_text(TEXT_OFFSET .. character.offset, width - x + 8, y, 0.5)
             y = y + 7
             djui_hud_print_text(TEXT_TABLE_POS .. currChar, width - x + 8, y, 0.5)
             y = y + 7

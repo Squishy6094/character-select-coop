@@ -61,39 +61,17 @@ local defaultModels = {
 
 local paletteLoop = #characterColorPresets[E_MODEL_MARIO]
 
-local network_player_color_to_palette, network_player_palette_to_color, network_send, network_global_index_from_local, network_local_index_from_global, tostring, tonumber, math_floor = network_player_color_to_palette, network_player_palette_to_color, network_send, network_global_index_from_local, network_local_index_from_global, tostring, tonumber, math.floor
+local network_player_set_full_override_palette_color = network_player_set_full_override_palette_color
 
-local function network_player_full_color_to_palette(networkPlayer, colorTable)
+local function network_player_set_full_override_palette_color(networkPlayer, colorTable)
     for i = 0, paletteLoop do
-        network_player_color_to_palette(networkPlayer, i, colorTable[i])
+        network_player_set_override_palette_color(networkPlayer, i, colorTable[i])
     end
-end
-
-local function network_player_full_palette_to_color(networkPlayer, out)
-    for i = 0, paletteLoop do
-        network_player_palette_to_color(networkPlayer, i, out[i])
-    end
-end
-
-local function network_prep_packet(localPlayerColors, setDefault)
-    local networkString = ""
-    for i = 0, paletteLoop do -- Goes through all palette parts
-        local playerPart = localPlayerColors[i]
-        networkString = networkString..tostring(playerPart.r).." "..tostring(playerPart.g).." "..tostring(playerPart.b).." "
-    end
-    local data = {
-        index = network_global_index_from_local(0),
-        colorString = networkString,
-        setDefault = setDefault
-    }
-    return data
 end
 
 local prevChar = currChar
-local connectedIndex = 0
 local stallTimer = 5
 
-local networkPlayerColors = {}
 local prevPresetPalette = {}
 local prevModel = {}
 
@@ -109,20 +87,6 @@ local function mario_update(m)
         end
     end
 
-    if networkPlayerColors[m.playerIndex] == nil and np.connected then
-        networkPlayerColors[m.playerIndex] = {
-            [SHIRT]  = {r = 0, g = 0, b = 0},
-            [GLOVES] = {r = 0, g = 0, b = 0},
-            [SHOES]  = {r = 0, g = 0, b = 0},
-            [HAIR]   = {r = 0, g = 0, b = 0},
-            [SKIN]   = {r = 0, g = 0, b = 0},
-            [CAP]    = {r = 0, g = 0, b = 0},
-            [PANTS]  = {r = 0, g = 0, b = 0},
-            [EMBLEM] = {r = 0, g = 0, b = 0},
-        }
-        network_player_full_palette_to_color(np, networkPlayerColors[m.playerIndex])
-    end
-
     if np.connected then
         local modelId = p.modelId and p.modelId or defaultModels[m.character.type]
         if p.presetPalette == nil or characterColorPresets[modelId] == nil then
@@ -132,19 +96,9 @@ local function mario_update(m)
             p.presetPalette = false
         end
 
-        if (prevPresetPalette[m.playerIndex] ~= p.presetPalette or prevModel[m.playerIndex] ~= modelId) and networkPlayerColors[m.playerIndex] ~= nil then
-            if p.presetPalette and characterColorPresets[modelId] then 
-                if prevModel[m.playerIndex] == modelId then
-                    network_player_full_palette_to_color(np, networkPlayerColors[m.playerIndex])
-                end
-            else
-                if m.playerIndex == 0 then
-                    network_player_full_palette_to_color(nil, networkPlayerColors[0]) -- Gets palette data from Config
-                    if not stopPalettes then
-                        network_player_full_color_to_palette(np, networkPlayerColors[0]) -- Applies Config Locally
-                    end
-                    network_send(true, network_prep_packet(networkPlayerColors[0], not stopPalettes)) -- Networks and Applies Config on other Clients
-                end
+        if (prevPresetPalette[m.playerIndex] ~= p.presetPalette or prevModel[m.playerIndex] ~= modelId) then
+            if not p.presetPalette or not characterColorPresets[modelId] then
+                network_player_reset_override_palette_color(np)
             end
         end
 
@@ -152,7 +106,7 @@ local function mario_update(m)
         prevModel[m.playerIndex] = modelId
 
         if p.presetPalette and characterColorPresets[modelId] and not stopPalettes then
-            network_player_full_color_to_palette(np, characterColorPresets[modelId])
+            network_player_set_full_override_palette_color(np, characterColorPresets[modelId])
         end
     else
         if p.isUpdating then
@@ -176,39 +130,6 @@ local function mario_update(m)
             stallTimer = stallTimer - 1
         end
     end
-
-    if connectedIndex ~= 0 and gPlayerSyncTable[connectedIndex].isUpdating then
-        connectedIndex = 0
-        network_send(true, network_prep_packet(networkPlayerColors[0]))
-    end
-end
-
-local function on_connect(m)
-    connectedIndex = m.playerIndex
-end
-
-local MATH_DIVIDE_3 = 1/3
-
-local function on_packet_receive(data)
-    local dataIndex = network_local_index_from_global(data.index)
-    local colorTable = string_split(data.colorString)
-    for i = 1, #colorTable do -- Goes through all palettes
-        local playerPart = math_floor((i-1)*MATH_DIVIDE_3)
-        if i%3 == 1 then
-            networkPlayerColors[dataIndex][playerPart].r = tonumber(colorTable[i])
-        end
-        if i%3 == 2 then
-            networkPlayerColors[dataIndex][playerPart].g = tonumber(colorTable[i])
-        end
-        if i%3 == 0 then
-            networkPlayerColors[dataIndex][playerPart].b = tonumber(colorTable[i])
-        end
-    end
-    if data.setDefault then
-        network_player_full_color_to_palette(gNetworkPlayers[dataIndex], networkPlayerColors[dataIndex])
-    end
 end
 
 hook_event(HOOK_MARIO_UPDATE, mario_update)
-hook_event(HOOK_ON_PLAYER_CONNECTED, on_connect)
-hook_event(HOOK_ON_PACKET_RECEIVE, on_packet_receive)

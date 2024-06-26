@@ -5,7 +5,7 @@
 --- @field public credit string
 --- @field public color Color
 --- @field public model ModelExtendedId|integer
---- @field public forceChar CharacterType
+--- @field public offset CharacterType
 --- @field public lifeIcon TextureInfo
 --- @field public camScale integer
 
@@ -53,11 +53,11 @@ local TYPE_FUNCTION = "function"
 ---@param credit string|nil
 ---@param color Color|string|nil {r, g, b}
 ---@param modelInfo ModelExtendedId|integer|nil Use smlua_model_util_get_id()
----@param forceChar CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
+---@param offset CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
 ---@param lifeIcon TextureInfo|nil Use get_texture_info()
 ---@param camScale integer|nil Zooms the camera based on a multiplier (Default 1.0)
 ---@return integer
-local function character_add(name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
+local function character_add(name, description, credit, color, modelInfo, offset, lifeIcon, camScale)
     if type(description) == TYPE_STRING then
         description = split_text_into_lines(description)
     end
@@ -71,7 +71,7 @@ local function character_add(name, description, credit, color, modelInfo, forceC
         credit = type(credit) == TYPE_STRING and credit or "Unknown",
         color = type(color) == TYPE_TABLE and color or {r = 255, g = 255, b = 255},
         model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or E_MODEL_ARMATURE,
-        forceChar = type(forceChar) == TYPE_INTEGER and forceChar or CT_MARIO,
+        offset = type(offset) == TYPE_INTEGER and offset or CT_MARIO,
         lifeIcon = type(lifeIcon) == TYPE_TABLE and lifeIcon or nil,
         starIcon = gTextures.star,
         camScale = type(camScale) == TYPE_INTEGER and camScale or 1,
@@ -87,16 +87,23 @@ end
 ---@param credit string|nil
 ---@param color Color|nil {r, g, b}
 ---@param modelInfo ModelExtendedId|integer|nil Use smlua_model_util_get_id()
----@param forceChar CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
+---@param offset integer|CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
 ---@param lifeIcon TextureInfo|nil Use get_texture_info()
 ---@param camScale integer|nil Zooms the camera based on a multiplier (Default 1.0)
-local function character_edit(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
+local function character_edit(charNum, name, description, credit, color, modelInfo, offset, lifeIcon, camScale)
     if tonumber(charNum) == nil or charNum > #characterTable or charNum < 0 then return end
     if type(description) == TYPE_STRING then
         description = split_text_into_lines(description)
     end
     if type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
+    end
+    if offset <= 5 then
+        if offset == CT_WALUIGI then
+            offset = 25
+        else
+            offset = 0
+        end
     end
     local tableCache = characterTable[charNum]
     characterTable[charNum] = characterTable[charNum] and {
@@ -106,7 +113,7 @@ local function character_edit(charNum, name, description, credit, color, modelIn
         credit = type(credit) == TYPE_STRING and credit or tableCache.credit,
         color = type(color) == TYPE_TABLE and color or tableCache.color,
         model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model,
-        forceChar = type(forceChar) == TYPE_INTEGER and forceChar or tableCache.forceChar,
+        offset = type(offset) == TYPE_INTEGER and offset or tableCache.offset,
         lifeIcon = type(lifeIcon) == TYPE_TABLE and lifeIcon or tableCache.lifeIcon,
         starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce
         camScale = type(camScale) == TYPE_INTEGER and camScale or tableCache.camScale,
