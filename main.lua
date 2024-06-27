@@ -413,14 +413,15 @@ local function mario_update(m)
         if currChar == 1 then
             characterTable[1].lifeIcon = defaultIcons[modelIndex]
             characterTable[1].camScale = defaultCamScales[modelIndex]
+            gNetworkPlayers[0].overrideModelIndex = modelIndex
+        else
+            gNetworkPlayers[0].overrideModelIndex = CT_MARIO
         end
         if optionTable[optionTableRef.localModels].toggle > 0 then
             gPlayerSyncTable[0].modelId = characterTable[currChar].model
-            gNetworkPlayers[0].overrideModelIndex = CT_MARIO
             m.marioObj.hookRender = 1
         else
             gPlayerSyncTable[0].modelId = nil
-            gNetworkPlayers[0].overrideModelIndex = modelIndex
             currChar = 1
         end
 
