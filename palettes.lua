@@ -98,7 +98,7 @@ local function mario_update(m)
 
         if (prevPresetPalette[m.playerIndex] ~= p.presetPalette or prevModel[m.playerIndex] ~= modelId) then
             if not p.presetPalette or not characterColorPresets[modelId] then
-                network_player_reset_override_palette_color(np)
+                network_player_reset_override_palette(np)
             end
         end
 
