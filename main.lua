@@ -39,6 +39,7 @@ characterTable = {
         color = {r = 255, g = 50, b = 50},
         model = nil,
         offset = 0,
+        forceChar = nil, -- Legacy Functionality
         lifeIcon = gTextures.mario_head,
         starIcon = gTextures.star,
         camScale = 1.0
@@ -408,6 +409,7 @@ local function mario_update(m)
 
     if m.playerIndex == 0 and stallFrame > 1 then
         local modelIndex = gNetworkPlayers[0].modelIndex
+        characterTable[1].forceChar = modelIndex
         characterTable[1].name = defaultNames[modelIndex]
         characterTable[1].color = defaultMenuColors[modelIndex]
         if currChar == 1 then
@@ -419,9 +421,13 @@ local function mario_update(m)
         end
         if optionTable[optionTableRef.localModels].toggle > 0 then
             gPlayerSyncTable[0].modelId = characterTable[currChar].model
+            if characterTable[currChar].forceChar ~= nil then
+                gNetworkPlayers[0].overrideModelIndex = characterTable[currChar].forceChar
+            end
             m.marioObj.hookRender = 1
         else
             gPlayerSyncTable[0].modelId = nil
+            gNetworkPlayers[0].overrideModelIndex = characterTable[1].forceChar
             currChar = 1
         end
 
@@ -599,6 +605,7 @@ local TEXT_DEBUGGING = "Character Debug"
 local TEXT_DESCRIPTION_SHORT = "Description:"
 local TEXT_LIFE_ICON = "Life Icon:"
 local TEXT_STAR_ICON = "Star Icon:"
+local TEXT_FORCED_CHAR = "Forced: "
 local TEXT_OFFSET = "Offset: "
 local TEXT_TABLE_POS = "Table Position: "
 local TEXT_PALETTE = "Palette: "
@@ -796,6 +803,8 @@ local function on_hud_render()
             djui_hud_render_texture(TEX_STAR_ICON, width - x + 35, y + 1, 0.4 / (TEX_STAR_ICON.width * MATH_DIVIDE_16), 0.4 / (TEX_STAR_ICON.height * MATH_DIVIDE_16))
             y = y + 7
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+            djui_hud_print_text(TEXT_FORCED_CHAR .. defaultForceChar[character.forceChar], width - x + 8, y, 0.5)
+            y = y + 7
             djui_hud_print_text(TEXT_OFFSET .. character.offset, width - x + 8, y, 0.5)
             y = y + 7
             djui_hud_print_text(TEXT_TABLE_POS .. currChar, width - x + 8, y, 0.5)
