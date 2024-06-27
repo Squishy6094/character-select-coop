@@ -61,11 +61,11 @@ local defaultModels = {
 
 local paletteLoop = #characterColorPresets[E_MODEL_MARIO]
 
-local network_player_set_full_override_palette_color = network_player_set_full_override_palette_color
+local network_player_set_full_override_palette = network_player_set_full_override_palette
 
-local function network_player_set_full_override_palette_color(networkPlayer, colorTable)
+local function network_player_set_full_override_palette(networkPlayer, colorTable)
     for i = 0, paletteLoop do
-        network_player_set_override_palette_color(networkPlayer, i, colorTable[i])
+        network_player_set_override_palette(networkPlayer, i, colorTable[i])
     end
 end
 
@@ -106,7 +106,7 @@ local function mario_update(m)
         prevModel[m.playerIndex] = modelId
 
         if p.presetPalette and characterColorPresets[modelId] and not stopPalettes then
-            network_player_set_full_override_palette_color(np, characterColorPresets[modelId])
+            network_player_set_full_override_palette(np, characterColorPresets[modelId])
         end
     else
         if p.isUpdating then
