@@ -61,11 +61,11 @@ local defaultModels = {
 
 local paletteLoop = #characterColorPresets[E_MODEL_MARIO]
 
-local network_player_set_override_palette = network_player_set_override_palette
+local network_player_set_override_palette_color = network_player_set_override_palette_color
 
 local function network_player_set_full_override_palette(networkPlayer, colorTable)
     for i = 0, paletteLoop do
-        network_player_set_override_palette(networkPlayer, i, colorTable[i])
+        network_player_set_override_palette_color(networkPlayer, i, colorTable[i])
     end
 end
 
