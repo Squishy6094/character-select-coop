@@ -12,6 +12,10 @@ local defaultIcons = {
 
 local MATH_DIVIDE_16 = 1/16
 
+-- Localize Functions to improve performence
+local texture_override_set,texture_override_reset,djui_hud_print_text,djui_hud_render_texture,tostring,hud_set_value,hud_get_value,hud_get_flash,djui_hud_get_screen_width,djui_hud_render_rect,math_ceil = texture_override_set,texture_override_reset,djui_hud_print_text,djui_hud_render_texture,tostring,hud_set_value,hud_get_value,hud_get_flash,djui_hud_get_screen_width,djui_hud_render_rect,math.ceil
+
+
 --- @param localIndex integer
 --- @return TextureInfo|nil
 --- This assumes multiple characters will not have the same model,
@@ -101,11 +105,11 @@ local function render_hud_stars()
         end
     end
 
-    local x = math.ceil(djui_hud_get_screen_width() - 76)
+    local x = math_ceil(djui_hud_get_screen_width() - 76)
     if x % 2 ~= 0 then
         x = x - 1
     end
-    local y = math.ceil(djui_hud_get_screen_height() - 209 - 16)
+    local y = math_ceil(240 - 209 - 16)
     local starIcon = characterTable[currChar].starIcon and characterTable[currChar].starIcon or gTextures.star
 
     local showX = 0

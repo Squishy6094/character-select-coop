@@ -11,7 +11,7 @@
 --- @field public offset integer
 
 -- localize functions to improve performance
-local smlua_model_util_get_id,table_insert,type,djui_hud_measure_text = smlua_model_util_get_id,table.insert,type,djui_hud_measure_text
+local smlua_model_util_get_id,table_insert,type,djui_hud_measure_text,tonumber = smlua_model_util_get_id,table.insert,type,djui_hud_measure_text,tonumber
 
 local characterVoices = {}
 local saveNameTable = {}
@@ -66,7 +66,7 @@ local function character_add(name, description, credit, color, modelInfo, forceC
     if type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
-    if type(offset) ~= TYPE_INTEGER or offset == 0 then
+    if type(offset) ~= TYPE_INTEGER then
         offset = (forceChar == CT_WALUIGI and 25 or 0)
     end
     table_insert(characterTable, {
@@ -105,7 +105,7 @@ local function character_edit(charNum, name, description, credit, color, modelIn
     if type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
-    if type(offset) ~= TYPE_INTEGER or offset == 0 then
+    if type(offset) ~= TYPE_INTEGER then
         offset = (forceChar == CT_WALUIGI and 25 or 0)
     end
     local tableCache = characterTable[charNum]
