@@ -1,3 +1,6 @@
+
+if incompatibleClient then return 0 end
+
 characterColorPresets = {
     [E_MODEL_MARIO] = {
         [PANTS]  = {r = 0x00, g = 0x00, b = 0xff},

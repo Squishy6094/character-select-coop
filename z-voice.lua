@@ -1,3 +1,6 @@
+
+if incompatibleClient then return 0 end
+
 local voiceTimeout = false
 
 local SLEEP_TALK_SNORES = 8

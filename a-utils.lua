@@ -1,5 +1,10 @@
-MOD_VERSION = "1.9 (In-Dev)"
-IS_COOPDX = get_coop_compatibility_enabled ~= nil
+if VERSION_NUMBER < 37 then
+    djui_popup_create("\n\\#FFAAAA\\Character Select requires\n CoopDX v1 or higher use!\n\nYou can find CoopDX here:\n\\#6666FF\\https://sm64coopdx.com", 5)
+    incompatibleClient = true
+    return 0
+end
+
+MOD_VERSION = "1.9"
 
 ommActive = false
 for i in pairs(gActiveMods) do

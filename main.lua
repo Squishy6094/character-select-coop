@@ -1,6 +1,8 @@
 -- name: Character Select
 -- description:\\#ffff33\\---- Character Select Coop v1.9 ----\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
 
+if incompatibleClient then return 0 end
+
 -- localize functions to improve performance
 local mod_storage_load,tonumber,djui_popup_create,mod_storage_save,tostring,djui_chat_message_create,camera_freeze,hud_hide,vec3f_copy,set_mario_action,set_mario_animation,camera_unfreeze,hud_show,obj_has_behavior_id,network_local_index_from_global,obj_has_model_extended,obj_set_model_extended,get_id_from_behavior,nearest_player_to_object,math_random,djui_hud_set_resolution,djui_hud_set_font,djui_hud_get_screen_width,maxf,djui_hud_set_color,djui_hud_render_rect,djui_hud_measure_text,djui_hud_print_text,math_ceil,math_abs,math_sin,min,math_min,minf,djui_hud_set_rotation,djui_hud_is_pause_menu_created,is_game_paused,hud_is_hidden,obj_get_first_with_behavior_id,hud_get_value,hud_set_value,play_sound,string_lower = mod_storage_load,tonumber,djui_popup_create,mod_storage_save,tostring,djui_chat_message_create,camera_freeze,hud_hide,vec3f_copy,set_mario_action,set_mario_animation,camera_unfreeze,hud_show,obj_has_behavior_id,network_local_index_from_global,obj_has_model_extended,obj_set_model_extended,get_id_from_behavior,nearest_player_to_object,math.random,djui_hud_set_resolution,djui_hud_set_font,djui_hud_get_screen_width,maxf,djui_hud_set_color,djui_hud_render_rect,djui_hud_measure_text,djui_hud_print_text,math.ceil,math.abs,math.sin,min,math.min,minf,djui_hud_set_rotation,djui_hud_is_pause_menu_created,is_game_paused,hud_is_hidden,obj_get_first_with_behavior_id,hud_get_value,hud_set_value,play_sound,string.lower
 
@@ -335,10 +337,6 @@ local function boot_note()
     else
         djui_chat_message_create("Character Select is active!\nYou can use \\#ffff33\\/char-select \\#ffffff\\to open the menu!")
     end
-
-    if not IS_COOPDX then
-        djui_chat_message_create("\\#FFAAAA\\Note: Although not required, we highly recommend\nusing SM64CoopDX when playing Character Select!\n\\#6666FF\\https://sm64coopdx.com")
-    end
 end
 
 local function menu_is_allowed()
@@ -580,13 +578,10 @@ local inputStallTimerDirectional = 0
 local inputStallToDirectional = 12
 local inputStallToButton = 10
 
--- Font Consistency between sm64ex-coop and sm64coopdx
-local FONT_CS_NORMAL = IS_COOPDX and FONT_ALIASED or FONT_NORMAL
-
 --Basic Menu Text
 local TEXT_OPTIONS_HEADER = "Menu Options"
 local TEXT_OPTIONS_HEADER_API = "API Options"
-local TEXT_VERSION = "Version: " .. MOD_VERSION .. (IS_COOPDX and " | sm64coopdx" or " | sm64ex-coop")
+local TEXT_VERSION = "Version: " .. MOD_VERSION .. " | sm64coopdx"
 local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
 local TEXT_DESCRIPTION = "Character Description:"
 local TEXT_PREF_SAVE = "Press A to Set as Preferred Character"
@@ -637,8 +632,9 @@ function update_menu_color()
 end
 
 local function on_hud_render()
+    local FONT_USER = djui_menu_get_font and djui_menu_get_font() or FONT_ALIASED
     djui_hud_set_resolution(RESOLUTION_N64)
-    djui_hud_set_font(FONT_CS_NORMAL)
+    djui_hud_set_font(FONT_ALIASED)
 
     local width = djui_hud_get_screen_width() + 1.4
     local height = 240
@@ -683,7 +679,7 @@ local function on_hud_render()
         djui_hud_render_rect(width - x, 50, 2, height - 50)
         djui_hud_render_rect(width - x, height - 2, x, 2)
         djui_hud_render_rect(width - 2, 50, 2, height - 50)
-        djui_hud_set_font(FONT_CS_NORMAL)
+        djui_hud_set_font(FONT_ALIASED)
         local character = characterTable[currChar]
         if optionTable[optionTableRef.debugInfo].toggle == 0 then -- Actual Description
             local TEXT_NAME = string_underscore_to_space(character.name)
@@ -706,7 +702,7 @@ local function on_hud_render()
             local creditScale = 0.6 
             creditScale = math.min(creditScale, 100/djui_hud_measure_text(TEXT_CREDIT))
             djui_hud_print_text(TEXT_CREDIT, width - textX - djui_hud_measure_text(TEXT_CREDIT) * creditScale *0.5, 74, creditScale)
-            djui_hud_set_font(FONT_CS_NORMAL)
+            djui_hud_set_font(FONT_ALIASED)
             djui_hud_print_text(TEXT_DESCRIPTION, width - textX - djui_hud_measure_text(TEXT_DESCRIPTION) * 0.2, 85, 0.4)
             if widthScale < 1.65 then
                 for i = 1, #TEXT_DESCRIPTION_TABLE do
@@ -765,7 +761,7 @@ local function on_hud_render()
                 local removeLine = 0
                 for i = 1, #TEXT_DESCRIPTION_TABLE do
                     if TEXT_DESCRIPTION_TABLE[i] ~= "" then
-                        djui_hud_set_font(FONT_CS_NORMAL)
+                        djui_hud_set_font(FONT_ALIASED)
                         local TEXT_DESCRIPTION_LINE = TEXT_DESCRIPTION_TABLE[i]
                         if (djui_hud_measure_text(TEXT_DESCRIPTION_TABLE[i]) * 0.3 > 100) then
                             TEXT_DESCRIPTION_LINE = "(!) " .. TEXT_DESCRIPTION_LINE
@@ -924,7 +920,7 @@ local function on_hud_render()
             djui_hud_render_rect(width * 0.5 - 50 * widthScale, minf(55 - optionAnimTimer, height - 25 * widthScale), 100 * widthScale, 200)
             djui_hud_set_color(0, 0, 0, 255)
             djui_hud_render_rect(width * 0.5 - 50 * widthScale + 2, minf(55 - optionAnimTimer + 2, height - 25 * widthScale + 2), 100 * widthScale - 4, 196)
-            djui_hud_set_font(FONT_CS_NORMAL)
+            djui_hud_set_font(FONT_ALIASED)
             djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
             local text = TEXT_OPTIONS_HEADER
             if currOption > defaultOptionCount then
@@ -961,7 +957,7 @@ local function on_hud_render()
                     local scale = 0.5
                     local yOffset = 100 - optionAnimTimer + (i - currOption + 2) * 9 * widthScaleLimited
                     if i == currOption then
-                        djui_hud_set_font(FONT_CS_NORMAL)
+                        djui_hud_set_font(FONT_ALIASED)
                         scale = 0.3
                         yOffset = yOffset - 1
                         local currToggleName = optionTable[i].toggleNames[optionTable[i].toggle + 1]
@@ -985,7 +981,7 @@ local function on_hud_render()
             if optionTable[currOption].description ~= nil then
                 djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
                 for i = 1, #optionTable[currOption].description do
-                    djui_hud_set_font(FONT_CS_NORMAL)
+                    djui_hud_set_font(FONT_ALIASED)
                     local line = optionTable[currOption].description[i]
                     djui_hud_print_text(line, widthHalf - djui_hud_measure_text(line) * 0.15, 180 - optionAnimTimer + 15 * widthScaleLimited + 8 * i - 8 * #optionTable[currOption].description, 0.3)
                 end
@@ -1005,7 +1001,7 @@ local function on_hud_render()
             djui_hud_render_rect(widthHalf - 50 * widthScale + 2, height - 25 * widthScaleLimited + 2, 100 * widthScale - 4, 22 * widthScaleLimited)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_render_rect(widthHalf - 50 * widthScale, height - 2, 100 * widthScale, 2)
-            djui_hud_set_font(FONT_CS_NORMAL)
+            djui_hud_set_font(FONT_ALIASED)
             djui_hud_print_text(TEXT_OPTIONS_OPEN, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_OPEN) * 0.175 * widthScaleLimited, height - 23 * widthScaleLimited + optionAnimTimer + 202, 0.35 * widthScaleLimited)
             djui_hud_set_font(FONT_TINY)
             djui_hud_print_text(TEXT_MENU_CLOSE, widthHalf - djui_hud_measure_text(TEXT_MENU_CLOSE) * 0.25 * widthScaleLimited, height - 13 * widthScaleLimited + optionAnimTimer + 202, 0.5 * widthScaleLimited)
@@ -1067,15 +1063,11 @@ local function on_hud_render()
     if is_game_paused() and not djui_hud_is_pause_menu_created() and gMarioStates[0].action ~= ACT_EXIT_LAND_SAVE_DIALOG then
         local currCharY = 0
         djui_hud_set_resolution(RESOLUTION_DJUI)
-        djui_hud_set_font(FONT_NORMAL)
+        djui_hud_set_font(FONT_USER)
         if optionTable[optionTableRef.openInputs].toggle == 1 then
             currCharY = 27
             local text = menu_is_allowed() and TEXT_PAUSE_Z_OPEN or TEXT_PAUSE_UNAVALIBLE
             width = djui_hud_get_screen_width() - djui_hud_measure_text(text)
-            if not IS_COOPDX then -- Done to match DX not having dropshadow on the "R Button - Options" thingy
-                djui_hud_set_color(0, 0, 0, 255)
-                djui_hud_print_text(text, width - 19, 17, 1)
-            end
             djui_hud_set_color(255, 255, 255, 255)
             djui_hud_print_text(text, width - 20, 16, 1)
         end
@@ -1085,20 +1077,12 @@ local function on_hud_render()
             local TEXT_PAUSE_CURR_CHAR_WITH_NAME = TEXT_PAUSE_CURR_CHAR .. charName
             width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME)
             local charColor = characterTable[currChar].color
-            if not IS_COOPDX then
-                djui_hud_set_color(0, 0, 0, 255)
-                djui_hud_print_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME, width - 19, 17 + currCharY, 1)
-            end
             djui_hud_set_color(255, 255, 255, 255)
             djui_hud_print_text(TEXT_PAUSE_CURR_CHAR, width - 20, 16 + currCharY, 1)
             djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
             djui_hud_print_text(charName, djui_hud_get_screen_width() - djui_hud_measure_text(charName) - 20, 16 + currCharY, 1)
         else
             width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_LOCAL_MODEL_OFF)
-            if not IS_COOPDX then
-                djui_hud_set_color(0, 0, 0, 255)
-                djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, width - 19, 17 + currCharY, 1)
-            end
             djui_hud_set_color(255, 255, 255, 255)
             djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, width - 20, 16 + currCharY, 1)
         end
@@ -1119,11 +1103,7 @@ local function before_mario_update(m)
         menu = true
     end
     if not menu and (m.controller.buttonDown & D_JPAD) ~= 0 and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and optionTable[optionTableRef.openInputs].toggle == 2 then
-        if ommActive then
-            if (m.controller.buttonDown & R_TRIG) ~= 0 then
-                menu = true
-            end
-        else
+        if (m.controller.buttonDown & R_TRIG) ~= 0 or not ommActive then
             menu = true
         end
         inputStallTimerDirectional = inputStallToDirectional

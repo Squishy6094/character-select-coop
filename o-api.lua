@@ -1,3 +1,6 @@
+
+if incompatibleClient then return 0 end
+
 --- @class CharacterTable
 --- @field public name string
 --- @field public saveName string

@@ -2,6 +2,8 @@
 -- Custom HUD Rendering by Agent X and xLuigiGamerx --
 ------------------------------------------------------
 
+if incompatibleClient then return 0 end
+
 local defaultIcons = {
     [CT_MARIO] = gTextures.mario_head,
     [CT_LUIGI] = gTextures.luigi_head,
