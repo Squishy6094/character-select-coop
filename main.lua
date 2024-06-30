@@ -632,7 +632,7 @@ function update_menu_color()
 end
 
 local function on_hud_render()
-    local FONT_USER = djui_menu_get_font and djui_menu_get_font() or FONT_ALIASED
+    local FONT_USER = djui_menu_get_font()
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_font(FONT_ALIASED)
 
