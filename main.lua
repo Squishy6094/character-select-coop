@@ -502,10 +502,6 @@ local function mario_update(m)
     end
 end
 
--- Vertical Offsets
-local function on_object_render(obj)
-end
-
 local sCapBhvs = {
     [id_bhvWingCap] = true,
     [id_bhvVanishCap] = true,
@@ -563,7 +559,6 @@ end
 
 hook_event(HOOK_MARIO_UPDATE, mario_update)
 hook_event(HOOK_OBJECT_SET_MODEL, set_model)
-hook_event(HOOK_ON_OBJECT_RENDER, on_object_render)
 
 ------------------
 -- Menu Handler --
