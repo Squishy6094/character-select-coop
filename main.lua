@@ -1311,3 +1311,13 @@ local function chat_command(msg)
 end
 
 hook_chat_command("char-select", "- Opens the Character Select Menu", chat_command)
+
+--------------
+-- Mod Menu --
+--------------
+
+local function open_cs_menu()
+    menu = true
+end
+
+hook_mod_menu_button("Open Menu", open_cs_menu)
