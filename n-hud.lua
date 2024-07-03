@@ -98,7 +98,7 @@ end
 local function render_hud_stars()
     hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_STAR_COUNT)
 
-    if IS_COOPDX and hud_get_flash ~= nil then
+    if hud_get_flash ~= nil then
         -- prevent star count from flashing outside of castle
         if gNetworkPlayers[0].currCourseNum ~= COURSE_NONE then hud_set_flash(0) end
 
@@ -126,7 +126,7 @@ local function render_hud_stars()
 end
 
 local function render_hud_camera_status()
-    if not IS_COOPDX or not HUD_DISPLAY_CAMERA_STATUS then return end
+    if not HUD_DISPLAY_CAMERA_STATUS then return end
 
     hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_CAMERA)
 
