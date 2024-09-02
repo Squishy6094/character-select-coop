@@ -54,6 +54,7 @@ gPlayerSyncTable[0].offset = 0
 characterCaps = {}
 characterCelebrationStar = {}
 characterColorPresets = {}
+characterAnims = {}
 
 optionTableRef = {
     openInputs = 1,

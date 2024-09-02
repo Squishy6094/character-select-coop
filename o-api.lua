@@ -184,6 +184,12 @@ local function character_add_palette_preset(modelInfo, paletteTable)
     characterColorPresets[modelInfo] = paletteTableOut
 end
 
+---@param modelInfo ModelExtendedId|integer
+---@param animTable table
+local function character_add_animations(modelInfo, animTable)
+    characterAnims[modelInfo] = type(animTable) == TYPE_TABLE and animTable or nil
+end
+
 ---@param tablePos integer|nil
 ---@return CharacterTable
 local function character_get_current_table(tablePos)
@@ -334,6 +340,7 @@ _G.charSelect = {
     character_add_celebration_star = character_add_celebration_star,
     character_add_health_meter = character_add_health_meter,
     character_add_palette_preset = character_add_palette_preset,
+    character_add_animations = character_add_animations,
     character_get_current_table = character_get_current_table,
     character_get_current_number = character_get_current_number,
     character_get_current_model_number = character_get_current_number, -- Outdated function name, Not recommended for use
