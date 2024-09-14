@@ -197,8 +197,19 @@ local function character_get_current_table(tablePos)
     return characterTable[tablePos]
 end
 
-local function character_get_current_number()
-    return currChar
+--- @param localIndex integer
+--- @return integer|nil
+local function character_get_current_number(localIndex)
+    if localIndex == nil or localIndex == 0 then
+        return currChar
+    else
+        for i = 1, #characterTable do
+            if characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
+                return i
+            end
+        end
+        return nil
+    end
 end
 
 ---@param charNum integer|nil

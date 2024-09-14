@@ -4,14 +4,6 @@
 
 if incompatibleClient then return 0 end
 
-local defaultIcons = {
-    [CT_MARIO] = gTextures.mario_head,
-    [CT_LUIGI] = gTextures.luigi_head,
-    [CT_TOAD] = gTextures.toad_head,
-    [CT_WALUIGI] = gTextures.waluigi_head,
-    [CT_WARIO] = gTextures.wario_head
-}
-
 local sHudElements = {
     [HUD_DISPLAY_FLAG_LIVES] = true,
     [HUD_DISPLAY_FLAG_STAR_COUNT] = true,
@@ -46,7 +38,61 @@ local MATH_DIVIDE_16 = 1/16
 -- Localize Functions to improve performence
 local texture_override_set,texture_override_reset,djui_hud_print_text,djui_hud_render_texture,tostring,hud_set_value,hud_get_value,hud_get_flash,djui_hud_get_screen_width,djui_hud_render_rect,math_ceil = texture_override_set,texture_override_reset,djui_hud_print_text,djui_hud_render_texture,tostring,hud_set_value,hud_get_value,hud_get_flash,djui_hud_get_screen_width,djui_hud_render_rect,math.ceil
 
+local FONT_USER = FONT_NORMAL
 
+local defaultNames = {
+    [CT_MARIO] = "Mario",
+    [CT_LUIGI] = "Luigi",
+    [CT_TOAD] = "Toad",
+    [CT_WALUIGI] = "Waluigi",
+    [CT_WARIO] = "Wario"
+}
+--- @param localIndex integer
+--- @return string
+--- This assumes multiple characters will not have the same model,
+--- Icons can only be seen by users who have the character avalible to them
+function name_from_local_index(localIndex)
+    for i = 1, #characterTable do
+        if i == 1 and characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
+            return defaultNames[gMarioStates[localIndex].character.type]
+        end
+        if characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
+            return characterTable[i].name
+        end
+    end
+    return "???"
+end
+
+local defaultMenuColors = {
+    [CT_MARIO] = { r = 255, g = 50,  b = 50  },
+    [CT_LUIGI] = { r = 50,  g = 255, b = 50  },
+    [CT_TOAD] =  { r = 50,  g = 50,  b = 255 },
+    [CT_WALUIGI] = { r = 130, g = 25,  b = 130 },
+    [CT_WARIO] = { r = 255, g = 255, b = 50  }
+}
+--- @param localIndex integer
+--- @return table
+--- This assumes multiple characters will not have the same model,
+--- Icons can only be seen by users who have the character avalible to them
+function color_from_local_index(localIndex)
+    for i = 1, #characterTable do
+        if i == 1 and characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
+            return defaultMenuColors[gMarioStates[localIndex].character.type]
+        end
+        if characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
+            return characterTable[i].color
+        end
+    end
+    return {r = 255, g = 255, b = 255}
+end
+
+local defaultIcons = {
+    [CT_MARIO] = gTextures.mario_head,
+    [CT_LUIGI] = gTextures.luigi_head,
+    [CT_TOAD] = gTextures.toad_head,
+    [CT_WALUIGI] = gTextures.waluigi_head,
+    [CT_WARIO] = gTextures.wario_head
+}
 --- @param localIndex integer
 --- @return TextureInfo|nil
 --- This assumes multiple characters will not have the same model,
@@ -54,13 +100,14 @@ local texture_override_set,texture_override_reset,djui_hud_print_text,djui_hud_r
 --- This function can return nil. if this is the case, render `djui_hud_print_text("?", x, y, 1)`
 function life_icon_from_local_index(localIndex)
     for i = 1, #characterTable do
-        if i == 1 and characterTable[i].model == gPlayerSyncTable[localIndex].modelId then
+        if i == 1 and characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
             return defaultIcons[gMarioStates[localIndex].character.type]
         end
-        if characterTable[i].model == gPlayerSyncTable[localIndex].modelId then
+        if characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
             return characterTable[i].lifeIcon
         end
     end
+    return nil
 end
 
 --- @param localIndex integer
@@ -69,7 +116,7 @@ end
 --- Icons can only be seen by users who have the character avalible to them
 function star_icon_from_local_index(localIndex)
     for i = 1, #characterTable do
-        if characterTable[i].model == gPlayerSyncTable[localIndex].modelId then
+        if characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
             return characterTable[i].starIcon
         end
     end
@@ -228,7 +275,56 @@ local function render_act_select_hud()
     end
 end
 
+local bodyWidth = 250
+local bodyHeight = (16 * 32) + (16 - 1) * 4 + (32 + 16) + 32 + 32
+local boarderWidth = 8
+local function render_playerlist()
+    djui_hud_set_resolution(RESOLUTION_DJUI)
+    local x = djui_hud_get_screen_width()*0.5 - 363 - bodyWidth
+    local y = djui_hud_get_screen_height()*0.5 - bodyHeight*0.5
+    djui_hud_set_color(0, 0, 0, 200)
+    djui_hud_render_rect(x, y, bodyWidth, bodyHeight)
+    djui_hud_set_color(0, 0, 0, 128)
+    djui_hud_render_rect(x + boarderWidth, y + boarderWidth, bodyWidth - boarderWidth*2, bodyHeight - boarderWidth*2)
+
+    djui_hud_set_font(FONT_MENU)
+    djui_hud_set_color(255, 48, 48, 255)
+    djui_hud_print_text("C", x + bodyWidth*0.5 - djui_hud_measure_text("C"), y + 15, 1)
+    djui_hud_set_color(64, 231, 64, 255)
+    djui_hud_print_text("S", x + bodyWidth*0.5, y + 15, 1)
+    
+    -- Render Heads
+    local x = x + 22
+    local y = djui_hud_get_screen_height() * 0.5 - 36 * 8 - 2
+    for i = 0, MAX_PLAYERS - 1 do
+        local np = gNetworkPlayers[i]
+        --djui_chat_message_create(tostring(b)..tostring(np.currCourseNum)..tostring(course))
+        if np and np.connected then
+            y = y + 36
+            
+            if i%2 == 0 then
+                djui_hud_set_color(255, 255, 255, 10)
+                djui_hud_render_rect(x, y, bodyWidth - 44, 32)
+            end
+
+            local displayHead = life_icon_from_local_index(i)
+            djui_hud_set_color(255, 255, 255, 255)
+            if displayHead == nil then
+                djui_hud_print_text("?", x, y, 2)
+            else
+                djui_hud_render_texture(displayHead, x, y, 2 / (displayHead.width/16), 2 / (displayHead.height * MATH_DIVIDE_16))
+            end
+
+            djui_hud_set_font(FONT_USER)
+            local color = color_from_local_index(i)
+            djui_hud_set_color(color.r, color.g, color.b, 255)
+            djui_hud_print_text(name_from_local_index(i), x + 40, y, 1) 
+        end
+    end
+end
+
 local function on_hud_render_behind()
+    FONT_USER = djui_menu_get_font()
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_font(FONT_HUD)
     djui_hud_set_color(255, 255, 255, 255)
@@ -250,6 +346,10 @@ local function on_hud_render()
 
     if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then
         render_act_select_hud()
+    end
+
+    if djui_is_playerlist_open() then
+        render_playerlist()
     end
 end
 

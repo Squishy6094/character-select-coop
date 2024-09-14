@@ -419,6 +419,9 @@ local function mario_update(m)
 
     if m.playerIndex == 0 and stallFrame > 1 then
         local modelIndex = gNetworkPlayers[0].modelIndex
+
+        gPlayerSyncTable[0].saveName = characterTable[currChar].saveName
+
         characterTable[1].forceChar = modelIndex
         characterTable[1].name = defaultNames[modelIndex]
         characterTable[1].color = defaultMenuColors[modelIndex]
