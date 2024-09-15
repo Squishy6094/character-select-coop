@@ -284,7 +284,7 @@ local function render_playerlist()
     local y = djui_hud_get_screen_height()*0.5 - bodyHeight*0.5
     djui_hud_set_color(0, 0, 0, 200)
     djui_hud_render_rect(x, y, bodyWidth, bodyHeight)
-    djui_hud_set_color(0, 0, 0, 128)
+    djui_hud_set_color(0, 0, 0, 140)
     djui_hud_render_rect(x + boarderWidth, y + boarderWidth, bodyWidth - boarderWidth*2, bodyHeight - boarderWidth*2)
 
     djui_hud_set_font(FONT_MENU)
@@ -303,10 +303,13 @@ local function render_playerlist()
             y = y + 36
             
             if i%2 == 0 then
-                djui_hud_set_color(255, 255, 255, 10)
-                djui_hud_render_rect(x, y, bodyWidth - 44, 32)
+                djui_hud_set_color(32, 32, 32, 128)
+            else
+                djui_hud_set_color(16, 16, 16, 128)
             end
+            djui_hud_render_rect(x, y, bodyWidth - 44, 32)
 
+            djui_hud_set_font(FONT_HUD)
             local displayHead = life_icon_from_local_index(i)
             djui_hud_set_color(255, 255, 255, 255)
             if displayHead == nil then
