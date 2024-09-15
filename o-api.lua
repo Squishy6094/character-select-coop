@@ -379,6 +379,9 @@ _G.charSelect = {
     set_options_status = set_options_status,
     restrict_palettes = restrict_palettes,
 
+    -- Misc --
+    dialog_set_replace_name = dialog_set_replace_name,
+
     -- Tables --
     optionTableRef = optionTableRef,
     controller = controller,
