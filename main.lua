@@ -1178,19 +1178,16 @@ local function before_mario_update(m)
                 if currChar == 1 then
                     if (m.controller.buttonPressed & R_JPAD) ~= 0 or m.controller.stickX > 60 then
                         np.overrideModelIndex = np.overrideModelIndex + 1
-                        djui_chat_message_create(tostring(np.overrideModelIndex))
                         inputStallTimerDirectional = inputStallToDirectional
                         play_character_sound(m, CHAR_SOUND_ATTACKED)
                     end
                     if (m.controller.buttonPressed & L_JPAD) ~= 0 or m.controller.stickX < -60 then
                         np.overrideModelIndex = np.overrideModelIndex ~= 0 and np.overrideModelIndex - 1 or #defaultNames
-                        djui_chat_message_create(tostring(np.overrideModelIndex))
                         inputStallTimerDirectional = inputStallToDirectional
                         play_character_sound(m, CHAR_SOUND_ATTACKED)
                     end
                     if np.overrideModelIndex > #defaultNames then np.overrideModelIndex = CT_MARIO end
                     if np.overrideModelIndex < CT_MARIO then np.overrideModelIndex = #defaultNames end
-                    djui_chat_message_create(tostring(np.overrideModelIndex))
                 end
             end
 
