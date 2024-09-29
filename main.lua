@@ -33,6 +33,7 @@ local TEXT_PREF_LOAD = "Default"
     API to add characters, this ensures your pack is easy
     to use for anyone and low on file space!
 ]]
+
 characterTable = {
     [1] = {
         name = "Default",
@@ -419,38 +420,35 @@ local function mario_update(m)
     end
 
     if m.playerIndex == 0 and stallFrame > 1 then
-        local modelIndex = gNetworkPlayers[0].modelIndex
+        local np = gNetworkPlayers[0]
+        if currChar ~= 1 then
+            np.overrideModelIndex = CT_MARIO
+        end
+        local modelIndex = np.overrideModelIndex
 
         gPlayerSyncTable[0].saveName = characterTable[currChar].saveName
 
-        characterTable[1].forceChar = modelIndex
-        characterTable[1].name = defaultNames[modelIndex]
-        characterTable[1].color = defaultMenuColors[modelIndex]
+        local defaultTable = characterTable[1]
+        defaultTable.forceChar = modelIndex
+        defaultTable.name = defaultNames[modelIndex]
+        defaultTable.color = defaultMenuColors[modelIndex]
         if currChar == 1 then
-            characterTable[1].lifeIcon = defaultIcons[modelIndex]
-            characterTable[1].camScale = defaultCamScales[modelIndex]
-            gNetworkPlayers[0].overrideModelIndex = modelIndex
-        else
-            gNetworkPlayers[0].overrideModelIndex = CT_MARIO
+            defaultTable.lifeIcon = defaultIcons[modelIndex]
+            defaultTable.camScale = defaultCamScales[modelIndex]
         end
         if optionTable[optionTableRef.localModels].toggle > 0 then
             gPlayerSyncTable[0].modelId = characterTable[currChar].model
             if characterTable[currChar].forceChar ~= nil then
-                gNetworkPlayers[0].overrideModelIndex = characterTable[currChar].forceChar
+                np.overrideModelIndex = characterTable[currChar].forceChar
             end
             m.marioObj.hookRender = 1
         else
             gPlayerSyncTable[0].modelId = nil
-            gNetworkPlayers[0].overrideModelIndex = characterTable[1].forceChar
+            np.overrideModelIndex = defaultTable.forceChar
             currChar = 1
         end
 
         gPlayerSyncTable[0].offset = characterTable[currChar].offset
-        --[[
-        for i = 0, MAX_PLAYERS-1 do
-            local m = gMarioStates[i]
-        end
-        ]]
 
         if menuAndTransition then
             camera_freeze()
@@ -1107,6 +1105,7 @@ end
 
 local function before_mario_update(m)
     if m.playerIndex ~= 0 then return end
+    local np = gNetworkPlayers[0]
     if inputStallTimerButton > 0 then inputStallTimerButton = inputStallTimerButton - 1 end
     if inputStallTimerDirectional > 0 then inputStallTimerDirectional = inputStallTimerDirectional - 1 end
 
@@ -1174,6 +1173,24 @@ local function before_mario_update(m)
                     end
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                     gPlayerSyncTable[0].presetPalette = false
+                end
+
+                if currChar == 1 then
+                    if (m.controller.buttonPressed & R_JPAD) ~= 0 or m.controller.stickX > 60 then
+                        np.overrideModelIndex = np.overrideModelIndex + 1
+                        djui_chat_message_create(tostring(np.overrideModelIndex))
+                        inputStallTimerDirectional = inputStallToDirectional
+                        play_character_sound(m, CHAR_SOUND_ATTACKED)
+                    end
+                    if (m.controller.buttonPressed & L_JPAD) ~= 0 or m.controller.stickX < -60 then
+                        np.overrideModelIndex = np.overrideModelIndex ~= 0 and np.overrideModelIndex - 1 or #defaultNames
+                        djui_chat_message_create(tostring(np.overrideModelIndex))
+                        inputStallTimerDirectional = inputStallToDirectional
+                        play_character_sound(m, CHAR_SOUND_ATTACKED)
+                    end
+                    if np.overrideModelIndex > #defaultNames then np.overrideModelIndex = CT_MARIO end
+                    if np.overrideModelIndex < CT_MARIO then np.overrideModelIndex = #defaultNames end
+                    djui_chat_message_create(tostring(np.overrideModelIndex))
                 end
             end
 
