@@ -1,5 +1,5 @@
 -- name: Character Select
--- description:\\#ffff33\\--- Character Select Coop v1.9.1 ---\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
+-- description:\\#ffff33\\--- Character Select Coop v1.10 ---\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
 -- pausable: false
 
 if incompatibleClient then return 0 end
@@ -45,7 +45,8 @@ characterTable = {
         forceChar = nil, -- Legacy Functionality
         lifeIcon = gTextures.mario_head,
         starIcon = gTextures.star,
-        camScale = 1.0
+        camScale = 1.0,
+        hasMoveset = false,
     },
 }
 
@@ -1129,7 +1130,7 @@ local function before_mario_update(m)
         return
     end
 
-    local cameraToObject = gMarioStates[0].marioObj.header.gfx.cameraToObject
+    local cameraToObject = m.marioObj.header.gfx.cameraToObject
 
     -- C-up Failsafe (Camera Softlocks)
     if m.action == ACT_FIRST_PERSON or (m.prevAction == ACT_FIRST_PERSON and is_game_paused()) then
@@ -1222,22 +1223,12 @@ local function before_mario_update(m)
 
     if options then
         if inputStallTimerDirectional == 0 then
-            if (m.controller.buttonPressed & D_JPAD) ~= 0 then
+            if (m.controller.buttonPressed & D_JPAD) ~= 0 or m.controller.stickY < -60 then
                 currOption = currOption + 1
                 inputStallTimerDirectional = inputStallToDirectional
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
-            if (m.controller.buttonPressed & U_JPAD) ~= 0 then
-                currOption = currOption - 1
-                inputStallTimerDirectional = inputStallToDirectional
-                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-            end
-            if m.controller.stickY < -60 then
-                currOption = currOption + 1
-                inputStallTimerDirectional = inputStallToDirectional
-                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-            end
-            if m.controller.stickY > 60 then
+            if (m.controller.buttonPressed & U_JPAD) ~= 0 or m.controller.stickY > 60 then
                 currOption = currOption - 1
                 inputStallTimerDirectional = inputStallToDirectional
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
