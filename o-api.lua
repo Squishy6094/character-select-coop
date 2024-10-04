@@ -87,6 +87,7 @@ local function character_add(name, description, credit, color, modelInfo, forceC
         healthTexture = nil,
     })
     saveNameTable[#characterTable] = characterTable[#characterTable].saveName
+    characterMovesets[#characterTable] = {}
     return #characterTable
 end
 
@@ -272,6 +273,15 @@ local function hook_render_in_menu(func, underText)
     end
 end
 
+---@param hookEventType LuaHookedEventType
+---@param func function
+---@param charNum integer|nil
+local function hook_moveset_event(hookEventType, func, charNum)
+    if charNum > #characterTable then return end
+    if type(func) ~= TYPE_FUNCTION then return end
+    table_insert(characterMovesets[charNum], {hook = hookEventType, func = func})
+end
+
 ---@return boolean
 local function is_options_open()
     return options
@@ -389,4 +399,5 @@ _G.charSelect = {
     -- Custom Hooks --
     hook_allow_menu_open = hook_allow_menu_open,
     hook_render_in_menu = hook_render_in_menu,
+    hook_moveset_event = hook_moveset_event,
 }
