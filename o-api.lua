@@ -279,7 +279,7 @@ end
 local function hook_moveset_event(hookEventType, func, charNum)
     if charNum > #characterTable then return end
     if type(func) ~= TYPE_FUNCTION then return end
-    table_insert(characterMovesets[charNum], {hook = hookEventType, func = func})
+    characterMovesets[charNum][hookEventType] = func
 end
 
 ---@return boolean
