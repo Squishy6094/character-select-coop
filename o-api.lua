@@ -293,6 +293,12 @@ local function restrict_palettes(bool)
     stopPalettes = bool
 end
 
+---@param bool boolean
+local function restrict_movesets(bool)
+    if bool == nil then bool = true end
+    stopMovesets = bool
+end
+
 local controller = {
     buttonDown = 0,
     buttonPressed = 0,
@@ -388,6 +394,7 @@ _G.charSelect = {
     get_options_status = get_options_status,
     set_options_status = set_options_status,
     restrict_palettes = restrict_palettes,
+    restrict_movesets = restrict_movesets,
 
     -- Misc --
     dialog_set_replace_name = dialog_set_replace_name,
