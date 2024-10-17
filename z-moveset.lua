@@ -1,4 +1,5 @@
 local function mario_update(m)
+    if stopMovesets or optionTable[optionTableRef.localMoveset].toggle == 0 then return end
     local hook = HOOK_MARIO_UPDATE
     local currMoveset = characterMovesets[currChar]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -6,6 +7,7 @@ local function mario_update(m)
 end
 
 local function before_mario_update(m)
+    if stopMovesets or optionTable[optionTableRef.localMoveset].toggle == 0 then return end
     local hook = HOOK_BEFORE_MARIO_UPDATE
     local currMoveset = characterMovesets[currChar]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -13,6 +15,7 @@ local function before_mario_update(m)
 end
 
 local function on_pvp_attack(attacker, victim)
+    if stopMovesets or optionTable[optionTableRef.localMoveset].toggle == 0 then return end
     local hook = HOOK_ON_PVP_ATTACK
     local currMoveset = characterMovesets[currChar]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -20,6 +23,7 @@ local function on_pvp_attack(attacker, victim)
 end
 
 local function on_interact(m, o, intType)
+    if stopMovesets or optionTable[optionTableRef.localMoveset].toggle == 0 then return end
     local hook = HOOK_ON_INTERACT
     local currMoveset = characterMovesets[currChar]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -27,6 +31,7 @@ local function on_interact(m, o, intType)
 end
 
 local function on_set_mario_action(m)
+    if stopMovesets or optionTable[optionTableRef.localMoveset].toggle == 0 then return end
     local hook = HOOK_ON_SET_MARIO_ACTION
     local currMoveset = characterMovesets[currChar]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -34,6 +39,7 @@ local function on_set_mario_action(m)
 end
 
 local function before_set_mario_action(m, nextAct)
+    if stopMovesets or optionTable[optionTableRef.localMoveset].toggle == 0 then return end
     local hook = HOOK_BEFORE_SET_MARIO_ACTION
     local currMoveset = characterMovesets[currChar]
     if currMoveset == nil or currMoveset[hook] == nil then return end

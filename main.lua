@@ -36,7 +36,7 @@ local TEXT_PREF_LOAD = "Default"
 
 characterTable = {
     [1] = {
-        name = "Default",
+        name = "Mario",
         saveName = "Default",
         description = {"The vanilla cast for sm64coopdx!", "", "These Characters are swappable", "via the default Options Menu"},
         credit = "Nintendo / Coop Team",
@@ -66,10 +66,11 @@ optionTableRef = {
     anims = 4,
     inputLatency = 5,
     autoPalette = 6,
-    localModels = 7,
-    localVoices = 8,
-    debugInfo = 9,
-    resetSaveData = 10
+    localMoveset = 7,
+    localModels = 8,
+    localVoices = 9,
+    debugInfo = 10,
+    resetSaveData = 11
 }
 
 optionTable = {
@@ -125,6 +126,14 @@ optionTable = {
         toggleDefault = 1,
         toggleMax = 1,
         description = {"If On, Automatically", "sets your palette to the", "Character's Preset if avalible"}
+    },
+    [optionTableRef.localMoveset] = {
+        name = "Character Moveset",
+        toggle = tonumber(mod_storage_load("localMoveset")),
+        toggleSaveName = "localMoveset",
+        toggleDefault = 1,
+        toggleMax = 1,
+        description = {"Toggles if Custom Movesets", "are active on compatible", "characters"}
     },
     [optionTableRef.localModels] = {
         name = "Locally Display Models",
@@ -1141,6 +1150,7 @@ local function before_mario_update(m)
 
     if gNetworkPlayers[0].currActNum == 99 then menu = false end
     if m.action == ACT_INTRO_CUTSCENE then menu = false end
+    if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then menu = false end
 
     if menuAndTransition and not options then
         if menu then
