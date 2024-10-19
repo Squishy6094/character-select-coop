@@ -15,6 +15,7 @@ local creditsAndTransition = false
 currChar = 1
 local currOption = 1
 local creditScroll = 0
+local prevCreditScroll = creditScroll
 local creditScrollRange = 0
 
 local menuCrossFade = 7
@@ -1062,27 +1063,35 @@ local function on_hud_render()
                 local xLeft = widthHalf - 50 * widthScale + 8
                 local xRight = widthHalf + 50 * widthScale - 8
                 local y = 80 + 10*widthScale - optionAnimTimer - creditScroll
+                local prevY = 80 + 10*widthScale - optionAnimTimer - prevCreditScroll
                 for i = 1, #renderList do
                     local credit = renderList[i]
                     local header = (credit.font == FONT_ALIASED)
-                    if y > 60 and y < height then 
+                    if y > 61 and y < height then 
                         djui_hud_set_font(credit.font)
                         if not header then
                             djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
                         else
                             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
                         end
-                        djui_hud_print_text(credit.textLeft, xLeft - (header and 3 or 0), y, (header and 0.3 or 0.2)*widthScale)
+                        local x = xLeft - (header and 3 or 0)
+                        local scale = (header and 0.3 or 0.2)*widthScale
+                        djui_hud_print_text_interpolated(credit.textLeft, x, prevY, scale, x, y, scale)
                         if credit.textRight then
-                            djui_hud_print_text(credit.textRight, xRight - djui_hud_measure_text(credit.textRight)*0.2, y, 0.2*widthScale)
+                            local x = xRight - djui_hud_measure_text(credit.textRight)*0.2
+                            local scale = 0.2*widthScale
+                            djui_hud_print_text_interpolated(credit.textRight, x, prevY, scale, x, y, scale)
                         end
                     end
                     y = y + (header and 9 or 6)*widthScale
+                    prevY = prevY + (header and 9 or 6)*widthScale
                     if renderList[i + 1] ~= nil and renderList[i + 1].font == FONT_ALIASED then
                         y = y + 2
+                        prevY = prevY + 2
                     end
                 end
                 creditScrollRange = math.max(((y + creditScroll)) - (height - 36), 0)
+                prevCreditScroll = creditScroll
 
                 for i = 1, 8 do
                     djui_hud_set_color(0, 0, 0, 100)
@@ -1401,13 +1410,11 @@ local function before_mario_update(m)
 
     if creditsAndTransition then
         if (controller.buttonDown & U_JPAD) ~= 0 then
-            creditScroll = creditScroll - 0.5
-        end
-        if (controller.buttonDown & D_JPAD) ~= 0 then
-            creditScroll = creditScroll + 0.5
-        end
-        if math.abs(controller.stickY) > 30 then
-            creditScroll = creditScroll + controller.stickY*-0.01
+            creditScroll = creditScroll - 1.5
+        elseif (controller.buttonDown & D_JPAD) ~= 0 then
+            creditScroll = creditScroll + 1.5
+        elseif math.abs(controller.stickY) > 30 then
+            creditScroll = creditScroll + controller.stickY*-0.03
         end
 
         if inputStallTimerButton == 0 then
