@@ -1,5 +1,5 @@
 -- name: Character Select
--- description:\\#ffff33\\--- Character Select Coop v1.10 ---\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\\#dcdcdc\\Concepts by:\\#4496f5\\ AngelicMiracles\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
+-- description:\\#ffff33\\--- Character Select Coop v1.10 ---\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
 -- pausable: false
 
 if incompatibleClient then return 0 end
@@ -10,12 +10,20 @@ local mod_storage_load,tonumber,djui_popup_create,mod_storage_save,tostring,djui
 menu = false
 menuAndTransition = false
 options = false
+local credits = false
+local creditsAndTransition = false
 currChar = 1
 local currOption = 1
+local creditScroll = 0
+local creditScrollRange = 0
 
 local menuCrossFade = 7
 local menuCrossFadeCap = menuCrossFade
 local menuCrossFadeMath = 255 / menuCrossFade
+
+local creditsCrossFade = 7
+local creditsCrossFadeCap = creditsCrossFade
+local creditsCrossFadeMath = 255 / creditsCrossFade
 
 local TEX_HEADER = get_texture_info("char-select-text")
 local TEX_OVERRIDE_HEADER = nil
@@ -69,8 +77,9 @@ optionTableRef = {
     localMoveset = 7,
     localModels = 8,
     localVoices = 9,
-    debugInfo = 10,
-    resetSaveData = 11
+    credits = 10,
+    debugInfo = 11,
+    resetSaveData = 12,
 }
 
 optionTable = {
@@ -151,6 +160,14 @@ optionTable = {
         toggleMax = 1,
         description = {"Toggle if Custom Voicelines play", "for Characters who support it"}
     },
+    [optionTableRef.credits] = {
+        name = "Credits",
+        toggle = 0,
+        toggleDefault = 0,
+        toggleMax = 1,
+        toggleNames = {"", ""},
+        description = {"Shows the amazing people who", "Contributed to both", "Character Select and", "it's packs!"}
+    },
     [optionTableRef.debugInfo] = {
         name = "Debugging Info",
         toggle = tonumber(mod_storage_load("debuginfo")),
@@ -167,6 +184,18 @@ optionTable = {
         toggleNames = {"", ""},
         description = {"Resets Character Select's", "Save Data"}
     },
+}
+
+creditTable = {
+    {
+        packName = "Character Select Coop",
+        {creditTo = "Squishy6094",     creditFor = "Creator"},
+        {creditTo = "AngelicMiracles", creditFor = "Concepts / CoopDX"},
+        {creditTo = "AgentX",          creditFor = "Main Contributer / CoopDX"},
+        {creditTo = "xLuigiGamerx",    creditFor = "Main Contributer"},
+        {creditTo = "OneCalledRPG",    creditFor = "Contributer"},
+        {creditTo = "Cooliokid956",    creditFor = "Contributer"},
+    }
 }
 
 local defaultOptionCount = #optionTable
@@ -497,6 +526,12 @@ local function mario_update(m)
             noLoop = true
         end
 
+        --Open Credits
+        if optionTable[optionTableRef.credits].toggle > 0 then
+            credits = true
+            optionTable[optionTableRef.credits].toggle = 0
+        end
+
         --Reset Save Data Check
         if optionTable[optionTableRef.resetSaveData].toggle > 0 then
             reset_options(false)
@@ -635,6 +670,9 @@ local TEXT_MENU_CLOSE = "Press B to Exit Menu"
 local TEXT_OPTIONS_SELECT = "A - Select | B - Exit  "
 local TEXT_LOCAL_MODEL_OFF = "Locally Display Models is Off"
 local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Menu"
+
+--Credit Text
+local TEXT_CREDITS_HEADER = "Credits"
 
 menuColor = characterTable[currChar].color
 
@@ -934,6 +972,7 @@ local function on_hud_render()
                 renderInMenuTable.front[i]()
             end
         end
+        djui_hud_set_resolution(RESOLUTION_N64)
 
         --Options display
         local optionTableCount = #optionTable
@@ -945,77 +984,151 @@ local function on_hud_render()
             djui_hud_set_color(0, 0, 0, 255)
             djui_hud_render_rect(width * 0.5 - 50 * widthScale + 2, minf(55 - optionAnimTimer + 2, height - 25 * widthScale + 2), 100 * widthScale - 4, 196)
             djui_hud_set_font(FONT_ALIASED)
+
+            if not creditsAndTransition then
+                local widthScaleLimited = minf(widthScale, 1.5)
+                -- Up Arrow
+                if currOption > 3 then
+                    djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+                    djui_hud_set_rotation(0x2000, 0.5, 0.5)
+                    djui_hud_render_rect(widthHalf - 3 * widthScaleLimited, 95 - optionAnimTimer, 5  * widthScaleLimited, 5  * widthScaleLimited)
+                    djui_hud_set_color(0, 0, 0, 255)
+                    djui_hud_set_rotation(0x0000, 0.5, 0.5)
+                    djui_hud_render_rect(widthHalf - 4 * widthScaleLimited, 95 - optionAnimTimer + 2 * widthScaleLimited, 8 * widthScaleLimited, 10)
+                end
+
+                -- Down Arrow
+                if currOption < optionTableCount - 2 then
+                    local yOffset = 90 - optionAnimTimer + 45 * widthScaleLimited
+                    djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+                    djui_hud_set_rotation(0x2000, 0.5, 0.5)
+                    djui_hud_render_rect(widthHalf - 3 * widthScaleLimited, yOffset + 10, 5 * widthScaleLimited, 5 * widthScaleLimited)
+                    djui_hud_set_color(0, 0, 0, 255)
+                    djui_hud_set_rotation(0x0000, 0.5, 0.5)
+                    djui_hud_render_rect(widthHalf - 4 * widthScaleLimited, yOffset + 10 - 2 * widthScaleLimited, 8 * widthScaleLimited, 5 * widthScaleLimited)
+                end
+
+                -- Options 
+                for i = currOption - 2, currOption + 2 do
+                    if not (i < 1 or i > optionTableCount) then
+                        local toggleName = optionTable[i].name
+                        local scale = 0.5
+                        local yOffset = 100 - optionAnimTimer + (i - currOption + 2) * 9 * widthScaleLimited
+                        if i == currOption then
+                            djui_hud_set_font(FONT_ALIASED)
+                            scale = 0.3
+                            yOffset = yOffset - 1
+                            local currToggleName = optionTable[i].toggleNames[optionTable[i].toggle + 1]
+                            currToggleName = currToggleName and currToggleName or "???"
+                            if currToggleName ~= "" then
+                                toggleName = toggleName .. " - " .. currToggleName
+                            else
+                                toggleName = toggleName
+                            end
+                            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+                        else
+                            djui_hud_set_font(FONT_TINY)
+                            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 150)
+                        end
+                        scale = scale * widthScaleLimited
+                        djui_hud_print_text(toggleName, widthHalf - djui_hud_measure_text(toggleName) * scale * 0.5, yOffset, scale)
+                    end
+                end
+
+                -- Description
+                if optionTable[currOption].description ~= nil then
+                    djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+                    for i = 1, #optionTable[currOption].description do
+                        djui_hud_set_font(FONT_ALIASED)
+                        local line = optionTable[currOption].description[i]
+                        djui_hud_print_text(line, widthHalf - djui_hud_measure_text(line) * 0.15, 180 - optionAnimTimer + 15 * widthScaleLimited + 8 * i - 8 * #optionTable[currOption].description, 0.3)
+                    end
+                end
+                -- Footer
+                djui_hud_set_font(FONT_TINY)
+                djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+                djui_hud_print_text(TEXT_OPTIONS_SELECT, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_SELECT) * 0.3, height - 20 - optionAnimTimer, 0.6)
+            else
+                local renderList = {}
+                for i = 1, #creditTable do
+                    local credit = creditTable[i]
+                    table.insert(renderList, {textLeft = credit.packName, font = FONT_ALIASED})
+                    for i = 1, #credit do
+                        local credit = credit[i]
+                        table.insert(renderList, {textLeft = credit.creditTo, textRight = credit.creditFor, font = FONT_NORMAL})
+                    end
+                end
+
+                local xLeft = widthHalf - 50 * widthScale + 8
+                local xRight = widthHalf + 50 * widthScale - 8
+                local y = 80 + 10*widthScale - optionAnimTimer - creditScroll
+                for i = 1, #renderList do
+                    local credit = renderList[i]
+                    local header = (credit.font == FONT_ALIASED)
+                    if y > 60 and y < height then 
+                        djui_hud_set_font(credit.font)
+                        if not header then
+                            djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
+                        else
+                            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+                        end
+                        djui_hud_print_text(credit.textLeft, xLeft - (header and 3 or 0), y, (header and 0.3 or 0.2)*widthScale)
+                        if credit.textRight then
+                            djui_hud_print_text(credit.textRight, xRight - djui_hud_measure_text(credit.textRight)*0.2, y, 0.2*widthScale)
+                        end
+                    end
+                    y = y + (header and 9 or 6)*widthScale
+                    if renderList[i + 1] ~= nil and renderList[i + 1].font == FONT_ALIASED then
+                        y = y + 2
+                    end
+                end
+                creditScrollRange = math.max(((y + creditScroll)) - (height - 36), 0)
+
+                for i = 1, 8 do
+                    djui_hud_set_color(0, 0, 0, 100)
+                    djui_hud_render_rect(widthHalf - 50 * widthScale + 2, 60 - optionAnimTimer, 100 * widthScale - 4, i*4)
+                    djui_hud_render_rect(widthHalf - 50 * widthScale + 2, height - 2 - i*4, 96 * widthScale, i*4)
+                end
+            end
+
+            -- Render Header
+            djui_hud_set_font(FONT_ALIASED)
             djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
             local text = TEXT_OPTIONS_HEADER
-            if currOption > defaultOptionCount then
+            if creditsAndTransition then
+                text = TEXT_CREDITS_HEADER
+            elseif currOption > defaultOptionCount then
                 text = TEXT_OPTIONS_HEADER_API
             end
             djui_hud_print_text(text, widthHalf - djui_hud_measure_text(text) * 0.3 * minf(widthScale, 1.5), 65 + optionAnimTimer * -1, 0.6 * minf(widthScale, 1.5))
 
-            local widthScaleLimited = minf(widthScale, 1.5)
-            -- Up Arrow
-            if currOption > 3 then
-                djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-                djui_hud_set_rotation(0x2000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 3 * widthScaleLimited, 95 - optionAnimTimer, 5  * widthScaleLimited, 5  * widthScaleLimited)
-                djui_hud_set_color(0, 0, 0, 255)
-                djui_hud_set_rotation(0x0000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 4 * widthScaleLimited, 95 - optionAnimTimer + 2 * widthScaleLimited, 8 * widthScaleLimited, 10)
-            end
-
-            -- Down Arrow
-            if currOption < optionTableCount - 2 then
-                local yOffset = 90 - optionAnimTimer + 45 * widthScaleLimited
-                djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-                djui_hud_set_rotation(0x2000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 3 * widthScaleLimited, yOffset + 10, 5 * widthScaleLimited, 5 * widthScaleLimited)
-                djui_hud_set_color(0, 0, 0, 255)
-                djui_hud_set_rotation(0x0000, 0.5, 0.5)
-                djui_hud_render_rect(widthHalf - 4 * widthScaleLimited, yOffset + 10 - 2 * widthScaleLimited, 8 * widthScaleLimited, 5 * widthScaleLimited)
-            end
-
-            -- Options 
-            for i = currOption - 2, currOption + 2 do
-                if not (i < 1 or i > optionTableCount) then
-                    local toggleName = optionTable[i].name
-                    local scale = 0.5
-                    local yOffset = 100 - optionAnimTimer + (i - currOption + 2) * 9 * widthScaleLimited
-                    if i == currOption then
-                        djui_hud_set_font(FONT_ALIASED)
-                        scale = 0.3
-                        yOffset = yOffset - 1
-                        local currToggleName = optionTable[i].toggleNames[optionTable[i].toggle + 1]
-                        currToggleName = currToggleName and currToggleName or "???"
-                        if currToggleName ~= "" then
-                            toggleName = toggleName .. " - " .. currToggleName
-                        else
-                            toggleName = toggleName
-                        end
-                        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-                    else
-                        djui_hud_set_font(FONT_TINY)
-                        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 150)
-                    end
-                    scale = scale * widthScaleLimited
-                    djui_hud_print_text(toggleName, widthHalf - djui_hud_measure_text(toggleName) * scale * 0.5, yOffset, scale)
+            -- Fade in/out of credits
+            if optionTable[optionTableRef.anims].toggle == 1 then
+                if credits and creditsCrossFade > -creditsCrossFadeCap then
+                    creditsCrossFade = creditsCrossFade - 1
+                    if creditsCrossFade == 0 then creditsCrossFade = creditsCrossFade - 1 end
                 end
-            end
-
-            -- Description
-            if optionTable[currOption].description ~= nil then
-                djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-                for i = 1, #optionTable[currOption].description do
-                    djui_hud_set_font(FONT_ALIASED)
-                    local line = optionTable[currOption].description[i]
-                    djui_hud_print_text(line, widthHalf - djui_hud_measure_text(line) * 0.15, 180 - optionAnimTimer + 15 * widthScaleLimited + 8 * i - 8 * #optionTable[currOption].description, 0.3)
+                if not credits and creditsCrossFade < creditsCrossFadeCap then
+                    creditsCrossFade = creditsCrossFade + 1
+                    if creditsCrossFade == 0 then creditsCrossFade = creditsCrossFade + 1 end
                 end
+                if creditsCrossFade < 0 then
+                    creditsAndTransition = true
+                else
+                    creditsAndTransition = false
+                end
+            else
+                if credits then
+                    creditsCrossFade = -creditsCrossFadeCap
+                else
+                    creditsCrossFade = creditsCrossFadeCap
+                end
+                creditsAndTransition = credits
             end
-            -- Footer
-            djui_hud_set_font(FONT_TINY)
-            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_print_text(TEXT_OPTIONS_SELECT, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_SELECT) * 0.3, height - 20 - optionAnimTimer, 0.6)
-            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_render_rect(width * 0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
+            
+            djui_hud_set_resolution(RESOLUTION_N64)
+            djui_hud_set_color(0, 0, 0, (math_abs(creditsCrossFade)) * -creditsCrossFadeMath)
+            djui_hud_render_rect(width * 0.5 - 50 * widthScale + 2, minf(55 - optionAnimTimer + 2, height - 25 * widthScale + 2), 100 * widthScale - 4, 196)
         else
             -- How to open options display
             local widthScaleLimited = minf(widthScale, 1.42)
@@ -1030,6 +1143,8 @@ local function on_hud_render()
             djui_hud_set_font(FONT_TINY)
             djui_hud_print_text(TEXT_MENU_CLOSE, widthHalf - djui_hud_measure_text(TEXT_MENU_CLOSE) * 0.25 * widthScaleLimited, height - 13 * widthScaleLimited + optionAnimTimer + 202, 0.5 * widthScaleLimited)
         end
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_render_rect(width * 0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
 
 
         -- Anim logic
@@ -1054,9 +1169,11 @@ local function on_hud_render()
     else
         options = false
         optionAnimTimer = optionAnimTimerCap
+        credits = false
+        creditsCrossFade = 0
     end
 
-    -- Cross fade
+    -- Fade in/out of menu
     if optionTable[optionTableRef.anims].toggle == 1 then
         if menu and menuCrossFade > -menuCrossFadeCap then
             menuCrossFade = menuCrossFade - 1
@@ -1079,6 +1196,7 @@ local function on_hud_render()
         end
         menuAndTransition = menu
     end
+
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_color(0, 0, 0, (math_abs(menuCrossFade)) * -menuCrossFadeMath)
     djui_hud_render_rect(0, 0, width, height)
@@ -1115,6 +1233,7 @@ end
 
 local function before_mario_update(m)
     if m.playerIndex ~= 0 then return end
+    local controller = m.controller
     local np = gNetworkPlayers[0]
     if inputStallTimerButton > 0 then inputStallTimerButton = inputStallTimerButton - 1 end
     if inputStallTimerDirectional > 0 then inputStallTimerDirectional = inputStallTimerDirectional - 1 end
@@ -1124,11 +1243,11 @@ local function before_mario_update(m)
     end
 
     -- Menu Inputs
-    if is_game_paused() and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and (m.controller.buttonPressed & Z_TRIG) ~= 0 and optionTable[optionTableRef.openInputs].toggle == 1 then
+    if is_game_paused() and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and (controller.buttonPressed & Z_TRIG) ~= 0 and optionTable[optionTableRef.openInputs].toggle == 1 then
         menu = true
     end
-    if not menu and (m.controller.buttonDown & D_JPAD) ~= 0 and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and optionTable[optionTableRef.openInputs].toggle == 2 then
-        if (m.controller.buttonDown & R_TRIG) ~= 0 or not ommActive then
+    if not menu and (controller.buttonDown & D_JPAD) ~= 0 and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and optionTable[optionTableRef.openInputs].toggle == 2 then
+        if (controller.buttonDown & R_TRIG) ~= 0 or not ommActive then
             menu = true
         end
         inputStallTimerDirectional = inputStallToDirectional
@@ -1155,9 +1274,9 @@ local function before_mario_update(m)
     if menuAndTransition and not options then
         if menu then
             if inputStallTimerDirectional == 0 and optionTable[optionTableRef.localModels].toggle ~= 0 and not charBeingSet then
-                if (m.controller.buttonPressed & D_JPAD) ~= 0 or (m.controller.buttonPressed & D_CBUTTONS) ~= 0 or m.controller.stickY < -60 then
+                if (controller.buttonPressed & D_JPAD) ~= 0 or (controller.buttonPressed & D_CBUTTONS) ~= 0 or controller.stickY < -60 then
                     currChar = currChar + 1
-                    if (m.controller.buttonPressed & D_CBUTTONS) == 0 then
+                    if (controller.buttonPressed & D_CBUTTONS) == 0 then
                         inputStallTimerDirectional = inputStallToDirectional
                     else
                         inputStallTimerDirectional = 3 -- C-Scrolling
@@ -1170,9 +1289,9 @@ local function before_mario_update(m)
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                     gPlayerSyncTable[0].presetPalette = false
                 end
-                if (m.controller.buttonPressed & U_JPAD) ~= 0 or (m.controller.buttonPressed & U_CBUTTONS) ~= 0 or m.controller.stickY > 60 then
+                if (controller.buttonPressed & U_JPAD) ~= 0 or (controller.buttonPressed & U_CBUTTONS) ~= 0 or controller.stickY > 60 then
                     currChar = currChar - 1
-                    if (m.controller.buttonPressed & U_CBUTTONS) == 0 then
+                    if (controller.buttonPressed & U_CBUTTONS) == 0 then
                         inputStallTimerDirectional = inputStallToDirectional
                     else
                         inputStallTimerDirectional = 3 -- C-Scrolling
@@ -1187,12 +1306,12 @@ local function before_mario_update(m)
                 end
 
                 if currChar == 1 then
-                    if (m.controller.buttonPressed & R_JPAD) ~= 0 or m.controller.stickX > 60 then
+                    if (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60 then
                         np.overrideModelIndex = np.overrideModelIndex + 1
                         inputStallTimerDirectional = inputStallToDirectional
                         play_character_sound(m, CHAR_SOUND_ATTACKED)
                     end
-                    if (m.controller.buttonPressed & L_JPAD) ~= 0 or m.controller.stickX < -60 then
+                    if (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60 then
                         np.overrideModelIndex = np.overrideModelIndex ~= 0 and np.overrideModelIndex - 1 or #defaultNames
                         inputStallTimerDirectional = inputStallToDirectional
                         play_character_sound(m, CHAR_SOUND_ATTACKED)
@@ -1203,7 +1322,7 @@ local function before_mario_update(m)
             end
 
             if inputStallTimerButton == 0 then
-                if (m.controller.buttonPressed & A_BUTTON) ~= 0 then
+                if (controller.buttonPressed & A_BUTTON) ~= 0 then
                     if characterTable[currChar] ~= nil then
                         mod_storage_save_pref_char(characterTable[currChar])
                         inputStallTimerButton = inputStallToButton
@@ -1212,14 +1331,14 @@ local function before_mario_update(m)
                         play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
                     end
                 end
-                if (m.controller.buttonPressed & B_BUTTON) ~= 0 then
+                if (controller.buttonPressed & B_BUTTON) ~= 0 then
                     menu = false
                 end
-                if (m.controller.buttonPressed & START_BUTTON) ~= 0 then
+                if (controller.buttonPressed & START_BUTTON) ~= 0 then
                     options = true
                 end
                 local modelId = gPlayerSyncTable[0].modelId and gPlayerSyncTable[0].modelId or defaultModels[m.character.type]
-                if (m.controller.buttonPressed & Y_BUTTON) ~= 0 then
+                if (controller.buttonPressed & Y_BUTTON) ~= 0 then
                     if characterColorPresets[modelId] and optionTable[optionTableRef.localModels].toggle > 0 and not stopPalettes then
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject)
                         gPlayerSyncTable[0].presetPalette = not gPlayerSyncTable[0].presetPalette
@@ -1237,23 +1356,23 @@ local function before_mario_update(m)
 
         -- Handles Camera Posistioning
         faceAngle = m.faceAngle.y
-        if m.controller.buttonPressed & R_CBUTTONS ~= 0 then faceAngle = faceAngle + 0x1000 end
-        if m.controller.buttonPressed & L_CBUTTONS ~= 0 then faceAngle = faceAngle - 0x1000 end
+        if controller.buttonPressed & R_CBUTTONS ~= 0 then faceAngle = faceAngle + 0x1000 end
+        if controller.buttonPressed & L_CBUTTONS ~= 0 then faceAngle = faceAngle - 0x1000 end
 
         nullify_inputs(m)
         if is_game_paused() then
-            m.controller.buttonPressed = START_BUTTON
+            controller.buttonPressed = START_BUTTON
         end
     end
 
-    if options then
+    if options and not creditsAndTransition then
         if inputStallTimerDirectional == 0 then
-            if (m.controller.buttonPressed & D_JPAD) ~= 0 or m.controller.stickY < -60 then
+            if (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -60 then
                 currOption = currOption + 1
                 inputStallTimerDirectional = inputStallToDirectional
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
-            if (m.controller.buttonPressed & U_JPAD) ~= 0 or m.controller.stickY > 60 then
+            if (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 60 then
                 currOption = currOption - 1
                 inputStallTimerDirectional = inputStallToDirectional
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
@@ -1261,7 +1380,7 @@ local function before_mario_update(m)
         end
 
         if inputStallTimerButton == 0 then
-            if (m.controller.buttonPressed & A_BUTTON) ~= 0 and not optionTable[currOption].optionBeingSet then
+            if (controller.buttonPressed & A_BUTTON) ~= 0 and not optionTable[currOption].optionBeingSet then
                 optionTable[currOption].toggle = optionTable[currOption].toggle + 1
                 if optionTable[currOption].toggle > optionTable[currOption].toggleMax then optionTable[currOption].toggle = 0 end
                 if optionTable[currOption].toggleSaveName ~= nil then
@@ -1270,7 +1389,7 @@ local function before_mario_update(m)
                 inputStallTimerButton = inputStallToButton
                 play_sound(SOUND_MENU_CHANGE_SELECT, cameraToObject)
             end
-            if (m.controller.buttonPressed & B_BUTTON) ~= 0 then
+            if (controller.buttonPressed & B_BUTTON) ~= 0 then
                 options = false
                 inputStallTimerButton = inputStallToButton
             end
@@ -1279,6 +1398,30 @@ local function before_mario_update(m)
         if currOption < 1 then currOption = #optionTable end
         nullify_inputs(m)
     end
+
+    if creditsAndTransition then
+        if (controller.buttonDown & U_JPAD) ~= 0 then
+            creditScroll = creditScroll - 0.5
+        end
+        if (controller.buttonDown & D_JPAD) ~= 0 then
+            creditScroll = creditScroll + 0.5
+        end
+        if math.abs(controller.stickY) > 30 then
+            creditScroll = creditScroll + controller.stickY*-0.01
+        end
+
+        if inputStallTimerButton == 0 then
+            if (controller.buttonPressed & A_BUTTON) ~= 0 or (controller.buttonPressed & B_BUTTON) ~= 0 or (controller.buttonPressed & START_BUTTON) ~= 0 then
+                credits = false
+            end
+        end
+        nullify_inputs(m)
+        if creditScroll < 0 then creditScroll = 0 end
+        if creditScroll > creditScrollRange then creditScroll = creditScrollRange end
+    else
+        creditScroll = 0
+    end
+
 end
 
 hook_event(HOOK_BEFORE_MARIO_UPDATE, before_mario_update)
