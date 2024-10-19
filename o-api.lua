@@ -287,6 +287,28 @@ local function is_options_open()
     return options
 end
 
+---@param modName string
+---@param creditTo string Who did the thing
+---@param creditFor string What did they do
+local function credit_add(modName, creditTo, creditFor)
+    if #creditTable > 1 then
+        log_to_console("woag")
+        for i = 2, #creditTable do
+            if modName == creditTable[i].packName then
+                table_insert(creditTable[i], {creditTo = creditTo, creditFor = creditFor})
+                log_to_console("hi added :3")
+                return
+            end
+        end
+    end
+    local i = #creditTable + 1
+    creditTable[i] = {
+        packName = modName
+    }
+    table_insert(creditTable[i], {creditTo = creditTo, creditFor = creditFor})
+    log_to_console("oughh")
+end
+
 ---@param bool boolean
 local function restrict_palettes(bool)
     if bool == nil then bool = true end
@@ -393,6 +415,7 @@ _G.charSelect = {
     get_option = get_option,
     get_options_status = get_options_status,
     set_options_status = set_options_status,
+    credit_add = credit_add,
     restrict_palettes = restrict_palettes,
     restrict_movesets = restrict_movesets,
 
