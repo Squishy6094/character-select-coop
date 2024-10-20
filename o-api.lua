@@ -292,11 +292,9 @@ end
 ---@param creditFor string What did they do
 local function credit_add(modName, creditTo, creditFor)
     if #creditTable > 1 then
-        log_to_console("woag")
         for i = 2, #creditTable do
             if modName == creditTable[i].packName then
                 table_insert(creditTable[i], {creditTo = creditTo, creditFor = creditFor})
-                log_to_console("hi added :3")
                 return
             end
         end
@@ -306,7 +304,6 @@ local function credit_add(modName, creditTo, creditFor)
         packName = modName
     }
     table_insert(creditTable[i], {creditTo = creditTo, creditFor = creditFor})
-    log_to_console("oughh")
 end
 
 ---@param bool boolean
