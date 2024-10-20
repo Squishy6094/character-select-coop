@@ -85,6 +85,7 @@ local function character_add(name, description, credit, color, modelInfo, forceC
         starIcon = gTextures.star,
         camScale = type(camScale) == TYPE_INTEGER and camScale or 1,
         healthTexture = nil,
+        hasMoveset = false,
     })
     saveNameTable[#characterTable] = characterTable[#characterTable].saveName
     characterMovesets[#characterTable] = {}
@@ -126,6 +127,7 @@ local function character_edit(charNum, name, description, credit, color, modelIn
         starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce
         camScale = type(camScale) == TYPE_INTEGER and camScale or tableCache.camScale,
         healthTexture = tableCache.healthTexture,
+        hasMoveset = tableCache.hasMoveset,
     } or nil
 end
 
@@ -280,6 +282,7 @@ local function hook_moveset_event(hookEventType, func, charNum)
     if charNum > #characterTable then return end
     if type(func) ~= TYPE_FUNCTION then return end
     characterMovesets[charNum][hookEventType] = func
+    characterTable[charNum].hasMoveset = true
 end
 
 ---@return boolean

@@ -805,6 +805,7 @@ local function on_hud_render()
             local TEXT_ICON_DEFAULT = "?"
             local TEXT_SCALE = "Camera Scale: " .. character.camScale
             local TEXT_PRESET = "Preset Palette: "..(gPlayerSyncTable[0].presetPalette and "On" or "Off")
+            local TEXT_MOVESET = "Has Moveset: "..(character.hasMoveset and "Yes" or "No")
             local TEXT_PREF = "Preferred: " .. TEXT_PREF_LOAD
             local TEXT_PREF_COLOR = "Pref Color: R-" .. prefCharColor.r .. ", G-" .. prefCharColor.g .. ", B-" .. prefCharColor.b
 
@@ -870,8 +871,8 @@ local function on_hud_render()
             y = y + 7
             djui_hud_print_text(TEXT_SCALE, width - x + 8, y, 0.5)
             local modelId = gPlayerSyncTable[0].modelId and gPlayerSyncTable[0].modelId or defaultModels[gMarioStates[0].character.type]
+            y = y + 7
             if characterColorPresets[modelId] ~= nil then
-                y = y + 7
                 djui_hud_print_text(TEXT_PALETTE, width - x + 8, y, 0.5)
                 local x = x - djui_hud_measure_text(TEXT_PALETTE)*0.5
                 for i = 0, #characterColorPresets[modelId] do
@@ -880,7 +881,11 @@ local function on_hud_render()
                     djui_hud_set_color(characterColorPresets[modelId][i].r, characterColorPresets[modelId][i].g, characterColorPresets[modelId][i].g, 255)
                     djui_hud_render_rect(width - x + 7 + (6.5 * i), y + 2, 5, 5)
                 end
+                y = y + 7
+                djui_hud_set_color(character.color.r, character.color.g, character.color.b, 255)
             end
+            djui_hud_print_text(TEXT_MOVESET, width - x + 8, y, 0.5)
+            y = y + 7
 
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             djui_hud_print_text(TEXT_PRESET, width - x + 8, height - 29, 0.5)
