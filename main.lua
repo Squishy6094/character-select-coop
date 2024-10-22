@@ -117,7 +117,7 @@ optionTable = {
         toggleSaveName = "Anims",
         toggleDefault = 1,
         toggleMax = 1,
-        toggleNames = {"Off", "On"--[[, "On (30 fps)"]]},
+        toggleNames = {"Off", "On"},
         description = {"Toggles Animations In-Menu,", "Turning these off may", "Save Performance"}
     },
     [optionTableRef.inputLatency] = {
@@ -977,7 +977,7 @@ local function on_hud_render()
         djui_hud_render_rect(0, 48, width, 2)
         djui_hud_render_rect(width - 2, 0, 2, 50)
         djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
-        if TEX_OVERRIDE_HEADER then -- Render Override Header
+        if TEX_OVERRIDE_HEADER ~= nil then -- Render Override Header
             djui_hud_render_texture(TEX_OVERRIDE_HEADER, widthHalf - 128, 10, 1 / (TEX_OVERRIDE_HEADER.height*MATH_DIVIDE_32), 1 / (TEX_OVERRIDE_HEADER.height*MATH_DIVIDE_32))
         else
             djui_hud_render_texture(TEX_HEADER, widthHalf - 128, 10, 1, 1)
