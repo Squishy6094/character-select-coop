@@ -124,3 +124,41 @@ for i in pairs(gActiveMods) do
 end
 
 stopMovesets = false
+
+SEASON_EVENT_BIRTHDAY = 1
+SEASON_EVENT_CHRISTMAS = 2
+
+-- Holiday Detection by EmilyEmmi
+seasonalEvent = 0
+local time = get_time() - 3600 * 4
+local days = (time // 60 // 60 // 24) + 1
+local years = (days // 365.25)
+local year = 1970 + years
+days = days - years * 365 - years // 4 + years // 100 - years // 400
+while month < 12 do
+    month = month + 1
+    local DaysInMonth = 30
+    if month == 2 then
+        DaysInMonth = 28 + is_zero(year % 4) - is_zero(year % 100)
+            + is_zero(year % 400)
+    else
+        DaysInMonth = 30 + (month + bool_to_int(month > 7)) % 2
+    end
+    if days > DaysInMonth then
+        days = days - DaysInMonth
+    else
+        break
+    end
+end
+
+-- Apply Holiday
+-- December
+if month == 12 then
+    if days == 3 then
+        -- Character Select's Birthday
+        seasonalEvent = SEASON_EVENT_BIRTHDAY
+    else
+        -- Christmas
+        seasonalEvent = SEASON_EVENT_CHRISTMAS
+    end
+end
