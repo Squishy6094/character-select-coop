@@ -244,6 +244,13 @@ local defaultIcons = {
     [CT_WALUIGI] = gTextures.waluigi_head,
     [CT_WARIO] = gTextures.wario_head
 }
+local defaultModels = {
+    [CT_MARIO]   = E_MODEL_MARIO,
+    [CT_LUIGI]   = E_MODEL_LUIGI,
+    [CT_TOAD]    = E_MODEL_TOAD,
+    [CT_WALUIGI] = E_MODEL_WALUIGI,
+    [CT_WARIO]   = E_MODEL_WARIO
+}
 local defaultCamScales = {
     [CT_MARIO] = 1,
     [CT_LUIGI] = 1,
@@ -442,6 +449,8 @@ local altOffsetActs = {
     [ACT_GROUND_POUND] = true,
 }
 
+local prevBaseChar = gNetworkPlayers[0].modelIndex
+local prevBaseCharFrame = gNetworkPlayers[0].modelIndex
 --- @param m MarioState
 local function mario_update(m)
     if stallFrame == 1 or queueStorageFailsafe then
@@ -461,20 +470,30 @@ local function mario_update(m)
 
     if m.playerIndex == 0 and stallFrame > 1 then
         local np = gNetworkPlayers[0]
+        if djui_hud_is_pause_menu_created() and prevBaseCharFrame ~= np.modelIndex then
+            prevBaseChar = np.modelIndex
+        end
+        prevBaseCharFrame = np.modelIndex
         if currChar ~= 1 then
             np.overrideModelIndex = CT_MARIO
+        else
+            if prevBaseChar == nil then
+                prevBaseChar = np.modelIndex
+            end
+            np.overrideModelIndex = prevBaseChar
         end
         local modelIndex = np.overrideModelIndex
 
         gPlayerSyncTable[0].saveName = characterTable[currChar].saveName
 
         local defaultTable = characterTable[1]
-        defaultTable.forceChar = modelIndex
-        defaultTable.name = defaultNames[modelIndex]
-        defaultTable.color = defaultMenuColors[modelIndex]
+        defaultTable.forceChar = prevBaseChar
+        defaultTable.name = defaultNames[prevBaseChar]
+        defaultTable.color = defaultMenuColors[prevBaseChar]
         if currChar == 1 then
             defaultTable.lifeIcon = defaultIcons[modelIndex]
             defaultTable.camScale = defaultCamScales[modelIndex]
+            defaultTable.model = defaultModels[modelIndex]
         end
         if optionTable[optionTableRef.localModels].toggle > 0 then
             gPlayerSyncTable[0].modelId = characterTable[currChar].model
@@ -1321,17 +1340,17 @@ local function before_mario_update(m)
 
                 if currChar == 1 then
                     if (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60 then
-                        np.overrideModelIndex = np.overrideModelIndex + 1
+                        prevBaseChar = prevBaseChar + 1
                         inputStallTimerDirectional = inputStallToDirectional
                         play_character_sound(m, CHAR_SOUND_ATTACKED)
                     end
                     if (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60 then
-                        np.overrideModelIndex = np.overrideModelIndex ~= 0 and np.overrideModelIndex - 1 or #defaultNames
+                        prevBaseChar = prevBaseChar ~= 0 and prevBaseChar - 1 or #defaultModels
                         inputStallTimerDirectional = inputStallToDirectional
                         play_character_sound(m, CHAR_SOUND_ATTACKED)
                     end
-                    if np.overrideModelIndex > #defaultNames then np.overrideModelIndex = CT_MARIO end
-                    if np.overrideModelIndex < CT_MARIO then np.overrideModelIndex = #defaultNames end
+                    if prevBaseChar > #defaultModels then prevBaseChar = CT_MARIO end
+                    if prevBaseChar < CT_MARIO then prevBaseChar = #defaultModels end
                 end
             end
 

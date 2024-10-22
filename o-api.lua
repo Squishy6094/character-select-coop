@@ -200,7 +200,7 @@ local function character_get_current_table(tablePos)
     return characterTable[tablePos]
 end
 
---- @param localIndex integer
+--- @param localIndex integer|nil
 --- @return integer|nil
 local function character_get_current_number(localIndex)
     if localIndex == nil or localIndex == 0 then
