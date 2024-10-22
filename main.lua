@@ -47,12 +47,12 @@ characterTable = {
     [1] = {
         name = "Mario",
         saveName = "Default",
-        description = {"The vanilla cast for sm64coopdx!", "", "These Characters are swappable", "via the default Options Menu"},
+        description = {"The vanilla cast for sm64coopdx!", "", "These Characters are swappable", "by pressing Left/Right or", "via the default Options Menu"},
         credit = "Nintendo / Coop Team",
         color = {r = 255, g = 50, b = 50},
         model = nil,
         offset = 0,
-        forceChar = nil, -- Legacy Functionality
+        forceChar = nil,
         lifeIcon = gTextures.mario_head,
         starIcon = gTextures.star,
         camScale = 1.0,
