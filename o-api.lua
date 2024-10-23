@@ -278,7 +278,7 @@ end
 ---@param hookEventType LuaHookedEventType
 ---@param func function
 ---@param charNum integer|nil
-local function hook_moveset_event(hookEventType, func, charNum)
+local function character_hook_moveset(hookEventType, func, charNum)
     if charNum > #characterTable then return end
     if type(func) ~= TYPE_FUNCTION then return end
     characterMovesets[charNum][hookEventType] = func
@@ -429,5 +429,5 @@ _G.charSelect = {
     -- Custom Hooks --
     hook_allow_menu_open = hook_allow_menu_open,
     hook_render_in_menu = hook_render_in_menu,
-    hook_moveset_event = hook_moveset_event,
+    character_hook_moveset = character_hook_moveset,
 }
