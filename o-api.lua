@@ -278,7 +278,7 @@ end
 ---@param hookEventType LuaHookedEventType
 ---@param func function
 ---@param charNum integer|nil
-local function character_hook_moveset(hookEventType, func, charNum)
+local function character_hook_moveset(charNum, hookEventType, func)
     if charNum > #characterTable then return end
     if type(func) ~= TYPE_FUNCTION then return end
     characterMovesets[charNum][hookEventType] = func
