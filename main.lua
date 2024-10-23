@@ -472,6 +472,7 @@ local function mario_update(m)
         local np = gNetworkPlayers[0]
         if djui_hud_is_pause_menu_created() and prevBaseCharFrame ~= np.modelIndex then
             prevBaseChar = np.modelIndex
+            currChar = 1
         end
         prevBaseCharFrame = np.modelIndex
         if currChar ~= 1 then
