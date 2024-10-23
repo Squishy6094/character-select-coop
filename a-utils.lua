@@ -145,7 +145,6 @@ local function get_time_segmented()
         else
             DaysInMonth = 30 + (month + (month > 7 and 1 or 0)) % 2
         end
-        log_to_console(month .. " " .. DaysInMonth)
         if days > DaysInMonth then
             days = days - DaysInMonth
         else
