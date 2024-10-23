@@ -66,7 +66,7 @@ characterCaps = {}
 characterCelebrationStar = {}
 characterColorPresets = {}
 characterAnims = {}
-characterMovesets = {}
+characterMovesets = {[1] = {}}
 
 optionTableRef = {
     openInputs = 1,
