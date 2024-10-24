@@ -128,36 +128,10 @@ stopMovesets = false
 SEASON_EVENT_BIRTHDAY = 1
 SEASON_EVENT_CHRISTMAS = 2
 
--- Holiday Detection by EmilyEmmi
 seasonalEvent = 0
-local function get_time_segmented()
-    local time = get_time() - 3600 * 4
-    local days = (time // 60 // 60 // 24) + 1
-    local month = 0
-    local years = (days // 365.25)
-    local year = 1970 + years
-    days = days - years * 365 - years // 4 + years // 100 - years // 400
-    while month < 12 do
-        month = month + 1
-        local DaysInMonth = 30
-        if month == 2 then
-            DaysInMonth = 28 + (year%4 == 0 and 1 or 0) - (year%4 == 0 and 1 or 0) + (year%4 == 0 and 1 or 0)
-        else
-            DaysInMonth = 30 + (month + (month > 7 and 1 or 0)) % 2
-        end
-        if days > DaysInMonth then
-            days = days - DaysInMonth
-        else
-            break
-        end
-    end
-    return {days = days, month = month, year = year}
-end
-
--- Apply Holiday
 -- December
-if get_time_segmented().month == 12 then
-    if get_time_segmented().days == 3 then
+if get_date_and_time().month == 12 then
+    if get_date_and_time()().days == 3 then
         -- Character Select's Birthday
         seasonalEvent = SEASON_EVENT_BIRTHDAY
     else
