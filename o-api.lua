@@ -275,7 +275,7 @@ local function hook_render_in_menu(func, underText)
     end
 end
 
----@param hookEventType LuaHookedEventType
+---@param hookEventType LuaHookedEventType|integer
 ---@param func function
 ---@param charNum integer|nil
 local function character_hook_moveset(charNum, hookEventType, func)
@@ -420,7 +420,7 @@ _G.charSelect = {
     restrict_movesets = restrict_movesets,
 
     -- Misc --
-    dialog_set_replace_name = dialog_set_replace_name,
+    dialog_set_replace_name = dialog_set_replace_name, -- Function located in dialog.lua
 
     -- Tables --
     optionTableRef = optionTableRef,
