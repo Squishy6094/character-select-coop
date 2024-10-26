@@ -1,3 +1,6 @@
+
+if incompatibleClient then return 0 end
+
 local function find_character_number(index)
     if index == nil then index = 0 end
     for i = 1, #characterTable do

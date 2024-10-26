@@ -1,5 +1,7 @@
 -- Animations --
 
+if incompatibleClient then return 0 end
+
 local function character_anims(m)
     p = gPlayerSyncTable[m.playerIndex]
     if characterAnims[p.modelId] then

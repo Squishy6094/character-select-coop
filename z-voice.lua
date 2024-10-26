@@ -1,4 +1,5 @@
-if incompatibleClient then return end
+
+if incompatibleClient then return 0 end
 
 -- rewritten custom voice system for Character Select
 -- by Agent X
