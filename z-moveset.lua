@@ -108,3 +108,20 @@ local function on_death(m)
 end
 hook_event(HOOK_ON_DEATH, on_death)
 
+local function hud_render()
+    if stopMovesets or optionTable[optionTableRef.localMoveset].toggle == 0 then return end
+    local hook = HOOK_ON_HUD_RENDER
+    local currMoveset = characterMovesets[find_character_number(0)]
+    if currMoveset == nil or currMoveset[hook] == nil then return end
+    return currMoveset[hook]()
+end
+hook_event(HOOK_ON_HUD_RENDER, hud_render)
+
+local function hud_render_behind()
+    if stopMovesets or optionTable[optionTableRef.localMoveset].toggle == 0 then return end
+    local hook = HOOK_ON_HUD_RENDER_BEHIND
+    local currMoveset = characterMovesets[find_character_number(0)]
+    if currMoveset == nil or currMoveset[hook] == nil then return end
+    return currMoveset[hook]()
+end
+hook_event(HOOK_ON_HUD_RENDER_BEHIND, hud_render_behind)
