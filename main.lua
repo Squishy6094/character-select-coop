@@ -196,6 +196,7 @@ creditTable = {
         {creditTo = "xLuigiGamerx",    creditFor = "Main Contributer"},
         {creditTo = "OneCalledRPG",    creditFor = "Contributer"},
         {creditTo = "Cooliokid956",    creditFor = "Contributer"},
+        {creditTo = "EliteMasterEric", creditFor = "Dialog Replacement"}
     }
 }
 
