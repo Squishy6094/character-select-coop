@@ -128,3 +128,21 @@ local function hud_render_behind()
     return currMoveset[hook]()
 end
 hook_event(HOOK_ON_HUD_RENDER_BEHIND, hud_render_behind)
+
+local function level_init()
+    if stopMovesets or optionTable[optionTableRef.localMoveset].toggle == 0 then return end
+    local hook = HOOK_ON_LEVEL_INIT
+    local currMoveset = characterMovesets[find_character_number(0)]
+    if currMoveset == nil or currMoveset[hook] == nil then return end
+    return currMoveset[hook]()
+end
+hook_event(HOOK_ON_LEVEL_INIT, level_init)
+
+local function sync_valid()
+    if stopMovesets or optionTable[optionTableRef.localMoveset].toggle == 0 then return end
+    local hook = HOOK_ON_SYNC_VALID
+    local currMoveset = characterMovesets[find_character_number(0)]
+    if currMoveset == nil or currMoveset[hook] == nil then return end
+    return currMoveset[hook]()
+end
+hook_event(HOOK_ON_SYNC_VALID, sync_valid)
