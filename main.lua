@@ -1104,7 +1104,7 @@ local function on_hud_render()
                         local scale = (header and 0.3 or 0.2)*widthScale
                         djui_hud_print_text_interpolated(credit.textLeft, x, prevY, scale, x, y, scale)
                         if credit.textRight then
-                            local x = xRight - djui_hud_measure_text(credit.textRight)*0.2
+                            local x = xRight - djui_hud_measure_text(credit.textRight)*scale
                             local scale = 0.2*widthScale
                             djui_hud_print_text_interpolated(credit.textRight, x, prevY, scale, x, y, scale)
                         end
