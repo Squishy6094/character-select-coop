@@ -245,13 +245,6 @@ local defaultIcons = {
     [CT_WALUIGI] = gTextures.waluigi_head,
     [CT_WARIO] = gTextures.wario_head
 }
-local defaultModels = {
-    [CT_MARIO]   = E_MODEL_MARIO,
-    [CT_LUIGI]   = E_MODEL_LUIGI,
-    [CT_TOAD]    = E_MODEL_TOAD,
-    [CT_WALUIGI] = E_MODEL_WALUIGI,
-    [CT_WARIO]   = E_MODEL_WARIO
-}
 local defaultCamScales = {
     [CT_MARIO] = 1,
     [CT_LUIGI] = 1,
@@ -393,12 +386,27 @@ local function boot_note()
     end
 end
 
-local function menu_is_allowed()
+local function menu_is_allowed(m)
+    if m == nil then m = gMarioStates[0] end
+    -- API Check
     for _, func in pairs(allowMenu) do
         if not func() then
             return false
         end
     end
+
+    -- C-up Failsafe (Camera Softlocks)
+    if m.action == ACT_FIRST_PERSON or (m.prevAction == ACT_FIRST_PERSON and is_game_paused()) then
+        return false
+    elseif m.prevAction == ACT_FIRST_PERSON and not is_game_paused() then
+        m.prevAction = ACT_WALKING
+    end
+
+    -- Cutscene Check
+    if gNetworkPlayers[0].currActNum == 99 then return false end
+    if m.action == ACT_INTRO_CUTSCENE then return false end
+    if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then return false end
+
     return true
 end
 
@@ -1295,23 +1303,12 @@ local function before_mario_update(m)
         inputStallTimerDirectional = inputStallToDirectional
     end
 
-    if not menu_is_allowed() then
+    if not menu_is_allowed(m) then
         menu = false
         return
     end
 
     local cameraToObject = m.marioObj.header.gfx.cameraToObject
-
-    -- C-up Failsafe (Camera Softlocks)
-    if m.action == ACT_FIRST_PERSON or (m.prevAction == ACT_FIRST_PERSON and is_game_paused()) then
-        menu = false
-    elseif m.prevAction == ACT_FIRST_PERSON and not is_game_paused() then
-        m.prevAction = ACT_WALKING
-    end
-
-    if gNetworkPlayers[0].currActNum == 99 then menu = false end
-    if m.action == ACT_INTRO_CUTSCENE then menu = false end
-    if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then menu = false end
 
     if menuAndTransition and not options then
         if menu then
