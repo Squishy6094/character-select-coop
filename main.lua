@@ -679,6 +679,7 @@ local TEXT_PAUSE_Z_OPEN = "Z Button - Character Select"
 local TEXT_PAUSE_UNAVALIBLE = "Character Select is Unavalible"
 local TEXT_PAUSE_CURR_CHAR = "Current Character: "
 local TEXT_MOVESET_RESTRICTED = "Movesets are Restricted"
+local TEXT_PALETTE_RESTRICTED = "Palettes are Restricted"
 if math_random(100) == 64 then
     -- Easter Egg if you get lucky loading the mod Referencing the original sm64ex DynOS options by PeachyPeach >v<
     TEXT_PAUSE_Z_OPEN = "Z - DynOS"
@@ -1273,10 +1274,18 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, width - 20, 16 + currCharY, 1)
         end
 
-        if characterTable[currChar].hasMoveset and optionTable[optionTableRef.localMoveset].toggle > 0 and stopMovesets then
+        local char = characterTable[currChar]
+        if char.hasMoveset and optionTable[optionTableRef.localMoveset].toggle > 0 and stopMovesets then
             width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_MOVESET_RESTRICTED)
             djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_print_text(TEXT_MOVESET_RESTRICTED, width - 20, 43 + currCharY, 1)
+            currCharY = currCharY + 27
+            djui_hud_print_text(TEXT_MOVESET_RESTRICTED, width - 20, 16 + currCharY, 1)
+        end 
+        if stopPalettes then
+            width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PALETTE_RESTRICTED)
+            djui_hud_set_color(255, 255, 255, 255)
+            currCharY = currCharY + 27
+            djui_hud_print_text(TEXT_PALETTE_RESTRICTED, width - 20, 16 + currCharY, 1)
         end 
     end
 end
