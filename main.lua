@@ -600,12 +600,16 @@ local function on_star_or_key_grab(m, o, type)
     end
 end
 
+local settingModel
 function set_model(o, model)
+    if settingModel then return end
     if optionTable[optionTableRef.localModels].toggle == 0 then return end
     if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
         local i = network_local_index_from_global(o.globalPlayerIndex)
         if gPlayerSyncTable[i].modelId ~= nil and obj_has_model_extended(o, gPlayerSyncTable[i].modelId) == 0 then
+            settingModel = true
             obj_set_model_extended(o, gPlayerSyncTable[i].modelId)
+            settingModel = false
         end
         return
     end
@@ -613,7 +617,9 @@ function set_model(o, model)
         local i = network_local_index_from_global(o.parentObj.globalPlayerIndex)
         local starModel = characterCelebrationStar[gPlayerSyncTable[i].modelId]
         if gPlayerSyncTable[i].modelId ~= nil and starModel ~= nil and obj_has_model_extended(o, starModel) == 0 and not BowserKey then
+            settingModel = true
             obj_set_model_extended(o, starModel)
+            settingModel = false
         end
         return
     end
@@ -641,8 +647,10 @@ function set_model(o, model)
                 capModel = capModels.metalWing
             end
             if capModel ~= E_MODEL_NONE and capModel ~= E_MODEL_ERROR_MODEL and capModel ~= nil then
+                settingModel = true
                 obj_set_model_extended(o, capModel)
-            end
+                settingModel = false
+        end
         end
     end
 end
