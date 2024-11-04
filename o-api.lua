@@ -275,14 +275,25 @@ local function hook_render_in_menu(func, underText)
     end
 end
 
+---@param charNum integer|nil
 ---@param hookEventType LuaHookedEventType|integer
 ---@param func function
----@param charNum integer|nil
 local function character_hook_moveset(charNum, hookEventType, func)
     if charNum > #characterTable then return end
     if type(func) ~= TYPE_FUNCTION then return end
     characterMovesets[charNum][hookEventType] = func
     characterTable[charNum].hasMoveset = true
+end
+
+---@param unlockCondition function|boolean|nil
+---@param charNum integer|nil
+local function character_set_locked(charNum, unlockCondition)
+    if charNum > #characterTable or charNum < 2 then return end
+    if unlockCondition == nil then unlockCondition = false end
+    characterTable[charNum].locked = true
+    if currChar == charNum then
+        currChar = 1
+    end
 end
 
 ---@return boolean
@@ -398,6 +409,7 @@ _G.charSelect = {
     character_get_voice = character_get_voice,
     character_get_life_icon = life_icon_from_local_index, -- Function located in n-hud.lua
     character_get_star_icon = star_icon_from_local_index, -- Function located in n-hud.lua
+    character_set_locked = character_set_locked,
 
     -- Hud Element Functions --
     hud_hide_element = hud_hide_element,
