@@ -412,6 +412,16 @@ local function menu_is_allowed(m)
     return true
 end
 
+local function find_character_number(index)
+    if index == nil then index = 0 end
+    for i = 1, #characterTable do
+        if characterTable[i].saveName == gPlayerSyncTable[index].saveName then
+            return i
+        end
+    end
+    return 1
+end
+
 -------------------
 -- Model Handler --
 -------------------
@@ -478,7 +488,7 @@ local function mario_update(m)
         queueStorageFailsafe = false
     end
 
-    if stallFrame < 2 then
+    if stallFrame < 3 then
         stallFrame = stallFrame + 1
     end
 
@@ -565,14 +575,19 @@ local function mario_update(m)
         for i = 2, #characterTable do
             local currChar = characterTable[i]
             if currChar.locked then
-                local unlock = characterUnlock[i]
+                local unlock = characterUnlock[i].check
+                local notif = characterUnlock[i].notif
                 if type(unlock) == TYPE_FUNCTION then
                     if unlock() then
                         currChar.locked = false
-                        djui_popup_create("", 3)
+                        if stallFrame == 3 and notif then
+                            if optionTable[optionTableRef.notification].toggle > 0 then
+                                djui_popup_create('Character Select:\nUnlocked '..currChar.name..'\nas a Playable Character!', 3)
+                            end
+                        end
                     end
                 elseif type(unlock) == TYPE_BOOLEAN then
-                    currChar.locked = unlock
+                    currChar.locked = not unlock
                 end
             end
         end
