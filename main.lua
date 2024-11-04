@@ -57,6 +57,7 @@ characterTable = {
         starIcon = gTextures.star,
         camScale = 1.0,
         hasMoveset = false,
+        locked = false,
     },
 }
 
@@ -67,6 +68,7 @@ characterCelebrationStar = {}
 characterColorPresets = {}
 characterAnims = {}
 characterMovesets = {[1] = {}}
+characterUnlock = {}
 
 optionTableRef = {
     openInputs = 1,
@@ -295,7 +297,7 @@ local function load_preferred_char()
     end
     if savedChar ~= nil and savedChar ~= "Default" then
         for i = 2, #characterTable do
-            if characterTable[i].saveName == savedChar then
+            if characterTable[i].saveName == savedChar and not characterTable[i].locked then
                 currChar = i
                 if optionTable[optionTableRef.localModels].toggle == 1 then
                     if optionTable[optionTableRef.notification].toggle > 0 then
@@ -423,6 +425,9 @@ local ignoredSurfaces = {
     SURFACE_BURNING, SURFACE_QUICKSAND, SURFACE_INSTANT_QUICKSAND, SURFACE_INSTANT_MOVING_QUICKSAND, SURFACE_DEEP_MOVING_QUICKSAND, SURFACE_INSTANT_QUICKSAND, SURFACE_DEEP_QUICKSAND, SURFACE_SHALLOW_MOVING_QUICKSAND,
     SURFACE_SHALLOW_QUICKSAND, SURFACE_WARP, SURFACE_LOOK_UP_WARP, SURFACE_WOBBLING_WARP, SURFACE_INSTANT_WARP_1B, SURFACE_INSTANT_WARP_1C, SURFACE_INSTANT_WARP_1D, SURFACE_INSTANT_WARP_1E
 }
+
+local TYPE_FUNCTION = "function"
+local TYPE_BOOLEAN = "boolean"
 
 local menuActBlacklist = {
     -- Star Acts
@@ -556,6 +561,22 @@ local function mario_update(m)
             noLoop = true
         end
 
+        -- Check for Locked Chars
+        for i = 2, #characterTable do
+            local currChar = characterTable[i]
+            if currChar.locked then
+                local unlock = characterUnlock[i]
+                if type(unlock) == TYPE_FUNCTION then
+                    if unlock() then
+                        currChar.locked = false
+                        djui_popup_create("", 3)
+                    end
+                elseif type(unlock) == TYPE_BOOLEAN then
+                    currChar.locked = unlock
+                end
+            end
+        end
+
         --Open Credits
         if optionTable[optionTableRef.credits].toggle > 0 then
             credits = true
@@ -650,7 +671,7 @@ function set_model(o, model)
                 settingModel = true
                 obj_set_model_extended(o, capModel)
                 settingModel = false
-        end
+            end
         end
     end
 end
@@ -689,6 +710,7 @@ local TEXT_PAUSE_CURR_CHAR = "Current Character: "
 local TEXT_MOVESET_RESTRICTED = "Movesets are Restricted"
 local TEXT_PALETTE_RESTRICTED = "Palettes are Restricted"
 local TEXT_MOVESET_AND_PALETTE_RESTRICTED = "Moveset and Palettes are Restricted"
+local TEXT_CHAR_LOCKED = "Locked"
 if math_random(100) == 64 then
     -- Easter Egg if you get lucky loading the mod Referencing the original sm64ex DynOS options by PeachyPeach >v<
     TEXT_PAUSE_Z_OPEN = "Z - DynOS"
@@ -954,8 +976,13 @@ local function on_hud_render()
         local buttonX = 20 * widthScale
         local buttonAnimX = buttonX + math_sin(buttonAnimTimer * 0.05) * 2.5 + 5
         for i = -1, 4 do
-            if characterTable[i + currChar] ~= nil then
-                buttonColor = characterTable[i + currChar].color
+            local char = characterTable[i + currChar]
+            if char ~= nil then
+                if not char.locked then
+                    buttonColor = char.color
+                else
+                    buttonColor = {r = char.color.r*0.5, g = char.color.g*0.5, b = char.color.b*0.5}
+                end
                 djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
                 local x = buttonX
                 if i == 0 then
@@ -974,7 +1001,11 @@ local function on_hud_render()
                 djui_hud_render_rect(x + 1, y + 1, 68, 18)
                 djui_hud_set_font(FONT_TINY)
                 djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
-                djui_hud_print_text(characterTable[currChar + i].name, x + 5, y + 5, 0.6)
+                local charName = char.name
+                if char.locked then
+                    charName = TEXT_CHAR_LOCKED
+                end
+                djui_hud_print_text(charName, x + 5, y + 5, 0.6)
             end
         end
 
@@ -1283,7 +1314,6 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, width - 20, 16 + currCharY, 1)
         end
 
-        local char = characterTable[currChar]
         local text = nil
         if stopMovesets and stopPalettes then
             text = TEXT_MOVESET_AND_PALETTE_RESTRICTED
@@ -1304,7 +1334,6 @@ end
 local function before_mario_update(m)
     if m.playerIndex ~= 0 then return end
     local controller = m.controller
-    local np = gNetworkPlayers[0]
     if inputStallTimerButton > 0 then inputStallTimerButton = inputStallTimerButton - 1 end
     if inputStallTimerDirectional > 0 then inputStallTimerDirectional = inputStallTimerDirectional - 1 end
 
@@ -1335,6 +1364,11 @@ local function before_mario_update(m)
             if inputStallTimerDirectional == 0 and optionTable[optionTableRef.localModels].toggle ~= 0 and not charBeingSet then
                 if (controller.buttonPressed & D_JPAD) ~= 0 or (controller.buttonPressed & D_CBUTTONS) ~= 0 or controller.stickY < -60 then
                     currChar = currChar + 1
+                    if characterTable[currChar] and characterTable[currChar].locked then
+                        repeat
+                            currChar = currChar + 1
+                        until (not characterTable[currChar].locked) or currChar > #characterTable
+                    end
                     if (controller.buttonPressed & D_CBUTTONS) == 0 then
                         inputStallTimerDirectional = inputStallToDirectional
                     else
@@ -1350,6 +1384,11 @@ local function before_mario_update(m)
                 end
                 if (controller.buttonPressed & U_JPAD) ~= 0 or (controller.buttonPressed & U_CBUTTONS) ~= 0 or controller.stickY > 60 then
                     currChar = currChar - 1
+                    if characterTable[currChar] and characterTable[currChar].locked then
+                        repeat
+                            currChar = currChar - 1
+                        until (not characterTable[currChar].locked) or currChar < 1
+                    end
                     if (controller.buttonPressed & U_CBUTTONS) == 0 then
                         inputStallTimerDirectional = inputStallToDirectional
                     else
@@ -1523,17 +1562,19 @@ local function chat_command(msg)
 
     -- Name Check
     for i = 1, #characterTable do
-        if msg == string_lower(characterTable[i].name) or msg == string_underscore_to_space(string_lower(characterTable[i].saveName)) then
-            currChar = i
-            djui_chat_message_create('Character set to "' .. characterTable[i].name .. '" Successfully!')
-            return true
+        if not characterTable[i].locked then
+            if msg == string_lower(characterTable[i].name) or msg == string_underscore_to_space(string_lower(characterTable[i].saveName)) then
+                currChar = i
+                djui_chat_message_create('Character set to "' .. characterTable[i].name .. '" Successfully!')
+                return true
+            end
         end
     end
 
     -- Number Check
     if tonumber(msg) then
         msg = tonumber(msg)
-        if msg > 0 and msg <= #characterTable then
+        if msg > 0 and msg <= #characterTable and not characterTable[msg].locked then
             currChar = msg
             djui_chat_message_create('Character set to "' .. characterTable[msg].name .. '" Successfully!')
             return true
