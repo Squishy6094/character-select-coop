@@ -1005,7 +1005,6 @@ local function on_hud_render()
         local charNum = -1
         for i = -1, 4 do
             charNum = currChar + i
-            djui_chat_message_create("A "..i.." "..charNum)
             local char = characterTable[charNum]
             if optionTable[optionTableRef.showLocked].toggle == 0 and char ~= nil and char.locked then
                 if i < 0 then
@@ -1020,7 +1019,6 @@ local function on_hud_render()
                     charNum = charNum - 1
                 end
                 charNum = charNum + i
-                djui_chat_message_create("B "..i.." "..charNum)
             else
             end
             local char = characterTable[charNum]
