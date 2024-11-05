@@ -141,7 +141,7 @@ optionTable = {
         toggleSaveName = "showLocked",
         toggleDefault = 1,
         toggleMax = 1,
-        description = {"Toggles if locked CHaracters", "Display In-Menu"}
+        description = {"Toggles if Locked Characters", "Display In-Menu"}
     },
     [optionTableRef.autoPalette] = {
         name = "Auto-Apply Palette",
@@ -1004,19 +1004,23 @@ local function on_hud_render()
         local buttonAnimX = buttonX + math_sin(buttonAnimTimer * 0.05) * 2.5 + 5
         local charNum = -1
         for i = -1, 4 do
-            charNum = currChar
+            charNum = currChar + i
+            djui_chat_message_create("A "..i.." "..charNum)
             local char = characterTable[charNum]
             if optionTable[optionTableRef.showLocked].toggle == 0 and char ~= nil and char.locked then
                 if i < 0 then
                     repeat 
                         charNum = charNum - 1
                     until characterTable[charNum] == nil or (not characterTable[charNum].locked)
+                    charNum = charNum + 1
                 else
                     repeat 
                         charNum = charNum + 1
                     until characterTable[charNum] == nil or (not characterTable[charNum].locked)
+                    charNum = charNum - 1
                 end
                 charNum = charNum + i
+                djui_chat_message_create("B "..i.." "..charNum)
             else
             end
             local char = characterTable[charNum]
