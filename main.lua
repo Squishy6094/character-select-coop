@@ -71,18 +71,22 @@ characterMovesets = {[1] = {}}
 characterUnlock = {}
 
 optionTableRef = {
+    -- Menu
     openInputs = 1,
     notification = 2,
     menuColor = 3,
     anims = 4,
     inputLatency = 5,
-    autoPalette = 6,
-    localMoveset = 7,
-    localModels = 8,
-    localVoices = 9,
-    credits = 10,
-    debugInfo = 11,
-    resetSaveData = 12,
+    showLocked = 6,
+    -- Characters
+    autoPalette = 7,
+    localMoveset = 8,
+    localModels = 9,
+    localVoices = 10,
+    -- CS
+    credits = 11,
+    debugInfo = 12,
+    resetSaveData = 13,
 }
 
 optionTable = {
@@ -114,7 +118,7 @@ optionTable = {
         description = {"Toggles the Menu Color"}
     },
     [optionTableRef.anims] = {
-        name = "Animations",
+        name = "Menu Anims",
         toggle = tonumber(mod_storage_load("Anims")),
         toggleSaveName = "Anims",
         toggleDefault = 1,
@@ -130,6 +134,14 @@ optionTable = {
         toggleMax = 2,
         toggleNames = {"Slow", "Normal", "Fast"},
         description = {"Sets how fast you scroll", "throughout the Menu"}
+    },
+    [optionTableRef.showLocked] = {
+        name = "Show Locked Chars",
+        toggle = tonumber(mod_storage_load("showLocked")),
+        toggleSaveName = "showLocked",
+        toggleDefault = 1,
+        toggleMax = 1,
+        description = {"Toggles if locked CHaracters", "Display In-Menu"}
     },
     [optionTableRef.autoPalette] = {
         name = "Auto-Apply Palette",
@@ -169,7 +181,7 @@ optionTable = {
         toggleDefault = 0,
         toggleMax = 1,
         toggleNames = {"", ""},
-        description = {"Shows the amazing people who", "Contributed to both", "Character Select and", "it's packs!"}
+        description = {"Thank you for choosing", "Character Select!"}
     },
     [optionTableRef.debugInfo] = {
         name = "Debugging Info",
@@ -990,8 +1002,24 @@ local function on_hud_render()
         local buttonColor = {}
         local buttonX = 20 * widthScale
         local buttonAnimX = buttonX + math_sin(buttonAnimTimer * 0.05) * 2.5 + 5
+        local charNum = -1
         for i = -1, 4 do
-            local char = characterTable[i + currChar]
+            charNum = currChar
+            local char = characterTable[charNum]
+            if optionTable[optionTableRef.showLocked].toggle == 0 and char ~= nil and char.locked then
+                if i < 0 then
+                    repeat 
+                        charNum = charNum - 1
+                    until characterTable[charNum] == nil or (not characterTable[charNum].locked)
+                else
+                    repeat 
+                        charNum = charNum + 1
+                    until characterTable[charNum] == nil or (not characterTable[charNum].locked)
+                end
+                charNum = charNum + i
+            else
+            end
+            local char = characterTable[charNum]
             if char ~= nil then
                 if not char.locked then
                     buttonColor = char.color
