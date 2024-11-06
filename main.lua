@@ -424,16 +424,6 @@ local function menu_is_allowed(m)
     return true
 end
 
-local function find_character_number(index)
-    if index == nil then index = 0 end
-    for i = 1, #characterTable do
-        if characterTable[i].saveName == gPlayerSyncTable[index].saveName then
-            return i
-        end
-    end
-    return 1
-end
-
 -------------------
 -- Model Handler --
 -------------------
