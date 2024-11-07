@@ -237,8 +237,8 @@ function character_get_voice(m)
     return characterVoices[gPlayerSyncTable[m.playerIndex].modelId]
 end
 
----@param unlockCondition function|boolean|nil
 ---@param charNum integer|nil
+---@param unlockCondition function|boolean|nil
 ---@param notify boolean|nil
 local function character_set_locked(charNum, unlockCondition, notify)
     if charNum == nil or charNum > #characterTable or charNum < 2 then return end

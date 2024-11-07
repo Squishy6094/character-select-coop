@@ -377,7 +377,7 @@ local function reset_options(wasChatTriggered)
         promptedAreYouSure = true
     else
         djui_chat_message_create("\\#ff3333\\Character Select Save Data Reset!")
-        djui_chat_message_create("Note: If your issue has not been resolved, you may need to manually delete your save data via the directory below:\n\\#dcdcFF\\sm64ex-coop/sav/character-select-coop.sav")
+        djui_chat_message_create("Note: If your issue has not been resolved, you may need to manually delete your save data via the directory below:\n\\#dcdcFF\\%appdata%/sm64coopdx/sav/character-select-coop.sav")
         for i = 1, #optionTable do
             optionTable[i].toggle = optionTable[i].toggleDefault
             if optionTable[i].toggleSaveName ~= nil then
