@@ -4,6 +4,9 @@
 
 if incompatibleClient then return 0 end
 
+-- localize functions to improve performance - n-hud.lua
+local hud_get_value,hud_set_value,djui_hud_print_text,tostring,hud_set_flash,get_global_timer,hud_get_flash,djui_hud_get_screen_width,math_ceil,obj_get_first_with_behavior_id,get_behavior_from_id,count_objects_with_behavior,djui_hud_render_rect,djui_hud_set_resolution,djui_hud_get_screen_height,djui_hud_set_color,djui_hud_set_font,djui_hud_measure_text,djui_chat_message_create,hud_is_hidden,djui_is_playerlist_open = hud_get_value,hud_set_value,djui_hud_print_text,tostring,hud_set_flash,get_global_timer,hud_get_flash,djui_hud_get_screen_width,math.ceil,obj_get_first_with_behavior_id,get_behavior_from_id,count_objects_with_behavior,djui_hud_render_rect,djui_hud_set_resolution,djui_hud_get_screen_height,djui_hud_set_color,djui_hud_set_font,djui_hud_measure_text,djui_chat_message_create,hud_is_hidden,djui_is_playerlist_open
+
 local sHudElements = {
     [HUD_DISPLAY_FLAG_LIVES] = true,
     [HUD_DISPLAY_FLAG_STAR_COUNT] = true,
@@ -34,9 +37,6 @@ function hud_get_element(hudElement)
 end
 
 local MATH_DIVIDE_16 = 1/16
-
--- Localize Functions to improve performence
-local texture_override_set,texture_override_reset,djui_hud_print_text,djui_hud_render_texture,tostring,hud_set_value,hud_get_value,hud_get_flash,djui_hud_get_screen_width,djui_hud_render_rect,math_ceil = texture_override_set,texture_override_reset,djui_hud_print_text,djui_hud_render_texture,tostring,hud_set_value,hud_get_value,hud_get_flash,djui_hud_get_screen_width,djui_hud_render_rect,math.ceil
 
 local FONT_USER = FONT_NORMAL
 

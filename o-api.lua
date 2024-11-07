@@ -1,5 +1,7 @@
-
 if incompatibleClient then return 0 end
+
+-- localize functions to improve performance - o-api.lua
+local table_insert,djui_hud_measure_text,smlua_model_util_get_id,type,tonumber = table.insert,djui_hud_measure_text,smlua_model_util_get_id,type,tonumber
 
 --- @class CharacterTable
 --- @field public name string
@@ -13,9 +15,6 @@ if incompatibleClient then return 0 end
 --- @field public camScale integer
 --- @field public offset integer
 
--- localize functions to improve performance
-local smlua_model_util_get_id,table_insert,type,djui_hud_measure_text,tonumber = smlua_model_util_get_id,table.insert,type,djui_hud_measure_text,tonumber
-
 local characterVoices = {}
 local saveNameTable = {}
 
@@ -28,7 +27,7 @@ local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 local function split_text_into_lines(text)
     local words = {}
     for word in text:gmatch("%S+") do
-        table.insert(words, word)
+        table_insert(words, word)
     end
 
     local lines = {}
@@ -38,11 +37,11 @@ local function split_text_into_lines(text)
         if measuredWidth <= 100 then
             currentLine = currentLine .. " " .. word
         else
-            table.insert(lines, currentLine)
+            table_insert(lines, currentLine)
             currentLine = word
         end
     end
-    table.insert(lines, currentLine) -- add the last line
+    table_insert(lines, currentLine) -- add the last line
 
     return lines
 end

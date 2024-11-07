@@ -1,5 +1,7 @@
-
 if incompatibleClient then return 0 end
+
+-- localize functions to improve performance - z-voice.lua
+local type,audio_sample_stop,audio_sample_load,math_random,audio_sample_play,is_game_paused,table_insert,play_character_sound = type,audio_sample_stop,audio_sample_load,math.random,audio_sample_play,is_game_paused,table.insert,play_character_sound
 
 -- rewritten custom voice system for Character Select
 -- by Agent X
@@ -87,7 +89,7 @@ local function custom_character_sound(m, sound)
             end
         end
         -- choose a random sample
-        sample = voice[math.random(#voice)]
+        sample = voice[math_random(#voice)]
     end
 
     -- play the sample
@@ -122,7 +124,7 @@ local function custom_character_snore(m)
         snoreTable = {}
         for i = CHAR_SOUND_SNORING1, CHAR_SOUND_SNORING3 do
             if voice[i] ~= nil then
-                table.insert(snoreTable, voice[i])
+                table_insert(snoreTable, voice[i])
             end
         end
     end

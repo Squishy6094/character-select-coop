@@ -2,6 +2,9 @@
 -- https://github.com/coop-deluxe/sm64coopdx/pull/321 --
 if not smlua_text_utils_dialog_get then return end
 
+-- localize functions to improve performance - dialog.lua
+local smlua_text_utils_dialog_replace,smlua_text_utils_dialog_get = smlua_text_utils_dialog_replace,smlua_text_utils_dialog_get
+
 local DIALOG_NAME = "Mario"
 
 ---@param name string

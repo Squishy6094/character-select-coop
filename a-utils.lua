@@ -1,3 +1,6 @@
+-- localize functions to improve performance - a-utils.lua
+local string_lower,string_format,table_insert,get_date_and_time = string.lower,string.format,table.insert,get_date_and_time
+
 if VERSION_NUMBER < 37 then
     djui_popup_create("\n\\#FFAAAA\\Character Select requires\n CoopDX v1 or higher use!\n\nYou can find CoopDX here:\n\\#6666FF\\https://sm64coopdx.com", 5)
     incompatibleClient = true
@@ -13,9 +16,6 @@ for i in pairs(gActiveMods) do
         break
     end
 end
-
--- localize functions to improve performance
-local string_lower,table_insert = string.lower,table.insert
 
 local saveableCharacters = {
     ["1"] = true,
@@ -89,7 +89,7 @@ end
 --- Splits a string into a table by spaces
 function string_split(string)
     local result = {}
-    for match in string:gmatch(string.format("[^%s]+", " ")) do
+    for match in string:gmatch(string_format("[^%s]+", " ")) do
         table_insert(result, match)
     end
     return result

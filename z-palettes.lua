@@ -1,5 +1,8 @@
-
 if incompatibleClient then return 0 end
+
+-- localize functions to improve performance - z-palettes.lua
+local network_player_set_override_palette_color,network_player_reset_override_palette = network_player_set_override_palette_color,network_player_reset_override_palette
+
 
 characterColorPresets = {
     [E_MODEL_MARIO] = {

@@ -4,8 +4,8 @@
 
 if incompatibleClient then return 0 end
 
--- localize functions to improve performance
-local mod_storage_load,tonumber,djui_popup_create,mod_storage_save,tostring,djui_chat_message_create,camera_freeze,hud_hide,vec3f_copy,set_mario_action,set_mario_animation,camera_unfreeze,hud_show,obj_has_behavior_id,network_local_index_from_global,obj_has_model_extended,obj_set_model_extended,get_id_from_behavior,nearest_player_to_object,math_random,djui_hud_set_resolution,djui_hud_set_font,djui_hud_get_screen_width,maxf,djui_hud_set_color,djui_hud_render_rect,djui_hud_measure_text,djui_hud_print_text,math_ceil,math_abs,math_sin,min,math_min,minf,djui_hud_set_rotation,djui_hud_is_pause_menu_created,is_game_paused,hud_is_hidden,obj_get_first_with_behavior_id,hud_get_value,hud_set_value,play_sound,string_lower = mod_storage_load,tonumber,djui_popup_create,mod_storage_save,tostring,djui_chat_message_create,camera_freeze,hud_hide,vec3f_copy,set_mario_action,set_mario_animation,camera_unfreeze,hud_show,obj_has_behavior_id,network_local_index_from_global,obj_has_model_extended,obj_set_model_extended,get_id_from_behavior,nearest_player_to_object,math.random,djui_hud_set_resolution,djui_hud_set_font,djui_hud_get_screen_width,maxf,djui_hud_set_color,djui_hud_render_rect,djui_hud_measure_text,djui_hud_print_text,math.ceil,math.abs,math.sin,min,math.min,minf,djui_hud_set_rotation,djui_hud_is_pause_menu_created,is_game_paused,hud_is_hidden,obj_get_first_with_behavior_id,hud_get_value,hud_set_value,play_sound,string.lower
+-- localize functions to improve performance - main.lua
+local mod_storage_load,tonumber,mod_storage_save,djui_popup_create,tostring,djui_chat_message_create,is_game_paused,obj_get_first_with_behavior_id,djui_hud_is_pause_menu_created,camera_freeze,hud_hide,vec3f_copy,set_mario_action,set_mario_animation,camera_unfreeze,hud_show,type,get_id_from_behavior,obj_has_behavior_id,network_local_index_from_global,obj_has_model_extended,obj_set_model_extended,nearest_player_to_object,math_random,djui_hud_set_resolution,djui_hud_set_font,djui_hud_get_screen_width,maxf,djui_hud_set_color,djui_hud_render_rect,djui_hud_measure_text,djui_hud_print_text,min,math_min,math_ceil,math_abs,math_sin,minf,djui_hud_set_rotation,table_insert,djui_hud_print_text_interpolated,math_max,play_sound,play_character_sound,string_lower = mod_storage_load,tonumber,mod_storage_save,djui_popup_create,tostring,djui_chat_message_create,is_game_paused,obj_get_first_with_behavior_id,djui_hud_is_pause_menu_created,camera_freeze,hud_hide,vec3f_copy,set_mario_action,set_mario_animation,camera_unfreeze,hud_show,type,get_id_from_behavior,obj_has_behavior_id,network_local_index_from_global,obj_has_model_extended,obj_set_model_extended,nearest_player_to_object,math.random,djui_hud_set_resolution,djui_hud_set_font,djui_hud_get_screen_width,maxf,djui_hud_set_color,djui_hud_render_rect,djui_hud_measure_text,djui_hud_print_text,min,math.min,math.ceil,math.abs,math.sin,minf,djui_hud_set_rotation,table.insert,djui_hud_print_text_interpolated,math.max,play_sound,play_character_sound,string.lower
 
 menu = false
 menuAndTransition = false
@@ -842,7 +842,7 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_NAME, width - textX - djui_hud_measure_text(TEXT_NAME) * 0.3, 55, 0.6)
             djui_hud_set_font(FONT_TINY)
             local creditScale = 0.6 
-            creditScale = math.min(creditScale, 100/djui_hud_measure_text(TEXT_CREDIT))
+            creditScale = math_min(creditScale, 100/djui_hud_measure_text(TEXT_CREDIT))
             djui_hud_print_text(TEXT_CREDIT, width - textX - djui_hud_measure_text(TEXT_CREDIT) * creditScale *0.5, 74, creditScale)
             djui_hud_set_font(FONT_ALIASED)
             djui_hud_print_text(TEXT_DESCRIPTION, width - textX - djui_hud_measure_text(TEXT_DESCRIPTION) * 0.2, 85, 0.4)
@@ -994,6 +994,7 @@ local function on_hud_render()
         local buttonAnimX = buttonX + math_sin(buttonAnimTimer * 0.05) * 2.5 + 5
         local charNum = -1
         for i = -1, 4 do
+            -- Hide Locked Characters based on Toggle
             charNum = currChar + i
             local char = characterTable[charNum]
             if optionTable[optionTableRef.showLocked].toggle == 0 and char ~= nil and char.locked then
@@ -1009,8 +1010,8 @@ local function on_hud_render()
                     charNum = charNum - 1
                 end
                 charNum = charNum + i
-            else
             end
+
             local char = characterTable[charNum]
             if char ~= nil then
                 if not char.locked then
@@ -1164,10 +1165,10 @@ local function on_hud_render()
                 local renderList = {}
                 for i = 1, #creditTable do
                     local credit = creditTable[i]
-                    table.insert(renderList, {textLeft = credit.packName, font = FONT_ALIASED})
+                    table_insert(renderList, {textLeft = credit.packName, font = FONT_ALIASED})
                     for i = 1, #credit do
                         local credit = credit[i]
-                        table.insert(renderList, {textLeft = credit.creditTo, textRight = credit.creditFor, font = FONT_NORMAL})
+                        table_insert(renderList, {textLeft = credit.creditTo, textRight = credit.creditFor, font = FONT_NORMAL})
                     end
                 end
 
@@ -1201,7 +1202,7 @@ local function on_hud_render()
                         prevY = prevY + 2
                     end
                 end
-                creditScrollRange = math.max(((y + creditScroll)) - (height - 36), 0)
+                creditScrollRange = math_max(((y + creditScroll)) - (height - 36), 0)
                 prevCreditScroll = creditScroll
 
                 for i = 1, 8 do
