@@ -256,7 +256,17 @@ end
 
 ---@return string
 local function version_get()
-    return MOD_VERSION
+    return MOD_VERSION_STRING
+end
+
+---@return table
+local function version_get_full()
+    return {
+        api = MOD_VERSION_API,
+        major = MOD_VERSION_MAJOR,
+        minor = MOD_VERSION_MINOR,
+        indev = MOD_VERSION_INDEV
+    }
 end
 
 ---@return boolean
@@ -424,6 +434,7 @@ _G.charSelect = {
     -- Menu Functions --
     header_set_texture = header_set_texture, -- Function located in main.lua
     version_get = version_get,
+    version_get_full = version_get_full,
     is_menu_open = is_menu_open,
     set_menu_open = set_menu_open,
     is_options_open = is_options_open,
