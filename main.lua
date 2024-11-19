@@ -1,5 +1,5 @@
 -- name: Character Select
--- description:\\#ffff33\\--- Character Select Coop v1.10 ---\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
+-- description:\\#ffff33\\--- Character Select Coop v1.11 ---\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
 -- pausable: false
 
 if incompatibleClient then return 0 end
@@ -716,7 +716,7 @@ local inputStallToButton = 10
 --Basic Menu Text
 local TEXT_OPTIONS_HEADER = "Menu Options"
 local TEXT_OPTIONS_HEADER_API = "API Options"
-local TEXT_VERSION = "Version: " .. MOD_VERSION .. " | sm64coopdx"
+local TEXT_VERSION = "Version: " .. MOD_VERSION_STRING .. " | sm64coopdx"
 local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
 local TEXT_DESCRIPTION = "Character Description:"
 local TEXT_PREF_SAVE = "Press A to Set as Preferred Character"
