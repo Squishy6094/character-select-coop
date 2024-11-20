@@ -100,11 +100,9 @@ local defaultIcons = {
 --- This function can return nil. if this is the case, render `djui_hud_print_text("?", x, y, 1)`
 function life_icon_from_local_index(localIndex)
     for i = 1, #characterTable do
-        if i == 1 and characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
-            return defaultIcons[gMarioStates[localIndex].character.type]
-        end
-        if characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
-            return characterTable[i].lifeIcon
+        local char = characterTable[i]
+        if char.saveName == gPlayerSyncTable[localIndex].saveName then
+            return char[gPlayerSyncTable[localIndex].currAlt].lifeIcon
         end
     end
     return nil
@@ -116,8 +114,9 @@ end
 --- Icons can only be seen by users who have the character avalible to them
 function star_icon_from_local_index(localIndex)
     for i = 1, #characterTable do
-        if characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
-            return characterTable[i].starIcon
+        local char = characterTable[i]
+        if char.saveName == gPlayerSyncTable[localIndex].saveName then
+            return char[gPlayerSyncTable[localIndex].currAlt].starIcon
         end
     end
     return gTextures.star
@@ -162,7 +161,7 @@ local function render_hud_mario_lives()
 
     local x = 22
     local y = 15 -- SCREEN_HEIGHT - 209 - 16
-    local lifeIcon = characterTable[currChar].lifeIcon
+    local lifeIcon = life_icon_from_local_index(0)
 
     if lifeIcon == nil then
         djui_hud_print_text("?", x, y, 1)

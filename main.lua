@@ -41,27 +41,108 @@ local TEXT_PREF_LOAD = "Default"
     We highly recommend you create your own mod and use the
     API to add characters, this ensures your pack is easy
     to use for anyone and low on file space!
+    
+local defaultForceChar = {
+    [CT_MARIO] = ,
+    [CT_LUIGI] = "CT_LUIGI",
+    [CT_TOAD] = "CT_TOAD",
+    [CT_WALUIGI] = "CT_WALUIGI",
+    [CT_WARIO] = "CT_WARIO"
+}
+local defaultIcons = {
+    [CT_MARIO] = gTextures.mario_head,
+    [CT_LUIGI] = gTextures.luigi_head,
+    [CT_TOAD] = gTextures.toad_head,
+    [CT_WALUIGI] = gTextures.waluigi_head,
+    [CT_WARIO] = gTextures.wario_head
+}
+local defaultCamScales = {
+    [CT_MARIO] = 1,
+    [CT_LUIGI] = 1,
+    [CT_TOAD] = 0.8,
+    [CT_WALUIGI] = 1.1,
+    [CT_WARIO] = 1
+}
+local defaultModels = {
+    [CT_MARIO] = E_MODEL_MARIO,
+    [CT_LUIGI] = E_MODEL_LUIGI,
+    [CT_TOAD] = E_MODEL_TOAD_PLAYER,
+    [CT_WALUIGI] = E_MODEL_WALUIGI,
+    [CT_WARIO] = E_MODEL_WARIO
+}
 ]]
 
 characterTable = {
     [1] = {
-        name = "Mario",
         saveName = "Default",
-        description = {"The vanilla cast for sm64coopdx!", "", "These Characters are swappable", "by pressing Left/Right or", "via the default Options Menu"},
-        credit = "Nintendo / Coop Team",
-        color = {r = 255, g = 50, b = 50},
-        model = nil,
-        offset = 0,
-        forceChar = nil,
-        lifeIcon = gTextures.mario_head,
-        starIcon = gTextures.star,
-        camScale = 1.0,
+        currAlt = 1,
         hasMoveset = false,
         locked = false,
+        [1] = {
+            name = "Mario",
+            description = {"The vanilla cast for sm64coopdx!", "", "These Characters are swappable", "by pressing Left/Right or", "via the default Options Menu"},
+            credit = "Nintendo / Coop Team",
+            color = { r = 255, g = 50,  b = 50  },
+            model = E_MODEL_MARIO,
+            offset = 0,
+            forceChar = CT_MARIO,
+            lifeIcon = gTextures.mario_head,
+            starIcon = gTextures.star,
+            camScale = 1.0,
+        },
+        [2] = {
+            name = "Luigi",
+            description = {"The vanilla cast for sm64coopdx!", "", "These Characters are swappable", "by pressing Left/Right or", "via the default Options Menu"},
+            credit = "Nintendo / Coop Team",
+            color = { r = 50,  g = 255, b = 50  },
+            model = E_MODEL_LUIGI,
+            offset = 0,
+            forceChar = CT_LUIGI,
+            lifeIcon = gTextures.mario_head,
+            starIcon = gTextures.star,
+            camScale = 1.0,
+        },
+        [3] = {
+            name = "Toad",
+            description = {"The vanilla cast for sm64coopdx!", "", "These Characters are swappable", "by pressing Left/Right or", "via the default Options Menu"},
+            credit = "Nintendo / Coop Team",
+            color = { r = 50,  g = 50,  b = 255 },
+            model = E_MODEL_TOAD_PLAYER,
+            offset = 0,
+            forceChar = CT_TOAD,
+            lifeIcon = gTextures.mario_head,
+            starIcon = gTextures.star,
+            camScale = 0.8,
+        },
+        [4] = {
+            name = "Waluigi",
+            description = {"The vanilla cast for sm64coopdx!", "", "These Characters are swappable", "by pressing Left/Right or", "via the default Options Menu"},
+            credit = "Nintendo / Coop Team",
+            color = { r = 130, g = 25,  b = 130 },
+            model = E_MODEL_WALUIGI,
+            offset = 0,
+            forceChar = CT_WALUIGI,
+            lifeIcon = gTextures.mario_head,
+            starIcon = gTextures.star,
+            camScale = 1.1,
+        },
+        [5] = {
+            name = "Wario",
+            description = {"The vanilla cast for sm64coopdx!", "", "These Characters are swappable", "by pressing Left/Right or", "via the default Options Menu"},
+            credit = "Nintendo / Coop Team",
+            color = { r = 255, g = 255, b = 50  },
+            model = E_MODEL_WARIO,
+            offset = 0,
+            forceChar = CT_WALUIGI,
+            lifeIcon = gTextures.mario_head,
+            starIcon = gTextures.star,
+            camScale = 1.0,
+        },
     },
 }
 
 gPlayerSyncTable[0].offset = 0
+gPlayerSyncTable[0].currAlt = 1
 
 characterCaps = {}
 characterCelebrationStar = {}
@@ -69,7 +150,6 @@ characterColorPresets = {}
 characterAnims = {}
 characterMovesets = {[1] = {}}
 characterUnlock = {}
-characterAlts = {}
 
 optionTableRef = {
     -- Menu
@@ -232,13 +312,6 @@ local menuColorTable = {
 }
 
 -- Default Player Adjustments
-local defaultNames = {
-    [CT_MARIO] = "Mario",
-    [CT_LUIGI] = "Luigi",
-    [CT_TOAD] = "Toad",
-    [CT_WALUIGI] = "Waluigi",
-    [CT_WARIO] = "Wario"
-}
 local defaultMenuColors = {
     [CT_MARIO] = menuColorTable[1],
     [CT_LUIGI] = menuColorTable[4],
@@ -246,33 +319,19 @@ local defaultMenuColors = {
     [CT_WALUIGI] = menuColorTable[7],
     [CT_WARIO] = menuColorTable[3]
 }
-local defaultForceChar = {
-    [CT_MARIO] = "CT_MARIO",
-    [CT_LUIGI] = "CT_LUIGI",
-    [CT_TOAD] = "CT_TOAD",
-    [CT_WALUIGI] = "CT_WALUIGI",
-    [CT_WARIO] = "CT_WARIO"
-}
-local defaultIcons = {
-    [CT_MARIO] = gTextures.mario_head,
-    [CT_LUIGI] = gTextures.luigi_head,
-    [CT_TOAD] = gTextures.toad_head,
-    [CT_WALUIGI] = gTextures.waluigi_head,
-    [CT_WARIO] = gTextures.wario_head
-}
-local defaultCamScales = {
-    [CT_MARIO] = 1,
-    [CT_LUIGI] = 1,
-    [CT_TOAD] = 0.8,
-    [CT_WALUIGI] = 1.1,
-    [CT_WARIO] = 1
-}
 local defaultModels = {
     [CT_MARIO] = E_MODEL_MARIO,
     [CT_LUIGI] = E_MODEL_LUIGI,
     [CT_TOAD] = E_MODEL_TOAD_PLAYER,
     [CT_WALUIGI] = E_MODEL_WALUIGI,
     [CT_WARIO] = E_MODEL_WARIO
+}
+local defaultForceChar = {
+    [CT_MARIO] = "CT_MARIO",
+    [CT_LUIGI] = "CT_LUIGI",
+    [CT_TOAD] = "CT_TOAD",
+    [CT_WALUIGI] = "CT_WALUIGI",
+    [CT_WARIO] = "CT_WARIO"
 }
 
 ---@param m MarioState
@@ -300,7 +359,7 @@ local function nullify_inputs(m)
     c.stickY = 0
 end
 
-local prefCharColor = defaultMenuColors[CT_MARIO]
+local prefCharColor = {r = 255, g = 50, b = 50}
 
 local function load_preferred_char()
     local savedChar = mod_storage_load("PrefChar")
@@ -344,9 +403,9 @@ end
 
 local function mod_storage_save_pref_char(charTable)
     mod_storage_save("PrefChar", charTable.saveName)
-    mod_storage_save("PrefCharColor", tostring(charTable.color.r) .. "_" .. tostring(charTable.color.g) .. "_" .. tostring(charTable.color.b))
+    mod_storage_save("PrefCharColor", tostring(charTable[charTable.currAlt].color.r) .. "_" .. tostring(charTable[charTable.currAlt].color.g) .. "_" .. tostring(charTable[charTable.currAlt].color.b))
     TEXT_PREF_LOAD = charTable.saveName
-    prefCharColor = charTable.color
+    prefCharColor = charTable[charTable.currAlt].color
 end
 
 function failsafe_options()
@@ -387,6 +446,10 @@ local function reset_options(wasChatTriggered)
             if optionTable[i].toggleNames == nil then
                 optionTable[i].toggleNames = { "Off", "On" }
             end
+        end
+        currChar = 1
+        for i = 1, #characterTable do
+            characterTable[i].currAlt = 1
         end
         mod_storage_save_pref_char(characterTable[1])
         promptedAreYouSure = false
@@ -510,23 +573,20 @@ local function mario_update(m)
             end
             np.overrideModelIndex = prevBaseChar
         end
-        local modelIndex = np.overrideModelIndex
-
-        gPlayerSyncTable[0].saveName = characterTable[currChar].saveName
+        local modelIndex = np.overrideModelIndex + 1
 
         local defaultTable = characterTable[1]
-        defaultTable.forceChar = prevBaseChar
-        defaultTable.name = defaultNames[prevBaseChar]
-        defaultTable.color = defaultMenuColors[prevBaseChar]
+        local charTable = characterTable[currChar]
+        gPlayerSyncTable[0].saveName = charTable.saveName
+        gPlayerSyncTable[0].currAlt = charTable.currAlt
+
         if currChar == 1 then
-            defaultTable.lifeIcon = defaultIcons[modelIndex]
-            defaultTable.camScale = defaultCamScales[modelIndex]
-            defaultTable.model = defaultModels[modelIndex]
+            --defaultTable.currAlt = modelIndex
         end
         if optionTable[optionTableRef.localModels].toggle > 0 then
-            gPlayerSyncTable[0].modelId = characterTable[currChar].model
-            if characterTable[currChar].forceChar ~= nil then
-                np.overrideModelIndex = characterTable[currChar].forceChar
+            gPlayerSyncTable[0].modelId = charTable[charTable.currAlt].model
+            if charTable[charTable.currAlt].forceChar ~= nil then
+                np.overrideModelIndex = charTable[charTable.currAlt].forceChar
             end
             m.marioObj.hookRender = 1
         else
@@ -535,7 +595,7 @@ local function mario_update(m)
             currChar = 1
         end
 
-        gPlayerSyncTable[0].offset = characterTable[currChar].offset
+        gPlayerSyncTable[0].offset = charTable[charTable.currAlt].offset
 
         if menuAndTransition then
             camera_freeze()
@@ -546,7 +606,7 @@ local function mario_update(m)
             if m.area.camera.cutscene == 0 then
                 m.area.camera.cutscene = CUTSCENE_CS_MENU
             end
-            local camScale = characterTable[currChar].camScale
+            local camScale = charTable[charTable.currAlt].camScale
             local focusPos = {
                 x = m.pos.x,
                 y = m.pos.y + 120 * camScale,
@@ -755,7 +815,7 @@ local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Men
 --Credit Text
 local TEXT_CREDITS_HEADER = "Credits"
 
-menuColor = characterTable[currChar].color
+menuColor = characterTable[1][1].color
 
 local MATH_DIVIDE_320 = 1/320
 local MATH_DIVIDE_64 = 1/64
@@ -770,7 +830,8 @@ function update_menu_color()
         optionTable[optionTableRef.menuColor].toggleNames[2] = string_underscore_to_space(TEXT_PREF_LOAD) .. " (Pref)"
         menuColor = prefCharColor
     else
-        menuColor = characterTable[currChar].color
+        local char = characterTable[currChar]
+        menuColor = char[char.currAlt].color
     end
     return menuColor
 end
@@ -780,6 +841,7 @@ local function djui_hud_render_triangle(x, y, width, height)
     djui_hud_render_texture(TEX_TRIANGLE, x, y, width*MATH_DIVIDE_64, height*MATH_DIVIDE_32)
 end
 
+local buttonAltAnim = 0
 local function on_hud_render()
     local FONT_USER = djui_menu_get_font()
     djui_hud_set_resolution(RESOLUTION_N64)
@@ -830,6 +892,9 @@ local function on_hud_render()
         djui_hud_render_rect(width - 2, 50, 2, height - 50)
         djui_hud_set_font(FONT_ALIASED)
         local character = characterTable[currChar]
+        local TEXT_SAVE_NAME = "Save Name: " .. character.saveName
+        local TEXT_MOVESET = "Has Moveset: "..(character.hasMoveset and "Yes" or "No")
+        character = characterTable[currChar][character.currAlt]
         if optionTable[optionTableRef.debugInfo].toggle == 0 then -- Actual Description
             local TEXT_NAME = string_underscore_to_space(character.name)
             local TEXT_CREDIT = "Credit: " .. character.credit
@@ -882,7 +947,6 @@ local function on_hud_render()
             end
         else -- Debugging Info
             local TEXT_NAME = "Name: " .. character.name
-            local TEXT_SAVE_NAME = "Save Name: " .. character.saveName
             local TEXT_CREDIT = "Credit: " .. character.credit
             local TEXT_DESCRIPTION_TABLE = character.description
             local TEXT_COLOR = "Color: R-" .. character.color.r ..", G-" ..character.color.g ..", B-"..character.color.b
@@ -891,7 +955,6 @@ local function on_hud_render()
             local TEXT_ICON_DEFAULT = "?"
             local TEXT_SCALE = "Camera Scale: " .. character.camScale
             local TEXT_PRESET = "Preset Palette: "..(gPlayerSyncTable[0].presetPalette and "On" or "Off")
-            local TEXT_MOVESET = "Has Moveset: "..(character.hasMoveset and "Yes" or "No")
             local TEXT_PREF = "Preferred: " .. TEXT_PREF_LOAD
             local TEXT_PREF_COLOR = "Pref Color: R-" .. prefCharColor.r .. ", G-" .. prefCharColor.g .. ", B-" .. prefCharColor.b
 
@@ -986,9 +1049,11 @@ local function on_hud_render()
         djui_hud_render_rect(0, 50, 2, height - 50)
         djui_hud_render_rect(x - 2, 50, 2, height - 50)
         djui_hud_render_rect(0, height - 2, x, 2)
-
+        
+        local leftRightAnim = 0
         if optionTable[optionTableRef.anims].toggle > 0 then
             buttonAnimTimer = buttonAnimTimer + 1
+            leftRightAnim = buttonAltAnim/inputStallToDirectional
         end
         if optionTable[optionTableRef.anims].toggle == 0 then
             buttonScroll = 0
@@ -998,6 +1063,8 @@ local function on_hud_render()
 
         local buttonColor = {}
         local buttonX = 20 * widthScale
+        local leftArrowX = buttonX - 4 + math_min(leftRightAnim, 0)
+        local rightArrowX = leftArrowX + 73 + math_max(leftRightAnim, 0)
         local buttonAnimX = buttonX + math_sin(buttonAnimTimer * 0.05) * 2.5 + 5
         local charNum = -1
         for i = -1, 4 do
@@ -1022,17 +1089,25 @@ local function on_hud_render()
             local char = characterTable[charNum]
             if char ~= nil then
                 if not char.locked then
-                    buttonColor = char.color
+                    buttonColor = char[char.currAlt].color -- Change Later
                 else
                     buttonColor = {r = char.color.r*0.5, g = char.color.g*0.5, b = char.color.b*0.5}
                 end
                 djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
                 local x = buttonX
+                local y = 104 + buttonScroll
                 if i == 0 then
                     if optionTable[optionTableRef.anims].toggle > 0 then
                         x = buttonAnimX
                     else
                         x = buttonX + 10
+                    end
+                    if #char > 1 then
+                        djui_hud_set_rotation(0x4000, 0, 0)
+                        djui_hud_render_triangle(x - 6, y, 8, 4)
+                        djui_hud_set_rotation(-0x4000, 0, 0)
+                        djui_hud_render_triangle(x + 76, y - 8 - 1*MATH_DIVIDE_16, 8, 4)
+                        djui_hud_set_rotation(0, 0, 0)
                     end
                 end
                 local y = (i + 3) * 30 + buttonScroll
@@ -1044,7 +1119,7 @@ local function on_hud_render()
                 djui_hud_render_rect(x + 1, y + 1, 68, 18)
                 djui_hud_set_font(FONT_TINY)
                 djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
-                local charName = char.name
+                local charName = char[char.currAlt].name
                 if char.locked then
                     charName = TEXT_CHAR_LOCKED
                 end
@@ -1337,10 +1412,11 @@ local function on_hud_render()
         end
 
         if optionTable[optionTableRef.localModels].toggle == 1 then
-            local charName = string_underscore_to_space(characterTable[currChar].name)
+            local character = characterTable[currChar][characterTable[currChar].currAlt]
+            local charName = string_underscore_to_space(character.name)
             local TEXT_PAUSE_CURR_CHAR_WITH_NAME = TEXT_PAUSE_CURR_CHAR .. charName
             width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME)
-            local charColor = characterTable[currChar].color
+            local charColor = character.color
             djui_hud_set_color(255, 255, 255, 255)
             djui_hud_print_text(TEXT_PAUSE_CURR_CHAR, width - 20, 16 + currCharY, 1)
             djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
@@ -1396,15 +1472,16 @@ local function before_mario_update(m)
 
     local cameraToObject = m.marioObj.header.gfx.cameraToObject
 
+    local character = characterTable[currChar]
     if menuAndTransition and not options then
         if menu then
             if inputStallTimerDirectional == 0 and optionTable[optionTableRef.localModels].toggle ~= 0 and not charBeingSet then
                 if (controller.buttonPressed & D_JPAD) ~= 0 or (controller.buttonPressed & D_CBUTTONS) ~= 0 or controller.stickY < -60 then
                     currChar = currChar + 1
-                    if characterTable[currChar] and characterTable[currChar].locked then
+                    if character and character.locked then
                         repeat
                             currChar = currChar + 1
-                        until (not characterTable[currChar].locked) or currChar > #characterTable
+                        until (not character.locked) or currChar > #characterTable
                     end
                     if (controller.buttonPressed & D_CBUTTONS) == 0 then
                         inputStallTimerDirectional = inputStallToDirectional
@@ -1421,10 +1498,10 @@ local function before_mario_update(m)
                 end
                 if (controller.buttonPressed & U_JPAD) ~= 0 or (controller.buttonPressed & U_CBUTTONS) ~= 0 or controller.stickY > 60 then
                     currChar = currChar - 1
-                    if characterTable[currChar] and characterTable[currChar].locked then
+                    if character and character.locked then
                         repeat
                             currChar = currChar - 1
-                        until (not characterTable[currChar].locked) or currChar < 1
+                        until (not character.locked) or currChar < 1
                     end
                     if (controller.buttonPressed & U_CBUTTONS) == 0 then
                         inputStallTimerDirectional = inputStallToDirectional
@@ -1440,19 +1517,23 @@ local function before_mario_update(m)
                     gPlayerSyncTable[0].presetPalette = false
                 end
 
-                if currChar == 1 then
+                -- Alt switcher
+                if #character > 1 then
+                    djui_chat_message_create(tostring(character.currAlt))
                     if (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60 then
-                        prevBaseChar = prevBaseChar + 1
+                        character.currAlt = character.currAlt + 1
                         inputStallTimerDirectional = inputStallToDirectional
-                        play_character_sound(m, CHAR_SOUND_ATTACKED)
+                        play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
+                        buttonAltAnim = 12
                     end
                     if (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60 then
-                        prevBaseChar = prevBaseChar ~= 0 and prevBaseChar - 1 or #defaultModels
+                        character.currAlt = character.currAlt ~= 0 and character.currAlt - 1 or #character
                         inputStallTimerDirectional = inputStallToDirectional
-                        play_character_sound(m, CHAR_SOUND_ATTACKED)
+                        play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
+                        buttonAltAnim = -12
                     end
-                    if prevBaseChar > #defaultModels then prevBaseChar = CT_MARIO end
-                    if prevBaseChar < CT_MARIO then prevBaseChar = #defaultModels end
+                    if character.currAlt > #character then character.currAlt = 1 end
+                    if character.currAlt < 1 then character.currAlt = #character end
                 end
             end
 
