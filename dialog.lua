@@ -17,7 +17,7 @@ local prevChar = currChar
 local function dialog_swap()
     for i = DIALOG_000, DIALOG_COUNT - 1 do
         local dialog = smlua_text_utils_dialog_get(i)
-        local name = characterTable[currChar].name
+        local name = characterTable[currChar][characterTable[currChar].currAlt].name
         local replaced_dialog = dialog.str:gsub(DIALOG_NAME, currChar)
         smlua_text_utils_dialog_replace(DIALOG_034, dialog.unused, dialog.linesPerBox, dialog.leftOffset, dialog.width, replaced_dialog)
     end
