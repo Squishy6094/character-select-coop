@@ -69,6 +69,7 @@ characterColorPresets = {}
 characterAnims = {}
 characterMovesets = {[1] = {}}
 characterUnlock = {}
+characterAlts = {}
 
 optionTableRef = {
     -- Menu
@@ -757,6 +758,7 @@ local TEXT_CREDITS_HEADER = "Credits"
 menuColor = characterTable[currChar].color
 
 local MATH_DIVIDE_320 = 1/320
+local MATH_DIVIDE_64 = 1/64
 local MATH_DIVIDE_32 = 1/32
 local MATH_DIVIDE_30 = 1/30
 local MATH_DIVIDE_16 = 1/16
@@ -771,6 +773,11 @@ function update_menu_color()
         menuColor = characterTable[currChar].color
     end
     return menuColor
+end
+
+local TEX_TRIANGLE = get_texture_info("char-select-triangle")
+local function djui_hud_render_triangle(x, y, width, height)
+    djui_hud_render_texture(TEX_TRIANGLE, x, y, width*MATH_DIVIDE_64, height*MATH_DIVIDE_32)
 end
 
 local function on_hud_render()
@@ -1103,22 +1110,16 @@ local function on_hud_render()
                 -- Up Arrow
                 if currOption > 3 then
                     djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-                    djui_hud_set_rotation(0x2000, 0.5, 0.5)
-                    djui_hud_render_rect(widthHalf - 3 * widthScaleLimited, 95 - optionAnimTimer, 5  * widthScaleLimited, 5  * widthScaleLimited)
-                    djui_hud_set_color(0, 0, 0, 255)
-                    djui_hud_set_rotation(0x0000, 0.5, 0.5)
-                    djui_hud_render_rect(widthHalf - 4 * widthScaleLimited, 95 - optionAnimTimer + 2 * widthScaleLimited, 8 * widthScaleLimited, 10)
+                    djui_hud_render_triangle(widthHalf - 3.5*widthScaleLimited, 94 - optionAnimTimer, 6*widthScaleLimited, 3*widthScaleLimited)
                 end
 
                 -- Down Arrow
                 if currOption < optionTableCount - 2 then
                     local yOffset = 90 - optionAnimTimer + 45 * widthScaleLimited
                     djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-                    djui_hud_set_rotation(0x2000, 0.5, 0.5)
-                    djui_hud_render_rect(widthHalf - 3 * widthScaleLimited, yOffset + 10, 5 * widthScaleLimited, 5 * widthScaleLimited)
-                    djui_hud_set_color(0, 0, 0, 255)
-                    djui_hud_set_rotation(0x0000, 0.5, 0.5)
-                    djui_hud_render_rect(widthHalf - 4 * widthScaleLimited, yOffset + 10 - 2 * widthScaleLimited, 8 * widthScaleLimited, 5 * widthScaleLimited)
+                    djui_hud_set_rotation(0x8000, 0.5, 0.5)
+                    djui_hud_render_triangle(widthHalf - 3.5*widthScaleLimited, yOffset + 10 + 3*widthScaleLimited, 6*widthScaleLimited, 3*widthScaleLimited)
+                    djui_hud_set_rotation(0, 0, 0)
                 end
 
                 -- Options 

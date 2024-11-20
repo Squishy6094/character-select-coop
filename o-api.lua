@@ -130,6 +130,45 @@ local function character_edit(charNum, name, description, credit, color, modelIn
     } or nil
 end
 
+---@param charNum integer Use _G.charSelect.character_get_number_from_string() or _G.charSelect.character_add()'s return value
+---@param name string|nil Underscores turn into Spaces
+---@param description table|string|nil {"string"}
+---@param credit string|nil
+---@param color Color|nil {r, g, b}
+---@param modelInfo ModelExtendedId|integer|nil Use smlua_model_util_get_id()
+---@param forceChar integer|CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
+---@param lifeIcon TextureInfo|nil Use get_texture_info()
+---@param camScale integer|nil Zooms the camera based on a multiplier (Default 1.0)
+---@param offset integer|nil Visually offsets the character
+local function character_add_alt(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale, offset)
+    if tonumber(charNum) == nil or charNum > #characterTable or charNum < 0 then return end
+    if type(description) == TYPE_STRING then
+        description = split_text_into_lines(description)
+    end
+    if type(color) == TYPE_STRING then
+        color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
+    end
+    if type(offset) ~= TYPE_INTEGER then
+        offset = (forceChar == CT_WALUIGI and 25 or 0)
+    end
+    local tableCache = characterTable[charNum]
+    characterTable[charNum] = characterTable[charNum] and {
+        name = type(name) == TYPE_STRING and name or tableCache.name,
+        saveName = saveNameTable[charNum],
+        description = type(description) == TYPE_TABLE and description or tableCache.description,
+        credit = type(credit) == TYPE_STRING and credit or tableCache.credit,
+        color = type(color) == TYPE_TABLE and color or tableCache.color,
+        model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model,
+        forceChar = type(forceChar) == TYPE_INTEGER and forceChar or tableCache.forceChar,
+        offset = type(offset) == TYPE_INTEGER and offset or tableCache.offset,
+        lifeIcon = type(lifeIcon) == TYPE_TABLE and lifeIcon or tableCache.lifeIcon,
+        starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce
+        camScale = type(camScale) == TYPE_INTEGER and camScale or tableCache.camScale,
+        healthTexture = tableCache.healthTexture,
+        hasMoveset = tableCache.hasMoveset,
+    } or nil
+end
+
 ---@param modelInfo ModelExtendedId|integer
 ---@param clips table
 local function character_add_voice(modelInfo, clips)
