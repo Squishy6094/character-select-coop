@@ -99,7 +99,7 @@ characterTable = {
             model = E_MODEL_LUIGI,
             offset = 0,
             forceChar = CT_LUIGI,
-            lifeIcon = gTextures.mario_head,
+            lifeIcon = gTextures.luigi_head,
             starIcon = gTextures.star,
             camScale = 1.0,
         },
@@ -111,7 +111,7 @@ characterTable = {
             model = E_MODEL_TOAD_PLAYER,
             offset = 0,
             forceChar = CT_TOAD,
-            lifeIcon = gTextures.mario_head,
+            lifeIcon = gTextures.toad_head,
             starIcon = gTextures.star,
             camScale = 0.8,
         },
@@ -123,7 +123,7 @@ characterTable = {
             model = E_MODEL_WALUIGI,
             offset = 0,
             forceChar = CT_WALUIGI,
-            lifeIcon = gTextures.mario_head,
+            lifeIcon = gTextures.waluigi_head,
             starIcon = gTextures.star,
             camScale = 1.1,
         },
@@ -135,7 +135,7 @@ characterTable = {
             model = E_MODEL_WARIO,
             offset = 0,
             forceChar = CT_WALUIGI,
-            lifeIcon = gTextures.mario_head,
+            lifeIcon = gTextures.wario_head,
             starIcon = gTextures.star,
             camScale = 1.0,
         },
@@ -364,7 +364,7 @@ local prefCharColor = {r = 255, g = 50, b = 50}
 
 local function load_preferred_char()
     local savedChar = mod_storage_load("PrefChar")
-    local savedAlt = mod_storage_load_number("PrefAlt")
+    local savedAlt = math.floor(mod_storage_load_number("PrefAlt"))
     if savedChar == nil or savedChar == "" then
         mod_storage_save("PrefChar", "Default")
         savedChar = "Default"
@@ -375,20 +375,23 @@ local function load_preferred_char()
     end
     if savedChar ~= nil and savedChar ~= "Default" then
         for i = 2, #characterTable do
-            if characterTable[i].saveName == savedChar and not characterTable[i].locked then
+            local char = characterTable[i]
+            if char.saveName == savedChar and not char.locked then
                 currChar = i
-                if savedAlt > 0 and savedAlt <= #characterTable[i] then
-                    characterTable[i].currAlt = savedAlt
+                if savedAlt > 0 and savedAlt <= #char then
+                    char.currAlt = savedAlt
                 end
                 if optionTable[optionTableRef.localModels].toggle == 1 then
                     if optionTable[optionTableRef.notification].toggle > 0 then
-                        djui_popup_create('Character Select:\nYour Preferred Character\n"' .. string_underscore_to_space(characterTable[i].name) .. '"\nwas applied successfully!', 4)
+                        djui_popup_create('Character Select:\nYour Preferred Character\n"' .. string_underscore_to_space(char[char.currAlt].name) .. '"\nwas applied successfully!', 4)
                     end
                 end
                 break
             end
         end
     end
+
+    characterTable[1].currAlt = gNetworkPlayers[0].modelIndex + 1
 
     local savedCharColors = mod_storage_load("PrefCharColor")
     if savedCharColors ~= nil and savedCharColors ~= "" then
@@ -548,7 +551,6 @@ local altOffsetActs = {
     [ACT_GROUND_POUND] = true,
 }
 
-local prevBaseChar = gNetworkPlayers[0].modelIndex
 local prevBaseCharFrame = gNetworkPlayers[0].modelIndex
 --- @param m MarioState
 local function mario_update(m)
@@ -570,28 +572,17 @@ local function mario_update(m)
     if m.playerIndex == 0 and stallFrame > 1 then
         local np = gNetworkPlayers[0]
         if djui_hud_is_pause_menu_created() and prevBaseCharFrame ~= np.modelIndex then
-            prevBaseChar = np.modelIndex
+            characterTable[1].currAlt = np.modelIndex + 1
             currChar = 1
+            gPlayerSyncTable[0].presetPalette = false
         end
         prevBaseCharFrame = np.modelIndex
-        if currChar ~= 1 then
-            np.overrideModelIndex = CT_MARIO
-        else
-            if prevBaseChar == nil then
-                prevBaseChar = np.modelIndex
-            end
-            np.overrideModelIndex = prevBaseChar
-        end
-        local modelIndex = np.overrideModelIndex + 1
 
         local defaultTable = characterTable[1]
         local charTable = characterTable[currChar]
         gPlayerSyncTable[0].saveName = charTable.saveName
         gPlayerSyncTable[0].currAlt = charTable.currAlt
 
-        if currChar == 1 then
-            --defaultTable.currAlt = modelIndex
-        end
         if optionTable[optionTableRef.localModels].toggle > 0 then
             gPlayerSyncTable[0].modelId = charTable[charTable.currAlt].model
             if charTable[charTable.currAlt].forceChar ~= nil then
@@ -903,8 +894,10 @@ local function on_hud_render()
         local character = characterTable[currChar]
         local TEXT_SAVE_NAME = "Save Name: " .. character.saveName
         local TEXT_MOVESET = "Has Moveset: "..(character.hasMoveset and "Yes" or "No")
+        local TEXT_ALT = "Alt: " .. character.currAlt .. "/" .. #character
         character = characterTable[currChar][character.currAlt]
-        if optionTable[optionTableRef.debugInfo].toggle == 0 then -- Actual Description
+        if optionTable[optionTableRef.debugInfo].toggle == 0 then
+            -- Actual Description --
             local TEXT_NAME = string_underscore_to_space(character.name)
             local TEXT_CREDIT = "Credit: " .. character.credit
             local TEXT_DESCRIPTION_TABLE = character.description
@@ -954,7 +947,8 @@ local function on_hud_render()
                 djui_hud_set_font(FONT_TINY)
                 djui_hud_print_text(TEXT_PREF_SAVE, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE) * 0.25, height - 13, 0.5)
             end
-        else -- Debugging Info
+        else
+            -- Debugging Info --
             local TEXT_NAME = "Name: " .. character.name
             local TEXT_CREDIT = "Credit: " .. character.credit
             local TEXT_DESCRIPTION_TABLE = character.description
@@ -964,7 +958,7 @@ local function on_hud_render()
             local TEXT_ICON_DEFAULT = "?"
             local TEXT_SCALE = "Camera Scale: " .. character.camScale
             local TEXT_PRESET = "Preset Palette: "..(gPlayerSyncTable[0].presetPalette and "On" or "Off")
-            local TEXT_PREF = "Preferred: " .. TEXT_PREF_LOAD_NAME .. ((TEXT_PREF_LOAD_ALT ~= 1 and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "")
+            local TEXT_PREF = "Preferred: " .. TEXT_PREF_LOAD_NAME .. ((TEXT_PREF_LOAD_ALT ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "")
             local TEXT_PREF_COLOR = "Pref Color: R-" .. prefCharColor.r .. ", G-" .. prefCharColor.g .. ", B-" .. prefCharColor.b
 
             local textX = x * 0.5
@@ -974,6 +968,8 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_NAME, width - x + 8, y, 0.5)
             y = y + 7
             djui_hud_print_text(TEXT_SAVE_NAME, width - x + 8, y, 0.5)
+            y = y + 7
+            djui_hud_print_text(TEXT_ALT, width - x + 8, y, 0.5)
             y = y + 7
             djui_hud_print_text(TEXT_CREDIT, width - x + 8, y, 0.5)
             y = y + 7
@@ -1537,14 +1533,12 @@ local function before_mario_update(m)
                         character.currAlt = character.currAlt + 1
                         inputStallTimerDirectional = inputStallToDirectional
                         play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
-                        gPlayerSyncTable[0].presetPalette = false
                         buttonAltAnim = inputStallToDirectional
                     end
                     if (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60 then
                         character.currAlt = character.currAlt ~= 0 and character.currAlt - 1 or #character
                         inputStallTimerDirectional = inputStallToDirectional
                         play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
-                        gPlayerSyncTable[0].presetPalette = false
                         buttonAltAnim = -inputStallToDirectional
                     end
                     if character.currAlt > #character then character.currAlt = 1 end
