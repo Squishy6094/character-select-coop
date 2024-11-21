@@ -1054,6 +1054,13 @@ local function on_hud_render()
         if optionTable[optionTableRef.anims].toggle > 0 then
             buttonAnimTimer = buttonAnimTimer + 1
             leftRightAnim = buttonAltAnim/inputStallToDirectional
+            if buttonAltAnim ~= 0 then
+                if buttonAltAnim > 0 then
+                    buttonAltAnim = buttonAltAnim - 3
+                else
+                    buttonAltAnim = buttonAltAnim + 3
+                end
+            end
         end
         if optionTable[optionTableRef.anims].toggle == 0 then
             buttonScroll = 0
@@ -1063,8 +1070,6 @@ local function on_hud_render()
 
         local buttonColor = {}
         local buttonX = 20 * widthScale
-        local leftArrowX = buttonX - 4 + math_min(leftRightAnim, 0)
-        local rightArrowX = leftArrowX + 73 + math_max(leftRightAnim, 0)
         local buttonAnimX = buttonX + math_sin(buttonAnimTimer * 0.05) * 2.5 + 5
         local charNum = -1
         for i = -1, 4 do
@@ -1104,9 +1109,9 @@ local function on_hud_render()
                     end
                     if #char > 1 then
                         djui_hud_set_rotation(0x4000, 0, 0)
-                        djui_hud_render_triangle(x - 6, y, 8, 4)
+                        djui_hud_render_triangle(x - 6 + math_min(leftRightAnim, 0), y, 8, 4)
                         djui_hud_set_rotation(-0x4000, 0, 0)
-                        djui_hud_render_triangle(x + 76, y - 8 - 1*MATH_DIVIDE_16, 8, 4)
+                        djui_hud_render_triangle(x + 76 + math_max(leftRightAnim, 0), y - 8 - 1*MATH_DIVIDE_16, 8, 4)
                         djui_hud_set_rotation(0, 0, 0)
                     end
                 end
@@ -1519,18 +1524,19 @@ local function before_mario_update(m)
 
                 -- Alt switcher
                 if #character > 1 then
-                    djui_chat_message_create(tostring(character.currAlt))
                     if (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60 then
                         character.currAlt = character.currAlt + 1
                         inputStallTimerDirectional = inputStallToDirectional
                         play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
-                        buttonAltAnim = 12
+                        gPlayerSyncTable[0].presetPalette = false
+                        buttonAltAnim = inputStallToDirectional
                     end
                     if (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60 then
                         character.currAlt = character.currAlt ~= 0 and character.currAlt - 1 or #character
                         inputStallTimerDirectional = inputStallToDirectional
                         play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
-                        buttonAltAnim = -12
+                        gPlayerSyncTable[0].presetPalette = false
+                        buttonAltAnim = -inputStallToDirectional
                     end
                     if character.currAlt > #character then character.currAlt = 1 end
                     if character.currAlt < 1 then character.currAlt = #character end

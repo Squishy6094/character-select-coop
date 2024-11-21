@@ -190,7 +190,7 @@ local function render_hud_stars()
         x = x - 1
     end
     local y = math_ceil(240 - 209 - 16)
-    local starIcon = characterTable[currChar].starIcon and characterTable[currChar].starIcon or gTextures.star
+    local starIcon = star_icon_from_local_index(0)
 
     local showX = 0
     local hudDisplayStars = hud_get_value(HUD_DISPLAY_STARS)
@@ -220,7 +220,7 @@ local function render_hud_camera_status()
 
     switch(cameraHudStatus & CAM_STATUS_MODE_GROUP, {
         [CAM_STATUS_MARIO] = function()
-            local lifeIcon = characterTable[currChar].lifeIcon
+            local lifeIcon = life_icon_from_local_index(0)
             if lifeIcon == nil then
                 djui_hud_print_text("?", x + 16, y, 1)
             else
