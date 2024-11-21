@@ -34,7 +34,8 @@ function header_set_texture(texture)
     TEX_OVERRIDE_HEADER = texture
 end
 
-local TEXT_PREF_LOAD = "Default"
+local TEXT_PREF_LOAD_NAME = "Default"
+local TEXT_PREF_LOAD_ALT = 1
 
 --[[
     Note: Do NOT add characters via the characterTable below,
@@ -406,27 +407,26 @@ local function load_preferred_char()
             djui_popup_create("Character Select:\nNo Characters were Found", 2)
         end
     end
-    return savedChar
+    TEXT_PREF_LOAD_NAME = savedChar
+    TEXT_PREF_LOAD_ALT = savedAlt
 end
 
 local function mod_storage_save_pref_char(charTable)
     mod_storage_save("PrefChar", charTable.saveName)
     mod_storage_save_number("PrefAlt", charTable.currAlt)
     mod_storage_save("PrefCharColor", tostring(charTable[charTable.currAlt].color.r) .. "_" .. tostring(charTable[charTable.currAlt].color.g) .. "_" .. tostring(charTable[charTable.currAlt].color.b))
-    TEXT_PREF_LOAD = charTable.saveName
+    TEXT_PREF_LOAD_NAME = charTable.saveName
+    TEXT_PREF_LOAD_ALT = charTable.currAlt
     prefCharColor = charTable[charTable.currAlt].color
 end
 
 function failsafe_options()
     for i = 1, #optionTable do
         if optionTable[i].toggle == nil or optionTable[i].toggle == "" then
-            local load = optionTable[i].toggleSaveName and mod_storage_load(optionTable[i].toggleSaveName) or nil
-            if load == "" then
-                load = nil
-            end
-            optionTable[i].toggle = load and tonumber(load) or optionTable[i].toggleDefault
+            local load = optionTable[i].toggleSaveName and mod_storage_load_number(optionTable[i].toggleSaveName) or nil
+            optionTable[i].toggle = load and load or optionTable[i].toggleDefault
             if optionTable[i].toggleSaveName ~= nil then
-                mod_storage_save(optionTable[i].toggleSaveName, tostring(optionTable[i].toggle))
+                mod_storage_save_number(optionTable[i].toggleSaveName, optionTable[i].toggle)
             end
         end
         if optionTable[i].toggleNames == nil then
@@ -450,7 +450,7 @@ local function reset_options(wasChatTriggered)
         for i = 1, #optionTable do
             optionTable[i].toggle = optionTable[i].toggleDefault
             if optionTable[i].toggleSaveName ~= nil then
-                mod_storage_save(optionTable[i].toggleSaveName, tostring(optionTable[i].toggle))
+                mod_storage_save_number(optionTable[i].toggleSaveName, optionTable[i].toggle)
             end
             if optionTable[i].toggleNames == nil then
                 optionTable[i].toggleNames = { "Off", "On" }
@@ -555,7 +555,7 @@ local function mario_update(m)
     if stallFrame == 1 or queueStorageFailsafe then
         failsafe_options()
         if not queueStorageFailsafe then
-            TEXT_PREF_LOAD = load_preferred_char()
+            load_preferred_char()
             if optionTable[optionTableRef.notification].toggle == 1 then
                 boot_note()
             end
@@ -836,7 +836,7 @@ function update_menu_color()
     if optionTable[optionTableRef.menuColor].toggle > 1 then
         menuColor = menuColorTable[optionTable[optionTableRef.menuColor].toggle - 1]
     elseif optionTable[optionTableRef.menuColor].toggle == 1 then
-        optionTable[optionTableRef.menuColor].toggleNames[2] = string_underscore_to_space(TEXT_PREF_LOAD) .. " (Pref)"
+        optionTable[optionTableRef.menuColor].toggleNames[2] = string_underscore_to_space(TEXT_PREF_LOAD_NAME) .. ((TEXT_PREF_LOAD_ALT ~= 1 and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "") .. " (Pref)"
         menuColor = prefCharColor
     else
         local char = characterTable[currChar]
@@ -910,14 +910,14 @@ local function on_hud_render()
             local TEXT_DESCRIPTION_TABLE = character.description
             local TEXT_PRESET = "Preset Character Palette: "..(gPlayerSyncTable[0].presetPalette and "On" or "Off")
             local TEXT_PREF = "Preferred Character:"
-            local TEXT_PREF_LOAD = string_underscore_to_space(TEXT_PREF_LOAD)
-            if djui_hud_measure_text(TEXT_PREF_LOAD) / widthScale > 110 then
+            local TEXT_PREF_LOAD_NAME = string_underscore_to_space(TEXT_PREF_LOAD_NAME)
+            if djui_hud_measure_text(TEXT_PREF_LOAD_NAME) / widthScale > 110 then
                 TEXT_PREF = "Preferred Char:"
             end
-            if djui_hud_measure_text(TEXT_PREF_LOAD) / widthScale > 164 then
+            if djui_hud_measure_text(TEXT_PREF_LOAD_NAME) / widthScale > 164 then
                 TEXT_PREF = "Pref Char:"
             end
-            TEXT_PREF = TEXT_PREF .. ' "' .. TEXT_PREF_LOAD .. '"'
+            TEXT_PREF = TEXT_PREF .. ' "' .. TEXT_PREF_LOAD_NAME .. '"' .. ((TEXT_PREF_LOAD_ALT ~= 1 and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "")
 
             local textX = x * 0.5
             djui_hud_print_text(TEXT_NAME, width - textX - djui_hud_measure_text(TEXT_NAME) * 0.3, 55, 0.6)
@@ -964,7 +964,7 @@ local function on_hud_render()
             local TEXT_ICON_DEFAULT = "?"
             local TEXT_SCALE = "Camera Scale: " .. character.camScale
             local TEXT_PRESET = "Preset Palette: "..(gPlayerSyncTable[0].presetPalette and "On" or "Off")
-            local TEXT_PREF = "Preferred: " .. TEXT_PREF_LOAD
+            local TEXT_PREF = "Preferred: " .. TEXT_PREF_LOAD_NAME .. ((TEXT_PREF_LOAD_ALT ~= 1 and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "")
             local TEXT_PREF_COLOR = "Pref Color: R-" .. prefCharColor.r .. ", G-" .. prefCharColor.g .. ", B-" .. prefCharColor.b
 
             local textX = x * 0.5
@@ -1615,7 +1615,7 @@ local function before_mario_update(m)
                 optionTable[currOption].toggle = optionTable[currOption].toggle + 1
                 if optionTable[currOption].toggle > optionTable[currOption].toggleMax then optionTable[currOption].toggle = 0 end
                 if optionTable[currOption].toggleSaveName ~= nil then
-                    mod_storage_save(optionTable[currOption].toggleSaveName, tostring(optionTable[currOption].toggle))
+                    mod_storage_save_number(optionTable[currOption].toggleSaveName, optionTable[currOption].toggle)
                 end
                 inputStallTimerButton = inputStallToButton
                 play_sound(SOUND_MENU_CHANGE_SELECT, cameraToObject)
