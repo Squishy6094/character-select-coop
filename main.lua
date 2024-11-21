@@ -363,14 +363,22 @@ local prefCharColor = {r = 255, g = 50, b = 50}
 
 local function load_preferred_char()
     local savedChar = mod_storage_load("PrefChar")
+    local savedAlt = mod_storage_load_number("PrefAlt")
     if savedChar == nil or savedChar == "" then
         mod_storage_save("PrefChar", "Default")
         savedChar = "Default"
+    end
+    if savedAlt == nil then
+        mod_storage_save_number("PrefAlt", 1)
+        savedAlt = 1
     end
     if savedChar ~= nil and savedChar ~= "Default" then
         for i = 2, #characterTable do
             if characterTable[i].saveName == savedChar and not characterTable[i].locked then
                 currChar = i
+                if savedAlt > 0 and savedAlt <= #characterTable[i] then
+                    characterTable[i].currAlt = savedAlt
+                end
                 if optionTable[optionTableRef.localModels].toggle == 1 then
                     if optionTable[optionTableRef.notification].toggle > 0 then
                         djui_popup_create('Character Select:\nYour Preferred Character\n"' .. string_underscore_to_space(characterTable[i].name) .. '"\nwas applied successfully!', 4)
@@ -403,6 +411,7 @@ end
 
 local function mod_storage_save_pref_char(charTable)
     mod_storage_save("PrefChar", charTable.saveName)
+    mod_storage_save_number("PrefAlt", charTable.currAlt)
     mod_storage_save("PrefCharColor", tostring(charTable[charTable.currAlt].color.r) .. "_" .. tostring(charTable[charTable.currAlt].color.g) .. "_" .. tostring(charTable[charTable.currAlt].color.b))
     TEXT_PREF_LOAD = charTable.saveName
     prefCharColor = charTable[charTable.currAlt].color
