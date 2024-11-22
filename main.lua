@@ -364,13 +364,13 @@ local prefCharColor = {r = 255, g = 50, b = 50}
 
 local function load_preferred_char()
     local savedChar = mod_storage_load("PrefChar")
-    local savedAlt = math.floor(mod_storage_load_number("PrefAlt"))
+    local savedAlt = tonumber(mod_storage_load("PrefAlt"))
     if savedChar == nil or savedChar == "" then
         mod_storage_save("PrefChar", "Default")
         savedChar = "Default"
     end
     if savedAlt == nil then
-        mod_storage_save_number("PrefAlt", 1)
+        mod_storage_save("PrefAlt", "1")
         savedAlt = 1
     end
     if savedChar ~= nil and savedChar ~= "Default" then
@@ -416,7 +416,7 @@ end
 
 local function mod_storage_save_pref_char(charTable)
     mod_storage_save("PrefChar", charTable.saveName)
-    mod_storage_save_number("PrefAlt", charTable.currAlt)
+    mod_storage_save("PrefAlt", tostring(charTable.currAlt))
     mod_storage_save("PrefCharColor", tostring(charTable[charTable.currAlt].color.r) .. "_" .. tostring(charTable[charTable.currAlt].color.g) .. "_" .. tostring(charTable[charTable.currAlt].color.b))
     TEXT_PREF_LOAD_NAME = charTable.saveName
     TEXT_PREF_LOAD_ALT = charTable.currAlt
@@ -426,11 +426,11 @@ end
 function failsafe_options()
     for i = 1, #optionTable do
         if optionTable[i].toggle == nil or optionTable[i].toggle == "" then
-            local load = optionTable[i].toggleSaveName and mod_storage_load_number(optionTable[i].toggleSaveName) or nil
-            optionTable[i].toggle = load and load or optionTable[i].toggleDefault
-            if optionTable[i].toggleSaveName ~= nil then
-                mod_storage_save_number(optionTable[i].toggleSaveName, optionTable[i].toggle)
+            local load = optionTable[i].toggleSaveName and mod_storage_load(optionTable[i].toggleSaveName) or nil
+            if load == "" then
+                load = nil
             end
+            optionTable[i].toggle = load and tonumber(load) or optionTable[i].toggleDefault
         end
         if optionTable[i].toggleNames == nil then
             optionTable[i].toggleNames = {"Off", "On"}
@@ -453,7 +453,7 @@ local function reset_options(wasChatTriggered)
         for i = 1, #optionTable do
             optionTable[i].toggle = optionTable[i].toggleDefault
             if optionTable[i].toggleSaveName ~= nil then
-                mod_storage_save_number(optionTable[i].toggleSaveName, optionTable[i].toggle)
+                mod_storage_save(optionTable[i].toggleSaveName, tostring(optionTable[i].toggle))
             end
             if optionTable[i].toggleNames == nil then
                 optionTable[i].toggleNames = { "Off", "On" }
@@ -1609,7 +1609,7 @@ local function before_mario_update(m)
                 optionTable[currOption].toggle = optionTable[currOption].toggle + 1
                 if optionTable[currOption].toggle > optionTable[currOption].toggleMax then optionTable[currOption].toggle = 0 end
                 if optionTable[currOption].toggleSaveName ~= nil then
-                    mod_storage_save_number(optionTable[currOption].toggleSaveName, optionTable[currOption].toggle)
+                    mod_storage_save(optionTable[currOption].toggleSaveName, tostring(optionTable[currOption].toggle))
                 end
                 inputStallTimerButton = inputStallToButton
                 play_sound(SOUND_MENU_CHANGE_SELECT, cameraToObject)
