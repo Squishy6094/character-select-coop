@@ -298,7 +298,7 @@ function render_playerlist_and_modlist()
             entryX = x + 8 + listMargins
             entryY = y + 124 + 0 + ((entryHeight + 4) * (p - 1))
             djui_hud_render_rect(entryX, entryY, entryWidth, entryHeight)
-            hudTex = life_icon_from_local_index(i) or get_texture_info("segment2.05000.rgba16") -- Question Mark
+            hudTex = life_icon_from_local_index(i) or get_texture_info("texture_hud_char_question") -- Question Mark
 
             playerNameColor = {
                 r = 127 + network_player_get_override_palette_color_channel(np, CAP, 0) / 2,
