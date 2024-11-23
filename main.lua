@@ -42,35 +42,6 @@ local TEXT_PREF_LOAD_ALT = 1
     We highly recommend you create your own mod and use the
     API to add characters, this ensures your pack is easy
     to use for anyone and low on file space!
-    
-local defaultForceChar = {
-    [CT_MARIO] = ,
-    [CT_LUIGI] = "CT_LUIGI",
-    [CT_TOAD] = "CT_TOAD",
-    [CT_WALUIGI] = "CT_WALUIGI",
-    [CT_WARIO] = "CT_WARIO"
-}
-local defaultIcons = {
-    [CT_MARIO] = gTextures.mario_head,
-    [CT_LUIGI] = gTextures.luigi_head,
-    [CT_TOAD] = gTextures.toad_head,
-    [CT_WALUIGI] = gTextures.waluigi_head,
-    [CT_WARIO] = gTextures.wario_head
-}
-local defaultCamScales = {
-    [CT_MARIO] = 1,
-    [CT_LUIGI] = 1,
-    [CT_TOAD] = 0.8,
-    [CT_WALUIGI] = 1.1,
-    [CT_WARIO] = 1
-}
-local defaultModels = {
-    [CT_MARIO] = E_MODEL_MARIO,
-    [CT_LUIGI] = E_MODEL_LUIGI,
-    [CT_TOAD] = E_MODEL_TOAD_PLAYER,
-    [CT_WALUIGI] = E_MODEL_WALUIGI,
-    [CT_WARIO] = E_MODEL_WARIO
-}
 ]]
 
 characterTable = {
@@ -81,7 +52,12 @@ characterTable = {
         locked = false,
         [1] = {
             name = "Mario",
-            description = {"The vanilla cast for sm64coopdx!", "", "These Characters are swappable", "by pressing Left/Right or", "via the default Options Menu"},
+            description = {
+                "The iconic Italian plumber himself!",
+                "He's quite confident and brave,",
+                "always prepared to jump into action",
+                "to save the Mushroom Kingdom!",
+            },
             credit = "Nintendo / Coop Team",
             color = { r = 255, g = 50,  b = 50  },
             model = E_MODEL_MARIO,
@@ -93,7 +69,13 @@ characterTable = {
         },
         [2] = {
             name = "Luigi",
-            description = {"The vanilla cast for sm64coopdx!", "", "These Characters are swappable", "by pressing Left/Right or", "via the default Options Menu"},
+            description = {
+                "The other iconic Italian plumber!",
+                "He's a bit shy and scares easily,",
+                "but he's willing to follow his brother",
+                "Mario through any battle that may",
+                "come their way!",
+            },
             credit = "Nintendo / Coop Team",
             color = { r = 50,  g = 255, b = 50  },
             model = E_MODEL_LUIGI,
@@ -105,7 +87,12 @@ characterTable = {
         },
         [3] = {
             name = "Toad",
-            description = {"The vanilla cast for sm64coopdx!", "", "These Characters are swappable", "by pressing Left/Right or", "via the default Options Menu"},
+            description = {
+                "Princess Peach's little attendant!",
+                "He's an energetic little mushroom",
+                "that's never afraid to follow",
+                "Mario and Luigi on their adventures!",
+            },
             credit = "Nintendo / Coop Team",
             color = { r = 50,  g = 50,  b = 255 },
             model = E_MODEL_TOAD_PLAYER,
@@ -117,7 +104,12 @@ characterTable = {
         },
         [4] = {
             name = "Waluigi",
-            description = {"The vanilla cast for sm64coopdx!", "", "These Characters are swappable", "by pressing Left/Right or", "via the default Options Menu"},
+            description = {
+                "The mischievous rival of Luigi!",
+                "He's a narcissistic competitor",
+                "that takes great taste in others",
+                "getting pummeled from his success!",
+            },
             credit = "Nintendo / Coop Team",
             color = { r = 130, g = 25,  b = 130 },
             model = E_MODEL_WALUIGI,
@@ -129,7 +121,13 @@ characterTable = {
         },
         [5] = {
             name = "Wario",
-            description = {"The vanilla cast for sm64coopdx!", "", "These Characters are swappable", "by pressing Left/Right or", "via the default Options Menu"},
+            description = {
+                "The mischievous rival of Mario!",
+                "He's a greed-filled treasure hunter",
+                "obsessed with money and gold coins.",
+                "He's always ready for a brawl if his",
+                "money is on the line!",
+            },
             credit = "Nintendo / Coop Team",
             color = { r = 255, g = 255, b = 50  },
             model = E_MODEL_WARIO,
