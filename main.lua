@@ -908,7 +908,7 @@ local function on_hud_render()
             if djui_hud_measure_text(TEXT_PREF_LOAD_NAME) / widthScale > 164 then
                 TEXT_PREF = "Pref Char:"
             end
-            TEXT_PREF = TEXT_PREF .. ' "' .. TEXT_PREF_LOAD_NAME .. '"' .. ((TEXT_PREF_LOAD_ALT ~= 1 and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "")
+            TEXT_PREF = TEXT_PREF .. ' "' .. TEXT_PREF_LOAD_NAME .. '"' .. ((TEXT_PREF_LOAD_ALT ~= 1 and TEXT_PREF_LOAD_NAME ~= "Default" and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "")
 
             local textX = x * 0.5
             djui_hud_print_text(TEXT_NAME, width - textX - djui_hud_measure_text(TEXT_NAME) * 0.3, 55, 0.6)
@@ -956,7 +956,7 @@ local function on_hud_render()
             local TEXT_ICON_DEFAULT = "?"
             local TEXT_SCALE = "Camera Scale: " .. character.camScale
             local TEXT_PRESET = "Preset Palette: "..(gPlayerSyncTable[0].presetPalette and "On" or "Off")
-            local TEXT_PREF = "Preferred: " .. TEXT_PREF_LOAD_NAME .. ((TEXT_PREF_LOAD_ALT ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "")
+            local TEXT_PREF = "Preferred: " .. TEXT_PREF_LOAD_NAME .. " ("..TEXT_PREF_LOAD_ALT..")"
             local TEXT_PREF_COLOR = "Pref Color: R-" .. prefCharColor.r .. ", G-" .. prefCharColor.g .. ", B-" .. prefCharColor.b
 
             local textX = x * 0.5
@@ -1108,7 +1108,7 @@ local function on_hud_render()
                     if optionTable[optionTableRef.anims].toggle > 0 then
                         x = buttonAnimX
                     else
-                        x = buttonX + 10
+                        x = buttonX + 5
                     end
                     if #char > 1 then
                         djui_hud_set_rotation(0x4000, 0, 0)
