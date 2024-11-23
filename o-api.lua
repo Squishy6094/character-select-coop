@@ -274,7 +274,7 @@ end
 
 --- @param localIndex integer|nil
 --- @return integer|nil
-local function character_get_current_alt(localIndex)
+local function character_get_current_costume(localIndex)
     if localIndex == nil or localIndex == 0 then
         return characterTable[currChar].currAlt
     else
@@ -493,7 +493,7 @@ _G.charSelect = {
     character_add_animations = character_add_animations,
     character_get_current_table = character_get_current_table,
     character_get_current_number = character_get_current_number,
-    character_get_current_alt = character_get_current_alt,
+    character_get_current_costume = character_get_current_costume,
     character_get_current_model_number = character_get_current_number, -- Outdated function name, Not recommended for use
     character_set_current_number = character_set_current_number,
     character_get_number_from_string = character_get_number_from_string,
