@@ -132,7 +132,7 @@ characterTable = {
             color = { r = 255, g = 255, b = 50  },
             model = E_MODEL_WARIO,
             offset = 0,
-            forceChar = CT_WALUIGI,
+            forceChar = CT_WARIO,
             lifeIcon = gTextures.wario_head,
             starIcon = gTextures.star,
             camScale = 1.0,
