@@ -274,54 +274,82 @@ local function render_act_select_hud()
     end
 end
 
-local bodyWidth = 250
-local bodyHeight = (16 * 32) + (16 - 1) * 4 + (32 + 16) + 32 + 32
-local boarderWidth = 8
-local function render_playerlist()
-    djui_hud_set_resolution(RESOLUTION_DJUI)
-    local x = djui_hud_get_screen_width()*0.5 - 363 - bodyWidth
-    local y = djui_hud_get_screen_height()*0.5 - bodyHeight*0.5
-    djui_hud_set_color(0, 0, 0, 200)
-    djui_hud_render_rect(x, y, bodyWidth, bodyHeight)
-    djui_hud_set_color(0, 0, 0, 140)
-    djui_hud_render_rect(x + boarderWidth, y + boarderWidth, bodyWidth - boarderWidth*2, bodyHeight - boarderWidth*2)
+function render_playerlist_and_modlist()
+    -- PlayerList
 
-    djui_hud_set_font(FONT_MENU)
-    djui_hud_set_color(255, 48, 48, 255)
-    djui_hud_print_text("C", x + bodyWidth*0.5 - djui_hud_measure_text("C"), y + 15, 1)
-    djui_hud_set_color(64, 231, 64, 255)
-    djui_hud_print_text("S", x + bodyWidth*0.5, y + 15, 1)
-    
-    -- Render Heads
-    local x = x + 22
-    local y = djui_hud_get_screen_height() * 0.5 - 36 * 8 - 2
-    for i = 0, MAX_PLAYERS - 1 do
-        local np = gNetworkPlayers[i]
-        --djui_chat_message_create(tostring(b)..tostring(np.currCourseNum)..tostring(course))
-        if np and np.connected then
-            y = y + 36
-            
-            if i%2 == 0 then
-                djui_hud_set_color(32, 32, 32, 128)
-            else
-                djui_hud_set_color(16, 16, 16, 128)
-            end
-            djui_hud_render_rect(x, y, bodyWidth - 44, 32)
+    playerListWidth = 710
+    playerListHeight = (16 * 32) + (16 - 1) * 4 + (32 + 16) + 32 + 32
 
-            djui_hud_set_font(FONT_HUD)
-            local displayHead = life_icon_from_local_index(i)
-            djui_hud_set_color(255, 255, 255, 255)
-            if displayHead == nil then
-                djui_hud_print_text("?", x, y, 2)
+    listMargins = 16
+
+    local x = djui_hud_get_screen_width()/2 - playerListWidth/2
+    local y = djui_hud_get_screen_height()/2 - playerListHeight/2
+    djui_hud_render_header_box("\\#FF3030\\P\\#40E740\\L\\#40B0FF\\A\\#FFEF40\\Y\\#FF3030\\E\\#40E740\\R\\#40B0FF\\S", 0, 0xdc, 0xdc, 0xdc, 0xff, 1, x, y, playerListWidth, playerListHeight, 0, 0, 0)
+    djui_hud_set_font(FONT_USER)
+    for i = 0, #gNetworkPlayers do
+        o = i > (network_player_connected_count() - 1) and i + (network_player_connected_count() - 1) or 0
+        p = math.abs(i - o)
+        np = gNetworkPlayers[i]
+        if gNetworkPlayers[i].name ~= "" then
+            v = (p % 2) ~= 0 and 16 or 32
+            djui_hud_set_color(v, v, v, 128)
+            entryWidth = playerListWidth - ((8 + listMargins) * 2)
+            entryHeight = 32
+            entryX = x + 8 + listMargins
+            entryY = y + 124 + 0 + ((entryHeight + 4) * (p - 1))
+            djui_hud_render_rect(entryX, entryY, entryWidth, entryHeight)
+            hudTex = life_icon_from_local_index(i) or get_texture_info("segment2.05000.rgba16") -- Question Mark
+
+            playerNameColor = {
+                r = 127 + network_player_get_override_palette_color_channel(np, CAP, 0) / 2,
+                g = 127 + network_player_get_override_palette_color_channel(np, CAP, 1) / 2,
+                b = 127 + network_player_get_override_palette_color_channel(np, CAP, 2) / 2
+            }
+
+            if hudTex then
+                djui_hud_set_color(255, 255, 255, 255)
+                djui_hud_render_texture(hudTex, entryX, entryY, hudTex.width/8, hudTex.height/8)
+                djui_hud_print_text_with_color(np.name, entryX + 40, entryY, 1, playerNameColor.r, playerNameColor.g, playerNameColor.b, 255)
             else
-                djui_hud_render_texture(displayHead, x, y, 2 / (displayHead.width/16), 2 / (displayHead.height * MATH_DIVIDE_16))
+                djui_hud_print_text_with_color(np.name, entryX, entryY, 1, playerNameColor.r, playerNameColor.g, playerNameColor.b, 255)
             end
 
-            djui_hud_set_font(FONT_USER)
-            local color = color_from_local_index(i)
-            djui_hud_set_color(color.r, color.g, color.b, 255)
-            djui_hud_print_text(name_from_local_index(i), x + 40, y, 1) 
+            local levelName = get_level_name(np.currCourseNum, np.currLevelNum, np.currAreaIndex)
+            if levelName then
+                djui_hud_print_text_with_color(levelName, ((entryX + entryWidth) - djui_hud_measure_text((string.gsub(levelName, "\\(.-)\\", "")))) - 126, entryY, 1, 0xdc, 0xdc, 0xdc, 255)
+            end
+
+            if np.currActNum then
+                currActNum = np.currActNum == 99 and "Done" or np.currActNum ~= 0 and "# "..tostring(np.currActNum) or ""
+                printedcurrActNum = currActNum
+                djui_hud_print_text_with_color(printedcurrActNum, entryX + entryWidth - djui_hud_measure_text(printedcurrActNum) - 18, entryY, 1, 0xdc, 0xdc, 0xdc, 255)
+            end
+
+            if np.description then
+                djui_hud_print_text_with_color(np.description, (entryX + 278) - (djui_hud_measure_text((string.gsub(np.description, "\\(.-)\\", "")))/2), entryY, 1, np.descriptionR, np.descriptionG, np.descriptionB, np.descriptionA)
+            end
         end
+    end
+
+    -- ModList
+
+    modListWidth = 280
+    modListHeight = ((#gActiveMods + 1) * 32) + ((#gActiveMods + 1) - 1) * 4 + (32 + 16) + 32 + 32
+    mX = djui_hud_get_screen_width()/2 + 363
+    mY = djui_hud_get_screen_height()/2 - modListHeight/2
+
+    djui_hud_render_header_box("\\#FF3030\\M\\#40E740\\O\\#40B0FF\\D\\#FFEF40\\S", 0, 0xdc, 0xdc, 0xdc, 0xff, 1, mX, mY, modListWidth, modListHeight, 0, 0, 0)
+    djui_hud_set_font(FONT_USER)
+
+    for i = 0, #gActiveMods do
+        v = (i % 2) ~= 0 and 16 or 32
+        djui_hud_set_color(v, v, v, 128)
+        entryWidth = modListWidth - ((8 + listMargins) * 2)
+        entryHeight = 32
+        entryX = mX + 8 + listMargins
+        entryY = mY + 124 + 0 + ((entryHeight + 4) * (i - 1))
+        djui_hud_render_rect(entryX, entryY, entryWidth, entryHeight)
+        djui_hud_print_text_with_color(gActiveMods[i].name, entryX, entryY, 1, 0xdc, 0xdc, 0xdc, 255)
     end
 end
 
@@ -341,6 +369,10 @@ local function on_hud_render_behind()
     render_hud_health()
 end
 
+_G.charSelect = {
+    enablePlayerList = true -- Set to false to disable the playerlist
+}
+
 local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_font(FONT_HUD)
@@ -350,8 +382,13 @@ local function on_hud_render()
         render_act_select_hud()
     end
 
-    if djui_is_playerlist_open() then
-        render_playerlist()
+    gServerSettings.enablePlayerList = false -- Disables the original playerlist and modlist
+
+    enablePlayerList = charSelect.enablePlayerList -- gServerSettings.enablePlayerList but for the character select playerlist
+    djui_hud_set_resolution(RESOLUTION_DJUI)
+
+    if djui_attempting_to_open_playerlist() and enablePlayerList then
+        render_playerlist_and_modlist()
     end
 end
 
