@@ -49,6 +49,7 @@ end
 local TYPE_INTEGER = "number"
 local TYPE_STRING = "string"
 local TYPE_TABLE = "table"
+local TYPE_TEX_INFO = "userdata"
 local TYPE_FUNCTION = "function"
 
 ---@param name string|nil Underscores turn into Spaces
@@ -85,7 +86,7 @@ local function character_add(name, description, credit, color, modelInfo, forceC
             model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or E_MODEL_ARMATURE,
             forceChar = forceChar and forceChar or CT_MARIO,
             offset = offset and offset or 0,
-            lifeIcon = type(lifeIcon) == TYPE_TABLE and lifeIcon or nil,
+            lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO) and lifeIcon or nil,
             starIcon = gTextures.star,
             camScale = type(camScale) == TYPE_INTEGER and camScale or 1,
         },
@@ -125,7 +126,7 @@ local function character_add_costume(charNum, name, description, credit, color, 
         model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model,
         forceChar = type(forceChar) == TYPE_INTEGER and forceChar or tableCache.forceChar,
         offset = type(offset) == TYPE_INTEGER and offset or tableCache.offset,
-        lifeIcon = type(lifeIcon) == TYPE_TABLE and lifeIcon or tableCache.lifeIcon,
+        lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO) == TYPE_TABLE and lifeIcon or tableCache.lifeIcon,
         starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce
         camScale = type(camScale) == TYPE_INTEGER and camScale or tableCache.camScale,
     })
@@ -164,7 +165,7 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
         model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model,
         forceChar = type(forceChar) == TYPE_INTEGER and forceChar or tableCache.forceChar,
         offset = type(offset) == TYPE_INTEGER and offset or tableCache.offset,
-        lifeIcon = type(lifeIcon) == TYPE_TABLE and lifeIcon or tableCache.lifeIcon,
+        lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO) == TYPE_TABLE and lifeIcon or tableCache.lifeIcon,
         starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce
         camScale = type(camScale) == TYPE_INTEGER and camScale or tableCache.camScale,
     } or nil
