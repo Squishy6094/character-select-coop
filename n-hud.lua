@@ -153,65 +153,41 @@ local MATH_DIVIDE_16 = 1/16
 
 local FONT_USER = FONT_NORMAL
 
-local defaultNames = {
-    [CT_MARIO] = "Mario",
-    [CT_LUIGI] = "Luigi",
-    [CT_TOAD] = "Toad",
-    [CT_WALUIGI] = "Waluigi",
-    [CT_WARIO] = "Wario"
-}
 --- @param localIndex integer
 --- @return string
 --- This assumes multiple characters will not have the same model,
 --- Icons can only be seen by users who have the character avalible to them
 function name_from_local_index(localIndex)
+    if localIndex == nil then localIndex = 0 end
     for i = 1, #characterTable do
-        if i == 1 and characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
-            return defaultNames[gMarioStates[localIndex].character.type]
-        end
         if characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
-            return characterTable[i].name
+            return characterTable[i][gPlayerSyncTable[localIndex].currAlt].name
         end
     end
     return "???"
 end
 
-local defaultMenuColors = {
-    [CT_MARIO] = { r = 255, g = 50,  b = 50  },
-    [CT_LUIGI] = { r = 50,  g = 255, b = 50  },
-    [CT_TOAD] =  { r = 50,  g = 50,  b = 255 },
-    [CT_WALUIGI] = { r = 130, g = 25,  b = 130 },
-    [CT_WARIO] = { r = 255, g = 255, b = 50  }
-}
 --- @param localIndex integer
 --- @return table
 --- This assumes multiple characters will not have the same model,
 --- Icons can only be seen by users who have the character avalible to them
 function color_from_local_index(localIndex)
+    if localIndex == nil then localIndex = 0 end
     for i = 1, #characterTable do
-        if i == 1 and characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
-            return defaultMenuColors[gMarioStates[localIndex].character.type]
-        end
         if characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
-            return characterTable[i].color
+            return characterTable[i][gPlayerSyncTable[localIndex].currAlt].color
         end
     end
     return {r = 255, g = 255, b = 255}
 end
 
-local defaultIcons = {
-    [CT_MARIO] = gTextures.mario_head,
-    [CT_LUIGI] = gTextures.luigi_head,
-    [CT_TOAD] = gTextures.toad_head,
-    [CT_WALUIGI] = gTextures.waluigi_head,
-    [CT_WARIO] = gTextures.wario_head
-}
 --- @param localIndex integer
 --- @return TextureInfo|string
 --- This assumes multiple characters will not have the same model,
 --- Icons can only be seen by users who have the character avalible to them.
 --- This function can return nil. if this is the case, render `djui_hud_print_text("?", x, y, 1)`
 function life_icon_from_local_index(localIndex)
+    if localIndex == nil then localIndex = 0 end
     for i = 1, #characterTable do
         local char = characterTable[i]
         if char.saveName == gPlayerSyncTable[localIndex].saveName then
@@ -222,16 +198,22 @@ function life_icon_from_local_index(localIndex)
 end
 
 local TYPE_STRING = "string"
-function render_icon_from_local_index(index, x, y, scale)
-    local lifeIcon = life_icon_from_local_index(index)
+function render_icon_from_local_index(localIndex, x, y, scaleW, scaleH)
+    if localIndex == nil then localIndex = 0 end
+    local lifeIcon = life_icon_from_local_index(localIndex)
     local startFont = djui_hud_get_font()
+    local startColor = djui_hud_get_color()
 
     if type(lifeIcon) == TYPE_STRING then
-        djui_hud_set_font(FONT_HUD)
-        djui_hud_print_text(lifeIcon, x, y, 1)
+        local color = color_from_local_index(0)
+        djui_hud_set_font(FONT_RECOLOR_HUD)
+        djui_hud_set_color(color.r/startColor.r*255, color.g/startColor.g*255, color.b/startColor.b*255, startColor.a)
+        djui_hud_print_text(lifeIcon, x - 1, y - 11, 1)
+        -- Reset HUD Modifications
         djui_hud_set_font(startFont)
+        djui_hud_set_color(startColor.r, startColor.g, startColor.b, startColor.a)
     else
-        djui_hud_render_texture(lifeIcon, x, y, scale / (lifeIcon.width * MATH_DIVIDE_16), scale / (lifeIcon.height * MATH_DIVIDE_16))
+        djui_hud_render_texture(lifeIcon, x, y, scaleW / (lifeIcon.width * MATH_DIVIDE_16), scaleH / (lifeIcon.height * MATH_DIVIDE_16))
     end
 end
 
@@ -240,6 +222,7 @@ end
 --- This assumes multiple characters will not have the same model,
 --- Icons can only be seen by users who have the character avalible to them
 function star_icon_from_local_index(localIndex)
+    if localIndex == nil then localIndex = 0 end
     for i = 1, #characterTable do
         local char = characterTable[i]
         if char.saveName == gPlayerSyncTable[localIndex].saveName then
