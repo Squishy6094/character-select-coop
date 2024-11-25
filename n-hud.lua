@@ -198,7 +198,7 @@ function life_icon_from_local_index(localIndex)
 end
 
 local TYPE_STRING = "string"
-function render_icon_from_local_index(localIndex, x, y, scaleW, scaleH)
+function render_icon_from_local_index(localIndex, x, y, scale)
     if localIndex == nil then localIndex = 0 end
     local lifeIcon = life_icon_from_local_index(localIndex)
     local startFont = djui_hud_get_font()
@@ -208,12 +208,12 @@ function render_icon_from_local_index(localIndex, x, y, scaleW, scaleH)
         local color = color_from_local_index(0)
         djui_hud_set_font(FONT_RECOLOR_HUD)
         djui_hud_set_color(color.r/startColor.r*255, color.g/startColor.g*255, color.b/startColor.b*255, startColor.a)
-        djui_hud_print_text(lifeIcon, x - 1, y - 11, 1)
+        djui_hud_print_text(lifeIcon, x - scale, y - 11*scale, scale)
         -- Reset HUD Modifications
         djui_hud_set_font(startFont)
         djui_hud_set_color(startColor.r, startColor.g, startColor.b, startColor.a)
     else
-        djui_hud_render_texture(lifeIcon, x, y, scaleW / (lifeIcon.width * MATH_DIVIDE_16), scaleH / (lifeIcon.height * MATH_DIVIDE_16))
+        djui_hud_render_texture(lifeIcon, x, y, scale / (lifeIcon.width * MATH_DIVIDE_16), scale / (lifeIcon.height * MATH_DIVIDE_16))
     end
 end
 
@@ -361,12 +361,7 @@ local function render_act_select_hud()
             local np = gNetworkPlayers[j]
             if np and np.connected and np.currCourseNum == course and np.currActNum == a then
                 djui_hud_render_rect(x - 4, 17, 16, 16)
-                local displayHead = life_icon_from_local_index(j)
-                if displayHead == nil then
-                    djui_hud_print_text("?", x - 4, 17, 1)
-                else
-                    djui_hud_render_texture(displayHead, x - 4, 17, 1 / (displayHead.width/16), 1 / (displayHead.height * MATH_DIVIDE_16))
-                end
+                render_icon_from_local_index(0, x - 4, 17, 1)
                 break
             end
         end
@@ -390,14 +385,13 @@ function render_playerlist_and_modlist()
         p = math.abs(i - o)
         np = gNetworkPlayers[i]
         if gNetworkPlayers[i].name ~= "" then
-            v = (p % 2) ~= 0 and 16 or 32
+            local v = (p % 2) ~= 0 and 16 or 32
             djui_hud_set_color(v, v, v, 128)
-            entryWidth = playerListWidth - ((8 + listMargins) * 2)
-            entryHeight = 32
-            entryX = x + 8 + listMargins
-            entryY = y + 124 + 0 + ((entryHeight + 4) * (p - 1))
+            local entryWidth = playerListWidth - ((8 + listMargins) * 2)
+            local entryHeight = 32
+            local entryX = x + 8 + listMargins
+            local entryY = y + 124 + 0 + ((entryHeight + 4) * (p - 1))
             djui_hud_render_rect(entryX, entryY, entryWidth, entryHeight)
-            hudTex = life_icon_from_local_index(i) or get_texture_info("texture_hud_char_question") -- Question Mark
 
             playerNameColor = {
                 r = 127 + network_player_get_override_palette_color_channel(np, CAP, 0) / 2,
@@ -405,13 +399,9 @@ function render_playerlist_and_modlist()
                 b = 127 + network_player_get_override_palette_color_channel(np, CAP, 2) / 2
             }
 
-            if hudTex then
-                djui_hud_set_color(255, 255, 255, 255)
-                djui_hud_render_texture(hudTex, entryX, entryY, hudTex.width/8, hudTex.height/8)
-                djui_hud_print_text_with_color(np.name, entryX + 40, entryY, 1, playerNameColor.r, playerNameColor.g, playerNameColor.b, 255)
-            else
-                djui_hud_print_text_with_color(np.name, entryX, entryY, 1, playerNameColor.r, playerNameColor.g, playerNameColor.b, 255)
-            end
+            djui_hud_set_color(255, 255, 255, 255)
+            render_icon_from_local_index(i, entryX, entryY, 2)
+            djui_hud_print_text_with_color(np.name, entryX + 40, entryY, 1, playerNameColor.r, playerNameColor.g, playerNameColor.b, 255)
 
             local levelName = get_level_name(np.currCourseNum, np.currLevelNum, np.currAreaIndex)
             if levelName then
