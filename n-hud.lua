@@ -54,6 +54,40 @@ local function remove_color(text, get_color)
     return text
 end
 
+---@param text string
+---@return string
+local function generate_rainbow_text(text)
+    local preResult = {}
+    local postResult = {}
+    for match in text:gmatch(string.format(".", "(.)")) do
+        table.insert(preResult, match)
+    end
+
+    local sRainbowColors = {
+        [0] = "\\#ffef40\\",
+        [1] = "\\#ff3030\\",
+        [2] = "\\#40e740\\",
+        [3] = "\\#40b0ff\\",
+    }
+
+    -- Planned: find a way to detect the easteregg ex theme
+    local sExCoopRainbowColors = {
+        [0] = "\\#ffef00\\",
+        [1] = "\\#ff0800\\",
+        [2] = "\\#1be700\\",
+        [3] = "\\#00b3ff\\",
+    }
+
+    local exEasterEgg = false
+    for i = 1, #preResult do
+        rainbow = exEasterEgg and sExCoopRainbowColors[i % 4] or sRainbowColors[i % 4]
+        table.insert(postResult, rainbow .. preResult[i])
+    end
+
+    local result = table.concat(postResult, "")
+    return result
+end
+
 ---@param x integer X Offset
 ---@param y integer Y Offset
 ---@param width integer Width
@@ -373,12 +407,14 @@ function render_playerlist_and_modlist()
 
     playerListWidth = 710
     playerListHeight = (16 * 32) + (16 - 1) * 4 + (32 + 16) + 32 + 32
+    local x = djui_hud_get_screen_width()/2 - playerListWidth/2
+    local y = djui_hud_get_screen_height()/2 - playerListHeight/2
 
     listMargins = 16
 
-    local x = djui_hud_get_screen_width()/2 - playerListWidth/2
-    local y = djui_hud_get_screen_height()/2 - playerListHeight/2
-    djui_hud_render_header_box("\\#FF3030\\P\\#40E740\\L\\#40B0FF\\A\\#FFEF40\\Y\\#FF3030\\E\\#40E740\\R\\#40B0FF\\S", 0, 0xdc, 0xdc, 0xdc, 0xff, 1, x, y, playerListWidth, playerListHeight, 0, 0, 0)
+    local playersString = generate_rainbow_text("PLAYERS")
+
+    djui_hud_render_header_box(playersString, 0, 0xdc, 0xdc, 0xdc, 0xff, 1, x, y, playerListWidth, playerListHeight, 0, 0, 0)
     djui_hud_set_font(FONT_USER)
     for i = 0, #gNetworkPlayers do
         o = i > (network_player_connected_count() - 1) and i + (network_player_connected_count() - 1) or 0
@@ -427,7 +463,9 @@ function render_playerlist_and_modlist()
     mX = djui_hud_get_screen_width()/2 + 363
     mY = djui_hud_get_screen_height()/2 - modListHeight/2
 
-    djui_hud_render_header_box("\\#FF3030\\M\\#40E740\\O\\#40B0FF\\D\\#FFEF40\\S", 0, 0xdc, 0xdc, 0xdc, 0xff, 1, mX, mY, modListWidth, modListHeight, 0, 0, 0)
+    local modsString = generate_rainbow_text("MODS")
+
+    djui_hud_render_header_box(modsString, 0, 0xdc, 0xdc, 0xdc, 0xff, 1, mX, mY, modListWidth, modListHeight, 0, 0, 0)
     djui_hud_set_font(FONT_USER)
 
     for i = 0, #gActiveMods do
