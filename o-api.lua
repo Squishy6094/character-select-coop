@@ -58,7 +58,7 @@ local TYPE_FUNCTION = "function"
 ---@param color Color|string|nil {r, g, b}
 ---@param modelInfo ModelExtendedId|integer|nil Use smlua_model_util_get_id()
 ---@param forceChar CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
----@param lifeIcon TextureInfo|nil Use get_texture_info()
+---@param lifeIcon TextureInfo|string|nil Use get_texture_info()
 ---@param camScale integer|nil Zooms the camera based on a multiplier (Default 1.0)
 ---@param offset integer|nil Visually offsets the character
 ---@return integer
@@ -66,11 +66,14 @@ local function character_add(name, description, credit, color, modelInfo, forceC
     if type(description) == TYPE_STRING then
         description = split_text_into_lines(description)
     end
-    if type(color) == TYPE_STRING then
+    if color ~= nil and type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
     if type(offset) ~= TYPE_INTEGER then
         offset = (forceChar == CT_WALUIGI and 25 or 0)
+    end
+    if lifeIcon ~= nil and type(lifeIcon) == TYPE_STRING then
+        lifeIcon = lifeIcon:sub(1,1)
     end
     table_insert(characterTable, {
         saveName = type(name) == TYPE_STRING and string_space_to_underscore(name) or "Untitled",
@@ -86,7 +89,7 @@ local function character_add(name, description, credit, color, modelInfo, forceC
             model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or E_MODEL_ARMATURE,
             forceChar = forceChar and forceChar or CT_MARIO,
             offset = offset and offset or 0,
-            lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO) and lifeIcon or nil,
+            lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or "?",
             starIcon = gTextures.star,
             camScale = type(camScale) == TYPE_INTEGER and camScale or 1,
         },
@@ -117,6 +120,9 @@ local function character_add_costume(charNum, name, description, credit, color, 
     if type(offset) ~= TYPE_INTEGER then
         offset = (forceChar == CT_WALUIGI and 25 or 0)
     end
+    if lifeIcon ~= nil and type(lifeIcon) == TYPE_STRING then
+        lifeIcon = lifeIcon:sub(1,1)
+    end
     local tableCache = characterTable[charNum][1]
     table_insert(characterTable[charNum], {
         name = type(name) == TYPE_STRING and name or tableCache.name,
@@ -126,7 +132,7 @@ local function character_add_costume(charNum, name, description, credit, color, 
         model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model,
         forceChar = type(forceChar) == TYPE_INTEGER and forceChar or tableCache.forceChar,
         offset = type(offset) == TYPE_INTEGER and offset or tableCache.offset,
-        lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO) == TYPE_TABLE and lifeIcon or tableCache.lifeIcon,
+        lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or tableCache.lifeIcon,
         starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce
         camScale = type(camScale) == TYPE_INTEGER and camScale or tableCache.camScale,
     })
@@ -155,6 +161,9 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
     if type(offset) ~= TYPE_INTEGER then
         offset = (forceChar == CT_WALUIGI and 25 or 0)
     end
+    if lifeIcon ~= nil and type(lifeIcon) == TYPE_STRING then
+        lifeIcon = lifeIcon:sub(1,1)
+    end
     local tableCache = characterTable[charNum][charAlt]
     characterTable[charNum][charAlt] = characterTable[charNum][charAlt] and {
         name = type(name) == TYPE_STRING and name or tableCache.name,
@@ -165,7 +174,7 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
         model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model,
         forceChar = type(forceChar) == TYPE_INTEGER and forceChar or tableCache.forceChar,
         offset = type(offset) == TYPE_INTEGER and offset or tableCache.offset,
-        lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO) == TYPE_TABLE and lifeIcon or tableCache.lifeIcon,
+        lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or tableCache.lifeIcon,
         starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce
         camScale = type(camScale) == TYPE_INTEGER and camScale or tableCache.camScale,
     } or nil

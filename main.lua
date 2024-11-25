@@ -514,6 +514,7 @@ local ignoredSurfaces = {
 
 local TYPE_FUNCTION = "function"
 local TYPE_BOOLEAN = "boolean"
+local TYPE_STRING = "string"
 
 local menuActBlacklist = {
     -- Star Acts
@@ -953,7 +954,6 @@ local function on_hud_render()
             local TEXT_COLOR = "Color: R-" .. character.color.r ..", G-" ..character.color.g ..", B-"..character.color.b
             local TEX_LIFE_ICON = character.lifeIcon
             local TEX_STAR_ICON = character.starIcon
-            local TEXT_ICON_DEFAULT = "?"
             local TEXT_SCALE = "Camera Scale: " .. character.camScale
             local TEXT_PRESET = "Preset Palette: "..(gPlayerSyncTable[0].presetPalette and "On" or "Off")
             local TEXT_PREF = "Preferred: " .. TEXT_PREF_LOAD_NAME .. " ("..TEXT_PREF_LOAD_ALT..")"
@@ -997,15 +997,15 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_COLOR, width - x + 8, y, 0.5)
             djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             y = y + 7
-            if TEX_LIFE_ICON ~= nil then
+            if type(TEX_LIFE_ICON) ~= TYPE_STRING then
                 djui_hud_print_text(TEXT_LIFE_ICON .. "    (" .. TEX_LIFE_ICON.width .. "x" .. TEX_LIFE_ICON.height .. ")", width - x + 8, y, 0.5)
                 djui_hud_set_color(255, 255, 255, 255)
                 djui_hud_render_texture(TEX_LIFE_ICON, width - x + 33, y + 1, 0.4 / (TEX_LIFE_ICON.width * MATH_DIVIDE_16), 0.4 / (TEX_LIFE_ICON.height * MATH_DIVIDE_16))
             else
-                djui_hud_print_text(TEXT_LIFE_ICON .. "    (?x?)", width - x + 8, y, 0.5)
+                djui_hud_print_text(TEXT_LIFE_ICON .. "    (FONT_HUD)", width - x + 8, y, 0.5)
                 djui_hud_set_font(FONT_HUD)
                 djui_hud_set_color(255, 255, 255, 255)
-                djui_hud_print_text(TEXT_ICON_DEFAULT, width - x + 33, y + 1, 0.5)
+                djui_hud_print_text(TEX_LIFE_ICON, width - x + 33, y + 1, 0.4)
                 djui_hud_set_font(FONT_TINY)
             end
             y = y + 7

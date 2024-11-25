@@ -207,7 +207,7 @@ local defaultIcons = {
     [CT_WARIO] = gTextures.wario_head
 }
 --- @param localIndex integer
---- @return TextureInfo|nil
+--- @return TextureInfo|string
 --- This assumes multiple characters will not have the same model,
 --- Icons can only be seen by users who have the character avalible to them.
 --- This function can return nil. if this is the case, render `djui_hud_print_text("?", x, y, 1)`
@@ -218,7 +218,21 @@ function life_icon_from_local_index(localIndex)
             return char[gPlayerSyncTable[localIndex].currAlt].lifeIcon
         end
     end
-    return nil
+    return "?"
+end
+
+local TYPE_STRING = "string"
+function render_icon_from_local_index(index, x, y, scale)
+    local lifeIcon = life_icon_from_local_index(index)
+    local startFont = djui_hud_get_font()
+
+    if type(lifeIcon) == TYPE_STRING then
+        djui_hud_set_font(FONT_HUD)
+        djui_hud_print_text(lifeIcon, x, y, 1)
+        djui_hud_set_font(startFont)
+    else
+        djui_hud_render_texture(lifeIcon, x, y, scale / (lifeIcon.width * MATH_DIVIDE_16), scale / (lifeIcon.height * MATH_DIVIDE_16))
+    end
 end
 
 --- @param localIndex integer
@@ -274,13 +288,7 @@ local function render_hud_mario_lives()
 
     local x = 22
     local y = 15 -- SCREEN_HEIGHT - 209 - 16
-    local lifeIcon = life_icon_from_local_index(0)
-
-    if lifeIcon == nil then
-        djui_hud_print_text("?", x, y, 1)
-    else
-        djui_hud_render_texture(lifeIcon, x, y, 1 / (lifeIcon.width * MATH_DIVIDE_16), 1 / (lifeIcon.height * MATH_DIVIDE_16))
-    end
+    render_icon_from_local_index(0, x, y, 1)
     djui_hud_print_text("@", x + 16, y, 1)
     djui_hud_print_text(tostring(hud_get_value(HUD_DISPLAY_LIVES)):gsub("-", "M"), x + 32, y, 1)
 end
@@ -333,12 +341,7 @@ local function render_hud_camera_status()
 
     switch(cameraHudStatus & CAM_STATUS_MODE_GROUP, {
         [CAM_STATUS_MARIO] = function()
-            local lifeIcon = life_icon_from_local_index(0)
-            if lifeIcon == nil then
-                djui_hud_print_text("?", x + 16, y, 1)
-            else
-                djui_hud_render_texture(lifeIcon, x + 16, y, 1 / (lifeIcon.width * MATH_DIVIDE_16), 1 / (lifeIcon.height * MATH_DIVIDE_16))
-            end
+            render_icon_from_local_index(0, x + 16, y, 1)
         end,
         [CAM_STATUS_LAKITU] = function()
             djui_hud_render_texture(gTextures.lakitu, x + 16, y, 1, 1)
