@@ -485,7 +485,8 @@ local function on_hud_render_behind()
     render_hud_health()
 end
 
-_G.charSelect = {
+-- Can't name this charSelect due to o-api.lua overriding it, if I did so, using character select with no packs would make it nil
+_G.gServerSettingsCS = {
     enablePlayerList = true -- Set to false to disable the playerlist
 }
 
@@ -500,7 +501,7 @@ local function on_hud_render()
 
     gServerSettings.enablePlayerList = false -- Disables the original playerlist and modlist
 
-    local enablePlayerList = charSelect.enablePlayerList -- gServerSettings.enablePlayerList but for the character select playerlist
+    local enablePlayerList = gServerSettingsCS.enablePlayerList -- gServerSettings.enablePlayerList but for the character select playerlist
     djui_hud_set_resolution(RESOLUTION_DJUI)
 
     if djui_attempting_to_open_playerlist() and enablePlayerList then
