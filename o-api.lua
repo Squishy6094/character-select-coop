@@ -308,8 +308,10 @@ end
 local function character_get_number_from_string(name)
     if type(name) ~= TYPE_STRING then return nil end
     for i = 2, #characterTable do
-        if characterTable[i].name == name or characterTable[i].name == string_space_to_underscore(name) then
-            return i
+        for a = 1, #characterTable[i] do
+            if characterTable[i][a].name == name or characterTable[i][a].name == string_space_to_underscore(name) then
+                return i
+            end
         end
     end
     return nil
