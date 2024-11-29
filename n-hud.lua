@@ -193,9 +193,10 @@ local FONT_USER = FONT_NORMAL
 --- Icons can only be seen by users who have the character avalible to them
 function name_from_local_index(localIndex)
     if localIndex == nil then localIndex = 0 end
+    local p = gPlayerSyncTable[localIndex]
     for i = 1, #characterTable do
-        if characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
-            return characterTable[i][gPlayerSyncTable[localIndex].currAlt].name
+        if characterTable[i].saveName == p.saveName then
+            return characterTable[i][(p.currAlt and p.currAlt or 1)].name
         end
     end
     return "???"
@@ -207,9 +208,10 @@ end
 --- Icons can only be seen by users who have the character avalible to them
 function color_from_local_index(localIndex)
     if localIndex == nil then localIndex = 0 end
+    local p = gPlayerSyncTable[localIndex]
     for i = 1, #characterTable do
-        if characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
-            return characterTable[i][gPlayerSyncTable[localIndex].currAlt].color
+        if characterTable[i].saveName == p.saveName then
+            return characterTable[i][(p.currAlt and p.currAlt or 1)].color
         end
     end
     return {r = 255, g = 255, b = 255}
@@ -222,10 +224,11 @@ end
 --- This function can return nil. if this is the case, render `djui_hud_print_text("?", x, y, 1)`
 function life_icon_from_local_index(localIndex)
     if localIndex == nil then localIndex = 0 end
+    local p = gPlayerSyncTable[localIndex]
     for i = 1, #characterTable do
         local char = characterTable[i]
-        if char.saveName == gPlayerSyncTable[localIndex].saveName then
-            return char[gPlayerSyncTable[localIndex].currAlt].lifeIcon
+        if char.saveName == p.saveName then
+            return char[(p.currAlt and p.currAlt or 1)].lifeIcon
         end
     end
     return "?"
@@ -257,10 +260,11 @@ end
 --- Icons can only be seen by users who have the character avalible to them
 function star_icon_from_local_index(localIndex)
     if localIndex == nil then localIndex = 0 end
+    local p = gPlayerSyncTable[localIndex]
     for i = 1, #characterTable do
         local char = characterTable[i]
-        if char.saveName == gPlayerSyncTable[localIndex].saveName then
-            return char[gPlayerSyncTable[localIndex].currAlt].starIcon
+        if char.saveName == p.saveName then
+            return char[(p.currAlt and p.currAlt or 1)].starIcon
         end
     end
     return gTextures.star
