@@ -13,6 +13,8 @@ local hud_get_value,hud_set_value,djui_hud_print_text,tostring,hud_set_flash,get
     Djui box code written by xLuigiGamerx (Use outside of character select is forbidden as these functions were made for another mod I'm planning to release)
 ]]
 
+---@param text string
+---@return nil, number, number, number, number
 local function convert_color(text)
     if text:sub(2, 2) ~= "#" then
         return nil
@@ -29,7 +31,9 @@ local function convert_color(text)
     return r, g, b, a
 end
 
--- removes color string
+---@param text string
+---@param get_color boolean
+---@return string, string, string, boolean
 local function remove_color(text, get_color)
     local start = text:find("\\")
     local next = 1
@@ -54,6 +58,79 @@ local function remove_color(text, get_color)
     return text
 end
 
+----------------------------------------------------------------------------------------------
+-- Version check to make sure not to use undefined functions or structs from later versions --
+--                              Delete this next update (v1.1)                              --
+----------------------------------------------------------------------------------------------
+if SM64COOPDX_VERSION ~= "v1.1" then
+
+--- @class DjuiColor
+--- @field public a integer
+--- @field public b integer
+--- @field public g integer
+--- @field public r integer
+
+--- @class DjuiInteractableTheme
+--- @field public cursorDownBorderColor DjuiColor
+--- @field public cursorDownRectColor DjuiColor
+--- @field public defaultBorderColor DjuiColor
+--- @field public defaultRectColor DjuiColor
+--- @field public hoveredBorderColor DjuiColor
+--- @field public hoveredRectColor DjuiColor
+--- @field public textColor DjuiColor
+
+--- @class DjuiPanelTheme
+--- @field public hudFontHeader boolean
+
+--- @class DjuiTheme
+--- @field public id string
+--- @field public interactables DjuiInteractableTheme
+--- @field public name string
+--- @field public panels DjuiPanelTheme
+--- @field public threePanels DjuiThreePanelTheme
+
+--- @class DjuiThreePanelTheme
+--- @field public borderColor DjuiColor
+--- @field public rectColor DjuiColor
+
+    ---@return DjuiTheme
+    function djui_menu_get_theme()
+        ---@type DjuiTheme
+        local defaultTheme = {
+            id = "PRE_1.1",
+            interactables = { cursorDownBorderColor = { r = 0, g = 0, b = 0, a = 0 }, cursorDownRectColor = { r = 0, g = 0, b = 0, a = 0 }, defaultBorderColor = { r = 0, g = 0, b = 0, a = 0 }, defaultRectColor = { r = 0, g = 0, b = 0, a = 0 }, hoveredBorderColor = { r = 0, g = 0, b = 0, a = 0 }, hoveredRectColor = { r = 0, g = 0, b = 0, a = 0 }, textColor = { r = 0, g = 0, b = 0, a = 0 }},
+            name = "Pre 1.1",
+            panels = { hudFontHeader = false},
+            threePanels = { borderColor = { r = 0, g = 0, b = 0, a = 200 }, rectColor = { r = 0, g = 0, b = 0, a = 230 }}
+        }
+
+        return defaultTheme
+    end
+
+    ---@param section string
+    ---@param key string
+    ---@return string
+    function djui_language_get(section, key)
+        local langTable = {
+            ["PLAYER_LIST"] = {["PLAYERS"] = "PLAYERS"},
+            ["MODLIST"] = {["MODS"] = "MODS"}
+        }
+        return langTable[section][key] or key
+    end
+
+    ---@param color integer
+    ---@return string
+    function djui_menu_get_rainbow_string_color(color)
+        local rainbowTextTable = {
+            [0] = "\\#ff3030\\",
+            [1] = "\\#40e740\\",
+            [2] = "\\#40b0ff\\",
+            [3] = "\\#ffef40\\",
+        }
+        return rainbowTextTable[color]
+    end
+end
+
 ---@param text string
 ---@return string
 local function generate_rainbow_text(text)
@@ -63,24 +140,20 @@ local function generate_rainbow_text(text)
         table.insert(preResult, match)
     end
 
+    RED = djui_menu_get_rainbow_string_color(0)
+    GREEN = djui_menu_get_rainbow_string_color(1)
+    BLUE = djui_menu_get_rainbow_string_color(2)
+    YELLOW = djui_menu_get_rainbow_string_color(3)
+
     local sRainbowColors = {
-        [0] = "\\#ffef40\\",
-        [1] = "\\#ff3030\\",
-        [2] = "\\#40e740\\",
-        [3] = "\\#40b0ff\\",
+        [0] = YELLOW,
+        [1] = RED,
+        [2] = GREEN,
+        [3] = BLUE,
     }
 
-    -- Planned: find a way to detect the easteregg ex theme
-    local sExCoopRainbowColors = {
-        [0] = "\\#ffef00\\",
-        [1] = "\\#ff0800\\",
-        [2] = "\\#1be700\\",
-        [3] = "\\#00b3ff\\",
-    }
-
-    local exEasterEgg = false
     for i = 1, #preResult do
-        rainbow = exEasterEgg and sExCoopRainbowColors[i % 4] or sRainbowColors[i % 4]
+        rainbow = sRainbowColors[i % 4]
         table.insert(postResult, rainbow .. preResult[i])
     end
 
@@ -92,31 +165,37 @@ end
 ---@param y integer Y Offset
 ---@param width integer Width
 ---@param height integer Height
----@param r integer Red Value: Must be between 0-255 (Default: 0)
----@param g integer Green Value: Must be between 0-255 (Default: 0)
----@param b integer Blue Value: Must be between 0-255 (Default: 0)
-local function djui_hud_render_djui(x, y, width, height, r, g, b)
+---@param rectColor DjuiColor Rect Color
+---@param borderColor DjuiColor Border Color
+local function djui_hud_render_djui(x, y, width, height, rectColor, borderColor)
 
-    red = 0 or r
-    green = 0 or g
-    blue = 0 or b
+    djui_hud_set_color(borderColor.r, borderColor.g, borderColor.b, borderColor.a)
 
-    djui_hud_set_color(red, green, blue, 200)
-    djui_hud_render_rect(x, y, width, height)
+    -- Left
+    djui_hud_render_rect(x, y, 8, height)
+    -- Right
+    djui_hud_render_rect(x + width - 8, y, 8, height)
+    -- Up
+    djui_hud_render_rect(x + 8, y, width - 16, 8)
+    -- Down
+    djui_hud_render_rect(x + 8, y + height - 8, width - 16, 8)
 
-    djui_hud_set_color(red, green, blue, 140)
+
+    -- Inner Rect
+
+    djui_hud_set_color(rectColor.r, rectColor.g, rectColor.b, rectColor.a)
     djui_hud_render_rect(x + 8, y + 8, width - 16, height - 16)
 
 end
 
----@param text string
----@param x integer
----@param y integer
----@param scale integer
----@param red integer
----@param green integer
----@param blue integer
----@param alpha integer
+---@param text string Text
+---@param x integer X Offset
+---@param y integer Y Offset
+---@param scale integer Scale
+---@param red integer Default text red value
+---@param green integer Default text green value
+---@param blue integer Default text blue value
+---@param alpha integer Default text alpha value
 local function djui_hud_print_text_with_color(text, x, y, scale, red, green, blue, alpha)
     djui_hud_set_color(red or 255, green or 255, blue or 255, alpha or 255)
     local space = 0
@@ -135,19 +214,28 @@ end
 
 ---@param text string Message
 ---@param headerYOffset integer A y offset for the header
+---@param tr integer Text Red
+---@param tg integer Text Green
+---@param tb integer Text Blue
 ---@param a integer Text Alpha Value
 ---@param scale integer Scale
 ---@param x integer X Offset
 ---@param y integer Y Offset
 ---@param width integer Width
 ---@param height integer Height
----@param r integer Red Value: Must be between 0-255 (Default: 0)
----@param g integer Green Value: Must be between 0-255 (Default: 0)
----@param b integer Blue Value: Must be between 0-255 (Default: 0)
-local function djui_hud_render_header_box(text, headerYOffset, tr, tg, tb, a, scale, x, y, width, height, r, g, b)
-    djui_hud_set_font(FONT_MENU)
-    djui_hud_render_djui(x, y, width, height, r, g, b)
-    djui_hud_print_text_with_color(text, x + width / 2 - (djui_hud_measure_text((string.gsub(text, "\\(.-)\\", ""))) * scale) / 2, y + 14.5 + headerYOffset, scale, tr, tg, tb, a)
+---@param rectColor DjuiColor Rect Color
+---@param borderColor DjuiColor Border Color
+local function djui_hud_render_header_box(text, headerYOffset, tr, tg, tb, a, scale, x, y, width, height, rectColor, borderColor)
+    local headerFont = djui_menu_get_theme().panels.hudFontHeader and FONT_HUD or FONT_MENU
+    djui_hud_set_font(headerFont)
+
+    local hudFont = headerFont == FONT_HUD
+    local scaleMultiplier = hudFont and 4 * 0.7 or 1
+    local headerFontOffset = hudFont and 31.65 or 14.5
+    local defaultHeaderOffset = y + headerFontOffset + headerYOffset
+
+    djui_hud_render_djui(x, y, width, height, rectColor, borderColor)
+    djui_hud_print_text_with_color(text, x + width / 2 - (djui_hud_measure_text(remove_color(text, false)) * scale * scaleMultiplier) / 2, defaultHeaderOffset, scaleMultiplier, tr, tg, tb, a)
 end
 
 ---------------------
@@ -407,6 +495,14 @@ local function render_act_select_hud()
 end
 
 function render_playerlist_and_modlist()
+
+    -- DjuiTheme Data
+
+    local sDjuiTheme = djui_menu_get_theme()
+    local hudFont = sDjuiTheme.panels.hudFontHeader
+    local rectColor = sDjuiTheme.threePanels.rectColor
+    local borderColor = sDjuiTheme.threePanels.borderColor
+
     -- PlayerList
 
     playerListWidth = 710
@@ -416,9 +512,9 @@ function render_playerlist_and_modlist()
 
     listMargins = 16
 
-    local playersString = generate_rainbow_text("PLAYERS")
+    local playersString = hudFont and djui_language_get("PLAYER_LIST", "PLAYERS") or generate_rainbow_text(djui_language_get("PLAYER_LIST", "PLAYERS"))
 
-    djui_hud_render_header_box(playersString, 0, 0xdc, 0xdc, 0xdc, 0xff, 1, x, y, playerListWidth, playerListHeight, 0, 0, 0)
+    djui_hud_render_header_box(playersString, 0, 0xff, 0xff, 0xff, 0xff, 1, x, y, playerListWidth, playerListHeight, rectColor, borderColor)
     djui_hud_set_font(FONT_USER)
     for i = 0, #gNetworkPlayers do
         o = i > (network_player_connected_count() - 1) and i + (network_player_connected_count() - 1) or 0
@@ -467,9 +563,9 @@ function render_playerlist_and_modlist()
     mX = djui_hud_get_screen_width()/2 + 363
     mY = djui_hud_get_screen_height()/2 - modListHeight/2
 
-    local modsString = generate_rainbow_text("MODS")
+    local modsString = hudFont and djui_language_get("MODLIST", "MODS") or generate_rainbow_text(djui_language_get("MODLIST", "MODS"))
 
-    djui_hud_render_header_box(modsString, 0, 0xdc, 0xdc, 0xdc, 0xff, 1, mX, mY, modListWidth, modListHeight, 0, 0, 0)
+    djui_hud_render_header_box(modsString, 0, 0xff, 0xff, 0xff, 0xff, 1, mX, mY, modListWidth, modListHeight, rectColor, borderColor)
     djui_hud_set_font(FONT_USER)
 
     for i = 0, #gActiveMods do
