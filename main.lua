@@ -553,6 +553,8 @@ local altOffsetActs = {
 local prevBaseCharFrame = gNetworkPlayers[0].modelIndex
 --- @param m MarioState
 local function mario_update(m)
+    local np = gNetworkPlayers[m.playerIndex]
+    local p = gPlayerSyncTable[m.playerIndex]
     if stallFrame == 1 or queueStorageFailsafe then
         failsafe_options()
         if not queueStorageFailsafe then
@@ -569,34 +571,34 @@ local function mario_update(m)
     end
 
     if m.playerIndex == 0 and stallFrame > 1 then
-        local np = gNetworkPlayers[0]
         if djui_hud_is_pause_menu_created() and prevBaseCharFrame ~= np.modelIndex then
             characterTable[1].currAlt = np.modelIndex + 1
             currChar = 1
-            gPlayerSyncTable[0].presetPalette = false
+            p.presetPalette = false
         end
         prevBaseCharFrame = np.modelIndex
 
         local defaultTable = characterTable[1]
         local charTable = characterTable[currChar]
-        gPlayerSyncTable[0].saveName = charTable.saveName
-        gPlayerSyncTable[0].currAlt = charTable.currAlt
+        p.saveName = charTable.saveName
+        p.currAlt = charTable.currAlt
 
         if optionTable[optionTableRef.localModels].toggle > 0 then
-            gPlayerSyncTable[0].modelId = charTable[charTable.currAlt].model
+            p.modelId = charTable[charTable.currAlt].model
             if charTable[charTable.currAlt].forceChar ~= nil then
-                np.overrideModelIndex = charTable[charTable.currAlt].forceChar
+                p.forceChar = charTable[charTable.currAlt].forceChar
             end
             m.marioObj.hookRender = 1
         else
-            gPlayerSyncTable[0].modelId = nil
-            np.overrideModelIndex = defaultTable.forceChar
+            p.modelId = nil
+            p.forceChar = defaultTable.forceChar
             currChar = 1
         end
 
-        gPlayerSyncTable[0].offset = charTable[charTable.currAlt].offset
+        p.offset = charTable[charTable.currAlt].offset
 
         if menuAndTransition then
+            play_secondary_music(0, 0, 0.5, 0)
             camera_freeze()
             hud_hide()
             if _G.PersonalStarCounter then
@@ -622,6 +624,7 @@ local function mario_update(m)
             end
             noLoop = false
         elseif not noLoop then
+            stop_secondary_music(50)
             camera_unfreeze()
             hud_show()
             if _G.PersonalStarCounter then
@@ -671,11 +674,15 @@ local function mario_update(m)
         end
     end
     
-    local offset = gPlayerSyncTable[m.playerIndex].offset
+    local offset = p.offset
+    local forceChar = p.forceChar
     if offset ~= 0 and offset ~= nil then
         if altOffsetActs[m.action] ~= false then
             m.marioObj.header.gfx.pos.y = (altOffsetActs[m.action] and m.pos.y or m.marioObj.header.gfx.pos.y) + offset
         end
+    end
+    if forceChar ~= nil then
+        np.overrideModelIndex = forceChar
     end
 end
 
