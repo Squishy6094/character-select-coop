@@ -511,8 +511,9 @@ _G.charSelect = {
     character_get_number_from_string = character_get_number_from_string,
     character_get_voice = character_get_voice,
     character_get_life_icon = life_icon_from_local_index, -- Function located in n-hud.lua
-    character_render_life_icon = render_icon_from_local_index,
+    character_render_life_icon = render_life_icon_from_local_index, -- Function located in n-hud.lua
     character_get_star_icon = star_icon_from_local_index, -- Function located in n-hud.lua
+    character_render_star_icon = render_star_icon_from_local_index, -- Function located in n-hud.lua
     character_set_locked = character_set_locked,
 
     -- Hud Element Functions --

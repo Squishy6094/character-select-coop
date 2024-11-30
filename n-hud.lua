@@ -235,7 +235,11 @@ function life_icon_from_local_index(localIndex)
 end
 
 local TYPE_STRING = "string"
-function render_icon_from_local_index(localIndex, x, y, scale)
+--- @param localIndex integer
+--- @param x integer
+--- @param y integer
+--- @param scale integer
+function render_life_icon_from_local_index(localIndex, x, y, scale)
     if localIndex == nil then localIndex = 0 end
     local lifeIcon = life_icon_from_local_index(localIndex)
     local startFont = djui_hud_get_font()
@@ -268,6 +272,16 @@ function star_icon_from_local_index(localIndex)
         end
     end
     return gTextures.star
+end
+
+--- @param localIndex integer
+--- @param x integer
+--- @param y integer
+--- @param scale integer
+function render_star_icon_from_local_index(localIndex, x, y, scale)
+    if localIndex == nil then localIndex = 0 end
+    local starIcon = star_icon_from_local_index(localIndex)
+    djui_hud_render_texture(starIcon, x, y, scale / (starIcon.width * MATH_DIVIDE_16), scale / (starIcon.height * MATH_DIVIDE_16))
 end
 
 local pieTextureNames = {
@@ -309,7 +323,7 @@ local function render_hud_mario_lives()
 
     local x = 22
     local y = 15 -- SCREEN_HEIGHT - 209 - 16
-    render_icon_from_local_index(0, x, y, 1)
+    render_life_icon_from_local_index(0, x, y, 1)
     djui_hud_print_text("@", x + 16, y, 1)
     djui_hud_print_text(tostring(hud_get_value(HUD_DISPLAY_LIVES)):gsub("-", "M"), x + 32, y, 1)
 end
@@ -332,13 +346,12 @@ local function render_hud_stars()
         x = x - 1
     end
     local y = math_ceil(240 - 209 - 16)
-    local starIcon = star_icon_from_local_index(0)
 
     local showX = 0
     local hudDisplayStars = hud_get_value(HUD_DISPLAY_STARS)
     if hudDisplayStars < 100 then showX = 1 end
 
-    djui_hud_render_texture(starIcon, x, y, 1 / (starIcon.width*MATH_DIVIDE_16), 1 / (starIcon.height*MATH_DIVIDE_16))
+    render_star_icon_from_local_index(0, x, y, 1)
     if showX == 1 then
         djui_hud_print_text("@", x + 16, y, 1)
     end
@@ -362,7 +375,7 @@ local function render_hud_camera_status()
 
     switch(cameraHudStatus & CAM_STATUS_MODE_GROUP, {
         [CAM_STATUS_MARIO] = function()
-            render_icon_from_local_index(0, x + 16, y, 1)
+            render_life_icon_from_local_index(0, x + 16, y, 1)
         end,
         [CAM_STATUS_LAKITU] = function()
             djui_hud_render_texture(gTextures.lakitu, x + 16, y, 1, 1)
@@ -399,7 +412,7 @@ local function render_act_select_hud()
             local np = gNetworkPlayers[j]
             if np and np.connected and np.currCourseNum == course and np.currActNum == a then
                 djui_hud_render_rect(x - 4, 17, 16, 16)
-                render_icon_from_local_index(0, x - 4, 17, 1)
+                render_life_icon_from_local_index(0, x - 4, 17, 1)
                 break
             end
         end
@@ -440,7 +453,7 @@ function render_playerlist_and_modlist()
             }
 
             djui_hud_set_color(255, 255, 255, 255)
-            render_icon_from_local_index(i, entryX, entryY, 2)
+            render_life_icon_from_local_index(i, entryX, entryY, 2)
             djui_hud_print_text_with_color(np.name, entryX + 40, entryY, 1, playerNameColor.r, playerNameColor.g, playerNameColor.b, 255)
 
             local levelName = get_level_name(np.currCourseNum, np.currLevelNum, np.currAreaIndex)
