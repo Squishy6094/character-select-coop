@@ -571,10 +571,10 @@ function render_playerlist_and_modlist()
 
     -- ModList
 
-    modListWidth = 280
-    modListHeight = ((#gActiveMods + 1) * 32) + ((#gActiveMods + 1) - 1) * 4 + (32 + 16) + 32 + 32
-    mX = djui_hud_get_screen_width()/2 + 363
-    mY = djui_hud_get_screen_height()/2 - modListHeight/2
+    local modListWidth = 280
+    local modListHeight = ((#gActiveMods + 1) * 32) + ((#gActiveMods + 1) - 1) * 4 + (32 + 16) + 32 + 32
+    local mX = djui_hud_get_screen_width()/2 + 363
+    local mY = djui_hud_get_screen_height()/2 - modListHeight/2
 
     local modsString = hudFont and djui_language_get("MODLIST", "MODS") or generate_rainbow_text(djui_language_get("MODLIST", "MODS"))
 
@@ -584,12 +584,23 @@ function render_playerlist_and_modlist()
     for i = 0, #gActiveMods do
         v = (i % 2) ~= 0 and 16 or 32
         djui_hud_set_color(v, v, v, 128)
-        entryWidth = modListWidth - ((8 + listMargins) * 2)
-        entryHeight = 32
-        entryX = mX + 8 + listMargins
-        entryY = mY + 124 + 0 + ((entryHeight + 4) * (i - 1))
+        local entryWidth = modListWidth - ((8 + listMargins) * 2)
+        local entryHeight = 32
+        local entryX = mX + 8 + listMargins
+        local entryY = mY + 124 + 0 + ((entryHeight + 4) * (i - 1))
         djui_hud_render_rect(entryX, entryY, entryWidth, entryHeight)
-        djui_hud_print_text_with_color(gActiveMods[i].name, entryX, entryY, 1, 0xdc, 0xdc, 0xdc, 255)
+        local modName = gActiveMods[i].name
+        local stringSubCount = 23
+        local inColor = false
+        for i = 1, #modName do
+            if modName:sub(i, i) == "\\" then
+                inColor = not inColor
+            end
+            if inColor then
+                stringSubCount = stringSubCount + 1
+            end
+        end
+        djui_hud_print_text_with_color(gActiveMods[i].name:sub(1, stringSubCount), entryX, entryY, 1, 0xdc, 0xdc, 0xdc, 255)
     end
 end
 
