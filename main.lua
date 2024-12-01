@@ -289,7 +289,7 @@ creditTable = {
         {creditTo = "AgentX",          creditFor = "Main Contributer / CoopDX"},
         {creditTo = "xLuigiGamerx",    creditFor = "Main Contributer"},
         {creditTo = "OneCalledRPG",    creditFor = "Contributer"},
-        {creditTo = "Cooliokid956",    creditFor = "Contributer"},
+        {creditTo = "SuperKirbyLover", creditFor = "Custom Health Meters"},
         {creditTo = "EliteMasterEric", creditFor = "Dialog Replacement"}
     }
 }
