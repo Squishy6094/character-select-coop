@@ -84,6 +84,7 @@ local function update_preset_palette(np)
     end
 end
 
+-- API funcs
 _G.charSelect.update_preset_palette = update_preset_palette
 
 local prevChar = currChar
