@@ -129,15 +129,16 @@ end
 
 stopMovesets = false
 
+seasonalEvent = 0
 SEASON_EVENT_BIRTHDAY = 1
 SEASON_EVENT_CHRISTMAS = 2
-
-seasonalEvent = 0
 -- December
-if get_date_and_time().month == 12 then
-    if get_date_and_time()().days == 3 then
+    log_to_console(tostring(get_date_and_time().day))
+if get_date_and_time().month == 11 then
+    if get_date_and_time().day == 3 then
         -- Character Select's Birthday
         seasonalEvent = SEASON_EVENT_BIRTHDAY
+        log_to_console("Happy Birthday!!")
     else
         -- Christmas
         seasonalEvent = SEASON_EVENT_CHRISTMAS

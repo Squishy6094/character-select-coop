@@ -598,7 +598,7 @@ local function mario_update(m)
         p.offset = charTable[charTable.currAlt].offset
 
         if menuAndTransition then
-            play_secondary_music(0, 0, 0.5, 0)
+            --play_secondary_music(0, 0, 0.5, 0)
             camera_freeze()
             hud_hide()
             if _G.PersonalStarCounter then
@@ -624,7 +624,7 @@ local function mario_update(m)
             end
             noLoop = false
         elseif not noLoop then
-            stop_secondary_music(50)
+            --stop_secondary_music(50)
             camera_unfreeze()
             hud_show()
             if _G.PersonalStarCounter then
@@ -783,7 +783,8 @@ local inputStallToButton = 10
 --Basic Menu Text
 local TEXT_OPTIONS_HEADER = "Menu Options"
 local TEXT_OPTIONS_HEADER_API = "API Options"
-local TEXT_VERSION = "Version: " .. MOD_VERSION_STRING .. " | sm64coopdx"
+local yearsOfCS = get_date_and_time().year - 123 -- Zero years as of 2023
+local TEXT_VERSION = "Version: " .. MOD_VERSION_STRING .. " | sm64coopdx" .. (seasonalEvent == SEASON_EVENT_BIRTHDAY and (" | " .. tostring(yearsOfCS) .. " year" .. (yearsOfCS > 1 and "s" or "") .. " of Character Select!") or "")
 local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
 local TEXT_DESCRIPTION = "Character Description:"
 local TEXT_PREF_SAVE = "Press A to Set as Preferred Character"
