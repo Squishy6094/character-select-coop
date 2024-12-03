@@ -2,7 +2,7 @@
 local string_lower,string_format,table_insert,get_date_and_time = string.lower,string.format,table.insert,get_date_and_time
 
 if VERSION_NUMBER < 37 then
-    djui_popup_create("\n\\#FFAAAA\\Character Select requires\n CoopDX v1 or higher use!\n\nYou can find CoopDX here:\n\\#6666FF\\https://sm64coopdx.com", 5)
+    djui_popup_create("\n\\#FFAAAA\\Character Select requires\n the latest version of CoopDX to use!\n\nYou can find CoopDX here:\n\\#6666FF\\https://sm64coopdx.com", 5)
     incompatibleClient = true
     return 0
 end
