@@ -1494,7 +1494,8 @@ local function before_mario_update(m)
             if inputStallTimerDirectional == 0 and optionTable[optionTableRef.localModels].toggle ~= 0 and not charBeingSet then
                 if (controller.buttonPressed & D_JPAD) ~= 0 or (controller.buttonPressed & D_CBUTTONS) ~= 0 or controller.stickY < -60 then
                     currChar = currChar + 1
-                    if character and character.locked then
+                    local character = characterTable[currChar]
+                    if character ~= nil and character.locked then
                         repeat
                             currChar = currChar + 1
                         until (not characterTable[currChar].locked) or currChar > #characterTable
@@ -1514,7 +1515,8 @@ local function before_mario_update(m)
                 end
                 if (controller.buttonPressed & U_JPAD) ~= 0 or (controller.buttonPressed & U_CBUTTONS) ~= 0 or controller.stickY > 60 then
                     currChar = currChar - 1
-                    if character and character.locked then
+                    local character = characterTable[currChar]
+                    if character ~= nil and character.locked then
                         repeat
                             currChar = currChar - 1
                         until (not characterTable[currChar].locked) or currChar < 1
