@@ -1488,7 +1488,6 @@ local function before_mario_update(m)
 
     local cameraToObject = m.marioObj.header.gfx.cameraToObject
 
-    local character = characterTable[currChar]
     if menuAndTransition and not options then
         if menu then
             if inputStallTimerDirectional == 0 and optionTable[optionTableRef.localModels].toggle ~= 0 and not charBeingSet then
@@ -1512,6 +1511,7 @@ local function before_mario_update(m)
                     end
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                     gPlayerSyncTable[0].presetPalette = false
+                    if currChar > #characterTable then currChar = 1 end
                 end
                 if (controller.buttonPressed & U_JPAD) ~= 0 or (controller.buttonPressed & U_CBUTTONS) ~= 0 or controller.stickY > 60 then
                     currChar = currChar - 1
@@ -1533,10 +1533,12 @@ local function before_mario_update(m)
                     end
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                     gPlayerSyncTable[0].presetPalette = false
+                    if currChar < 1 then currChar = #characterTable end
                 end
 
                 -- Alt switcher
-                if #character > 1 then
+                if #characterTable[currChar] > 1 then
+                    local character = characterTable[currChar]
                     if (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60 then
                         character.currAlt = character.currAlt + 1
                         inputStallTimerDirectional = inputStallToDirectional
@@ -1583,9 +1585,6 @@ local function before_mario_update(m)
                 end
             end
         end
-        -- Wraping Menu
-        if currChar > #characterTable then currChar = 1 end
-        if currChar < 1 then currChar = #characterTable end
 
         -- Handles Camera Posistioning
         faceAngle = m.faceAngle.y
