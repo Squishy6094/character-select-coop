@@ -77,6 +77,7 @@ local function network_player_set_full_override_palette(networkPlayer, colorTabl
     end
 end
 
+--- @param np NetworkPlayer
 local function update_preset_palette(np)
     local modelId = (gPlayerSyncTable[np.localIndex].modelId)
     if np.connected and gPlayerSyncTable[0].presetPalette and characterColorPresets[modelId] and not stopPalettes then
