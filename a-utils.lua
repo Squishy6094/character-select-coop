@@ -10,8 +10,8 @@ end
 MOD_VERSION_API = 1
 MOD_VERSION_MAJOR = 11
 MOD_VERSION_MINOR = 0
-MOD_VERSION_INDEV = true
-MOD_VERSION_STRING = tostring(MOD_VERSION_API) .. "." .. tostring(MOD_VERSION_MAJOR) .. (MOD_VERSION_MINOR > 0 and ("." .. tostring(MOD_VERSION_MINOR)) or "") .. (MOD_VERSION_INDEV and (" (In-Dev)" or ""))
+MOD_VERSION_INDEV = false
+MOD_VERSION_STRING = tostring(MOD_VERSION_API) .. "." .. tostring(MOD_VERSION_MAJOR) .. (MOD_VERSION_MINOR > 0 and ("." .. tostring(MOD_VERSION_MINOR)) or "") .. (MOD_VERSION_INDEV and " (In-Dev)" or "")
 
 ommActive = false
 for i in pairs(gActiveMods) do
