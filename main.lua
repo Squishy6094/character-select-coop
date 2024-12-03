@@ -1107,7 +1107,7 @@ local function on_hud_render()
                 if not char.locked then
                     buttonColor = char[char.currAlt].color -- Change Later
                 else
-                    buttonColor = {r = char.color.r*0.5, g = char.color.g*0.5, b = char.color.b*0.5}
+                    buttonColor = {r = char[char.currAlt].color.r*0.5, g = char[char.currAlt].color.g*0.5, b = char[char.currAlt].color.b*0.5}
                 end
                 djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
                 local x = buttonX
@@ -1497,7 +1497,7 @@ local function before_mario_update(m)
                     if character and character.locked then
                         repeat
                             currChar = currChar + 1
-                        until (not character.locked) or currChar > #characterTable
+                        until (not characterTable[currChar].locked) or currChar > #characterTable
                     end
                     if (controller.buttonPressed & D_CBUTTONS) == 0 then
                         inputStallTimerDirectional = inputStallToDirectional
@@ -1517,7 +1517,7 @@ local function before_mario_update(m)
                     if character and character.locked then
                         repeat
                             currChar = currChar - 1
-                        until (not character.locked) or currChar < 1
+                        until (not characterTable[currChar].locked) or currChar < 1
                     end
                     if (controller.buttonPressed & U_CBUTTONS) == 0 then
                         inputStallTimerDirectional = inputStallToDirectional
@@ -1696,10 +1696,16 @@ local function chat_command(msg)
     -- Name Check
     for i = 1, #characterTable do
         if not characterTable[i].locked then
-            if msg == string_lower(characterTable[i].name) or msg == string_underscore_to_space(string_lower(characterTable[i].saveName)) then
-                currChar = i
-                djui_chat_message_create('Character set to "' .. characterTable[i].name .. '" Successfully!')
-                return true
+            local saveName = string_underscore_to_space(string_lower(characterTable[i].saveName))
+            for a = 1, #characterTable[i] do
+                if msg == string_lower(characterTable[i][a].name) or msg == saveName then
+                    currChar = i
+                    if msg ~= saveName then
+                        characterTable[i].currAlt = a
+                    end
+                    djui_chat_message_create('Character set to "' .. characterTable[i][characterTable[i].currAlt].name .. '" Successfully!')
+                    return true
+                end
             end
         end
     end
