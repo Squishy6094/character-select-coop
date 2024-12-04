@@ -552,8 +552,8 @@ function render_playerlist_and_modlist()
             render_life_icon_from_local_index(i, entryX, entryY, 2)
             djui_hud_print_text_with_color(np.name, entryX + 40, entryY, 1, playerNameColor.r, playerNameColor.g, playerNameColor.b, 255)
 
-            local levelName = get_level_name(np.currCourseNum, np.currLevelNum, np.currAreaIndex)
-            if levelName then
+        local levelName = np.overrideLocation ~= "" and np.overrideLocation or get_level_name(np.currCourseNum, np.currLevelNum, np.currAreaIndex)
+        if levelName then
                 djui_hud_print_text_with_color(levelName, ((entryX + entryWidth) - djui_hud_measure_text((string.gsub(levelName, "\\(.-)\\", "")))) - 126, entryY, 1, 0xdc, 0xdc, 0xdc, 255)
             end
 
