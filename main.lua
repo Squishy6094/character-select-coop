@@ -900,7 +900,7 @@ local function on_hud_render()
         local TEXT_MOVESET = "Has Moveset: "..(character.hasMoveset and "Yes" or "No")
         local TEXT_ALT = "Alt: " .. character.currAlt .. "/" .. #character
         character = characterTable[currChar][character.currAlt]
-        local paletteCount = #characterColorPresets[gCSPlayers[0].modelId]
+        local paletteCount = characterColorPresets[gCSPlayers[0].modelId] ~= nil and #characterColorPresets[gCSPlayers[0].modelId] or 0
         if optionTable[optionTableRef.debugInfo].toggle == 0 then
             -- Actual Description --
             local TEXT_NAME = string_underscore_to_space(character.name)
@@ -1582,7 +1582,9 @@ local function before_mario_update(m)
                     end
                 end
             end
-            if #characterColorPresets[gCSPlayers[0].modelId] < gCSPlayers[0].presetPalette then gCSPlayers[0].presetPalette = 0 end
+            if characterColorPresets[gCSPlayers[0].modelId] ~= nil then
+                if #characterColorPresets[gCSPlayers[0].modelId] < gCSPlayers[0].presetPalette then gCSPlayers[0].presetPalette = 0 end
+            end
         end
 
         -- Handles Camera Posistioning
