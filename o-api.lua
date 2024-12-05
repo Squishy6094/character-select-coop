@@ -249,7 +249,10 @@ local function character_add_palette_preset(modelInfo, paletteTable)
             paletteTableOut[i].b = (type(color) == TYPE_TABLE and color.b ~= nil) and color.b or defaultColors[i].b
         end
     end
-    characterColorPresets[modelInfo] = paletteTableOut
+    if characterColorPresets[modelInfo] == nil then
+        characterColorPresets[modelInfo] = {}
+    end
+    table_insert(characterColorPresets[modelInfo], paletteTableOut)
 end
 
 ---@param modelInfo ModelExtendedId|integer
@@ -274,7 +277,7 @@ local function character_get_current_number(localIndex)
         return currChar
     else
         for i = 1, #characterTable do
-            if characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
+            if characterTable[i].saveName == gCSPlayers[localIndex].saveName then
                 return i
             end
         end
@@ -289,7 +292,7 @@ local function character_get_current_costume(localIndex)
         return characterTable[currChar].currAlt
     else
         for i = 1, #characterTable do
-            if characterTable[i].saveName == gPlayerSyncTable[localIndex].saveName then
+            if characterTable[i].saveName == gCSPlayers[localIndex].saveName then
                 return characterTable[i].currAlt
             end
         end
@@ -319,7 +322,7 @@ end
 
 ---@param m MarioState
 function character_get_voice(m)
-    return characterVoices[gPlayerSyncTable[m.playerIndex].modelId]
+    return characterVoices[gCSPlayers[m.playerIndex].modelId]
 end
 
 ---@param charNum integer|nil
