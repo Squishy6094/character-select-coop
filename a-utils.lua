@@ -142,3 +142,34 @@ if get_date_and_time().month == 11 then
         seasonalEvent = SEASON_EVENT_CHRISTMAS
     end
 end
+
+-- Data Networking --
+gCSPlayers = {}
+for i = 0, MAX_PLAYERS - 1 do
+    gCSPlayers[i] = {
+        index = network_global_index_from_local(i),
+        saveName = "Default",
+        currAlt = 1,
+        presetPalette = 0,
+        offset = 0,
+        forceChar = 0,
+        modelId = E_MODEL_MARIO,
+        isUpdating = false,
+    }
+end
+
+local stallPacket = 0
+local function update()
+    stallPacket = (stallPacket+1)%5 -- refresh rate (to reduce stress)
+    if stallPacket == 0 then
+        network_send(false, gCSPlayers[0])
+    end
+end
+
+local function on_packet_recieve(data)
+    local index = network_local_index_from_global(data.index)
+    gCSPlayers[index] = data
+end
+
+hook_event(HOOK_ON_PACKET_RECEIVE, on_packet_recieve)
+hook_event(HOOK_UPDATE, update)

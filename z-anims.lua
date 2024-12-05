@@ -6,7 +6,7 @@ if incompatibleClient then return 0 end
 local smlua_anim_util_set_animation = smlua_anim_util_set_animation
 
 local function character_anims(m)
-    p = gPlayerSyncTable[m.playerIndex]
+    p = gCSPlayers[m.playerIndex]
     if characterAnims[p.modelId] then
         local animID = characterAnims[p.modelId][m.marioObj.header.gfx.animInfo.animID]
         if animID then
