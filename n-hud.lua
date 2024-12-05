@@ -32,7 +32,7 @@ local function convert_color(text)
 end
 
 ---@param text string
----@param get_color boolean
+---@param get_color boolean|nil
 ---@return string, string, string, boolean
 local function remove_color(text, get_color)
     local start = text:find("\\")
@@ -517,6 +517,12 @@ function zero_index_to_one_index(table)
     return tableOne
 end
 
+local packFilterTotal = 0
+for i = 0, #gActiveMods do
+    if remove_color(gActiveMods[i].name):sub(1, 4) == "[CS]" then
+        packFilterTotal = packFilterTotal + 1
+    end
+end
 function render_playerlist_and_modlist()
 
     -- DjuiTheme Data
@@ -587,7 +593,8 @@ function render_playerlist_and_modlist()
     -- ModList
 
     local modListWidth = 280
-    local modListHeight = ((#gActiveMods + 1) * 32) + ((#gActiveMods + 1) - 1) * 4 + (32 + 16) + 32 + 32
+    local modsCount = #gActiveMods - packFilterTotal
+    local modListHeight = ((modsCount + 1) * 32) + ((modsCount + 1) - 1) * 4 + (32 + 16) + 32 + 32
     local mX = djui_hud_get_screen_width()/2 + 363
     local mY = djui_hud_get_screen_height()/2 - modListHeight/2
 
@@ -596,26 +603,37 @@ function render_playerlist_and_modlist()
     djui_hud_render_header_box(modsString, 0, 0xff, 0xff, 0xff, 0xff, 1, mX, mY, modListWidth, modListHeight, rectColor, borderColor)
     djui_hud_set_font(FONT_USER)
 
+    local packFilter = 0
     for i = 0, #gActiveMods do
-        v = (i % 2) ~= 0 and 16 or 32
-        djui_hud_set_color(v, v, v, 128)
-        local entryWidth = modListWidth - ((8 + listMargins) * 2)
-        local entryHeight = 32
-        local entryX = mX + 8 + listMargins
-        local entryY = mY + 124 + 0 + ((entryHeight + 4) * (i - 1))
-        djui_hud_render_rect(entryX, entryY, entryWidth, entryHeight)
-        local modName = gActiveMods[i].name
-        local stringSubCount = 23
-        local inColor = false
-        for i = 1, #modName do
-            if modName:sub(i, i) == "\\" then
-                inColor = not inColor
+        -- Filter CS Packs out of modlist
+        if remove_color(gActiveMods[i].name):sub(1, 4) == "[CS]" then
+            packFilter = packFilter + 1
+        else
+            local i = i - packFilter
+            v = (i % 2) ~= 0 and 16 or 32
+            djui_hud_set_color(v, v, v, 128)
+            local entryWidth = modListWidth - ((8 + listMargins) * 2)
+            local entryHeight = 32
+            local entryX = mX + 8 + listMargins
+            local entryY = mY + 124 + 0 + ((entryHeight + 4) * (i - 1))
+            djui_hud_render_rect(entryX, entryY, entryWidth, entryHeight)
+            local modName = gActiveMods[i].name
+            log_to_console(tostring(packFilterTotal > 0))
+            if modName == "Character Select" and packFilterTotal > 0 then
+                modName = modName.." (+"..packFilterTotal..")"
             end
-            if inColor then
-                stringSubCount = stringSubCount + 1
+            local stringSubCount = 23
+            local inColor = false
+            for i = 1, #modName do
+                if modName:sub(i, i) == "\\" then
+                    inColor = not inColor
+                end
+                if inColor then
+                    stringSubCount = stringSubCount + 1
+                end
             end
+            djui_hud_print_text_with_color(modName:sub(1, stringSubCount), entryX, entryY, 1, 0xdc, 0xdc, 0xdc, 255)
         end
-        djui_hud_print_text_with_color(gActiveMods[i].name:sub(1, stringSubCount), entryX, entryY, 1, 0xdc, 0xdc, 0xdc, 255)
     end
 end
 
