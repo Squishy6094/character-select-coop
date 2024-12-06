@@ -485,14 +485,11 @@ end
 
 -- Act Select Hud --
 local function render_act_select_hud()
-
-    local course, starBhvCount, sVisibleStars -- Localizing variables
-
-    course = gNetworkPlayers[0].currCourseNum
+    local course = gNetworkPlayers[0].currCourseNum
     if gServerSettings.enablePlayersInLevelDisplay == 0 or course == 0 or obj_get_first_with_behavior_id(id_bhvActSelector) == nil then return end
 
-    starBhvCount = count_objects_with_behavior(get_behavior_from_id(id_bhvActSelectorStarType))
-    sVisibleStars = starBhvCount < 7 and starBhvCount or 6
+    local starBhvCount = count_objects_with_behavior(get_behavior_from_id(id_bhvActSelectorStarType))
+    local sVisibleStars = starBhvCount < 6 and starBhvCount or 6
 
     for a = 1, sVisibleStars do
         local x = (139 - sVisibleStars * 17 + a * 34) + (djui_hud_get_screen_width() / 2) - 160 + 0.5
@@ -500,7 +497,7 @@ local function render_act_select_hud()
             local np = gNetworkPlayers[j]
             if np and np.connected and np.currCourseNum == course and np.currActNum == a then
                 djui_hud_render_rect(x - 4, 17, 16, 16)
-                render_life_icon_from_local_index(0, x - 4, 17, 1)
+                render_life_icon_from_local_index(j, x - 4, 17, 1)
                 break
             end
         end
