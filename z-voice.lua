@@ -73,6 +73,7 @@ local function custom_character_sound(m, sound)
 
     -- get the voice table
     local voiceTable = character_get_voice(m)
+    if voiceTable == nil then return end
     -- load samples that haven't been loaded
     for voice, name in pairs(voiceTable) do
         if type(voiceTable[voice]) == "string" then
@@ -121,6 +122,7 @@ local function custom_character_snore(m)
     end
 
     local voice = character_get_voice(m)
+    if voice == nil then return end
     local snoreTable = voice[CHAR_SOUND_SNORING3]
     -- for some reason CS seemed to originally expect snoring to all be under SNORING3 for some reason???
     -- if there's a pointer then it can't be a sound clip table
@@ -173,3 +175,11 @@ _G.charSelect.voice = {
     sound = custom_character_sound,
     snore = custom_character_snore,
 }
+
+--- Must be ran on startup, NOT on mods load
+local function config_character_sounds()
+    hook_event(HOOK_CHARACTER_SOUND, custom_character_sound)
+    hook_event(HOOK_MARIO_UPDATE, custom_character_snore)
+    log_to_console(tostring(custom_character_sound ~= nil))
+end
+_G.charSelect.config_character_sounds = config_character_sounds

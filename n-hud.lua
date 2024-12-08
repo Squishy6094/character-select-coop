@@ -615,7 +615,6 @@ function render_playerlist_and_modlist()
             local entryY = mY + 124 + 0 + ((entryHeight + 4) * (i - 1))
             djui_hud_render_rect(entryX, entryY, entryWidth, entryHeight)
             local modName = gActiveMods[i].name
-            log_to_console(tostring(packFilterTotal > 0))
             if modName == "Character Select" and packFilterTotal > 0 then
                 modName = modName.." (+"..packFilterTotal..")"
             end
