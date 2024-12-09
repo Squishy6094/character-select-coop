@@ -1713,11 +1713,15 @@ local function chat_command(msg)
     end
 
     -- Number Check
-    if tonumber(msg) then
-        msg = tonumber(msg)
-        if msg > 0 and msg <= #characterTable and not characterTable[msg].locked then
-            currChar = msg
-            djui_chat_message_create('Character set to "' .. characterTable[msg].name .. '" Successfully!')
+    msgSplit = string_split(msg)
+    if tonumber(msgSplit[1]) then
+        local charNum = tonumber(msgSplit[1])
+        local altNum = tonumber(msgSplit[2])
+        altNum = altNum and altNum or 1
+        if charNum > 0 and charNum <= #characterTable and not characterTable[charNum].locked then
+            currChar = charNum
+            characterTable[charNum].currAlt = altNum
+            djui_chat_message_create('Character set to "' .. characterTable[charNum][altNum].name .. '" Successfully!')
             return true
         end
     end
