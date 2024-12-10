@@ -143,7 +143,7 @@ if get_date_and_time().month == 11 then
     end
 end
 
--- Data Networking --
+-- Dedicated Networking Table for Character Select
 gCSPlayers = {}
 for i = 0, MAX_PLAYERS - 1 do
     gCSPlayers[i] = {

@@ -270,6 +270,11 @@ local function character_get_current_table(tablePos, charAlt)
     return characterTable[tablePos][charAlt]
 end
 
+---@return table
+local function character_get_full_table()
+    return characterTable
+end
+
 --- @param localIndex integer|nil
 --- @return integer|nil
 local function character_get_current_number(localIndex)
@@ -507,6 +512,7 @@ _G.charSelect = {
     character_add_palette_preset = character_add_palette_preset,
     character_add_animations = character_add_animations,
     character_get_current_table = character_get_current_table,
+    character_get_full_table = character_get_full_table,
     character_get_current_number = character_get_current_number,
     character_get_current_costume = character_get_current_costume,
     character_get_current_model_number = character_get_current_number, -- Outdated function name, Not recommended for use
@@ -546,6 +552,7 @@ _G.charSelect = {
     -- Tables --
     optionTableRef = optionTableRef,
     controller = controller,
+    gCSPlayers = gCSPlayers,
 
     -- Custom Hooks --
     hook_allow_menu_open = hook_allow_menu_open,
