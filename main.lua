@@ -1034,10 +1034,12 @@ local function on_hud_render()
             if characterColorPresets[modelId] ~= nil then
                 djui_hud_print_text(TEXT_PALETTE, width - x + 8, y, 0.5)
                 local x = x - djui_hud_measure_text(TEXT_PALETTE)*0.5
-                for i = 0, #characterColorPresets[modelId] do
+                local currPalette = gCSPlayers[0].presetPalette > 0 and gCSPlayers[0].presetPalette or 1
+                local paletteTable = characterColorPresets[modelId][currPalette]
+                for i = 0, #paletteTable do
                     djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
                     djui_hud_render_rect(width - x + 6.5 + (6.5 * i), y + 1.5, 6, 6)
-                    djui_hud_set_color(characterColorPresets[modelId][i].r, characterColorPresets[modelId][i].g, characterColorPresets[modelId][i].g, 255)
+                    djui_hud_set_color(paletteTable[i].r, paletteTable[i].g, paletteTable[i].b, 255)
                     djui_hud_render_rect(width - x + 7 + (6.5 * i), y + 2, 5, 5)
                 end
                 y = y + 7
