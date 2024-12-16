@@ -312,6 +312,19 @@ local function character_set_current_number(charNum)
     charBeingSet = true
 end
 
+--- @return table|nil
+local function character_get_current_palette()
+    local model = characterTable[currChar][characterTable[currChar].currAlt].model
+    return characterColorPresets[model][gCSPlayers[0].presetPalette]
+end
+
+--- @param localIndex integer|nil
+--- @return integer|nil
+local function character_get_current_palette_number(localIndex)
+    if localIndex == nil then localIndex = 0 end
+    return gCSPlayers[localIndex].presetPalette
+end
+
 ---@param name string
 local function character_get_number_from_string(name)
     if type(name) ~= TYPE_STRING then return nil end
@@ -517,6 +530,8 @@ _G.charSelect = {
     character_get_current_costume = character_get_current_costume,
     character_get_current_model_number = character_get_current_number, -- Outdated function name, Not recommended for use
     character_set_current_number = character_set_current_number,
+    character_get_current_palette = character_get_current_palette,
+    character_get_current_palette_number = character_get_current_palette_number,
     character_get_number_from_string = character_get_number_from_string,
     character_get_voice = character_get_voice,
     character_get_life_icon = life_icon_from_local_index, -- Function located in n-hud.lua
