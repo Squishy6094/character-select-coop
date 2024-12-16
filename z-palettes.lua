@@ -79,8 +79,6 @@ local defaultModels = {
 
 local paletteLoop = #characterColorPresets[E_MODEL_MARIO][1]
 
-local network_player_set_override_palette_color = network_player_set_override_palette_color
-
 local function network_player_set_full_override_palette(networkPlayer, colorTable)
     if colorTable == nil then return end
     for i = 0, paletteLoop do
@@ -90,7 +88,8 @@ end
 
 --- @param np NetworkPlayer
 local function update_preset_palette(np)
-    local modelId = (gCSPlayers[np.localIndex].modelId)
+    local p = gCSPlayers[np.localIndex]
+    local modelId = p.modelId
     if np.connected and gCSPlayers[0].presetPalette > 0 and characterColorPresets[modelId] and not stopPalettes then
         network_player_set_full_override_palette(np, characterColorPresets[modelId][p.presetPalette])
     end
