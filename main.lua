@@ -682,6 +682,14 @@ local function mario_update(m)
     if forceChar ~= nil then
         np.overrideModelIndex = forceChar
     end
+
+    -- Character Animations
+    if characterAnims[p.modelId] then
+        local animID = characterAnims[p.modelId][m.marioObj.header.gfx.animInfo.animID]
+        if animID then
+            smlua_anim_util_set_animation(m.marioObj, animID)
+        end
+    end
 end
 
 local sCapBhvs = {
