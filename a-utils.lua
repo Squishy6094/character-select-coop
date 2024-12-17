@@ -1,7 +1,7 @@
 -- localize functions to improve performance - a-utils.lua
 local string_lower,string_format,table_insert,get_date_and_time = string.lower,string.format,table.insert,get_date_and_time
 
-if VERSION_NUMBER < 37 then
+if VERSION_NUMBER < 38 then
     djui_popup_create("\n\\#FFAAAA\\Character Select requires\n the latest version of CoopDX to use!\n\nYou can find CoopDX here:\n\\#6666FF\\https://sm64coopdx.com", 5)
     incompatibleClient = true
     return 0
