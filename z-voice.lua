@@ -20,11 +20,9 @@ local function check_sound_exists(sound)
     if sound == nil then return false end
     local soundType = type(sound)
     if soundType == TYPE_USERDATA and sound._pointer ~= nil then
-        --log_to_console(soundType)
         return true
     elseif soundType == TYPE_STRING then
         sound = "sound/"..sound
-        --log_to_console(sound.." = "..tostring(mod_file_exists(sound)))
         return (mod_file_exists(sound))
     end
     return false
@@ -83,7 +81,6 @@ end
 --- @param sound CharacterSound
 local function custom_character_sound(m, sound)
     local index = m.playerIndex
-    --log_to_console(type(playerSample[index])..tostring(check_sound_exists(playerSample[index])))
     if check_sound_exists(playerSample[index]) and type(playerSample[index]) ~= TYPE_STRING then
         audio_sample_stop(playerSample[index])
     end
@@ -123,12 +120,11 @@ local function custom_character_sound(m, sound)
         end
     end
 
-    -- play the sample
+    -- Play the sample
     if check_sound_exists(playerSample[index]) then
         if sound == CHAR_SOUND_SNORING1 or sound == CHAR_SOUND_SNORING2 or sound == CHAR_SOUND_SNORING3 then
             audio_sample_play(playerSample[index], m.pos, 0.5)
         else
-            --log_to_console(tostring(check_sound_exists(playerSample[index])))
             audio_sample_play(playerSample[index], m.pos, 1.0)
         end
         return NO_SOUND
@@ -140,11 +136,6 @@ local function custom_character_snore(m)
     if is_game_paused() or optionTable[optionTableRef.localVoices].toggle == 0 then return end
 
     if m.action ~= ACT_SLEEPING then
-        -- if m.isSnoring ~= 0 then
-        --     stop_custom_character_sound(m, CHAR_SOUND_SNORING1)
-        --     stop_custom_character_sound(m, CHAR_SOUND_SNORING2)
-        --     stop_custom_character_sound(m, CHAR_SOUND_SNORING3)
-        -- end
         return
     elseif m.actionState ~= 2 or (m.flags & MARIO_MARIO_SOUND_PLAYED) == 0 then
         return
@@ -153,8 +144,6 @@ local function custom_character_snore(m)
     local voice = character_get_voice(m)
     if voice == nil then return end
     local snoreTable = voice[CHAR_SOUND_SNORING3]
-    -- for some reason CS seemed to originally expect snoring to all be under SNORING3 for some reason???
-    -- if there's a pointer then it can't be a sound clip table
     if snoreTable == nil or snoreTable._pointer ~= nil then
         snoreTable = {}
         for i = CHAR_SOUND_SNORING1, CHAR_SOUND_SNORING3 do
@@ -205,7 +194,7 @@ _G.charSelect.voice = {
     snore = custom_character_snore,
 }
 
---- Must be ran on startup
+-- Must be ran on startup
 local function config_character_sounds()
     hook_event(HOOK_CHARACTER_SOUND, custom_character_sound)
     hook_event(HOOK_MARIO_UPDATE, custom_character_snore)
