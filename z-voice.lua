@@ -17,12 +17,15 @@ local TYPE_TABLE = "table"
 local TYPE_USERDATA = "userdata"
 local TYPE_STRING = "string"
 local function check_sound_exists(sound)
+    if sound == nil then return false end
     local soundType = type(sound)
-    if soundType == TYPE_TABLE or soundType == TYPE_USERDATA then
+    if soundType == TYPE_USERDATA and sound._pointer ~= nil then
+        --log_to_console(soundType)
         return true
     elseif soundType == TYPE_STRING then
-        --return (mod_file_exists(sound) ~= nil)
-        return true
+        sound = "sound/"..sound
+        --log_to_console(sound.." = "..tostring(mod_file_exists(sound)))
+        return (mod_file_exists(sound))
     end
     return false
 end
@@ -81,7 +84,7 @@ end
 local function custom_character_sound(m, sound)
     local index = m.playerIndex
     --log_to_console(type(playerSample[index])..tostring(check_sound_exists(playerSample[index])))
-    if check_sound_exists(playerSample[index]) then
+    if check_sound_exists(playerSample[index]) and type(playerSample[index]) ~= TYPE_STRING then
         audio_sample_stop(playerSample[index])
     end
     if optionTable[optionTableRef.localVoices].toggle == 0 then return NO_SOUND end
@@ -91,7 +94,7 @@ local function custom_character_sound(m, sound)
     if voiceTable == nil then return end
     -- load samples that haven't been loaded
     for voice, name in pairs(voiceTable) do
-        if type(voiceTable[voice]) == "string" then
+        if check_sound_exists(voiceTable[voice]) and type(voiceTable[voice]) == "string" then
             local load = audio_sample_load(name)
             if load ~= nil then
                 voiceTable[voice] = load
@@ -104,11 +107,14 @@ local function custom_character_sound(m, sound)
     if voice == nil then return NO_SOUND end
     playerSample[index] = voice
     -- if there's no pointer then it must be a sound clip table
-    if voice._pointer == nil then
+    if voice._pointer == nil and type(voice) ~= TYPE_STRING then
         -- run through each sample and load in any samples that haven't been loaded
         for i, name in pairs(voice) do
-            if type(voice[i]) == "string" and check_sound_exists(name) then
-                voice[i] = audio_sample_load(name)
+            if check_sound_exists(voice[i]) and type(voice[i]) == "string" then
+                local load = audio_sample_load(name)
+                if load ~= nil then
+                    voice[i] = load
+                end
             end
         end
         if #voice ~= 0 then
@@ -122,10 +128,11 @@ local function custom_character_sound(m, sound)
         if sound == CHAR_SOUND_SNORING1 or sound == CHAR_SOUND_SNORING2 or sound == CHAR_SOUND_SNORING3 then
             audio_sample_play(playerSample[index], m.pos, 0.5)
         else
+            --log_to_console(tostring(check_sound_exists(playerSample[index])))
             audio_sample_play(playerSample[index], m.pos, 1.0)
         end
+        return NO_SOUND
     end
-    return NO_SOUND
 end
 
 --- @param m MarioState
@@ -198,10 +205,9 @@ _G.charSelect.voice = {
     snore = custom_character_snore,
 }
 
---- Must be ran on startup, NOT on mods load
+--- Must be ran on startup
 local function config_character_sounds()
     hook_event(HOOK_CHARACTER_SOUND, custom_character_sound)
     hook_event(HOOK_MARIO_UPDATE, custom_character_snore)
 end
--- Cannot be implemented until DX v1.11
--- _G.charSelect.config_character_sounds = config_character_sounds
+_G.charSelect.config_character_sounds = config_character_sounds
