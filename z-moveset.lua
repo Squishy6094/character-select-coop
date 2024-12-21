@@ -31,7 +31,7 @@ hook_event(HOOK_BEFORE_MARIO_UPDATE, before_mario_update)
 
 local function before_phys_step(m, stepType)
     if stopMovesets then return end
-    local hook = HOOK_BEFORE_MARIO_UPDATE
+    local hook = HOOK_BEFORE_PHYS_STEP
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
     return currMoveset[hook](m, stepType)
