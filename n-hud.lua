@@ -199,6 +199,9 @@ function hud_get_element(hudElement)
 end
 
 local MATH_DIVIDE_16 = 1/16
+local MATH_DIVIDE_32 = 1/32
+local MATH_DIVIDE_64 = 1/64
+local MATH_DIVIDE_HEALTH = 1/0x100
 
 local FONT_USER = FONT_NORMAL
 
@@ -299,6 +302,69 @@ function render_star_icon_from_local_index(localIndex, x, y, scale)
     djui_hud_render_texture(starIcon, x, y, scale / (starIcon.width * MATH_DIVIDE_16), scale / (starIcon.height * MATH_DIVIDE_16))
 end
 
+local TEXT_DEFAULT_METER_PREFIX = "char-select-custom-meter-"
+local TEX_DEFAULT_METER_LEFT = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."left")
+local TEX_DEFAULT_METER_RIGHT = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."right")
+local TEX_DEFAULT_METER_PIE1 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie1")
+local TEX_DEFAULT_METER_PIE2 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie2")
+local TEX_DEFAULT_METER_PIE3 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie3")
+local TEX_DEFAULT_METER_PIE4 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie4")
+local TEX_DEFAULT_METER_PIE5 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie5")
+local TEX_DEFAULT_METER_PIE6 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie6")
+local TEX_DEFAULT_METER_PIE7 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie7")
+local TEX_DEFAULT_METER_PIE8 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie8")
+local defaultMeterInfo = {
+    label = {
+        left = TEX_DEFAULT_METER_LEFT,
+        right = TEX_DEFAULT_METER_RIGHT,
+    },
+    pie = {
+        TEX_DEFAULT_METER_PIE1,
+        TEX_DEFAULT_METER_PIE2,
+        TEX_DEFAULT_METER_PIE3,
+        TEX_DEFAULT_METER_PIE4,
+        TEX_DEFAULT_METER_PIE5,
+        TEX_DEFAULT_METER_PIE6,
+        TEX_DEFAULT_METER_PIE7,
+        TEX_DEFAULT_METER_PIE8,
+    }
+}
+
+--- @param localIndex integer
+--- @return table
+--- This assumes multiple characters will not have the same model,
+--- Icons can only be seen by users who have the character avalible to them
+function health_meter_from_local_index(localIndex)
+    if localIndex == nil then localIndex = 0 end
+    local p = gCSPlayers[localIndex]
+    for i = 1, #characterTable do
+        local char = characterTable[i]
+        if char.saveName == p.saveName and char[(p.currAlt and p.currAlt or 1)].healthTexture ~= nil then
+            return char[(p.currAlt and p.currAlt or 1)].healthTexture
+        end
+    end
+    return defaultMeterInfo
+end
+
+--- @param localIndex integer
+--- @param x integer
+--- @param y integer
+--- @param scaleX integer
+--- @param scaleY integer
+function render_health_meter_from_local_index(localIndex, health, x, y, scaleX, scaleY)
+    if localIndex == nil then localIndex = 0 end
+    local health = math.floor(health*MATH_DIVIDE_HEALTH)
+    local textureTable = health_meter_from_local_index(localIndex)
+    local tex = textureTable.label.left
+    djui_hud_render_texture(tex, x, y, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64)
+    local tex = textureTable.label.right
+    djui_hud_render_texture(tex, x + 31*scaleX*MATH_DIVIDE_64, y, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64)
+    if health > 0 then
+        local tex = textureTable.pie[health]
+        djui_hud_render_texture(tex, x + 15*scaleX*MATH_DIVIDE_64, y + 16*scaleY*MATH_DIVIDE_64, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_32) * MATH_DIVIDE_64)
+    end
+end
+
 local pieTextureNames = {
     "one_segments",
     "two_segments",
@@ -311,7 +377,7 @@ local pieTextureNames = {
 }
 
 local function render_hud_health()
-	local textureTable = characterTable[currChar].healthTexture
+	local textureTable = characterTable[currChar][characterTable[currChar].currAlt].healthTexture
 	if textureTable then -- sets health HUD to custom textures
 		if textureTable.label.left and textureTable.label.right then -- if left and right label textures exist. BOTH have to exist to be set!
 			texture_override_set("texture_power_meter_left_side", textureTable.label.left)

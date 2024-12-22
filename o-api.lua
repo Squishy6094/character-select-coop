@@ -24,6 +24,34 @@ local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 -- API --
 ---------
 
+local TEXT_DEFAULT_METER_PREFIX = "char-select-custom-meter-"
+local TEX_DEFAULT_METER_LEFT = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."left")
+local TEX_DEFAULT_METER_RIGHT = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."right")
+local TEX_DEFAULT_METER_PIE1 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie1")
+local TEX_DEFAULT_METER_PIE2 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie2")
+local TEX_DEFAULT_METER_PIE3 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie3")
+local TEX_DEFAULT_METER_PIE4 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie4")
+local TEX_DEFAULT_METER_PIE5 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie5")
+local TEX_DEFAULT_METER_PIE6 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie6")
+local TEX_DEFAULT_METER_PIE7 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie7")
+local TEX_DEFAULT_METER_PIE8 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie8")
+local defaultMeterInfo = {
+    label = {
+        left = TEX_DEFAULT_METER_LEFT,
+        right = TEX_DEFAULT_METER_RIGHT,
+    },
+    pie = {
+        TEX_DEFAULT_METER_PIE1,
+        TEX_DEFAULT_METER_PIE2,
+        TEX_DEFAULT_METER_PIE3,
+        TEX_DEFAULT_METER_PIE4,
+        TEX_DEFAULT_METER_PIE5,
+        TEX_DEFAULT_METER_PIE6,
+        TEX_DEFAULT_METER_PIE7,
+        TEX_DEFAULT_METER_PIE8,
+    }
+}
+
 local function split_text_into_lines(text)
     local words = {}
     for word in text:gmatch("%S+") do
@@ -80,7 +108,6 @@ local function character_add(name, description, credit, color, modelInfo, forceC
         currAlt = 1,
         hasMoveset = false,
         locked = false,
-        healthTexture = nil,
         [1] = {
             name = type(name) == TYPE_STRING and name or "Untitled",
             description = type(description) == TYPE_TABLE and description or {"No description has been provided"},
@@ -92,6 +119,7 @@ local function character_add(name, description, credit, color, modelInfo, forceC
             lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or "?",
             starIcon = gTextures.star,
             camScale = type(camScale) == TYPE_INTEGER and camScale or 1,
+            healthTexture = defaultMeterInfo,
         },
     })
     saveNameTable[#characterTable] = characterTable[#characterTable].saveName
@@ -135,6 +163,7 @@ local function character_add_costume(charNum, name, description, credit, color, 
         lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or tableCache.lifeIcon,
         starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce
         camScale = type(camScale) == TYPE_INTEGER and camScale or tableCache.camScale,
+        healthTexture = tableCache.healthTexture,
     })
     return #characterTable[charNum]
 end
@@ -177,6 +206,7 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
         lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or tableCache.lifeIcon,
         starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce
         camScale = type(camScale) == TYPE_INTEGER and camScale or tableCache.camScale,
+        healthTexture = tableCache.healthTexture,
     } or nil
 end
 
@@ -207,11 +237,18 @@ local function character_add_caps(modelInfo, caps)
 end
 
 ---@param charNum integer
+---@param charAlt integer
+---@param healthTexture table|nil
+local function character_add_costume_health_meter(charNum, charAlt, healthTexture)
+    if type(charNum) ~= TYPE_INTEGER or charNum == nil then return end
+    if type(charAlt) ~= TYPE_INTEGER or charAlt == nil then return end
+    characterTable[charNum][charAlt].healthTexture = type(healthTexture) == TYPE_TABLE and healthTexture or nil
+end
+
+---@param charNum integer
 ---@param healthTexture table|nil
 local function character_add_health_meter(charNum, healthTexture)
-    if type(charNum) ~= TYPE_INTEGER or charNum == nil then return end
-    characterTable[charNum].healthTexture = type(healthTexture) == TYPE_TABLE and healthTexture or nil
-    return false
+    character_add_costume_health_meter(charNum, 1, healthTexture)
 end
 
 ---@param modelInfo ModelExtendedId|integer
@@ -522,6 +559,7 @@ _G.charSelect = {
     character_add_caps = character_add_caps,
     character_add_celebration_star = character_add_celebration_star,
     character_add_health_meter = character_add_health_meter,
+    character_add_costume_health_meter = character_add_costume_health_meter,
     character_add_palette_preset = character_add_palette_preset,
     character_add_animations = character_add_animations,
     character_get_current_table = character_get_current_table,
@@ -538,6 +576,8 @@ _G.charSelect = {
     character_render_life_icon = render_life_icon_from_local_index, -- Function located in n-hud.lua
     character_get_star_icon = star_icon_from_local_index, -- Function located in n-hud.lua
     character_render_star_icon = render_star_icon_from_local_index, -- Function located in n-hud.lua
+    character_get_health_meter = health_meter_from_local_index, -- Function located in n-hud.lua
+    character_render_health_meter = render_health_meter_from_local_index, -- Function located in n-hud.lua
     character_set_locked = character_set_locked,
 
     -- Hud Element Functions --
