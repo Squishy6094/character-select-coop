@@ -513,6 +513,10 @@ local ignoredSurfaces = {
 local TYPE_FUNCTION = "function"
 local TYPE_BOOLEAN = "boolean"
 local TYPE_STRING = "string"
+local TYPE_INTEGER = "number"
+local TYPE_TABLE = "table"
+
+local MATH_PI = math.pi
 
 local menuActBlacklist = {
     -- Star Acts
@@ -539,16 +543,33 @@ local menuActBlacklist = {
 }
 
 local faceAngle = 0
-local altOffsetActs = {
-    [ACT_CROUCH_SLIDE] = true,
+local function anim_generic_idle_offset(offset, animFrame)
+    return offset - math.max((math.sin((animFrame)/24*MATH_PI)+1.1)*2, 1.8)
+end
+local altOffsetAnim = {
+    [MARIO_ANIM_CROUCHING] = true,
     [ACT_READING_AUTOMATIC_DIALOG] = true,
-    [ACT_DEATH_EXIT_LAND] = true,
-    [ACT_SLIDE_KICK] = false,
-    [ACT_SLIDE_KICK_SLIDE] = false,
-    [ACT_GROUND_POUND] = true,
+    [MARIO_ANIM_FALL_OVER_BACKWARDS] = true,
+    [MARIO_ANIM_SLIDE_KICK] = false,
+    [MARIO_ANIM_GROUND_POUND] = false,
+    [MARIO_ANIM_GROUND_POUND_LANDING] = false,
+    [MARIO_ANIM_SLEEP_IDLE] = false,
+    [MARIO_ANIM_SLEEP_LYING] = false,
+    [MARIO_ANIM_SLEEP_START_LYING] = false,
+    [MARIO_ANIM_IDLE_HEAD_LEFT] = function (offset, animFrame)
+        return anim_generic_idle_offset(offset, animFrame)
+    end,
+    [MARIO_ANIM_IDLE_HEAD_CENTER] = function (offset, animFrame)
+        return anim_generic_idle_offset(offset, animFrame)
+    end,
+    [MARIO_ANIM_IDLE_HEAD_RIGHT] = function (offset, animFrame)
+        return anim_generic_idle_offset(offset, animFrame)
+    end,
 }
 
 local prevBaseCharFrame = gNetworkPlayers[0].modelIndex
+local prevAnim = 0
+local animTimer = 0
 --- @param m MarioState
 local function mario_update(m)
     local np = gNetworkPlayers[m.playerIndex]
@@ -671,12 +692,31 @@ local function mario_update(m)
             optionTable[i].optionBeingSet = false
         end
     end
+
+    local marioGfx = m.marioObj.header.gfx
+    if prevAnim ~= marioGfx.animInfo.animID then
+        prevAnim = marioGfx.animInfo.animID
+        animTimer = 0
+    end
+    animTimer = animTimer + 1
+        
     
-    local offset = p.offset
+    local networkOffset = p.offset
     local forceChar = p.forceChar
-    if offset ~= 0 and offset ~= nil then
-        if altOffsetActs[m.action] ~= false then
-            m.marioObj.header.gfx.pos.y = (altOffsetActs[m.action] and m.pos.y or m.marioObj.header.gfx.pos.y) + offset
+    if networkOffset ~= 0 and networkOffset ~= nil then
+        if m.playerIndex == 0 then
+        end
+        local offset = altOffsetAnim[marioGfx.animInfo.animID]
+        if offset ~= false then
+            if type(offset) == TYPE_FUNCTION then
+                marioGfx.pos.y = marioGfx.pos.y + offset(networkOffset, marioGfx.animInfo.animFrame)
+            elseif type(offset) == TYPE_TABLE then
+                marioGfx.pos.y = marioGfx.pos.y - offset[(math.min(animTimer, #offset))]*networkOffset + networkOffset
+            elseif type(offset) == TYPE_INTEGER then
+                marioGfx.pos.y = marioGfx.pos.y + networkOffset*offset
+            else
+                marioGfx.pos.y = (altOffsetAnim[marioGfx.animInfo.animID] and m.pos.y or marioGfx.pos.y) + networkOffset
+            end
         end
     end
     if forceChar ~= nil then

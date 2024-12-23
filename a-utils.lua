@@ -109,6 +109,10 @@ function switch(param, caseTable)
     return def and def() or nil
 end
 
+function clamp(num, min, max)
+    return math.max(math.min(num, max), min)
+end
+
 allowMenu = {}
 
 renderInMenuTable = {
