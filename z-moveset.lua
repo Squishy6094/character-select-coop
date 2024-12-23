@@ -30,7 +30,7 @@ end
 hook_event(HOOK_BEFORE_MARIO_UPDATE, before_mario_update)
 
 local function before_phys_step(m, stepType)
-    if stopMovesets then return end
+    if stopMovesets or optionTable[optionTableRef.localMoveset].toggle == 0 then return end
     local hook = HOOK_BEFORE_PHYS_STEP
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -39,7 +39,7 @@ end
 hook_event(HOOK_BEFORE_PHYS_STEP, before_phys_step)
 
 local function allow_pvp_attack(attacker, victim, int)
-    if stopMovesets then return end
+    if stopMovesets or optionTable[optionTableRef.localMoveset].toggle == 0 then return end
     local hook = HOOK_ON_PVP_ATTACK
     local attackerMoveset = characterMovesets[find_character_number(attacker.playerIndex)]
     local victimMoveset = characterMovesets[find_character_number(victim.playerIndex)]
