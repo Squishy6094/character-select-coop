@@ -24,34 +24,6 @@ local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 -- API --
 ---------
 
-local TEXT_DEFAULT_METER_PREFIX = "char-select-custom-meter-"
-local TEX_DEFAULT_METER_LEFT = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."left")
-local TEX_DEFAULT_METER_RIGHT = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."right")
-local TEX_DEFAULT_METER_PIE1 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie1")
-local TEX_DEFAULT_METER_PIE2 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie2")
-local TEX_DEFAULT_METER_PIE3 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie3")
-local TEX_DEFAULT_METER_PIE4 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie4")
-local TEX_DEFAULT_METER_PIE5 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie5")
-local TEX_DEFAULT_METER_PIE6 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie6")
-local TEX_DEFAULT_METER_PIE7 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie7")
-local TEX_DEFAULT_METER_PIE8 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie8")
-local defaultMeterInfo = {
-    label = {
-        left = TEX_DEFAULT_METER_LEFT,
-        right = TEX_DEFAULT_METER_RIGHT,
-    },
-    pie = {
-        TEX_DEFAULT_METER_PIE1,
-        TEX_DEFAULT_METER_PIE2,
-        TEX_DEFAULT_METER_PIE3,
-        TEX_DEFAULT_METER_PIE4,
-        TEX_DEFAULT_METER_PIE5,
-        TEX_DEFAULT_METER_PIE6,
-        TEX_DEFAULT_METER_PIE7,
-        TEX_DEFAULT_METER_PIE8,
-    }
-}
-
 local function split_text_into_lines(text)
     local words = {}
     for word in text:gmatch("%S+") do
@@ -119,7 +91,7 @@ local function character_add(name, description, credit, color, modelInfo, forceC
             lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or "?",
             starIcon = gTextures.star,
             camScale = type(camScale) == TYPE_INTEGER and camScale or 1,
-            healthTexture = defaultMeterInfo,
+            healthTexture = nil,
         },
     })
     saveNameTable[#characterTable] = characterTable[#characterTable].saveName
@@ -249,6 +221,21 @@ end
 ---@param healthTexture table|nil
 local function character_add_health_meter(charNum, healthTexture)
     character_add_costume_health_meter(charNum, 1, healthTexture)
+end
+
+---@param charNum integer
+---@param charAlt integer
+---@param courseTexture table|nil
+local function character_add_costume_course(charNum, charAlt, courseTexture)
+    if type(charNum) ~= TYPE_INTEGER or charNum == nil then return end
+    if type(charAlt) ~= TYPE_INTEGER or charAlt == nil then return end
+    characterTable[charNum][charAlt].courseTexture = type(courseTexture) == TYPE_TABLE and courseTexture or nil
+end
+
+---@param charNum integer
+---@param courseTexture table|nil
+local function character_add_course(charNum, courseTexture)
+    character_add_costume_course(charNum, 1, courseTexture)
 end
 
 ---@param modelInfo ModelExtendedId|integer
@@ -560,6 +547,8 @@ _G.charSelect = {
     character_add_celebration_star = character_add_celebration_star,
     character_add_health_meter = character_add_health_meter,
     character_add_costume_health_meter = character_add_costume_health_meter,
+    character_add_course_texture = character_add_course,
+    character_add_costume_course_texture = character_add_costume_course,
     character_add_palette_preset = character_add_palette_preset,
     character_add_animations = character_add_animations,
     character_get_current_table = character_get_current_table,

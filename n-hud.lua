@@ -330,6 +330,14 @@ local defaultMeterInfo = {
     }
 }
 
+local TEXT_DEFAULT_COURSE_PREFIX = "char-select-custom-course-"
+local TEX_DEFAULT_METER_LEFT = get_texture_info(TEXT_DEFAULT_COURSE_PREFIX.."top")
+local TEX_DEFAULT_METER_RIGHT = get_texture_info(TEXT_DEFAULT_COURSE_PREFIX.."bottom")
+local defaultCourseInfo = {
+    top = TEX_DEFAULT_METER_LEFT,
+    bottom = TEX_DEFAULT_METER_RIGHT,
+}
+
 --- @param localIndex integer
 --- @return table
 --- This assumes multiple characters will not have the same model,
@@ -377,23 +385,47 @@ local pieTextureNames = {
 }
 
 local function render_hud_health()
+    if currChar == 1 then
+        texture_override_reset("texture_power_meter_left_side")
+        texture_override_reset("texture_power_meter_right_side")
+		for i = 1, 8 do
+			texture_override_reset("texture_power_meter_" .. pieTextureNames[i])
+		end
+        return
+    end
 	local textureTable = characterTable[currChar][characterTable[currChar].currAlt].healthTexture
 	if textureTable then -- sets health HUD to custom textures
 		if textureTable.label.left and textureTable.label.right then -- if left and right label textures exist. BOTH have to exist to be set!
 			texture_override_set("texture_power_meter_left_side", textureTable.label.left)
 			texture_override_set("texture_power_meter_right_side", textureTable.label.right)
 		end
-		
 		for i = 1, 8 do
 			texture_override_set("texture_power_meter_" .. pieTextureNames[i], textureTable.pie[i])
 		end
 	else -- resets the health HUD
-		texture_override_reset("texture_power_meter_left_side")
-		texture_override_reset("texture_power_meter_right_side")
-		
+        texture_override_set("texture_power_meter_left_side", defaultMeterInfo.label.left)
+        texture_override_set("texture_power_meter_right_side", defaultMeterInfo.label.right)
 		for i = 1, 8 do
-			texture_override_reset("texture_power_meter_" .. pieTextureNames[i])
+			texture_override_set("texture_power_meter_" .. pieTextureNames[i], defaultMeterInfo.pie[i])
 		end
+	end
+end
+
+local function render_hud_act_select_course()
+    if currChar == 1 then
+        texture_override_reset("texture_menu_course_upper")
+        texture_override_reset("texture_menu_course_lower")
+        return
+    end
+	local textureTable = characterTable[currChar][characterTable[currChar].currAlt].courseTexture
+	if textureTable then -- sets health HUD to custom textures
+		if textureTable.top and textureTable.bottom then -- if left and right label textures exist. BOTH have to exist to be set!
+			texture_override_set("texture_menu_course_upper", textureTable.top)
+			texture_override_set("texture_menu_course_lower", textureTable.bottom)
+		end
+	else -- resets the course HUD
+        texture_override_set("texture_menu_course_upper", defaultCourseInfo.top)
+        texture_override_set("texture_menu_course_lower", defaultCourseInfo.bottom)
 	end
 end
 
@@ -632,14 +664,17 @@ local function on_hud_render_behind()
     djui_hud_set_font(FONT_HUD)
     djui_hud_set_color(255, 255, 255, 255)
 
-    if gNetworkPlayers[0].currActNum == 99 or gMarioStates[0].action == ACT_INTRO_CUTSCENE or hud_is_hidden() or obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then
+    if gNetworkPlayers[0].currActNum == 99 or gMarioStates[0].action == ACT_INTRO_CUTSCENE or hud_is_hidden() then
         return
     end
-
-    render_hud_mario_lives()
-    render_hud_stars()
-    render_hud_camera_status()
-    render_hud_health()
+    if obj_get_first_with_behavior_id(id_bhvActSelector) == nil then
+        render_hud_mario_lives()
+        render_hud_stars()
+        render_hud_camera_status()
+        render_hud_health()
+    else
+        render_hud_act_select_course()
+    end
 end
 
 -- Can't name this charSelect due to o-api.lua overriding it, if I did so, using character select with no packs would make it nil
