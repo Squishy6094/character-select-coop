@@ -496,6 +496,24 @@ local function menu_is_allowed(m)
     return true
 end
 
+local function get_next_unlocked_char()
+    for i = currChar, #characterTable do
+        if not characterTable[i].locked then
+            return i
+        end
+    end
+    return 1
+end
+
+local function get_last_unlocked_char()
+    for i = currChar, 1, -1 do
+        if not characterTable[i].locked then
+            return i
+        end
+    end
+    return 1
+end
+
 -------------------
 -- Model Handler --
 -------------------
@@ -882,7 +900,7 @@ function update_menu_color()
     elseif optionTable[optionTableRef.menuColor].toggle == 1 then
         optionTable[optionTableRef.menuColor].toggleNames[2] = string_underscore_to_space(TEXT_PREF_LOAD_NAME) .. ((TEXT_PREF_LOAD_ALT ~= 1 and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "") .. " (Pref)"
         menuColor = prefCharColor
-    else
+    elseif characterTable[currChar] ~= nil then
         local char = characterTable[currChar]
         menuColor = char[char.currAlt].color
     end
@@ -1544,9 +1562,7 @@ local function before_mario_update(m)
                     currChar = currChar + 1
                     local character = characterTable[currChar]
                     if character ~= nil and character.locked then
-                        repeat
-                            currChar = currChar + 1
-                        until (not characterTable[currChar].locked) or currChar > #characterTable
+                        currChar = get_next_unlocked_char()
                     end
                     if (controller.buttonPressed & D_CBUTTONS) == 0 then
                         inputStallTimerDirectional = inputStallToDirectional
@@ -1566,9 +1582,7 @@ local function before_mario_update(m)
                     currChar = currChar - 1
                     local character = characterTable[currChar]
                     if character ~= nil and character.locked then
-                        repeat
-                            currChar = currChar - 1
-                        until (not characterTable[currChar].locked) or currChar < 1
+                        currChar = get_last_unlocked_char()
                     end
                     if (controller.buttonPressed & U_CBUTTONS) == 0 then
                         inputStallTimerDirectional = inputStallToDirectional
