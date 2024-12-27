@@ -20,7 +20,8 @@ local dependacyFiles = {
 }
 local legacyFiles = {
     "voice.lua",
-    "palettes.lua"
+    "palettes.lua",
+    "z-anims.lua",
 }
 
 -- Check for Missing Files
