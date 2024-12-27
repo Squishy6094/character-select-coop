@@ -7,6 +7,52 @@ if VERSION_NUMBER < 38 then
     return 0
 end
 
+local dependacyFiles = {
+    -- Required Lua File
+    "main.lua",
+    "n-hud.lua",
+    "o-api.lua",
+    "z-moveset.lua",
+    "z-palettes.lua",
+    "z-voice.lua",
+    -- Required Actors
+    "actors/armature_geo.bin",
+}
+local legacyFiles = {
+    "voice.lua",
+    "palettes.lua"
+}
+
+-- Check for Missing Files
+local missingDependacyFiles = false
+for i = 1, #dependacyFiles do
+    --log_to_console(dependacyFiles[i] .. " = " .. tostring(mod_file_exists(dependacyFiles[i])))
+    if not mod_file_exists(dependacyFiles[i]) then
+        log_to_console("Character Select file missing: '" .. dependacyFiles[i] .. "'", CONSOLE_MESSAGE_ERROR)
+        missingDependacyFiles = true
+    end
+end
+if missingDependacyFiles then
+    djui_popup_create("\n\\#FFAAAA\\Character Select is missing\nan important file!\n\nYou can find a list of\nmissing files in the console!", 5)
+    incompatibleClient = true
+    return 0
+end
+
+-- Check for Legacy Files
+local foundLegacyFiles = false
+for i = 1, #legacyFiles do
+    --log_to_console(dependacyFiles[i] .. " = " .. tostring(mod_file_exists(dependacyFiles[i])))
+    if mod_file_exists(legacyFiles[i]) then
+        log_to_console("Character Select legacy file found: '" .. legacyFiles[i] .. "'", CONSOLE_MESSAGE_ERROR)
+        foundLegacyFiles = true
+    end
+end
+if foundLegacyFiles then
+    djui_popup_create("\n\\#FFAAAA\\Character Select is loading\nan outdated file!\n\nYou can find a list of\nold files in the console!", 5)
+    incompatibleClient = true
+    return 0
+end
+
 MOD_VERSION_API = 1
 MOD_VERSION_MAJOR = 11
 MOD_VERSION_MINOR = 3
