@@ -541,7 +541,7 @@ end
 
 local packFilterTotal = 0
 for i = 0, #gActiveMods do
-    if remove_color(gActiveMods[i].name):sub(1, 4) == "[CS]" then
+    if remove_color(gActiveMods[i].name):sub(1, 4) == "[CS]" or gActiveMods[i].category == "cs" then
         packFilterTotal = packFilterTotal + 1
     end
 end
