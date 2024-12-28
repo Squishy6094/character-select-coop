@@ -1,5 +1,5 @@
 -- name: Character Select
--- description:\\#ffff33\\-- Character Select Coop v1.11.3 --\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
+-- description:\\#ffff33\\-- Character Select Coop v1.12 --\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
 -- pausable: false
 -- category: cs
 
@@ -1737,9 +1737,14 @@ local function chat_command(msg)
     msg = string_lower(msg)
 
     -- Open Menu Check
-    if msg == "" or msg == "menu" then
-        menu = not menu
-        return true
+    if (msg == "" or msg == "menu") then
+        if menu_is_allowed(gMarioStates[0]) then
+            menu = not menu
+            return true
+        else
+            djui_chat_message_create(TEXT_PAUSE_UNAVALIBLE)
+            return true
+        end
     end
 
     -- Help Prompt Check
