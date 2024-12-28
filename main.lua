@@ -863,8 +863,9 @@ local TEXT_MOVESET_RESTRICTED = "Movesets are Restricted"
 local TEXT_PALETTE_RESTRICTED = "Palettes are Restricted"
 local TEXT_MOVESET_AND_PALETTE_RESTRICTED = "Moveset and Palettes are Restricted"
 local TEXT_CHAR_LOCKED = "Locked"
+-- Easter Egg if you get lucky loading the mod
+-- Referencing the original sm64ex DynOS options by PeachyPeach >v<
 if math_random(100) == 64 then
-    -- Easter Egg if you get lucky loading the mod Referencing the original sm64ex DynOS options by PeachyPeach >v<
     TEXT_PAUSE_Z_OPEN = "Z - DynOS"
     TEXT_PAUSE_CURR_CHAR = "Model: "
 end
@@ -1798,3 +1799,16 @@ local function chat_command(msg)
 end
 
 hook_chat_command("char-select", "- Opens the Character Select Menu", chat_command)
+
+--[[
+local function mod_menu_open_cs()
+    local m = gMarioStates[0]
+    if menu_is_allowed(m) then
+        gMarioStates[0].controller.buttonPressed = START_BUTTON
+        menu = true
+    else
+        play_sound(SOUND_MENU_CAMERA_BUZZ, m.pos)
+    end
+end
+hook_mod_menu_button("Open Menu", mod_menu_open_cs)
+]]
