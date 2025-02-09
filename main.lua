@@ -659,7 +659,6 @@ local function mario_update(m)
             gLakituState.pos.z = m.pos.z + coss(faceAngle) * 500 * camScale
 
             if m.forwardVel == 0 and m.pos.y == m.floorHeight and not ignoredSurfaces[m.floor.type] and m.health > 255 and not menuActBlacklist[m.action] then
-                set_mario_action(m, ACT_IDLE, 0)
                 set_mario_animation(m, MARIO_ANIM_FIRST_PERSON)
             end
             noLoop = false
@@ -857,7 +856,7 @@ local TEXT_DESCRIPTION = "Character Description:"
 local TEXT_PREF_SAVE = "Press A to Set as Preferred Character"
 local TEXT_PREF_SAVE_AND_PALETTE = "A - Set Preference | Y - Toggle Palette"
 local TEXT_PAUSE_Z_OPEN = "Z Button - Character Select"
-local TEXT_PAUSE_UNAVALIBLE = "Character Select is Unavalible"
+local TEXT_PAUSE_UNAVAILABLE = "Character Select is Unavailable"
 local TEXT_PAUSE_CURR_CHAR = "Current Character: "
 local TEXT_MOVESET_RESTRICTED = "Movesets are Restricted"
 local TEXT_PALETTE_RESTRICTED = "Palettes are Restricted"
@@ -1492,7 +1491,7 @@ local function on_hud_render()
         djui_hud_set_font(FONT_USER)
         if optionTable[optionTableRef.openInputs].toggle == 1 then
             currCharY = 27
-            local text = menu_is_allowed() and TEXT_PAUSE_Z_OPEN or TEXT_PAUSE_UNAVALIBLE
+            local text = menu_is_allowed() and TEXT_PAUSE_Z_OPEN or TEXT_PAUSE_UNAVAILABLE
             width = djui_hud_get_screen_width() - djui_hud_measure_text(text)
             djui_hud_set_color(255, 255, 255, 255)
             djui_hud_print_text(text, width - 20, 16, 1)
@@ -1742,7 +1741,7 @@ local function chat_command(msg)
             menu = not menu
             return true
         else
-            djui_chat_message_create(TEXT_PAUSE_UNAVALIBLE)
+            djui_chat_message_create(TEXT_PAUSE_UNAVAILABLE)
             return true
         end
     end

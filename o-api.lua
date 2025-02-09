@@ -441,6 +441,11 @@ local function character_hook_moveset(charNum, hookEventType, func)
     characterTable[charNum].hasMoveset = true
 end
 
+---@param charNum integer
+local function character_get_moveset(charNum)
+    return characterMovesets[charNum]
+end
+
 ---@return boolean
 local function is_options_open()
     return options
@@ -568,6 +573,7 @@ _G.charSelect = {
     character_get_health_meter = health_meter_from_local_index, -- Function located in n-hud.lua
     character_render_health_meter = render_health_meter_from_local_index, -- Function located in n-hud.lua
     character_set_locked = character_set_locked,
+    character_get_moveset = character_get_moveset,
 
     -- Hud Element Functions --
     hud_hide_element = hud_hide_element,
