@@ -267,7 +267,7 @@ function render_life_icon_from_local_index(localIndex, x, y, scale)
         local color = color_from_local_index(localIndex)
         djui_hud_set_font(FONT_RECOLOR_HUD)
         djui_hud_set_color(color.r/startColor.r*255, color.g/startColor.g*255, color.b/startColor.b*255, startColor.a)
-        djui_hud_print_text(lifeIcon, x - scale, y - 11*scale, scale)
+        djui_hud_print_text(lifeIcon, x - scale/4, y - 10*scale - scale/4, scale)
         -- Reset HUD Modifications
         djui_hud_set_font(startFont)
         djui_hud_set_color(startColor.r, startColor.g, startColor.b, startColor.a)
