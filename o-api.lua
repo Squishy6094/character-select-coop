@@ -599,10 +599,11 @@ _G.charSelect = {
     -- Misc --
     dialog_set_replace_name = dialog_set_replace_name, -- Function located in dialog.lua
 
-    -- Tables --
+    -- Tables & Variables --
     optionTableRef = optionTableRef,
     controller = controller,
     gCSPlayers = gCSPlayers,
+    CUTSCENE_CS_MENU = CUTSCENE_CS_MENU,
 
     -- Custom Hooks --
     hook_allow_menu_open = hook_allow_menu_open,

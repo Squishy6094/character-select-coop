@@ -309,13 +309,6 @@ local menuColorTable = {
 }
 
 -- Default Player Adjustments
-local defaultMenuColors = {
-    [CT_MARIO] = menuColorTable[1],
-    [CT_LUIGI] = menuColorTable[4],
-    [CT_TOAD] =  menuColorTable[5],
-    [CT_WALUIGI] = menuColorTable[7],
-    [CT_WARIO] = menuColorTable[3]
-}
 local defaultModels = {
     [CT_MARIO] = E_MODEL_MARIO,
     [CT_LUIGI] = E_MODEL_LUIGI,
@@ -524,7 +517,7 @@ end
 local stallFrame = 0
 local noLoop = false
 
-local CUTSCENE_CS_MENU = 0xFA
+CUTSCENE_CS_MENU = 0xFA
 
 local ignoredSurfaces = {
     SURFACE_BURNING, SURFACE_QUICKSAND, SURFACE_INSTANT_QUICKSAND, SURFACE_INSTANT_MOVING_QUICKSAND, SURFACE_DEEP_MOVING_QUICKSAND, SURFACE_INSTANT_QUICKSAND, SURFACE_DEEP_QUICKSAND, SURFACE_SHALLOW_MOVING_QUICKSAND,
