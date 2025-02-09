@@ -285,6 +285,11 @@ local function character_add_animations(modelInfo, animTable)
     characterAnims[modelInfo] = type(animTable) == TYPE_TABLE and animTable or nil
 end
 
+---@param modelInfo ModelExtendedId|integer
+local function character_get_animations(modelInfo)
+    return characterAnims[modelInfo]
+end
+
 ---@param tablePos integer|nil
 ---@param charAlt integer|nil
 ---@return CharacterTable
@@ -556,6 +561,7 @@ _G.charSelect = {
     character_add_costume_course_texture = character_add_costume_course,
     character_add_palette_preset = character_add_palette_preset,
     character_add_animations = character_add_animations,
+    character_get_animations = character_get_animations,
     character_get_current_table = character_get_current_table,
     character_get_full_table = character_get_full_table,
     character_get_current_number = character_get_current_number,
