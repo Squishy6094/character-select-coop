@@ -77,7 +77,7 @@ hook_event(HOOK_ON_INTERACT, on_interact)
 
 local function allow_interact(m, o, intType)
     if stopMovesets or optionTable[optionTableRef.localMoveset].toggle == 0 then return end
-    local hook = HOOK_ON_INTERACT
+    local hook = HOOK_ALLOW_INTERACT
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
     return currMoveset[hook](m, o, intType)
