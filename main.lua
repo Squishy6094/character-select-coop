@@ -1046,7 +1046,7 @@ local function on_hud_render()
                     djui_hud_render_rect(width - x + 7 + (6.5 * i), y + 2, 5, 5)
                 end
                 y = y + 7
-                djui_hud_set_color(character.color.r, character.color.g, character.color.b, 255)
+                djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
             end
             djui_hud_print_text(TEXT_MOVESET, width - x + 8, y, 0.5)
             y = y + 7
