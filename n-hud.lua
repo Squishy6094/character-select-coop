@@ -758,10 +758,6 @@ local function on_hud_render_behind()
     if gNetworkPlayers[0].currActNum == 99 or gMarioStates[0].action == ACT_INTRO_CUTSCENE or hud_is_hidden() then
         return
     end
-    
-    if gMarioStates[0].action ~= ACT_JUMBO_STAR_CUTSCENE then
-        set_mario_action(gMarioStates[0], ACT_JUMBO_STAR_CUTSCENE, 0)
-    end
 
     if obj_get_first_with_behavior_id(id_bhvActSelector) == nil then
         render_hud_mario_lives()
