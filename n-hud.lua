@@ -252,6 +252,22 @@ function life_icon_from_local_index(localIndex)
     return "?"
 end
 
+--- @param localIndex integer
+--- @return TextureInfo
+--- This assumes multiple characters will not have the same model,
+--- Icons can only be seen by users who have the character avalible to them
+function star_icon_from_local_index(localIndex)
+    if localIndex == nil then localIndex = 0 end
+    local p = gCSPlayers[localIndex]
+    for i = 1, #characterTable do
+        local char = characterTable[i]
+        if char.saveName == p.saveName then
+            return char[(p.currAlt and p.currAlt or 1)].starIcon
+        end
+    end
+    return gTextures.star
+end
+
 local TYPE_STRING = "string"
 --- @param localIndex integer
 --- @param x integer
@@ -277,19 +293,26 @@ function render_life_icon_from_local_index(localIndex, x, y, scale)
 end
 
 --- @param localIndex integer
---- @return TextureInfo
---- This assumes multiple characters will not have the same model,
---- Icons can only be seen by users who have the character avalible to them
-function star_icon_from_local_index(localIndex)
+--- @param x integer
+--- @param y integer
+--- @param scale integer
+function render_life_icon_from_local_index_interpolated(localIndex, prevX, prevY, prevScale, x, y, scale)
     if localIndex == nil then localIndex = 0 end
-    local p = gCSPlayers[localIndex]
-    for i = 1, #characterTable do
-        local char = characterTable[i]
-        if char.saveName == p.saveName then
-            return char[(p.currAlt and p.currAlt or 1)].starIcon
-        end
+    local lifeIcon = life_icon_from_local_index(localIndex)
+    local startFont = djui_hud_get_font()
+    local startColor = djui_hud_get_color()
+
+    if type(lifeIcon) == TYPE_STRING then
+        local color = color_from_local_index(localIndex)
+        djui_hud_set_font(FONT_RECOLOR_HUD)
+        djui_hud_set_color(color.r/startColor.r*255, color.g/startColor.g*255, color.b/startColor.b*255, startColor.a)
+        djui_hud_print_text_interpolated(lifeIcon, prevX - prevScale/4, prevY - 10*prevScale - prevScale/4, prevScale, x - scale/4, y - 10*scale - scale/4, scale)
+        -- Reset HUD Modifications
+        djui_hud_set_font(startFont)
+        djui_hud_set_color(startColor.r, startColor.g, startColor.b, startColor.a)
+    else
+        djui_hud_render_texture_interpolated(lifeIcon, prevX, prevY, prevScale / (lifeIcon.width * MATH_DIVIDE_16), prevScale / (lifeIcon.height * MATH_DIVIDE_16), x, y, scale / (lifeIcon.width * MATH_DIVIDE_16), scale / (lifeIcon.height * MATH_DIVIDE_16))
     end
-    return gTextures.star
 end
 
 --- @param localIndex integer
@@ -300,6 +323,16 @@ function render_star_icon_from_local_index(localIndex, x, y, scale)
     if localIndex == nil then localIndex = 0 end
     local starIcon = star_icon_from_local_index(localIndex)
     djui_hud_render_texture(starIcon, x, y, scale / (starIcon.width * MATH_DIVIDE_16), scale / (starIcon.height * MATH_DIVIDE_16))
+end
+
+--- @param localIndex integer
+--- @param x integer
+--- @param y integer
+--- @param scale integer
+function render_star_icon_from_local_index_interpolated(localIndex, prevX, prevY, prevScale, x, y, scale)
+    if localIndex == nil then localIndex = 0 end
+    local starIcon = star_icon_from_local_index(localIndex)
+    djui_hud_render_texture_interpolated(starIcon, prevX, prevY, prevScale / (starIcon.width * MATH_DIVIDE_16), prevScale / (starIcon.height * MATH_DIVIDE_16), x, y, scale / (starIcon.width * MATH_DIVIDE_16), scale / (starIcon.height * MATH_DIVIDE_16))
 end
 
 local TEXT_DEFAULT_METER_PREFIX = "char-select-custom-meter-"
