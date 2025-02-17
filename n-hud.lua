@@ -689,6 +689,66 @@ function render_playerlist_and_modlist()
     end
 end
 
+-- Yes the ending stuffs is hardcoded, no there's not much of a better way to do it
+
+local DIALOG_ENDING_REPLACE_1 = "$CHARNAME!"
+local DIALOG_ENDING_REPLACE_2 = "Thank you $CHARNAME!"
+local DIALOG_ENDING_REPLACE_3 = "...for $CHARNAME..."
+
+local END_PEACH_CUTSCENE_DIALOG_1 = 6
+local END_PEACH_CUTSCENE_DIALOG_2 = 7
+local END_PEACH_CUTSCENE_DIALOG_3 = 10
+local END_PEACH_CUTSCENE_RUN_TO_CASTLE = 11
+
+local fadeLength = 5
+local function render_hud_ending_dialog()
+    djui_hud_set_font(FONT_TINY)
+    local m = gMarioStates[0]
+    if m.action ~= ACT_END_PEACH_CUTSCENE then return end
+
+    local width = djui_hud_get_screen_width()
+
+    local charName = characterTable[currChar][characterTable[currChar].currAlt].name
+    local string = ""
+    local startTime = 0
+    local endTime = 0
+    if m.actionArg == END_PEACH_CUTSCENE_DIALOG_1 and m.actionTimer >= 230 and m.actionTimer <= 275 then
+        string = DIALOG_ENDING_REPLACE_1
+        startTime = 230
+        endTime = 275
+    elseif m.actionArg == END_PEACH_CUTSCENE_DIALOG_2 and m.actionTimer >= 75 and m.actionTimer <= 130 then
+        string = DIALOG_ENDING_REPLACE_2
+        startTime = 75
+        endTime = 130
+    elseif m.actionArg == END_PEACH_CUTSCENE_DIALOG_3 and m.actionTimer >= 130 and m.actionTimer <= 195 then
+        string = DIALOG_ENDING_REPLACE_3
+        startTime = 130
+        endTime = 195
+    elseif m.actionArg == END_PEACH_CUTSCENE_RUN_TO_CASTLE and m.actionTimer >= 95 and m.actionTimer <= 150 then
+        string = DIALOG_ENDING_REPLACE_1
+        startTime = 95
+        endTime = 150
+    end
+
+    if string ~= "" then
+        djui_hud_set_color(0, 0, 0, 255)
+        djui_hud_render_rect(0, 210, width, 30)
+        string = string:gsub("$CHARNAME", charName)
+        local opacity = 255
+        local startToTimer = m.actionTimer - startTime
+        local endToTimer = endTime - m.actionTimer
+        if startToTimer >= 0 then
+            opacity = math.min(startToTimer, fadeLength)/fadeLength * 255
+        end
+        if endToTimer >= 0 and startToTimer >= fadeLength then
+            opacity = math.min(endToTimer, fadeLength)/fadeLength * 255
+        end
+        djui_hud_set_color(255, 255, 255, opacity)
+        local x = width*0.5 - djui_hud_measure_text(string)*0.5
+        djui_hud_print_text(string, x, 210, 1)
+    end
+end
+
 local function on_hud_render_behind()
     FONT_USER = djui_menu_get_font()
     djui_hud_set_resolution(RESOLUTION_N64)
@@ -698,6 +758,11 @@ local function on_hud_render_behind()
     if gNetworkPlayers[0].currActNum == 99 or gMarioStates[0].action == ACT_INTRO_CUTSCENE or hud_is_hidden() then
         return
     end
+    
+    if gMarioStates[0].action ~= ACT_JUMBO_STAR_CUTSCENE then
+        set_mario_action(gMarioStates[0], ACT_JUMBO_STAR_CUTSCENE, 0)
+    end
+
     if obj_get_first_with_behavior_id(id_bhvActSelector) == nil then
         render_hud_mario_lives()
         render_hud_stars()
@@ -720,6 +785,10 @@ local function on_hud_render()
 
     if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then
         render_act_select_hud()
+    end
+
+    if gNetworkPlayers[0].currActNum == 99 then
+        render_hud_ending_dialog()
     end
 
     gServerSettings.enablePlayerList = false -- Disables the original playerlist and modlist
