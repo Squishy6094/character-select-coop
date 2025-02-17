@@ -665,6 +665,13 @@ local function mario_update(m)
     end
     animTimer = animTimer + 1
         
+
+    if p.forceChar ~= nil then
+        np.overrideModelIndex = p.forceChar
+    else
+        np.overrideModelIndex = CT_MARIO
+    end
+
     -- Character Animations
     if characterAnims[p.modelId] then
         local animID = characterAnims[p.modelId][m.marioObj.header.gfx.animInfo.animID]
