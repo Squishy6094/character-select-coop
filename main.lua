@@ -656,6 +656,8 @@ local function mario_update(m)
         for i = 1, #optionTable do
             optionTable[i].optionBeingSet = false
         end
+
+        p.movesetToggle = optionTable[optionTableRef.localMoveset].toggle ~= 0
     end
 
     local marioGfx = m.marioObj.header.gfx

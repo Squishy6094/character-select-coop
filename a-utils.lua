@@ -205,6 +205,7 @@ for i = 0, MAX_PLAYERS - 1 do
         forceChar = 0,
         modelId = E_MODEL_MARIO,
         isUpdating = false,
+        movesetToggle = true,
     }
 end
 
