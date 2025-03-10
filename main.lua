@@ -916,14 +916,14 @@ local function on_hud_render()
             local TEXT_DESCRIPTION_TABLE = character.description
             local TEXT_PRESET = "Preset Character Palette: "..(gCSPlayers[0].presetPalette > 0 and (paletteCount > 1 and "("..gCSPlayers[0].presetPalette.."/"..paletteCount..")" or "On") or "Off")
             local TEXT_PREF = "Preferred Character:"
-            local TEXT_PREF_LOAD_NAME = string_underscore_to_space(TEXT_PREF_LOAD_NAME)
+            local TEXT_PREF_LOAD_NAME = ' "' .. string_underscore_to_space(TEXT_PREF_LOAD_NAME) .. '"' .. ((TEXT_PREF_LOAD_ALT ~= 1 and TEXT_PREF_LOAD_NAME ~= "Default" and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "")
             if djui_hud_measure_text(TEXT_PREF_LOAD_NAME) / widthScale > 110 then
                 TEXT_PREF = "Preferred Char:"
             end
             if djui_hud_measure_text(TEXT_PREF_LOAD_NAME) / widthScale > 164 then
                 TEXT_PREF = "Pref Char:"
             end
-            TEXT_PREF = TEXT_PREF .. ' "' .. TEXT_PREF_LOAD_NAME .. '"' .. ((TEXT_PREF_LOAD_ALT ~= 1 and TEXT_PREF_LOAD_NAME ~= "Default" and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "")
+            TEXT_PREF = TEXT_PREF .. TEXT_PREF_LOAD_NAME
 
             local textX = x * 0.5
             djui_hud_print_text(TEXT_NAME, width - textX - djui_hud_measure_text(TEXT_NAME) * 0.3, 55, 0.6)
@@ -957,6 +957,7 @@ local function on_hud_render()
                 djui_hud_set_font(FONT_TINY)
                 djui_hud_print_text(TEXT_PREF_SAVE_AND_PALETTE, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE_AND_PALETTE) * 0.25, height - 13, 0.5)
             else
+                djui_hud_print_text(TEXT_PALETTE_RESTRICTED, width - textX - djui_hud_measure_text(TEXT_PALETTE_RESTRICTED) * 0.15, height - 31, 0.3)
                 djui_hud_set_font(FONT_TINY)
                 djui_hud_print_text(TEXT_PREF_SAVE, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE) * 0.25, height - 13, 0.5)
             end
