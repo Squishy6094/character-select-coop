@@ -207,7 +207,6 @@ local function dialog_swap()
             real_dialog_replace(i, dialog.unused, dialog.linesPerBox, dialog.leftOffset, dialog.width, replaced_dialog)
         end
     end
-    djui_chat_message_create("did it!!")
 end
 
 local function update()
