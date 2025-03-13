@@ -202,6 +202,7 @@ local function dialog_swap()
         if dialogTable[i] ~= nil then
             local dialog = dialogTable[i]
             local name = characterTable[currChar][characterTable[currChar].currAlt].name
+            name = name:gsub('"', "'")
             local replaced_dialog = dialog.str:gsub(DIALOG_NAME, name)
             real_dialog_replace(i, dialog.unused, dialog.linesPerBox, dialog.leftOffset, dialog.width, replaced_dialog)
         end
