@@ -178,7 +178,7 @@ define_cs_dialog(DIALOG_157, 1, 5, 30, 200, ("Watch out! Don't let\nyourself be 
 define_cs_dialog(DIALOG_158, 1, 6, 30, 200, ("1. If you jump repeatedly\nand time it right, you'll\njump higher and higher.\nIf you run really fast and\ntime three jumps right,\nyou can do a Triple Jump.\n2. Jump into a solid wall,\nthen jump again when you\nhit the wall. You can\nbounce to a higher level\nusing this Wall Kick."))
 define_cs_dialog(DIALOG_159, 1, 6, 30, 200, ("3. If you stop, press [Z]\nto crouch, then jump, you\ncan perform a Backward\nSomersault. To do a Long\nJump, run fast, press [Z],\nthen jump."))
 define_cs_dialog(DIALOG_160, 1, 4, 30, 200, ("Press [B] while running\nfast to do a Body Slide\nattack. To stand while\nsliding, press [A] or [B]."))
-define_cs_dialog(DIALOG_161, 1, 4, 30, 200, ("Mario!!!\nIt that really you???\nIt has been so long since\nour last adventure!\nThey told me that I might\nsee you if I waited here,\nbut I'd just about given\nup hope!\nIs it true? Have you\nreally beaten Bowser? And\nrestored the Stars to the\ncastle?\nAnd saved the Princess?\nI knew you could do it!\nNow I have a very special\nmessage for you.\n『Thanks for playing Super\nMario 64! This is the\nend of the game, but not\nthe end of the fun.\nWe want you to keep on\nplaying, so we have a\nlittle something for you.\nWe hope that you like it!\nEnjoy!!!』\n\nThe Super Mario 64 Team"))
+define_cs_dialog(DIALOG_161, 1, 4, 30, 200, ("Mario!!!\nIt that really you???\nIt has been so long since\nour last adventure!\nThey told me that I might\nsee you if I waited here,\nbut I'd just about given\nup hope!\nIs it true? Have you\nreally beaten Bowser? And\nrestored the Stars to the\ncastle?\nAnd saved the Princess?\nI knew you could do it!\nNow I have a very special\nmessage for you.\nThanks for playing Super\nMario 64! This is the\nend of the game, but not\nthe end of the fun.\nWe want you to keep on\nplaying, so we have a\nlittle something for you.\nWe hope that you like it!\nEnjoy!!!\n\nThe Super Mario 64 Team"))
 define_cs_dialog(DIALOG_162, 1, 4, 30, 200, ("No, no, no! Not you\nagain! I'm in a great\nhurry, can't you see?\n\nI've no time to squabble\nover Stars. Here, have it.\nI never meant to hide it\nfrom you...\nIt's just that I'm in such\na rush. That's it, that's\nall. Now, I must be off.\nOwww! Let me go!"))
 define_cs_dialog(DIALOG_163, 1, 5, 30, 200, ("Noooo! You've really\nbeaten me this time,\nMario! I can't stand\nlosing to you!\n\nMy troops...worthless!\nThey've turned over all\nthe Power Stars! What?!\nThere are 120 in all???\n\nAmazing! There were some\nin the castle that I\nmissed??!!\n\n\nNow I see peace\nreturning to the world...\nOooo! I really hate that!\nI can't watch--\nI'm outta here!\nJust you wait until next\ntime. Until then, keep\nthat Control Stick\nsmokin'!\nBuwaa ha ha!"))
 define_cs_dialog(DIALOG_164, 1, 4, 30, 200, ("Mario! What's up, pal?\nI haven't been on the\nslide lately, so I'm out\nof shape.\nStill, I'm always up for a\ngood race, especially\nagainst an old sleddin'\nbuddy.\nWhaddya say?\nReady...set...\n\n//Go//// Don't Go"))
@@ -186,8 +186,8 @@ define_cs_dialog(DIALOG_165, 1, 5, 30, 200, ("I take no responsibility\nwhatsoev
 define_cs_dialog(DIALOG_166, 1, 4, 30, 200, ("I'll be back soon.\nI'm out training now,\nso come back later.\n//--Koopa the Quick"))
 define_cs_dialog(DIALOG_167, 1, 4, 30, 200, ("Princess Toadstool's\ncastle is just ahead.\n\n\nPress [A] to jump, [Z] to\ncrouch, and [B] to punch,\nread a sign, or grab\nsomething.\nPress [B] again to throw\nsomething you're holding."))
 define_cs_dialog(DIALOG_168, 1, 5, 30, 200, ("Hey! Knock it off! That's\nthe second time you've\nnailed me. Now you're\nasking for it, linguine\nbreath!"))
-define_cs_dialog(DIALOG_169, 1, 4, 30, 200, ("Keep out!\
-That means you!\nArrgghh!\n\nAnyone entering this cave\nwithout permission will\nmeet certain disaster."))
+define_cs_dialog(DIALOG_169, 1, 4, 30, 200, ("Keep out!\nThat means you!\nArrgghh!\n\nAnyone entering this cave\nwithout permission will\nmeet certain disaster."))
+
 local DIALOG_NAME = "Mario"
 
 ---@param name string
@@ -195,15 +195,14 @@ function dialog_set_replace_name(name)
     DIALOG_NAME = name
 end
 
-local prevChar = currChar
+local prevCharName = ""
 
-local function dialog_swap()
-    for i = DIALOG_000, DIALOG_COUNT - 1 do
+local function dialog_swap(charName)
+    for i = DIALOG_000, #dialogTable do
         if dialogTable[i] ~= nil then
             local dialog = dialogTable[i]
-            local name = characterTable[currChar][characterTable[currChar].currAlt].name
-            name = name:gsub('"', "'")
-            local replaced_dialog = dialog.str:gsub(DIALOG_NAME, name)
+            charName = charName:gsub('"', "'")
+            local replaced_dialog = dialog.str:gsub(DIALOG_NAME, charName)
             real_dialog_replace(i, dialog.unused, dialog.linesPerBox, dialog.leftOffset, dialog.width, replaced_dialog)
         end
     end
@@ -211,9 +210,10 @@ end
 
 local function update()
     -- Query Character Swapped
-    if prevChar ~= currChar then
-        dialog_swap()
-        prevChar = currChar
+    local charName = characterTable[currChar][characterTable[currChar].currAlt].name
+    if prevCharName ~= charName then
+        dialog_swap(charName)
+        prevCharName = charName
     end
 end
 
