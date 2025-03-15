@@ -191,6 +191,12 @@ local function character_add_caps(modelInfo, caps)
     characterCaps[modelInfo] = type(caps) == TYPE_TABLE and caps or nil
 end
 
+---@param modelInfo ModelExtendedId|integer|nil
+local function character_get_caps(modelInfo)
+    if modelInfo == nil then modelInfo = characterTable[currChar][characterTable[currChar].currAlt].model end
+    return characterCaps[modelInfo]
+end
+
 ---@param charNum integer
 ---@param charAlt integer
 ---@param healthTexture table|nil
@@ -537,6 +543,7 @@ _G.charSelect = {
     character_edit_costume = character_edit_costume,
     character_add_voice = character_add_voice,
     character_add_caps = character_add_caps,
+    character_get_caps = character_get_caps,
     character_add_celebration_star = character_add_celebration_star,
     character_add_health_meter = character_add_health_meter,
     character_add_costume_health_meter = character_add_costume_health_meter,
