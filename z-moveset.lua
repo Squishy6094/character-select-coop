@@ -154,3 +154,12 @@ local function sync_valid()
     return currMoveset[hook]()
 end
 hook_event(HOOK_ON_SYNC_VALID, sync_valid)
+
+local function object_render(obj)
+    if stopMovesets or not gCSPlayers[0].movesetToggle then return end
+    local hook = HOOK_ON_OBJECT_RENDER
+    local currMoveset = characterMovesets[find_character_number(0)]
+    if currMoveset == nil or currMoveset[hook] == nil then return end
+    return currMoveset[hook](obj)
+end
+hook_event(HOOK_ON_OBJECT_RENDER, object_render)
