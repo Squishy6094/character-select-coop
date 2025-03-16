@@ -528,6 +528,7 @@ local menuActBlacklist = {
     [ACT_PUSHING_DOOR] = true,
     [ACT_UNLOCKING_KEY_DOOR] = true,
     [ACT_UNLOCKING_STAR_DOOR] = true,
+    [ACT_IN_CANNON] = true,
     -- Dialog Acts
     [ACT_READING_NPC_DIALOG] = true,
     [ACT_WAITING_FOR_DIALOG] = true,
