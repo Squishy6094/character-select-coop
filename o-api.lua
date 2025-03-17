@@ -70,6 +70,7 @@ local function character_add(name, description, credit, color, modelInfo, forceC
     if lifeIcon ~= nil and type(lifeIcon) == TYPE_STRING then
         lifeIcon = lifeIcon:sub(1,1)
     end
+    local addedModel = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or E_MODEL_ARMATURE
     table_insert(characterTable, {
         saveName = type(name) == TYPE_STRING and string_space_to_underscore(name) or "Untitled",
         currAlt = 1,
@@ -80,7 +81,8 @@ local function character_add(name, description, credit, color, modelInfo, forceC
             description = type(description) == TYPE_TABLE and description or {"No description has been provided"},
             credit = type(credit) == TYPE_STRING and credit or "Unknown",
             color = type(color) == TYPE_TABLE and color or {r = 255, g = 255, b = 255},
-            model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or E_MODEL_ARMATURE,
+            model = addedModel,
+            ogModel = addedModel,
             forceChar = forceChar and forceChar or CT_MARIO,
             lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or "?",
             starIcon = gTextures.star,
@@ -113,13 +115,15 @@ local function character_add_costume(charNum, name, description, credit, color, 
     if lifeIcon ~= nil and type(lifeIcon) == TYPE_STRING then
         lifeIcon = lifeIcon:sub(1,1)
     end
+    local addedModel = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model
     local tableCache = characterTable[charNum][1]
     table_insert(characterTable[charNum], {
         name = type(name) == TYPE_STRING and name or tableCache.name,
         description = type(description) == TYPE_TABLE and description or tableCache.description,
         credit = type(credit) == TYPE_STRING and credit or tableCache.credit,
         color = type(color) == TYPE_TABLE and color or tableCache.color,
-        model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model,
+        model = addedModel,
+        ogModel = addedModel,
         forceChar = type(forceChar) == TYPE_INTEGER and forceChar or tableCache.forceChar,
         lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or tableCache.lifeIcon,
         starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce
@@ -158,6 +162,7 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
         credit = type(credit) == TYPE_STRING and credit or tableCache.credit,
         color = type(color) == TYPE_TABLE and color or tableCache.color,
         model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model,
+        ogModel = tableCache.ogModel,
         forceChar = type(forceChar) == TYPE_INTEGER and forceChar or tableCache.forceChar,
         lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or tableCache.lifeIcon,
         starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce

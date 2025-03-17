@@ -206,12 +206,13 @@ for i = 0, MAX_PLAYERS - 1 do
         modelId = E_MODEL_MARIO,
         isUpdating = false,
         movesetToggle = true,
+        modelEditOffset = 0,
     }
 end
 
 local stallPacket = 0
 local function update()
-    stallPacket = (stallPacket+1)%5 -- refresh rate (to reduce stress)
+    stallPacket = (stallPacket+1)%3 -- refresh rate (to reduce stress)
     if stallPacket == 0 then
         network_send(false, gCSPlayers[0])
     end

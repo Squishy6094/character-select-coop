@@ -62,6 +62,7 @@ characterTable = {
             credit = "Nintendo / Coop Team",
             color = { r = 255, g = 50,  b = 50  },
             model = E_MODEL_MARIO,
+            ogModel = E_MODEL_MARIO,
             forceChar = CT_MARIO,
             lifeIcon = gTextures.mario_head,
             starIcon = gTextures.star,
@@ -79,6 +80,7 @@ characterTable = {
             credit = "Nintendo / Coop Team",
             color = { r = 50,  g = 255, b = 50  },
             model = E_MODEL_LUIGI,
+            ogModel = E_MODEL_LUIGI,
             forceChar = CT_LUIGI,
             lifeIcon = gTextures.luigi_head,
             starIcon = gTextures.star,
@@ -95,6 +97,7 @@ characterTable = {
             credit = "Nintendo / Coop Team",
             color = { r = 50,  g = 50,  b = 255 },
             model = E_MODEL_TOAD_PLAYER,
+            ogModel = E_MODEL_TOAD_PLAYER,
             forceChar = CT_TOAD,
             lifeIcon = gTextures.toad_head,
             starIcon = gTextures.star,
@@ -111,6 +114,7 @@ characterTable = {
             credit = "Nintendo / Coop Team",
             color = { r = 130, g = 25,  b = 130 },
             model = E_MODEL_WALUIGI,
+            ogModel = E_MODEL_WALUIGI,
             forceChar = CT_WALUIGI,
             lifeIcon = gTextures.waluigi_head,
             starIcon = gTextures.star,
@@ -128,6 +132,7 @@ characterTable = {
             credit = "Nintendo / Coop Team",
             color = { r = 255, g = 255, b = 50  },
             model = E_MODEL_WARIO,
+            ogModel = E_MODEL_WARIO,
             forceChar = CT_WARIO,
             lifeIcon = gTextures.wario_head,
             starIcon = gTextures.star,
@@ -576,10 +581,12 @@ local function mario_update(m)
             if charTable[charTable.currAlt].forceChar ~= nil then
                 p.forceChar = charTable[charTable.currAlt].forceChar
             end
+            p.modelEditOffset = charTable[charTable.currAlt].model - charTable[charTable.currAlt].ogModel
             m.marioObj.hookRender = 1
         else
             p.modelId = nil
             p.forceChar = defaultTable.forceChar
+            p.modelEditOffset = 0
             currChar = 1
         end
 
@@ -713,7 +720,10 @@ function set_model(o, model)
         for c = 1, #characterTable do
             if gCSPlayers[i].saveName == characterTable[c].saveName then
                 if gCSPlayers[i].currAlt <= #characterTable[c] then
-                    localModelData = characterTable[c][gCSPlayers[i].currAlt].model
+                    localModelData = characterTable[c][gCSPlayers[i].currAlt].ogModel + gCSPlayers[i].modelEditOffset
+                    djui_chat_message_create(tostring(characterTable[c][gCSPlayers[i].currAlt].ogModel))
+                    djui_chat_message_create(tostring(characterTable[c][gCSPlayers[i].currAlt].model))
+                    djui_chat_message_create(tostring(gCSPlayers[i].modelEditOffset))
                 end
             end
         end
