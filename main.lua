@@ -709,10 +709,27 @@ function set_model(o, model)
     if optionTable[optionTableRef.localModels].toggle == 0 then return end
     if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
         local i = network_local_index_from_global(o.globalPlayerIndex)
-        if gCSPlayers[i].modelId ~= nil and obj_has_model_extended(o, gCSPlayers[i].modelId) == 0 then
-            settingModel = true
-            obj_set_model_extended(o, gCSPlayers[i].modelId)
-            settingModel = false
+        local localModelData = nil
+        for c = 1, #characterTable do
+            if gCSPlayers[i].saveName == characterTable[c].saveName then
+                if gCSPlayers[i].currAlt <= #characterTable[c] then
+                    localModelData = characterTable[c][gCSPlayers[i].currAlt].model
+                end
+            end
+        end
+        if localModelData ~= nil then
+            if obj_has_model_extended(o, localModelData) == 0 then
+                settingModel = true
+                obj_set_model_extended(o, localModelData)
+                settingModel = false
+            end
+        else
+            -- Original/Backup
+            if gCSPlayers[i].modelId ~= nil and obj_has_model_extended(o, gCSPlayers[i].modelId) == 0 then
+                settingModel = true
+                obj_set_model_extended(o, gCSPlayers[i].modelId)
+                settingModel = false
+            end
         end
         return
     end
