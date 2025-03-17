@@ -721,9 +721,6 @@ function set_model(o, model)
             if gCSPlayers[i].saveName == characterTable[c].saveName then
                 if gCSPlayers[i].currAlt <= #characterTable[c] then
                     localModelData = characterTable[c][gCSPlayers[i].currAlt].ogModel + gCSPlayers[i].modelEditOffset
-                    djui_chat_message_create(tostring(characterTable[c][gCSPlayers[i].currAlt].ogModel))
-                    djui_chat_message_create(tostring(characterTable[c][gCSPlayers[i].currAlt].model))
-                    djui_chat_message_create(tostring(gCSPlayers[i].modelEditOffset))
                 end
             end
         end
