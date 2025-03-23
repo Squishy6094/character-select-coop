@@ -131,6 +131,8 @@ local function mario_update(m)
             if optionTable[optionTableRef.localModels].toggle == 0 then
                 p.presetPalette = 0
             end
+            prevChar = currChar
+            prevAlt = currAlt
         end
 
         if stallTimer > 0 then
