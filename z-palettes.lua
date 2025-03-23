@@ -114,41 +114,18 @@ local function mario_update(m)
         p.isUpdating = true
         for i = 1, MAX_PLAYERS - 1 do
             prevPresetPalette[i] = gCSPlayers[i].presetPalette
-            prevModel[i] = gCSPlayers[i].modelId and gCSPlayers[i].modelId or defaultModels[gMarioStates[i].character.type]
-        end
-    end
-
-    if np.connected then
-        local modelId = p.modelId and p.modelId or defaultModels[m.character.type]
-        if p.presetPalette == nil or characterColorPresets[modelId] == nil then
-            if p.presetPalette == nil then
-                prevPresetPalette[m.playerIndex] = 0
-            end
-            p.presetPalette = 0
-        end
-
-        if (prevPresetPalette[m.playerIndex] ~= p.presetPalette or prevModel[m.playerIndex] ~= modelId) then
-            if p.presetPalette == 0 or not characterColorPresets[modelId] then
-                network_player_reset_override_palette(np)
-            end
-        end
-
-        prevPresetPalette[m.playerIndex] = p.presetPalette
-        prevModel[m.playerIndex] = modelId
-
-        if p.presetPalette > 0 and characterColorPresets[modelId] and not stopPalettes then
-            network_player_set_full_override_palette(np, characterColorPresets[modelId][p.presetPalette])
-        end
-    else
-        if p.isUpdating then
-            p.isUpdating = false
+            prevModel[i] = gCSPlayers[i].modelId
         end
     end
     
     if m.playerIndex == 0 then
-        if (menuAndTransition or (prevChar ~= currChar or prevAlt ~= currAlt)) and stallTimer == 0 then
-            local modelId = p.modelId and p.modelId or defaultModels[m.character.type]
-            if optionTable[optionTableRef.autoPalette].toggle > 0 and optionTable[optionTableRef.localModels].toggle > 0 and (currChar ~= 1 and (prevChar ~= currChar or prevAlt ~= currAlt) and p.presetPalette == 0) and characterColorPresets[modelId] and not stopPalettes then
+        local prevNotCurrModel = prevModel[m.playerIndex] ~= p.modelId
+        local prevNotCurr = prevPresetPalette[m.playerIndex] ~= p.presetPalette or prevNotCurrModel
+        if (prevNotCurr) or stallTimer < 3 then
+            if optionTable[optionTableRef.autoPalette].toggle > 0 and
+            optionTable[optionTableRef.localModels].toggle > 0 and
+            (currChar ~= 1 and (prevNotCurrModel) and
+            p.presetPalette == 0) and characterColorPresets[p.modelId] and not stopPalettes then
                 p.presetPalette = 1
             end
             if optionTable[optionTableRef.localModels].toggle == 0 then
@@ -160,6 +137,32 @@ local function mario_update(m)
 
         if stallTimer > 0 then
             stallTimer = stallTimer - 1
+        end
+    end
+
+    if np.connected then
+        if p.presetPalette == nil or characterColorPresets[p.modelId] == nil then
+            if p.presetPalette == nil then
+                prevPresetPalette[m.playerIndex] = 0
+            end
+            p.presetPalette = 0
+        end
+
+        if (prevPresetPalette[m.playerIndex] ~= p.presetPalette or prevModel[m.playerIndex] ~= p.modelId) then
+            if p.presetPalette == 0 or not characterColorPresets[p.modelId] then
+                network_player_reset_override_palette(np)
+            end
+        end
+
+        prevPresetPalette[m.playerIndex] = p.presetPalette
+        prevModel[m.playerIndex] = p.modelId
+
+        if p.presetPalette > 0 and characterColorPresets[p.modelId] and not stopPalettes then
+            network_player_set_full_override_palette(np, characterColorPresets[p.modelId][p.presetPalette])
+        end
+    else
+        if p.isUpdating then
+            p.isUpdating = false
         end
     end
 end
