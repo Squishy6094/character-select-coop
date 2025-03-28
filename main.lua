@@ -157,14 +157,13 @@ optionTableRef = {
     inputLatency = 5,
     showLocked = 6,
     -- Characters
-    autoPalette = 7,
-    localMoveset = 8,
-    localModels = 9,
-    localVoices = 10,
+    localMoveset = 7,
+    localModels = 8,
+    localVoices = 9,
     -- CS
-    credits = 11,
-    debugInfo = 12,
-    resetSaveData = 13,
+    credits = 10,
+    debugInfo = 11,
+    resetSaveData = 12,
 }
 
 optionTable = {
@@ -220,14 +219,6 @@ optionTable = {
         toggleDefault = 1,
         toggleMax = 1,
         description = {"Toggles if Locked Characters", "Display In-Menu"}
-    },
-    [optionTableRef.autoPalette] = {
-        name = "Auto-Apply Palette",
-        toggle = tonumber(mod_storage_load("autoPalette")),
-        toggleSaveName = "autoPalette",
-        toggleDefault = 1,
-        toggleMax = 1,
-        description = {"If On, Automatically", "sets your palette to the", "Character's Preset if avalible"}
     },
     [optionTableRef.localMoveset] = {
         name = "Character Moveset",
@@ -934,12 +925,13 @@ local function on_hud_render()
         local TEXT_ALT = "Alt: " .. character.currAlt .. "/" .. #character
         character = characterTable[currChar][character.currAlt]
         local paletteCount = characterColorPresets[gCSPlayers[0].modelId] ~= nil and #characterColorPresets[gCSPlayers[0].modelId] or 0
+        local currPaletteTable = characterColorPresets[gCSPlayers[0].modelId] and characterColorPresets[gCSPlayers[0].modelId] or {currPalette = 0}
         if optionTable[optionTableRef.debugInfo].toggle == 0 then
             -- Actual Description --
             local TEXT_NAME = string_underscore_to_space(character.name)
             local TEXT_CREDIT = "Credit: " .. character.credit
             local TEXT_DESCRIPTION_TABLE = character.description
-            local TEXT_PRESET = "Preset Character Palette: "..(gCSPlayers[0].presetPalette > 0 and (paletteCount > 1 and "("..gCSPlayers[0].presetPalette.."/"..paletteCount..")" or "On") or "Off")
+            local TEXT_PRESET = "Preset Character Palette: "..((paletteCount > 1 and "("..currPaletteTable.currPalette.."/"..paletteCount..")" or (currPaletteTable.currPalette > 0 and "Off" or "On")) or "Off")
             local TEXT_PREF = "Preferred Character:"
             local TEXT_PREF_LOAD_NAME = ' "' .. string_underscore_to_space(TEXT_PREF_LOAD_NAME) .. '"' .. ((TEXT_PREF_LOAD_ALT ~= 1 and TEXT_PREF_LOAD_NAME ~= "Default" and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "")
             if djui_hud_measure_text(TEXT_PREF_LOAD_NAME) / widthScale > 110 then
@@ -977,15 +969,15 @@ local function on_hud_render()
 
             local modelId = gCSPlayers[0].modelId
             djui_hud_print_text(TEXT_PREF, width - textX - djui_hud_measure_text(TEXT_PREF) * 0.15, height - 22, 0.3)
+            local text = TEXT_PREF_SAVE
             if characterColorPresets[modelId] and not stopPalettes then
                 djui_hud_print_text(TEXT_PRESET, width - textX - djui_hud_measure_text(TEXT_PRESET) * 0.15, height - 31, 0.3)
-                djui_hud_set_font(FONT_TINY)
-                djui_hud_print_text(TEXT_PREF_SAVE_AND_PALETTE, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE_AND_PALETTE) * 0.25, height - 13, 0.5)
-            else
+                text = TEXT_PREF_SAVE_AND_PALETTE
+            elseif stopPalettes then
                 djui_hud_print_text(TEXT_PALETTE_RESTRICTED, width - textX - djui_hud_measure_text(TEXT_PALETTE_RESTRICTED) * 0.15, height - 31, 0.3)
-                djui_hud_set_font(FONT_TINY)
-                djui_hud_print_text(TEXT_PREF_SAVE, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE) * 0.25, height - 13, 0.5)
             end
+            djui_hud_set_font(FONT_TINY)
+            djui_hud_print_text(text, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE) * 0.25, height - 13, 0.5)
         else
             -- Debugging Info --
             local TEXT_NAME = "Name: " .. character.name
@@ -995,7 +987,7 @@ local function on_hud_render()
             local TEX_LIFE_ICON = character.lifeIcon
             local TEX_STAR_ICON = character.starIcon
             local TEXT_SCALE = "Camera Scale: " .. character.camScale
-            local TEXT_PRESET = "Preset Palette: ("..gCSPlayers[0].presetPalette.."/"..paletteCount..")"
+            local TEXT_PRESET = "Preset Palette: ("..currPaletteTable.currPalette.."/"..paletteCount..")"
             local TEXT_PREF = "Preferred: " .. TEXT_PREF_LOAD_NAME .. " ("..TEXT_PREF_LOAD_ALT..")"
             local TEXT_PREF_COLOR = "Pref Color: R-" .. prefCharColor.r .. ", G-" .. prefCharColor.g .. ", B-" .. prefCharColor.b
 
@@ -1065,8 +1057,8 @@ local function on_hud_render()
             if characterColorPresets[modelId] ~= nil then
                 djui_hud_print_text(TEXT_PALETTE, width - x + 8, y, 0.5)
                 local x = x - djui_hud_measure_text(TEXT_PALETTE)*0.5
-                local currPalette = gCSPlayers[0].presetPalette > 0 and gCSPlayers[0].presetPalette or 1
-                local paletteTable = characterColorPresets[modelId][currPalette]
+                local currPalette = currPaletteTable.currPalette > 0 and currPaletteTable.currPalette or 1
+                local paletteTable = currPaletteTable[currPalette]
                 for i = 0, #paletteTable do
                     djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
                     djui_hud_render_rect(width - x + 6.5 + (6.5 * i), y + 1.5, 6, 6)
@@ -1519,7 +1511,6 @@ local function before_mario_update(m)
     end
 
     local cameraToObject = m.marioObj.header.gfx.cameraToObject
-
     if menuAndTransition and not options then
         if menu then
             if inputStallTimerDirectional == 0 and optionTable[optionTableRef.localModels].toggle ~= 0 and not charBeingSet then
@@ -1540,8 +1531,10 @@ local function before_mario_update(m)
                         buttonScroll = buttonScrollCap
                     end
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                    gCSPlayers[0].presetPalette = 0
                     if currChar > #characterTable then currChar = 1 end
+                    if characterColorPresets[characterTable[currChar]] ~= nil then
+                        characterColorPresets[characterTable[currChar]].currPalette = 0
+                    end
                 end
                 if (controller.buttonPressed & U_JPAD) ~= 0 or (controller.buttonPressed & U_CBUTTONS) ~= 0 or controller.stickY > 60 then
                     currChar = currChar - 1
@@ -1560,8 +1553,10 @@ local function before_mario_update(m)
                         buttonScroll = -buttonScrollCap
                     end
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                    gCSPlayers[0].presetPalette = 0
                     if currChar < 1 then currChar = #characterTable end
+                    if characterColorPresets[characterTable[currChar]] ~= nil then
+                        characterColorPresets[characterTable[currChar]].currPalette = 0
+                    end
                 end
 
                 -- Alt switcher
@@ -1601,19 +1596,22 @@ local function before_mario_update(m)
                     options = true
                 end
                 local modelId = gCSPlayers[0].modelId
+                local paletteCount = characterColorPresets[gCSPlayers[0].modelId] ~= nil and #characterColorPresets[gCSPlayers[0].modelId] or 0
+                local currPaletteTable = characterColorPresets[gCSPlayers[0].modelId] and characterColorPresets[gCSPlayers[0].modelId] or {currPalette = 0}
+
                 if (controller.buttonPressed & Y_BUTTON) ~= 0 then
                     if characterColorPresets[modelId] and optionTable[optionTableRef.localModels].toggle > 0 and not stopPalettes then
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject)
-                        gCSPlayers[0].presetPalette = gCSPlayers[0].presetPalette + 1
+                        currPaletteTable.currPalette = currPaletteTable.currPalette + 1
                         inputStallTimerButton = inputStallToButton
                     else
                         play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
                         inputStallTimerButton = inputStallToButton
                     end
                 end
-            end
-            if characterColorPresets[gCSPlayers[0].modelId] ~= nil then
-                if #characterColorPresets[gCSPlayers[0].modelId] < gCSPlayers[0].presetPalette then gCSPlayers[0].presetPalette = 0 end
+                if characterColorPresets[gCSPlayers[0].modelId] ~= nil then
+                    if paletteCount < currPaletteTable.currPalette then currPaletteTable.currPalette = 0 end
+                end
             end
         end
 

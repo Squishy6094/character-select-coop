@@ -6,6 +6,7 @@ local network_player_set_override_palette_color,network_player_reset_override_pa
 
 characterColorPresets = {
     [E_MODEL_MARIO] = {
+        currPalette = 0,
         [1] = {
             [PANTS]  = { r = 0x00, g = 0x00, b = 0xff },
             [SHIRT]  = { r = 0xff, g = 0x00, b = 0x00 },
@@ -18,6 +19,7 @@ characterColorPresets = {
         },
     },
     [E_MODEL_LUIGI] = {
+        currPalette = 0,
         [1] = {
             [PANTS]  = { r = 0x00, g = 0x00, b = 0xff },
             [SHIRT]  = { r = 0x00, g = 0xff, b = 0x00 },
@@ -30,6 +32,7 @@ characterColorPresets = {
         },
     },
     [E_MODEL_TOAD_PLAYER] = {
+        currPalette = 0,
         [1] = {
             [PANTS]  = { r = 0xff, g = 0xff, b = 0xff },
             [SHIRT]  = { r = 0x4c, g = 0x2c, b = 0xd3 },
@@ -42,6 +45,7 @@ characterColorPresets = {
         },
     },
     [E_MODEL_WALUIGI] = {
+        currPalette = 0,
         [1] = {
             [PANTS]  = { r = 0x16, g = 0x16, b = 0x27 },
             [SHIRT]  = { r = 0x61, g = 0x26, b = 0xb0 },
@@ -55,6 +59,7 @@ characterColorPresets = {
         },
     },
     [E_MODEL_WARIO] = {
+        currPalette = 0,
         [1] = {
             [PANTS]  = { r = 0x7f, g = 0x20, b = 0x7a },
             [SHIRT]  = { r = 0xff, g = 0xbd, b = 0x00 },
@@ -98,8 +103,6 @@ end
 -- API funcs
 _G.charSelect.update_preset_palette = update_preset_palette
 
-local prevChar = currChar
-local prevAlt = 1
 local stallTimer = 5
 
 local prevPresetPalette = {}
@@ -119,21 +122,9 @@ local function mario_update(m)
     end
     
     if m.playerIndex == 0 then
-        local prevNotCurrModel = prevModel[m.playerIndex] ~= p.modelId
-        local prevNotCurr = prevPresetPalette[m.playerIndex] ~= p.presetPalette or prevNotCurrModel
-        if (prevNotCurr) or stallTimer < 3 then
-            if optionTable[optionTableRef.autoPalette].toggle > 0 and
-            optionTable[optionTableRef.localModels].toggle > 0 and
-            (currChar ~= 1 and (prevNotCurrModel) and
-            p.presetPalette == 0) and characterColorPresets[p.modelId] and not stopPalettes then
-                p.presetPalette = 1
-            end
-            if optionTable[optionTableRef.localModels].toggle == 0 then
-                p.presetPalette = 0
-            end
-            prevChar = currChar
-            prevAlt = currAlt
-        end
+        if not stopPalettes then
+            gCSPlayers[0].presetPalette = characterColorPresets[gCSPlayers[0].modelId] ~= nil and characterColorPresets[gCSPlayers[0].modelId].currPalette or 0
+        end 
 
         if stallTimer > 0 then
             stallTimer = stallTimer - 1

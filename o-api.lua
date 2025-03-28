@@ -268,7 +268,9 @@ local function character_add_palette_preset(modelInfo, paletteTable)
         end
     end
     if characterColorPresets[modelInfo] == nil then
-        characterColorPresets[modelInfo] = {}
+        characterColorPresets[modelInfo] = {
+            currPalette = 1,
+        }
     end
     table_insert(characterColorPresets[modelInfo], paletteTableOut)
 end
