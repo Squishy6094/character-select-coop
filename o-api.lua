@@ -19,10 +19,7 @@ local saveNameTable = {}
 
 local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 
----------
--- API --
----------
-
+---@ignore
 local function split_text_into_lines(text)
     local words = {}
     for word in text:gmatch("%S+") do
@@ -51,15 +48,16 @@ local TYPE_TABLE = "table"
 local TYPE_TEX_INFO = "userdata"
 local TYPE_FUNCTION = "function"
 
----@param name string|nil Underscores turn into Spaces
----@param description table|string|nil {"string"}
----@param credit string|nil
----@param color Color|string|nil {r, g, b}
----@param modelInfo ModelExtendedId|integer|nil Use smlua_model_util_get_id()
----@param forceChar CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
----@param lifeIcon TextureInfo|string|nil Use get_texture_info()
----@param camScale integer|nil Zooms the camera based on a multiplier (Default 1.0)
----@return integer
+---@description A function that adds a Character to the Character Table
+---@param name string|nil `"Custom Model"`
+---@param description table|string|nil `{"string"}`
+---@param credit string|nil `"You!"`, Credit the creators
+---@param color Color|string|nil `{r, g, b}`
+---@param modelInfo ModelExtendedId|integer|nil Use `smlua_model_util_get_id`
+---@param forceChar CharacterType|nil Character Type, such as `CT_MARIO`
+---@param lifeIcon TextureInfo|string|nil Use get_texture_info
+---@param camScale integer|nil Zooms the camera based on a multiplier (Default `1`)
+---@return integer --The index of the character in the character table
 local function character_add(name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
     if type(description) == TYPE_STRING then
         description = split_text_into_lines(description)
@@ -95,15 +93,17 @@ local function character_add(name, description, credit, color, modelInfo, forceC
     return #characterTable
 end
 
----@param charNum integer Use _G.charSelect.character_get_number_from_string() or _G.charSelect.character_add()'s return value
----@param name string|nil Underscores turn into Spaces
----@param description table|string|nil {"string"}
----@param credit string|nil
----@param color Color|nil {r, g, b}
----@param modelInfo ModelExtendedId|integer|nil Use smlua_model_util_get_id()
----@param forceChar integer|CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
----@param lifeIcon TextureInfo|nil Use get_texture_info()
----@param camScale integer|nil Zooms the camera based on a multiplier (Default 1.0)
+---@description A function that adds a Costume to an Existing Character, all inputs mimic character_edit
+---@param charNum integer The number/table position of the Character you want to add a costume to
+---@param name string|nil `"Custom Model"`
+---@param description table|string|nil `{"string"}`
+---@param credit string|nil `"You!"`, Credit the creators
+---@param color Color|string|nil `{r, g, b}`
+---@param modelInfo ModelExtendedId|integer|nil Use `smlua_model_util_get_id`
+---@param forceChar CharacterType|nil Character Type, such as `CT_MARIO`
+---@param lifeIcon TextureInfo|string|nil Use get_texture_info
+---@param camScale integer|nil Zooms the camera based on a multiplier (Default `1`)
+---@return integer --The index of the costume in the character's table
 local function character_add_costume(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
     if tonumber(charNum) == nil or charNum > #characterTable or charNum < 0 then return end
     if type(description) == TYPE_STRING then
@@ -133,16 +133,17 @@ local function character_add_costume(charNum, name, description, credit, color, 
     return #characterTable[charNum]
 end
 
----@param charNum integer Use _G.charSelect.character_get_number_from_string() or _G.charSelect.character_add()'s return value
----@param charAlt integer 
----@param name string|nil Underscores turn into Spaces
----@param description table|string|nil {"string"}
----@param credit string|nil
----@param color Color|nil {r, g, b}
----@param modelInfo ModelExtendedId|integer|nil Use smlua_model_util_get_id()
----@param forceChar integer|CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
----@param lifeIcon TextureInfo|nil Use get_texture_info()
----@param camScale integer|nil Zooms the camera based on a multiplier (Default 1.0)
+---@description A function that Edits an existing Costume, has 1 unique input, all other inputs mimic character_edit
+---@param charNum integer The number/table position of the Character you want to edit the costume of
+---@param charAlt integer The number/table position of the Costume you want to edit, this can be found by making a variable equal
+---@param name string|nil `"Custom Model"`
+---@param description table|string|nil `{"string"}`
+---@param credit string|nil `"You!"`, Credit the creators
+---@param color Color|string|nil `{r, g, b}`
+---@param modelInfo ModelExtendedId|integer|nil Use `smlua_model_util_get_id`
+---@param forceChar CharacterType|nil Character Type, such as `CT_MARIO`
+---@param lifeIcon TextureInfo|string|nil Use get_texture_info
+---@param camScale integer|nil Zooms the camera based on a multiplier (Default `1`)
 local function character_edit_costume(charNum, charAlt, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
     if tonumber(charNum) == nil or charNum > #characterTable or charNum < 0 then return end
     if type(description) == TYPE_STRING then
@@ -171,21 +172,23 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
     } or nil
 end
 
----@param charNum integer Use _G.charSelect.character_get_number_from_string() or _G.charSelect.character_add()'s return value
----@param name string|nil Underscores turn into Spaces
----@param description table|string|nil {"string"}
----@param credit string|nil
----@param color Color|nil {r, g, b}
----@param modelInfo ModelExtendedId|integer|nil Use smlua_model_util_get_id()
----@param forceChar integer|CharacterType|nil CT_MARIO, CT_LUIGI, CT_TOAD, CT_WALUIGI, CT_WARIO
----@param lifeIcon TextureInfo|nil Use get_texture_info()
----@param camScale integer|nil Zooms the camera based on a multiplier (Default 1.0)
+---@description A function that Edits an Existing Character, has 1 unique input, all other inputs mimic character_add
+---@param charNum integer The number/table position of the Character you want to edit the costume of
+---@param name string|nil `"Custom Model"`
+---@param description table|string|nil `{"string"}`
+---@param credit string|nil `"You!"`, Credit the creators
+---@param color Color|string|nil `{r, g, b}`
+---@param modelInfo ModelExtendedId|integer|nil Use `smlua_model_util_get_id`
+---@param forceChar CharacterType|nil Character Type, such as `CT_MARIO`
+---@param lifeIcon TextureInfo|string|nil Use get_texture_info
+---@param camScale integer|nil Zooms the camera based on a multiplier (Default `1`)
 local function character_edit(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
     character_edit_costume(charNum, 1, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
 end
 
----@param modelInfo ModelExtendedId|integer
----@param clips table
+---@param modelInfo ModelExtendedId|integer Model Information Received from smlua_model_util_get_id
+---@param clips table A Table with your Character's Sound File Names
+---@note Refer to [SM64CoopDX's Character Sound Constants](https://github.com/coop-deluxe/sm64coopdx/blob/main/docs/lua/constants.md#enum-CharacterSound) for all replaceable sounds\n\nFor voice clips to work functionally, you require [`config_character_sounds`](#config_character_sounds) to run on startup anywhere in your script.
 local function character_add_voice(modelInfo, clips)
     characterVoices[modelInfo] = type(clips) == TYPE_TABLE and clips or nil
 end
