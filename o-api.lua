@@ -170,6 +170,9 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
         camScale = type(camScale) == TYPE_INTEGER and camScale or tableCache.camScale,
         healthTexture = tableCache.healthTexture,
     } or nil
+    if modelInfo ~= nil and characterColorPresets[modelInfo] ~= nil then
+        characterColorPresets[modelInfo].currPalette = characterColorPresets[tableCache.model].currPalette
+    end
 end
 
 ---@description A function that Edits an Existing Character
