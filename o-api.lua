@@ -170,8 +170,10 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
         camScale = type(camScale) == TYPE_INTEGER and camScale or tableCache.camScale,
         healthTexture = tableCache.healthTexture,
     } or nil
-    if modelInfo ~= nil and characterColorPresets[modelInfo] ~= nil then
-        characterColorPresets[modelInfo].currPalette = characterColorPresets[tableCache.model].currPalette
+
+    local ccp = characterColorPresets
+    if modelInfo ~= nil and ccp[modelInfo] ~= nil and ccp[tableCache.model] ~= nil and ccp[modelInfo].currPalette <= ccp[tableCache.model].currPalette then
+        ccp[modelInfo].currPalette = ccp[tableCache.model].currPalette
     end
 end
 
