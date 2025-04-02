@@ -931,7 +931,7 @@ local function on_hud_render()
             local TEXT_NAME = string_underscore_to_space(character.name)
             local TEXT_CREDIT = "Credit: " .. character.credit
             local TEXT_DESCRIPTION_TABLE = character.description
-            local TEXT_PRESET = "Preset Character Palette: "..((paletteCount > 1 and "("..currPaletteTable.currPalette.."/"..paletteCount..")" or (currPaletteTable.currPalette > 0 and "Off" or "On")) or "Off")
+            local TEXT_PRESET = "Preset Character Palette: "..((paletteCount > 1 and "("..currPaletteTable.currPalette.."/"..paletteCount..")" or (currPaletteTable.currPalette > 0 and "On" or "Off")) or "Off")
             local TEXT_PREF = "Preferred Character:"
             local TEXT_PREF_LOAD_NAME = ' "' .. string_underscore_to_space(TEXT_PREF_LOAD_NAME) .. '"' .. ((TEXT_PREF_LOAD_ALT ~= 1 and TEXT_PREF_LOAD_NAME ~= "Default" and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "")
             if djui_hud_measure_text(TEXT_PREF_LOAD_NAME) / widthScale > 110 then
