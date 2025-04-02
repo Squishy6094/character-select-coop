@@ -538,7 +538,6 @@ local faceAngle = 0
 local eyeState = MARIO_EYES_OPEN
 local prevFOV = 40
 local menuFOV = 45
-local PSCState = true
 --- @param m MarioState
 local function mario_update(m)
     local np = gNetworkPlayers[m.playerIndex]
@@ -584,13 +583,6 @@ local function mario_update(m)
             p.modelEditOffset = 0
             currChar = 1
         end
-        
-        if not menuAndTransition then
-            local currFOV = get_current_fov()
-            if currFOV ~= menuFOV then
-                prevFOV = currFOV
-            end
-        end
 
         if menuAndTransition then
             --play_secondary_music(0, 0, 0.5, 0)
@@ -612,15 +604,21 @@ local function mario_update(m)
             gLakituState.pos.y = m.pos.y + 100 * camScale
             gLakituState.pos.z = m.pos.z + coss(faceAngle) * 500 * camScale
             p.inMenu = true
-        elseif p.inMenu then
-            --stop_secondary_music(50)
-            camera_unfreeze()
-            hud_show()
-            set_override_fov(prevFOV)
-            if m.area.camera.cutscene == CUTSCENE_CS_MENU then
-                m.area.camera.cutscene = CUTSCENE_STOP
+        else
+            if p.inMenu then
+                --stop_secondary_music(50)
+                camera_unfreeze()
+                hud_show()
+                set_override_fov(prevFOV)
+                if m.area.camera.cutscene == CUTSCENE_CS_MENU then
+                    m.area.camera.cutscene = CUTSCENE_STOP
+                end
+                p.inMenu = false
             end
-            p.inMenu = false
+            local currFOV = get_current_fov()
+            if currFOV ~= menuFOV then
+                prevFOV = currFOV
+            end
         end
 
         -- Check for Locked Chars
