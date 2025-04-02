@@ -207,6 +207,7 @@ for i = 0, MAX_PLAYERS - 1 do
         isUpdating = false,
         movesetToggle = true,
         modelEditOffset = 0,
+        inMenu = false,
     }
 end
 

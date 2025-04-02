@@ -490,7 +490,6 @@ end
 -------------------
 
 local stallFrame = 0
-local noLoop = false
 
 CUTSCENE_CS_MENU = 0xFA
 
@@ -537,6 +536,9 @@ local prevAnim = 0
 local animTimer = 0
 local faceAngle = 0
 local eyeState = MARIO_EYES_OPEN
+local prevFOV = 40
+local menuFOV = 45
+local PSCState = true
 --- @param m MarioState
 local function mario_update(m)
     local np = gNetworkPlayers[m.playerIndex]
@@ -582,14 +584,18 @@ local function mario_update(m)
             p.modelEditOffset = 0
             currChar = 1
         end
+        
+        if not menuAndTransition then
+            local currFOV = get_current_fov()
+            if currFOV ~= menuFOV then
+                prevFOV = currFOV
+            end
+        end
 
         if menuAndTransition then
             --play_secondary_music(0, 0, 0.5, 0)
             camera_freeze()
             hud_hide()
-            if _G.PersonalStarCounter then
-                _G.PersonalStarCounter.hide_star_counters(true)
-            end
             if m.area.camera.cutscene == 0 then
                 m.area.camera.cutscene = CUTSCENE_CS_MENU
             end
@@ -599,28 +605,22 @@ local function mario_update(m)
                 y = m.pos.y + 120 * camScale,
                 z = m.pos.z,
             }
-            set_override_fov(40)
+            set_override_fov(menuFOV)
             vec3f_copy(gLakituState.focus, focusPos)
             m.marioBodyState.eyeState = eyeState
             gLakituState.pos.x = m.pos.x + sins(faceAngle) * 500 * camScale
             gLakituState.pos.y = m.pos.y + 100 * camScale
             gLakituState.pos.z = m.pos.z + coss(faceAngle) * 500 * camScale
-
-            if m.forwardVel == 0 and m.pos.y == m.floorHeight and not ignoredSurfaces[m.floor.type] and m.health > 255 and not menuActBlacklist[m.action] then
-                set_mario_animation(m, MARIO_ANIM_FIRST_PERSON)
-            end
-            noLoop = false
-        elseif not noLoop then
+            p.inMenu = true
+        elseif p.inMenu then
             --stop_secondary_music(50)
             camera_unfreeze()
             hud_show()
-            if _G.PersonalStarCounter then
-                _G.PersonalStarCounter.hide_star_counters(false)
-            end
+            set_override_fov(prevFOV)
             if m.area.camera.cutscene == CUTSCENE_CS_MENU then
                 m.area.camera.cutscene = CUTSCENE_STOP
             end
-            noLoop = true
+            p.inMenu = false
         end
 
         -- Check for Locked Chars
@@ -661,6 +661,10 @@ local function mario_update(m)
         end
 
         p.movesetToggle = optionTable[optionTableRef.localMoveset].toggle ~= 0
+    end
+    
+    if p.inMenu and m.forwardVel == 0 and m.pos.y == m.floorHeight and not ignoredSurfaces[m.floor.type] and m.health > 255 and not menuActBlacklist[m.action] then
+        set_mario_animation(m, MARIO_ANIM_FIRST_PERSON)
     end
 
     local marioGfx = m.marioObj.header.gfx
