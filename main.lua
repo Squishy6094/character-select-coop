@@ -535,6 +535,8 @@ local menuActBlacklist = {
 local prevBaseCharFrame = gNetworkPlayers[0].modelIndex
 local prevAnim = 0
 local animTimer = 0
+local faceAngle = 0
+local eyeState = MARIO_EYES_OPEN
 --- @param m MarioState
 local function mario_update(m)
     local np = gNetworkPlayers[m.playerIndex]
@@ -597,7 +599,9 @@ local function mario_update(m)
                 y = m.pos.y + 120 * camScale,
                 z = m.pos.z,
             }
+            set_override_fov(40)
             vec3f_copy(gLakituState.focus, focusPos)
+            m.marioBodyState.eyeState = eyeState
             gLakituState.pos.x = m.pos.x + sins(faceAngle) * 500 * camScale
             gLakituState.pos.y = m.pos.y + 100 * camScale
             gLakituState.pos.z = m.pos.z + coss(faceAngle) * 500 * camScale
@@ -1617,8 +1621,15 @@ local function before_mario_update(m)
 
         -- Handles Camera Posistioning
         faceAngle = m.faceAngle.y
-        if controller.buttonPressed & R_CBUTTONS ~= 0 then faceAngle = faceAngle + 0x1000 end
-        if controller.buttonPressed & L_CBUTTONS ~= 0 then faceAngle = faceAngle - 0x1000 end
+        eyeState = MARIO_EYES_OPEN
+        if controller.buttonPressed & R_CBUTTONS ~= 0 then
+            faceAngle = faceAngle + 0x1000
+            eyeState = MARIO_EYES_LOOK_RIGHT
+        end
+        if controller.buttonPressed & L_CBUTTONS ~= 0 then
+            faceAngle = faceAngle - 0x1000
+            eyeState = MARIO_EYES_LOOK_LEFT
+        end
 
         nullify_inputs(m)
         if is_game_paused() then
