@@ -159,6 +159,10 @@ function clamp(num, min, max)
     return math.max(math.min(num, max), min)
 end
 
+function lerp(a, b, t)
+    return a * (1 - t) + b * t
+end
+
 allowMenu = {}
 
 renderInMenuTable = {
