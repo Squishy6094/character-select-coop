@@ -250,7 +250,7 @@ local function character_get_caps(modelInfo)
     return characterCaps[modelInfo]
 end
 
----@description A function that adds health meter textures to a character
+---@description A function that adds health meter textures to a costume
 ---@param charNum integer The number/table position of the Character you want to add a meter to
 ---@param charAlt integer The number/table position of the Costume you want to add a meter to
 ---@param healthTexture table|nil A Table with your Character's Health Textures (Table Shown in character_add_health_meter)
@@ -281,24 +281,29 @@ end
 ---@note     }
 ---@note }
 ---@note ```
----@note This method is restricted to the default meter format, you can refer to the Disassembled sections in the image below for how to format your health meter (Spriters Resource Page)
----@note <p align=center> <img src="https://www.spriters-resource.com/resources/sheets/7/6841.png?updated=1595395218" width="720"> </p>
 local function character_add_health_meter(charNum, healthTexture)
     character_add_costume_health_meter(charNum, 1, healthTexture)
 end
 
----@param charNum integer
----@param charAlt integer
----@param courseTexture table|nil
+---@description A function that adds course textures to a costume in the Star Select
+---@param charNum integer The number/table position of the Character you want to add a course textures to
+---@param charAlt integer The number/table position of the Costume you want to add a course textures to
+---@param courseTexture table|nil A Table with your Character's Health Textures (Table Shown in character_add_course)
 local function character_add_costume_course(charNum, charAlt, courseTexture)
     if type(charNum) ~= TYPE_INTEGER or charNum == nil then return end
     if type(charAlt) ~= TYPE_INTEGER or charAlt == nil then return end
     characterTable[charNum][charAlt].courseTexture = type(courseTexture) == TYPE_TABLE and courseTexture or nil
 end
 
----@description A function that adds a custom texture to the star select
----@param charNum integer The number/table position of the Character you want to add a course texture to
----@param courseTexture table|nil
+---@description A function that adds course textures to a character in the Star Select
+---@param charNum integer The number/table position of the Character you want to add a course textures to
+---@param courseTexture table|nil A Table with your Character's Health Textures (Table Shown Below)
+---@note ```lua
+---@note local COURSE_CHAR = {
+---@note     top = get_texture_info("char-course-top"),
+---@note     bottom = get_texture_info("char-course-bottom"),
+---@note }
+---@note ```
 local function character_add_course(charNum, courseTexture)
     character_add_costume_course(charNum, 1, courseTexture)
 end
@@ -360,17 +365,20 @@ local function character_add_palette_preset(modelInfo, paletteTable)
     table_insert(characterColorPresets[modelInfo], paletteTableOut)
 end
 
+---@description A function that adds animations to a model
 ---@param modelInfo ModelExtendedId|integer
 ---@param animTable table
 local function character_add_animations(modelInfo, animTable)
     characterAnims[modelInfo] = type(animTable) == TYPE_TABLE and animTable or nil
 end
 
+---@description A function that gets any animation table from a model
 ---@param modelInfo ModelExtendedId|integer
 local function character_get_animations(modelInfo)
     return characterAnims[modelInfo]
 end
 
+---@description A function that gets a character's full Character Select Table
 ---@param tablePos integer|nil
 ---@param charAlt integer|nil
 ---@return CharacterTable
@@ -380,11 +388,13 @@ local function character_get_current_table(tablePos, charAlt)
     return characterTable[tablePos][charAlt]
 end
 
+---@description A function that gets Character Select's Entire Character Table
 ---@return table
 local function character_get_full_table()
     return characterTable
 end
 
+---@description A function that gets the current character's table position in CS
 --- @param localIndex integer|nil
 --- @return integer|nil
 local function character_get_current_number(localIndex)
@@ -400,6 +410,7 @@ local function character_get_current_number(localIndex)
     end
 end
 
+---@description A function that gets the current costumes's table position in CS
 --- @param localIndex integer|nil
 --- @return integer|nil
 local function character_get_current_costume(localIndex)
@@ -415,6 +426,7 @@ local function character_get_current_costume(localIndex)
     end
 end
 
+---@description A function that sets the current character based only table position
 ---@param charNum integer|nil
 local function character_set_current_number(charNum)
     if type(charNum) ~= TYPE_INTEGER or characterTable[charNum] == nil then return end
@@ -422,12 +434,14 @@ local function character_set_current_number(charNum)
     charBeingSet = true
 end
 
+---@description A function that gets the current character's palette data
 --- @return table|nil
 local function character_get_current_palette()
     local model = characterTable[currChar][characterTable[currChar].currAlt].model
     return characterColorPresets[model][gCSPlayers[0].presetPalette]
 end
 
+---@description A function that gets the current character's palette number
 --- @param localIndex integer|nil
 --- @return integer|nil
 local function character_get_current_palette_number(localIndex)
@@ -435,6 +449,7 @@ local function character_get_current_palette_number(localIndex)
     return gCSPlayers[localIndex].presetPalette
 end
 
+---@description A function that searches for a character's table posision based on name
 ---@param name string
 local function character_get_number_from_string(name)
     if type(name) ~= TYPE_STRING then return nil end
@@ -448,14 +463,16 @@ local function character_get_number_from_string(name)
     return nil
 end
 
+---@description A function that gets the current character's voice table
 ---@param m MarioState
 function character_get_voice(m)
     return characterVoices[gCSPlayers[m.playerIndex].modelId]
 end
 
----@param charNum integer|nil
----@param unlockCondition function|boolean|nil
----@param notify boolean|nil
+---@description A function that locks a character under an unlock condition
+---@param charNum integer|nil The number of the Character you want to Lock
+---@param unlockCondition function|boolean|nil The condition for if the character stays locked
+---@param notify boolean|nil Wheather Character Select should notify the user when the character is unlocked
 local function character_set_locked(charNum, unlockCondition, notify)
     if charNum == nil or charNum > #characterTable or charNum < 2 then return end
     if unlockCondition == nil then unlockCondition = false end
@@ -470,12 +487,22 @@ local function character_set_locked(charNum, unlockCondition, notify)
     }
 end
 
----@return string
+---@description A function that returns the version string
+---@return string --`"v1.2.3"`
 local function version_get()
     return MOD_VERSION_STRING
 end
 
+---@description A function that returns the version in table format
 ---@return table
+---@note Returns the following table (Will differ based on version)
+---@note ```lua
+---@note {
+---@note    api = 1,
+---@note    major = 2,
+---@note    minor = 3,
+---@note    indev = true
+---@note }
 local function version_get_full()
     return {
         api = MOD_VERSION_API,
@@ -485,28 +512,33 @@ local function version_get_full()
     }
 end
 
+---@description A function that checks is the Character Select Menu is currently open
 ---@return boolean
 local function is_menu_open()
     return menuAndTransition
 end
 
+---@description A function that forces they Character Select Menu state
 ---@param bool boolean|nil Sets if the menu is open
 local function set_menu_open(bool)
     if bool == nil then bool = true end
     menu = bool
 end
 
+---@description A function that gets Character Select's current Menu color
 ---@return table
 local function get_menu_color()
     return update_menu_color()
 end
 
+---@description A function that allows you to add a condition for if the CS Menu can be opened
 ---@param func function
 local function hook_allow_menu_open(func)
     if type(func) ~= TYPE_FUNCTION then return end
     table_insert(allowMenu, func)
 end
 
+---@description A function that allows you to render HUD Elements in the menu (Behind transistions such as Option and going in/out of menu)
 ---@param func function
 local function hook_render_in_menu(func, underText)
     if type(func) ~= TYPE_FUNCTION then return end
@@ -517,6 +549,7 @@ local function hook_render_in_menu(func, underText)
     end
 end
 
+---@description A function that allows you to hook a function, much like hook_event, to a specific character number
 ---@param charNum integer|nil
 ---@param hookEventType LuaHookedEventType|integer
 ---@param func function
@@ -527,19 +560,22 @@ local function character_hook_moveset(charNum, hookEventType, func)
     characterTable[charNum].hasMoveset = true
 end
 
+---@description A function that returns the Character's moveset functions
 ---@param charNum integer
 local function character_get_moveset(charNum)
     return characterMovesets[charNum]
 end
 
+---@description A function that checks if the options menu is open inside of the CS menu
 ---@return boolean
 local function is_options_open()
     return options
 end
 
----@param modName string
----@param creditTo string Who did the thing
----@param creditFor string What did they do
+---@description A function that adds a line of credit to the CS Options' Credit section
+---@param modName string The Name of your Character Select Mod
+---@param creditTo string The person you want to Credit
+---@param creditFor string What the Person helped with
 local function credit_add(modName, creditTo, creditFor)
     if #creditTable > 1 then
         for i = 2, #creditTable do
@@ -556,18 +592,21 @@ local function credit_add(modName, creditTo, creditFor)
     table_insert(creditTable[i], {creditTo = creditTo, creditFor = creditFor})
 end
 
+---@description A function that sets if palettes are restricted (Default `false` unless a mod with the incompatible `gamemode` is on)
 ---@param bool boolean
 local function restrict_palettes(bool)
     if bool == nil then bool = true end
     stopPalettes = bool
 end
 
+---@description A function that sets if movesets are restricted (Default `false`)
 ---@param bool boolean
 local function restrict_movesets(bool)
     if bool == nil then bool = true end
     stopMovesets = bool
 end
 
+---@description A table that contains the local mario's controller before Character Select's menu cancels them
 local controller = {
     buttonDown = 0,
     buttonPressed = 0,
@@ -580,13 +619,14 @@ local controller = {
     stickY = 0
 }
 
----@param name string
----@param toggleDefault number|nil Defaults to 0
----@param toggleMax number|nil Defaults to 1
----@param toggleNames table|nil Table of Strings {"Off", "On"}
----@param description table|nil Table of Strings {"This toggle allows your", "character to feel everything."}
----@param save boolean|nil Defaults to true
----@return number
+---@description A function that adds an option to the Character Select Options Menu
+---@param name string The Name of the Option
+---@param toggleDefault number|nil The default number that the option toggles to (Defaults to `0`)
+---@param toggleMax number|nil The max number the option can be toggled to (Defaults to `1`)
+---@param toggleNames table|nil A table of strings, each entry being for a toggle's name `{"Off", "On"}`
+---@param description table|nil A table of strings, each entry being a new line `{"This toggle allows your", "character to feel everything."}`
+---@param save boolean|nil Wheather the option retains between sessions (Defaults to `true`)
+---@return number --The table position of the option added
 local function add_option(name, toggleDefault, toggleMax, toggleNames, description, save)
     if save == nil then save = true end
     local saveName = string_space_to_underscore(name)
@@ -603,22 +643,25 @@ local function add_option(name, toggleDefault, toggleMax, toggleNames, descripti
     return #optionTable
 end
 
----@param tableNum integer
+---@description A function that gets an option's data from the Character Select Options Menu
+---@param tableNum integer The table position of the option
 ---@return table|nil
 local function get_option(tableNum)
     if type(tableNum) ~= TYPE_INTEGER then return nil end
     return optionTable[tableNum]
 end
 
----@param tableNum integer
+---@description A function that gets an option's status from the Character Select Options Menu
+---@param tableNum integer The table position of the option
 ---@return number|nil
 local function get_options_status(tableNum)
     if type(tableNum) ~= TYPE_INTEGER then return nil end
     return optionTable[tableNum].toggle
 end
 
----@param tableNum integer
----@param toggle integer
+---@description A function that sets an option's status from the Character Select Options Menu
+---@param tableNum integer The table position of the option
+---@param toggle integer What you want to set the option to
 local function set_options_status(tableNum, toggle)
     local currOption = optionTable[tableNum]
     if currOption == nil or type(toggle) ~= TYPE_INTEGER or toggle > currOption.toggleMax or toggle < 1 then return end
