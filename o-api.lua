@@ -528,7 +528,7 @@ end
 ---@description A function that gets Character Select's current Menu color
 ---@return table
 local function get_menu_color()
-    return update_menu_color()
+    return menuColor
 end
 
 ---@description A function that allows you to add a condition for if the CS Menu can be opened
