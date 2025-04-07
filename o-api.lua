@@ -69,11 +69,14 @@ local function character_add(name, description, credit, color, modelInfo, forceC
         lifeIcon = lifeIcon:sub(1,1)
     end
     local addedModel = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or E_MODEL_ARMATURE
+    local charNum = #characterTable + 1
     table_insert(characterTable, {
         saveName = type(name) == TYPE_STRING and string_space_to_underscore(name) or "Untitled",
         currAlt = 1,
         hasMoveset = false,
         locked = false,
+        category = "All",
+        ogNum = charNum,
         [1] = {
             name = type(name) == TYPE_STRING and name or "Untitled",
             description = type(description) == TYPE_TABLE and description or {"No description has been provided"},
@@ -88,9 +91,9 @@ local function character_add(name, description, credit, color, modelInfo, forceC
             healthTexture = nil,
         },
     })
-    saveNameTable[#characterTable] = characterTable[#characterTable].saveName
-    characterMovesets[#characterTable] = {}
-    return #characterTable
+    saveNameTable[charNum] = characterTable[charNum].saveName
+    characterMovesets[charNum] = {}
+    return charNum
 end
 
 ---@description A function that adds a Costume to an Existing Character, all inputs mimic character_edit
@@ -487,6 +490,23 @@ local function character_set_locked(charNum, unlockCondition, notify)
     }
 end
 
+---@description A function that sets a character under a specific category
+---@param charNum integer|nil The number of the Character you want to Lock
+---@param category string The Category Name (Will create a new category if category does not exist)
+local function character_set_category(charNum, category)
+    category = string_underscore_to_space(category)
+    local foundCategory = false
+    for i = 1, #characterCategories do
+        if characterCategories[i] == category then
+            foundCategory = true
+        end
+    end
+    if not foundCategory then 
+        table_insert(characterCategories, category)
+    end
+    characterTable[charNum].category = characterTable[charNum].category .. "_" .. category
+end
+
 ---@description A function that returns the version string
 ---@return string --`"v1.2.3"`
 local function version_get()
@@ -706,6 +726,7 @@ _G.charSelect = {
     character_get_health_meter = health_meter_from_local_index, -- Function located in n-hud.lua
     character_render_health_meter = render_health_meter_from_local_index, -- Function located in n-hud.lua
     character_set_locked = character_set_locked,
+    character_set_category = character_set_category,
     character_get_moveset = character_get_moveset,
 
     -- Hud Element Functions --
