@@ -137,9 +137,12 @@ end
 
 --- @param string string
 --- Splits a string into a table by spaces
-function string_split(string)
+function string_split(string, splitAt)
+    if splitAt == nil then
+        splitAt = " "
+    end
     local result = {}
-    for match in string:gmatch(string_format("[^%s]+", " ")) do
+    for match in string:gmatch(string_format("[^%s]+", splitAt)) do
         table_insert(result, match)
     end
     return result

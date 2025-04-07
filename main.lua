@@ -50,7 +50,7 @@ local TEXT_PREF_LOAD_ALT = 1
 characterTable = {
     [1] = {
         saveName = "Default",
-        category = "All",
+        category = "All_CoopDX",
         ogNum = 1,
         currAlt = 1,
         hasMoveset = false,
@@ -147,25 +147,43 @@ characterTable = {
 
 characterCategories = {
     "All",
+    "CoopDX",
     "Locked",
-    "Unlocked",
 }
 
 local characterTableRender = {}
 
 local function update_character_render_table()
-    --currCharRender = 1
+    local ogNum = currChar
+    currChar = 1
+    currCharRender = 1
     local category = characterCategories[currCategory]
+    if category == nil then return false end
     characterTableRender = {}
     for i = 1, #characterTable do
-        if characterTable[i].category == category then
-            table_insert(characterTableRender, characterTable[i])
+        local charCategories = string_split(characterTable[i].category, "_")
+        for c = 1, #charCategories do
+            djui_chat_message_create(charCategories[c] .. " " .. category)
+            if category == charCategories[c] and not characterTable[i].locked then
+                table_insert(characterTableRender, characterTable[i])
+                if ogNum == i then
+                    currCharRender = i
+                    currChar = i
+                end
+            end
         end
+    end
+    djui_chat_message_create(category .. " - " .. #characterTableRender)
+    if #characterTableRender > 0 then
+        currChar = (characterTableRender[currCharRender] and characterTableRender[currCharRender].ogNum or characterTableRender[1].ogNum)
+        return true
+    else
+        return false
     end
 end
 
 local function update_locked_render_list()
-
+    string_split()
 end
 
 local function get_curr_char_num()
@@ -377,6 +395,7 @@ local function load_preferred_char()
             local char = characterTable[i]
             if char.saveName == savedChar and not char.locked then
                 currChar = i
+                currCharRender = i
                 if savedAlt > 0 and savedAlt <= #char then
                     char.currAlt = savedAlt
                 end
@@ -394,7 +413,7 @@ local function load_preferred_char()
 
     local savedCharColors = mod_storage_load("PrefCharColor")
     if savedCharColors ~= nil and savedCharColors ~= "" then
-        local savedCharColorsTable = string_split(string_underscore_to_space(savedCharColors))
+        local savedCharColorsTable = string_split(savedCharColors, "_")
         prefCharColor = {
             r = tonumber(savedCharColorsTable[1]),
             g = tonumber(savedCharColorsTable[2]),
@@ -411,6 +430,7 @@ local function load_preferred_char()
     end
     TEXT_PREF_LOAD_NAME = savedChar
     TEXT_PREF_LOAD_ALT = savedAlt
+    update_character_render_table()
 end
 
 local function mod_storage_save_pref_char(charTable)
@@ -1166,24 +1186,8 @@ local function on_hud_render()
         local charNum = -1
         for i = -1, 4 do
             -- Hide Locked Characters based on Toggle
-            charNum = currChar + i
-            local char = characterTable[charNum]
-            if optionTable[optionTableRef.showLocked].toggle == 0 and char ~= nil and char.locked then
-                if i < 0 then
-                    repeat 
-                        charNum = charNum - 1
-                    until characterTable[charNum] == nil or (not characterTable[charNum].locked)
-                    charNum = charNum + 1
-                else
-                    repeat 
-                        charNum = charNum + 1
-                    until characterTable[charNum] == nil or (not characterTable[charNum].locked)
-                    charNum = charNum - 1
-                end
-                charNum = charNum + i
-            end
-
-            local char = characterTable[charNum]
+            charNum = currCharRender + i
+            local char = characterTableRender[charNum]
             if char ~= nil then
                 if not char.locked then
                     buttonColor = char[char.currAlt].color
@@ -1226,7 +1230,7 @@ local function on_hud_render()
         end
 
         -- Scroll Bar
-        local MATH_DIVIDE_CHARACTERS = 1/#characterTable
+        local MATH_DIVIDE_CHARACTERS = 1/#characterTableRender
         local MATH_7_WIDTHSCALE = 7 * widthScale
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_rect(MATH_7_WIDTHSCALE, 55, 1, 170)
@@ -1234,10 +1238,11 @@ local function on_hud_render()
         djui_hud_render_rect(MATH_7_WIDTHSCALE + 6, 55, 1, 170)
         djui_hud_render_rect(MATH_7_WIDTHSCALE, 224, 7, 1)
         djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-        djui_hud_render_rect(MATH_7_WIDTHSCALE + 2, 57 + 166 * ((currChar - 1) * MATH_DIVIDE_CHARACTERS) - (buttonScroll * MATH_DIVIDE_30) * (166 * MATH_DIVIDE_CHARACTERS), 3, 166 * MATH_DIVIDE_CHARACTERS)
+        djui_hud_render_rect(MATH_7_WIDTHSCALE + 2, 57 + 166 * ((currCharRender - 1) * MATH_DIVIDE_CHARACTERS) - (buttonScroll * MATH_DIVIDE_30) * (166 * MATH_DIVIDE_CHARACTERS), 3, 166 * MATH_DIVIDE_CHARACTERS)
         djui_hud_set_font(FONT_TINY)
-        local TEXT_CHAR_COUNT = currChar .. "/" .. #characterTable
+        local TEXT_CHAR_COUNT = currCharRender .. "/" .. #characterTableRender
         djui_hud_print_text(TEXT_CHAR_COUNT, (11 - djui_hud_measure_text(TEXT_CHAR_COUNT) * 0.2) * widthScale, height - 12, 0.4)
+        djui_hud_print_text("- "..characterCategories[currCategory] .. " (L/R to Change Categories)", (11 + djui_hud_measure_text(TEXT_CHAR_COUNT) * 0.2) * widthScale, height - 12, 0.4)
 
         --Character Select Header
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
@@ -1575,45 +1580,47 @@ local function before_mario_update(m)
         if menu then
             if inputStallTimerDirectional == 0 and optionTable[optionTableRef.localModels].toggle ~= 0 and not charBeingSet then
                 if (controller.buttonPressed & D_JPAD) ~= 0 or (controller.buttonPressed & D_CBUTTONS) ~= 0 or controller.stickY < -60 then
-                    currChar = currChar + 1
-                    local character = characterTable[currChar]
+                    currCharRender = currCharRender + 1
+                    local character = characterTableRender[currCharRender]
                     if character ~= nil and character.locked then
-                        currChar = get_next_unlocked_char()
+                        currCharRender = get_next_unlocked_char()
                     end
                     if (controller.buttonPressed & D_CBUTTONS) == 0 then
                         inputStallTimerDirectional = inputStallToDirectional
                     else
                         inputStallTimerDirectional = 3 -- C-Scrolling
                     end
-                    if currChar > #characterTable then
-                        buttonScroll = -buttonScrollCap * #characterTable
+                    if currCharRender > #characterTableRender then
+                        buttonScroll = -buttonScrollCap * #characterTableRender
                     else
                         buttonScroll = buttonScrollCap
                     end
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                    if currChar > #characterTable then currChar = 1 end
+                    if currCharRender > #characterTableRender then currCharRender = 1 end
+                    currChar = characterTableRender[currCharRender].ogNum
                     if characterColorPresets[characterTable[currChar]] ~= nil then
                         characterColorPresets[characterTable[currChar]].currPalette = 0
                     end
                 end
                 if (controller.buttonPressed & U_JPAD) ~= 0 or (controller.buttonPressed & U_CBUTTONS) ~= 0 or controller.stickY > 60 then
-                    currChar = currChar - 1
-                    local character = characterTable[currChar]
+                    currCharRender = currCharRender - 1
+                    local character = characterTableRender[currCharRender]
                     if character ~= nil and character.locked then
-                        currChar = get_last_unlocked_char()
+                        currCharRender = get_last_unlocked_char()
                     end
                     if (controller.buttonPressed & U_CBUTTONS) == 0 then
                         inputStallTimerDirectional = inputStallToDirectional
                     else
                         inputStallTimerDirectional = 3 -- C-Scrolling
                     end
-                    if currChar < 1 then
-                        buttonScroll = buttonScrollCap * (#characterTable - 1)
+                    if currCharRender < 1 then
+                        buttonScroll = buttonScrollCap * (#characterTableRender - 1)
                     else
                         buttonScroll = -buttonScrollCap
                     end
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                    if currChar < 1 then currChar = #characterTable end
+                    if currCharRender < 1 then currCharRender = #characterTableRender end
+                    currChar = characterTableRender[currCharRender].ogNum
                     if characterColorPresets[characterTable[currChar]] ~= nil then
                         characterColorPresets[characterTable[currChar]].currPalette = 0
                     end
@@ -1640,25 +1647,23 @@ local function before_mario_update(m)
 
                 -- Tab Switcher
                 if (controller.buttonPressed & L_TRIG) ~= 0 then
-                    currCategory = currCategory - 1
-                    if currCategory > #characterCategories then currCategory = 1 end
-                    update_character_render_table()
-                    while #characterTableRender == 0 do
+                    local renderEmpty = true
+                    while renderEmpty do
                         currCategory = currCategory - 1
-                        if currCategory > #characterCategories then currCategory = 1 end
-                        update_character_render_table()
+                        if currCategory < 1 then currCategory = #characterCategories end
+                        renderEmpty = not update_character_render_table()
                     end
+                    inputStallTimerDirectional = inputStallToDirectional
                     play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
                 end
                 if (controller.buttonPressed & R_TRIG) ~= 0 then
-                    currCategory = currCategory - 1
-                    if currCategory < 1 then currCategory = #characterCategories end
-                    update_character_render_table()
-                    while #characterTableRender == 0 do
-                        currCategory = currCategory - 1
-                        if currCategory < 1 then currCategory = #characterCategories end
-                        update_character_render_table()
+                    local renderEmpty = true
+                    while renderEmpty do
+                        currCategory = currCategory + 1
+                        if currCategory > #characterCategories then currCategory = 1 end
+                        renderEmpty = not update_character_render_table()
                     end
+                    inputStallTimerDirectional = inputStallToDirectional
                     play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
                 end
             end
@@ -1825,7 +1830,9 @@ local function chat_command(msg)
             local saveName = string_underscore_to_space(string_lower(characterTable[i].saveName))
             for a = 1, #characterTable[i] do
                 if msg == string_lower(characterTable[i][a].name) or msg == saveName then
+                    currCategory = 1
                     currChar = i
+                    update_character_render_table()
                     if msg ~= saveName then
                         characterTable[i].currAlt = a
                     end
