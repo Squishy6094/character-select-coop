@@ -1,5 +1,5 @@
 -- name: Character Select
--- description:\\#ffff33\\-- Character Select Coop v1.13.1 --\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
+-- description:\\#ffff33\\--- Character Select Coop v1.14 ---\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
 -- pausable: false
 -- category: cs
 
@@ -663,8 +663,9 @@ local function mario_update(m)
         p.movesetToggle = optionTable[optionTableRef.localMoveset].toggle ~= 0
     end
     
-    if p.inMenu and m.forwardVel == 0 and m.pos.y == m.floorHeight and not ignoredSurfaces[m.floor.type] and m.health > 255 and not menuActBlacklist[m.action] then
-        set_mario_animation(m, MARIO_ANIM_FIRST_PERSON)
+    if p.inMenu and m.action & ACT_FLAG_ALLOW_FIRST_PERSON ~= 0 then
+        set_mario_animation(m, MARIO_ANIM_IDLE_HEAD_LEFT)
+        m.marioObj.header.gfx.angle.y = m.faceAngle.y
     end
 
     local marioGfx = m.marioObj.header.gfx
