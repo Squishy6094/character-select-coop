@@ -14,6 +14,8 @@ options = false
 local credits = false
 local creditsAndTransition = false
 currChar = 1
+currCharRender = 1
+currCategory = 1
 local currOption = 1
 local creditScroll = 0
 local prevCreditScroll = creditScroll
@@ -48,6 +50,8 @@ local TEXT_PREF_LOAD_ALT = 1
 characterTable = {
     [1] = {
         saveName = "Default",
+        category = "All",
+        ogNum = 1,
         currAlt = 1,
         hasMoveset = false,
         locked = false,
@@ -140,6 +144,37 @@ characterTable = {
         },
     },
 }
+
+characterCategories = {
+    "All",
+    "Locked",
+    "Unlocked",
+}
+
+local characterTableRender = {}
+
+local function update_character_render_table()
+    --currCharRender = 1
+    local category = characterCategories[currCategory]
+    characterTableRender = {}
+    for i = 1, #characterTable do
+        if characterTable[i].category == category then
+            table_insert(characterTableRender, characterTable[i])
+        end
+    end
+end
+
+local function update_locked_render_list()
+
+end
+
+local function get_curr_char_num()
+    for i = 1, #characterTable do
+        if characterTable[i].ogNum == currCharRender then
+            return characterTable[i].ogNum
+        end
+    end
+end
 
 characterCaps = {}
 characterCelebrationStar = {}
@@ -1601,6 +1636,30 @@ local function before_mario_update(m)
                     end
                     if character.currAlt > #character then character.currAlt = 1 end
                     if character.currAlt < 1 then character.currAlt = #character end
+                end
+
+                -- Tab Switcher
+                if (controller.buttonPressed & L_TRIG) ~= 0 then
+                    currCategory = currCategory - 1
+                    if currCategory > #characterCategories then currCategory = 1 end
+                    update_character_render_table()
+                    while #characterTableRender == 0 do
+                        currCategory = currCategory - 1
+                        if currCategory > #characterCategories then currCategory = 1 end
+                        update_character_render_table()
+                    end
+                    play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
+                end
+                if (controller.buttonPressed & R_TRIG) ~= 0 then
+                    currCategory = currCategory - 1
+                    if currCategory < 1 then currCategory = #characterCategories end
+                    update_character_render_table()
+                    while #characterTableRender == 0 do
+                        currCategory = currCategory - 1
+                        if currCategory < 1 then currCategory = #characterCategories end
+                        update_character_render_table()
+                    end
+                    play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
                 end
             end
 
