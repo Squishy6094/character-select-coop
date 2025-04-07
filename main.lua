@@ -863,6 +863,7 @@ menuColor = targetMenuColor
 local menuColorHalf = menuColor
 local transSpeed = 0.1
 function update_menu_color()
+    if optionTable[optionTableRef.menuColor].toggle == nil then return end
     if optionTable[optionTableRef.menuColor].toggle > 1 then
         targetMenuColor = menuColorTable[optionTable[optionTableRef.menuColor].toggle - 1]
     elseif optionTable[optionTableRef.menuColor].toggle == 1 then
