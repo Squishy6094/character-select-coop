@@ -933,7 +933,9 @@ function update_menu_color()
         menuColor.g = lerp(menuColor.g, targetMenuColor.g, transSpeed)
         menuColor.b = lerp(menuColor.b, targetMenuColor.b, transSpeed)
     else
-        menuColor = targetMenuColor
+        menuColor.r = targetMenuColor.r
+        menuColor.g = targetMenuColor.g
+        menuColor.b = targetMenuColor.b
     end
     menuColorHalf = {
         r = menuColor.r * 0.5 + 127,
