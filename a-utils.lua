@@ -24,30 +24,41 @@ local legacyFiles = {
     "z-anims.lua",
 }
 
+local fileErrorList = {}
+
 -- Check for Missing Files
-local missingDependacyFiles = false
 for i = 1, #dependacyFiles do
     if not mod_file_exists(dependacyFiles[i]) then
-        log_to_console("Character Select file missing: '" .. dependacyFiles[i] .. "'", CONSOLE_MESSAGE_ERROR)
-        missingDependacyFiles = true
+        log_to_console("Character Select file missing: '" .. dependacyFiles[i] .. "'", CONSOLE_MESSAGE_WARNING)
+        table_insert(fileErrorList, "Missing File '" .. dependacyFiles[i] .. "'")
     end
 end
-if missingDependacyFiles then
-    djui_popup_create("\n\\#FFAAAA\\Character Select is missing\nan important file!\n\nYou can find a list of\nmissing files in the console!", 5)
-    incompatibleClient = true
-    return 0
-end
-
 -- Check for Legacy Files
-local foundLegacyFiles = false
 for i = 1, #legacyFiles do
     if mod_file_exists(legacyFiles[i]) then
-        log_to_console("Character Select legacy file found: '" .. legacyFiles[i] .. "'", CONSOLE_MESSAGE_ERROR)
-        foundLegacyFiles = true
+        log_to_console("Character Select legacy file found: '" .. legacyFiles[i] .. "'", CONSOLE_MESSAGE_WARNING)
+        table_insert(fileErrorList, "Legacy File '" .. legacyFiles[i] .. "'")
     end
 end
-if foundLegacyFiles then
-    djui_popup_create("\n\\#FFAAAA\\Character Select is loading\nan outdated file!\n\nYou can find a list of\nold files in the console!", 5)
+if #fileErrorList > 0 then
+    djui_popup_create("\\#FFAAAA\\Character Select is having\nfile issues and cannot load!\n\nErrors have been logged in chat!", 4)
+    local errorString = "\\#FFAAAA\\Character Select File Issues"
+    for i = 1, #fileErrorList do
+        log_to_console(errorString)
+        errorString = errorString .. "\n" .. fileErrorList[i]
+    end
+    errorString = errorString + "\n\nThe best way to resolve these issues is to delete your current version of Character Select and then install the latest version!"
+    
+    
+    log_to_console(errorString)
+    local stallTimer = 0
+    hook_event(HOOK_UPDATE, function ()
+        stallTimer = stallTimer + 1
+        if stallTimer == 3 then
+            djui_chat_message_create(errorString)
+        end
+    end)
+
     incompatibleClient = true
     return 0
 end
