@@ -895,6 +895,8 @@ local TEXT_MENU_CLOSE = "Press B to Exit Menu"
 local TEXT_OPTIONS_SELECT = "A - Select | B - Exit  "
 local TEXT_LOCAL_MODEL_OFF = "Locally Display Models is Off"
 local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Menu"
+local TEXT_LOCAL_MODEL_ERROR = "Failed to find a Character Model"
+local TEXT_LOCAL_MODEL_ERROR_FIX = "Please Verify the Integrity of the Pack!"
 
 --Credit Text
 local TEXT_CREDITS_HEADER = "Credits"
@@ -972,6 +974,14 @@ local function on_hud_render()
             djui_hud_set_color(255, 255, 255, 255)
             djui_hud_print_text(TEXT_LOCAL_MODEL_OFF, widthHalf - djui_hud_measure_text(TEXT_LOCAL_MODEL_OFF) * 0.15 * widthScale, heightHalf, 0.3 * widthScale)
             djui_hud_print_text(TEXT_LOCAL_MODEL_OFF_OPTIONS, widthHalf - djui_hud_measure_text(TEXT_LOCAL_MODEL_OFF_OPTIONS) * 0.1 * widthScale, heightHalf + 10 * widthScale, 0.2 * widthScale)
+        end
+
+        if characterTable[currChar][characterTable[currChar].currAlt].model == E_MODEL_ARMATURE then
+            djui_hud_set_color(0, 0, 0, 200)
+            djui_hud_render_rect(0, 0, width, height)
+            djui_hud_set_color(255, 255, 255, 255)
+            djui_hud_print_text(TEXT_LOCAL_MODEL_ERROR, widthHalf - djui_hud_measure_text(TEXT_LOCAL_MODEL_ERROR) * 0.15 * widthScale, heightHalf, 0.3 * widthScale)
+            djui_hud_print_text(TEXT_LOCAL_MODEL_ERROR_FIX, widthHalf - djui_hud_measure_text(TEXT_LOCAL_MODEL_ERROR_FIX) * 0.1 * widthScale, heightHalf + 10 * widthScale, 0.2 * widthScale)
         end
 
         local x = 135 * widthScale * 0.8
