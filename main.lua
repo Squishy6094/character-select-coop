@@ -548,11 +548,6 @@ local stallFrame = 0
 
 CUTSCENE_CS_MENU = 0xFA
 
-local ignoredSurfaces = {
-    SURFACE_BURNING, SURFACE_QUICKSAND, SURFACE_INSTANT_QUICKSAND, SURFACE_INSTANT_MOVING_QUICKSAND, SURFACE_DEEP_MOVING_QUICKSAND, SURFACE_INSTANT_QUICKSAND, SURFACE_DEEP_QUICKSAND, SURFACE_SHALLOW_MOVING_QUICKSAND,
-    SURFACE_SHALLOW_QUICKSAND, SURFACE_WARP, SURFACE_LOOK_UP_WARP, SURFACE_WOBBLING_WARP, SURFACE_INSTANT_WARP_1B, SURFACE_INSTANT_WARP_1C, SURFACE_INSTANT_WARP_1D, SURFACE_INSTANT_WARP_1E
-}
-
 local TYPE_FUNCTION = "function"
 local TYPE_BOOLEAN = "boolean"
 local TYPE_STRING = "string"
@@ -560,31 +555,6 @@ local TYPE_INTEGER = "number"
 local TYPE_TABLE = "table"
 
 local MATH_PI = math.pi
-
-local menuActBlacklist = {
-    -- Star Acts
-    [ACT_FALL_AFTER_STAR_GRAB] = true,
-    [ACT_STAR_DANCE_EXIT] = true,
-    [ACT_STAR_DANCE_NO_EXIT] = true,
-    [ACT_STAR_DANCE_WATER] = true,
-    -- Key Acts
-    [ACT_UNLOCKING_KEY_DOOR] = true,
-    [ACT_UNLOCKING_STAR_DOOR] = true,
-    -- Cutscene Acts
-    [ACT_INTRO_CUTSCENE] = true,
-    [ACT_CREDITS_CUTSCENE] = true,
-    [ACT_WARP_DOOR_SPAWN] = true,
-    [ACT_PULLING_DOOR] = true,
-    [ACT_PUSHING_DOOR] = true,
-    [ACT_UNLOCKING_KEY_DOOR] = true,
-    [ACT_UNLOCKING_STAR_DOOR] = true,
-    [ACT_IN_CANNON] = true,
-    -- Dialog Acts
-    [ACT_READING_NPC_DIALOG] = true,
-    [ACT_WAITING_FOR_DIALOG] = true,
-    [ACT_EXIT_LAND_SAVE_DIALOG] = true,
-    [ACT_READING_AUTOMATIC_DIALOG] = true,
-}
 
 local prevBaseCharFrame = gNetworkPlayers[0].modelIndex
 local prevAnim = 0
@@ -864,7 +834,8 @@ local yearsOfCS = get_date_and_time().year - 123 -- Zero years as of 2023
 local TEXT_VERSION = "Version: " .. MOD_VERSION_STRING .. " | sm64coopdx" .. (seasonalEvent == SEASON_EVENT_BIRTHDAY and (" | " .. tostring(yearsOfCS) .. " year" .. (yearsOfCS > 1 and "s" or "") .. " of Character Select!") or "")
 local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
 local TEXT_DESCRIPTION = "Character Description:"
-local TEXT_PREF_SAVE = "Press A to Set as Preferred Character"
+local TEXT_PREF_SAVE = "Press A to Set Preferred Character"
+local TEXT_PREF_PALETTE = "Press A to Set as Toggle Palette"
 local TEXT_PREF_SAVE_AND_PALETTE = "A - Set Preference | Y - Toggle Palette"
 local TEXT_PAUSE_Z_OPEN = "Z Button - Character Select"
 local TEXT_PAUSE_UNAVAILABLE = "Character Select is Unavailable"
@@ -919,6 +890,7 @@ local targetMenuColor = {r = 0 , g = 0, b = 0}
 menuColor = targetMenuColor
 local menuColorHalf = menuColor
 local transSpeed = 0.1
+local menuTimer = 0
 function update_menu_color()
     if optionTable[optionTableRef.menuColor].toggle == nil then return end
     if optionTable[optionTableRef.menuColor].toggle > 1 then
@@ -954,6 +926,7 @@ end
 
 local buttonAltAnim = 0
 local menuOpacity = 245
+local menuTimerLoop = 300
 local function on_hud_render()
     local FONT_USER = djui_menu_get_font()
     djui_hud_set_resolution(RESOLUTION_N64)
@@ -968,6 +941,7 @@ local function on_hud_render()
     update_menu_color()
 
     if menuAndTransition then
+
         if optionTable[optionTableRef.localModels].toggle == 0 then
             djui_hud_set_color(0, 0, 0, 200)
             djui_hud_render_rect(0, 0, width, height)
@@ -1058,7 +1032,24 @@ local function on_hud_render()
                 end
             end
 
-            local modelId = gCSPlayers[0].modelId
+            local menuText = {
+                TEXT_PREF_SAVE,
+                TEXT_PREF_PALETTE
+            }
+            menuTimer = (menuTimer + 1)%(menuTimerLoop*#menuText)
+            local currText = menuText[math.ceil(menuTimer/menuTimerLoop)]
+            if currText ~= nil then
+                local currTextOpacity = math.min(math.abs(math.sin(menuTimer/menuTimerLoop)), 0.5) * 2 * 255
+                djui_chat_message_create(currText)
+                djui_chat_message_create(tostring(math.sin(menuTimer*MATH_PI/(menuTimerLoop))))
+                djui_chat_message_create(tostring(currTextOpacity))
+                local modelId = gCSPlayers[0].modelId
+                djui_hud_set_font(FONT_TINY)
+                djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, currTextOpacity)
+                djui_hud_print_text(currText, width - textX - djui_hud_measure_text(currText) * 0.25, height - 13, 0.5)
+                djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
+            end
+            --[[
             djui_hud_print_text(TEXT_PREF, width - textX - djui_hud_measure_text(TEXT_PREF) * 0.15, height - 22, 0.3)
             local text = TEXT_PREF_SAVE
             if characterColorPresets[modelId] and not stopPalettes then
@@ -1069,6 +1060,7 @@ local function on_hud_render()
             end
             djui_hud_set_font(FONT_TINY)
             djui_hud_print_text(text, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE) * 0.25, height - 13, 0.5)
+            ]]
         else
             -- Debugging Info --
             local TEXT_NAME = "Name: " .. character.name
@@ -1484,6 +1476,7 @@ local function on_hud_render()
         optionAnimTimer = optionAnimTimerCap
         credits = false
         creditsCrossFade = 0
+        menuTimer = 0
     end
 
     -- Fade in/out of menu
