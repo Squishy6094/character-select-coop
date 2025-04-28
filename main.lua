@@ -5,6 +5,23 @@
 
 if incompatibleClient then return 0 end
 
+--- @param hookEventType LuaHookedEventType
+local function create_hook_wrapper(hookEventType)
+    local callbacks = {}
+
+    hook_event(hookEventType, function(...)
+        for _, func in pairs(callbacks) do
+            func(...)
+        end
+    end)
+
+    return function(func)
+        table.insert(callbacks, func)
+    end
+end
+
+cs_hook_mario_update = create_hook_wrapper(HOOK_MARIO_UPDATE)
+
 -- localize functions to improve performance - main.lua
 local mod_storage_load,tonumber,mod_storage_save,djui_popup_create,tostring,djui_chat_message_create,is_game_paused,obj_get_first_with_behavior_id,djui_hud_is_pause_menu_created,camera_freeze,hud_hide,vec3f_copy,set_mario_action,set_mario_animation,camera_unfreeze,hud_show,type,get_id_from_behavior,obj_has_behavior_id,network_local_index_from_global,obj_has_model_extended,obj_set_model_extended,nearest_player_to_object,math_random,djui_hud_set_resolution,djui_hud_set_font,djui_hud_get_screen_width,maxf,djui_hud_set_color,djui_hud_render_rect,djui_hud_measure_text,djui_hud_print_text,min,math_min,math_ceil,math_abs,math_sin,minf,djui_hud_set_rotation,table_insert,djui_hud_print_text_interpolated,math_max,play_sound,play_character_sound,string_lower = mod_storage_load,tonumber,mod_storage_save,djui_popup_create,tostring,djui_chat_message_create,is_game_paused,obj_get_first_with_behavior_id,djui_hud_is_pause_menu_created,camera_freeze,hud_hide,vec3f_copy,set_mario_action,set_mario_animation,camera_unfreeze,hud_show,type,get_id_from_behavior,obj_has_behavior_id,network_local_index_from_global,obj_has_model_extended,obj_set_model_extended,nearest_player_to_object,math.random,djui_hud_set_resolution,djui_hud_set_font,djui_hud_get_screen_width,maxf,djui_hud_set_color,djui_hud_render_rect,djui_hud_measure_text,djui_hud_print_text,min,math.min,math.ceil,math.abs,math.sin,minf,djui_hud_set_rotation,table.insert,djui_hud_print_text_interpolated,math.max,play_sound,play_character_sound,string.lower
 
@@ -837,7 +854,8 @@ function set_model(o, model)
     end
 end
 
-hook_event(HOOK_MARIO_UPDATE, mario_update)
+--hook_event(HOOK_MARIO_UPDATE, mario_update)
+cs_hook_mario_update(mario_update)
 hook_event(HOOK_ON_INTERACT, on_star_or_key_grab)
 hook_event(HOOK_OBJECT_SET_MODEL, set_model)
 
