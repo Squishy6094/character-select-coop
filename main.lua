@@ -834,9 +834,9 @@ local yearsOfCS = get_date_and_time().year - 123 -- Zero years as of 2023
 local TEXT_VERSION = "Version: " .. MOD_VERSION_STRING .. " | sm64coopdx" .. (seasonalEvent == SEASON_EVENT_BIRTHDAY and (" | " .. tostring(yearsOfCS) .. " year" .. (yearsOfCS > 1 and "s" or "") .. " of Character Select!") or "")
 local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
 local TEXT_DESCRIPTION = "Character Description:"
-local TEXT_PREF_SAVE = "A - Set Preference"
-local TEXT_PREF_PALETTE = "Y - Toggle Palette"
---local TEXT_PREF_SAVE_AND_PALETTE = "A - Set Preference | Y - Toggle Palette"
+local TEXT_PREF_SAVE = "Preferred Char (A)"
+local TEXT_PREF_PALETTE = "Toggle Palette (Y)"
+local TEXT_MOVESET_INFO = "Moveset Info (Z)"
 local TEXT_PAUSE_Z_OPEN = "Z Button - Character Select"
 local TEXT_PAUSE_UNAVAILABLE = "Character Select is Unavailable"
 local TEXT_PAUSE_CURR_CHAR = "Current Character: "
@@ -996,16 +996,7 @@ local function on_hud_render()
             local TEXT_NAME = string_underscore_to_space(character.name)
             local TEXT_CREDIT = "Credit: " .. character.credit
             local TEXT_DESCRIPTION_TABLE = character.description
-            local TEXT_PRESET_TOGGLE = ((paletteCount > 1 and "("..currPaletteTable.currPalette.."/"..paletteCount..")" or (currPaletteTable.currPalette > 0 and "On" or "Off")) or "Off")
-            local TEXT_PREF = "Preferred Character:"
-            local TEXT_PREF_LOAD_NAME = ' "' .. string_underscore_to_space(TEXT_PREF_LOAD_NAME) .. '"' .. ((TEXT_PREF_LOAD_ALT ~= 1 and TEXT_PREF_LOAD_NAME ~= "Default" and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "")
-            if djui_hud_measure_text(TEXT_PREF_LOAD_NAME) / widthScale > 110 then
-                TEXT_PREF = "Preferred Char:"
-            end
-            if djui_hud_measure_text(TEXT_PREF_LOAD_NAME) / widthScale > 164 then
-                TEXT_PREF = "Pref Char:"
-            end
-            TEXT_PREF = TEXT_PREF .. TEXT_PREF_LOAD_NAME
+            local TEXT_PREF_LOAD_NAME = string_underscore_to_space(TEXT_PREF_LOAD_NAME) .. ((TEXT_PREF_LOAD_ALT ~= 1 and TEXT_PREF_LOAD_NAME ~= "Default" and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "")
 
             local textX = x * 0.5
             djui_hud_print_text(TEXT_NAME, width - textX - djui_hud_measure_text(TEXT_NAME) * 0.3, 55, 0.6)
@@ -1033,12 +1024,11 @@ local function on_hud_render()
             end
 
             local menuText = {
-                TEXT_PREF_SAVE .. " - " .. TEXT_PREF_LOAD_NAME
+                TEXT_PREF_SAVE .. " -" .. TEXT_PREF_LOAD_NAME
             }
             local modelId = gCSPlayers[0].modelId
             local TEXT_PRESET_TOGGLE = ((paletteCount > 1 and "("..currPaletteTable.currPalette.."/"..paletteCount..")" or (currPaletteTable.currPalette > 0 and "On" or "Off")) or "Off")
             if characterColorPresets[modelId] and not stopPalettes then
-                --djui_hud_print_text(TEXT_PRESET, width - textX - djui_hud_measure_text(TEXT_PRESET) * 0.15, height - 31, 0.3)
                 table_insert(menuText, TEXT_PREF_PALETTE .. " - " .. TEXT_PRESET_TOGGLE)
             elseif stopPalettes then
                 table_insert(menuText, TEXT_PALETTE_RESTRICTED)
@@ -1048,7 +1038,7 @@ local function on_hud_render()
             if currText ~= nil then
                 local currTextOpacity = clamp(math.abs(math.sin(menuTimer*MATH_PI/menuTimerLoop)), 0, 0.2) * 5 * 255
                 djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, currTextOpacity)
-                djui_hud_print_text(currText, width - textX - djui_hud_measure_text(currText) * 0.15, height - 13, 0.3)
+                djui_hud_print_text(currText, width - textX - djui_hud_measure_text(currText) * 0.15, height - 15, 0.3)
                 djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
             end
             --[[
