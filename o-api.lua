@@ -17,8 +17,6 @@ local table_insert,djui_hud_measure_text,smlua_model_util_get_id,type,tonumber =
 local characterVoices = {}
 local saveNameTable = {}
 
-local E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
-
 ---@ignore
 local function split_text_into_lines(text)
     local words = {}

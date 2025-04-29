@@ -163,7 +163,7 @@ local function update_character_render_table()
     for i = 1, #characterTable do
         local charCategories = string_split(characterTable[i].category, "_")
         for c = 1, #charCategories do
-            djui_chat_message_create(charCategories[c] .. " " .. category)
+            --djui_chat_message_create(charCategories[c] .. " " .. category)
             if category == charCategories[c] and not characterTable[i].locked then
                 table_insert(characterTableRender, characterTable[i])
                 if ogNum == i then
@@ -173,7 +173,7 @@ local function update_character_render_table()
             end
         end
     end
-    djui_chat_message_create(category .. " - " .. #characterTableRender)
+    --djui_chat_message_create(category .. " - " .. #characterTableRender)
     if #characterTableRender > 0 then
         currChar = (characterTableRender[currCharRender] and characterTableRender[currCharRender].ogNum or characterTableRender[1].ogNum)
         return true
@@ -181,7 +181,7 @@ local function update_character_render_table()
         return false
     end
 end
-
+--[[
 local function update_locked_render_list()
     string_split()
 end
@@ -193,6 +193,7 @@ local function get_curr_char_num()
         end
     end
 end
+]]
 
 characterCaps = {}
 characterCelebrationStar = {}
@@ -590,24 +591,23 @@ local function mario_update(m)
         end
         prevBaseCharFrame = np.modelIndex
 
+        if optionTable[optionTableRef.localModels].toggle == 0 then
+            currCategory = 1
+            currChar = 1
+            currCharRender = 1
+        end
+
         local defaultTable = characterTable[1]
         local charTable = characterTable[currChar]
         p.saveName = charTable.saveName
         p.currAlt = charTable.currAlt
-
-        if optionTable[optionTableRef.localModels].toggle > 0 then
-            p.modelId = charTable[charTable.currAlt].model
-            if charTable[charTable.currAlt].forceChar ~= nil then
-                p.forceChar = charTable[charTable.currAlt].forceChar
-            end
-            p.modelEditOffset = charTable[charTable.currAlt].model - charTable[charTable.currAlt].ogModel
-            m.marioObj.hookRender = 1
-        else
-            p.modelId = nil
-            p.forceChar = defaultTable.forceChar
-            p.modelEditOffset = 0
-            currChar = 1
+    
+        p.modelId = charTable[charTable.currAlt].model
+        if charTable[charTable.currAlt].forceChar ~= nil then
+            p.forceChar = charTable[charTable.currAlt].forceChar
         end
+        p.modelEditOffset = charTable[charTable.currAlt].model - charTable[charTable.currAlt].ogModel
+        m.marioObj.hookRender = 1
 
         if menuAndTransition then
             --play_secondary_music(0, 0, 0.5, 0)
@@ -735,12 +735,13 @@ local function on_star_or_key_grab(m, o, type)
     end
 end
 
-local settingModel
 function set_model(o, model)
-    if settingModel then return end
     if optionTable[optionTableRef.localModels].toggle == 0 then return end
+
+    -- Player Models
     if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
         local i = network_local_index_from_global(o.globalPlayerIndex)
+        local prevModelData = obj_get_model_id_extended(o)
         local localModelData = nil
         for c = 1, #characterTable do
             if gCSPlayers[i].saveName == characterTable[c].saveName then
@@ -751,27 +752,23 @@ function set_model(o, model)
         end
         if localModelData ~= nil then
             if obj_has_model_extended(o, localModelData) == 0 then
-                settingModel = true
                 obj_set_model_extended(o, localModelData)
-                settingModel = false
             end
         else
             -- Original/Backup
             if gCSPlayers[i].modelId ~= nil and obj_has_model_extended(o, gCSPlayers[i].modelId) == 0 then
-                settingModel = true
                 obj_set_model_extended(o, gCSPlayers[i].modelId)
-                settingModel = false
             end
         end
         return
     end
+
+    -- Star Models
     if obj_has_behavior_id(o, id_bhvCelebrationStar) ~= 0 and o.parentObj ~= nil then
         local i = network_local_index_from_global(o.parentObj.globalPlayerIndex)
         local starModel = characterCelebrationStar[gCSPlayers[i].modelId]
         if gCSPlayers[i].modelId ~= nil and starModel ~= nil and obj_has_model_extended(o, starModel) == 0 and not BowserKey then
-            settingModel = true
             obj_set_model_extended(o, starModel)
-            settingModel = false
         end
         return
     end
@@ -799,9 +796,7 @@ function set_model(o, model)
                 capModel = capModels.metalWing
             end
             if capModel ~= E_MODEL_NONE and capModel ~= E_MODEL_ERROR_MODEL and capModel ~= nil then
-                settingModel = true
                 obj_set_model_extended(o, capModel)
-                settingModel = false
             end
         end
     end
@@ -893,14 +888,18 @@ local transSpeed = 0.1
 local menuTimer = 0
 function update_menu_color()
     if optionTable[optionTableRef.menuColor].toggle == nil then return end
-    if optionTable[optionTableRef.menuColor].toggle > 1 then
-        targetMenuColor = menuColorTable[optionTable[optionTableRef.menuColor].toggle - 1]
-    elseif optionTable[optionTableRef.menuColor].toggle == 1 then
-        optionTable[optionTableRef.menuColor].toggleNames[2] = string_underscore_to_space(TEXT_PREF_LOAD_NAME) .. ((TEXT_PREF_LOAD_ALT ~= 1 and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "") .. " (Pref)"
-        targetMenuColor = prefCharColor
-    elseif characterTable[currChar] ~= nil then
-        local char = characterTable[currChar]
-        targetMenuColor = char[char.currAlt].color
+    if optionTable[optionTableRef.localModels].toggle == 1 then
+        if optionTable[optionTableRef.menuColor].toggle > 1 then
+            targetMenuColor = menuColorTable[optionTable[optionTableRef.menuColor].toggle - 1]
+        elseif optionTable[optionTableRef.menuColor].toggle == 1 then
+            optionTable[optionTableRef.menuColor].toggleNames[2] = string_underscore_to_space(TEXT_PREF_LOAD_NAME) .. ((TEXT_PREF_LOAD_ALT ~= 1 and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "") .. " (Pref)"
+            targetMenuColor = prefCharColor
+        elseif characterTable[currChar] ~= nil then
+            local char = characterTable[currChar]
+            targetMenuColor = char[char.currAlt].color
+        end
+    else
+        targetMenuColor = menuColorTable[9]
     end
     if optionTable[optionTableRef.anims].toggle > 0 then
         menuColor.r = lerp(menuColor.r, targetMenuColor.r, transSpeed)
@@ -1238,7 +1237,7 @@ local function on_hud_render()
         djui_hud_set_font(FONT_TINY)
         local TEXT_CHAR_COUNT = currCharRender .. "/" .. #characterTableRender
         djui_hud_print_text(TEXT_CHAR_COUNT, (11 - djui_hud_measure_text(TEXT_CHAR_COUNT) * 0.2) * widthScale, height - 12, 0.4)
-        djui_hud_print_text("- "..characterCategories[currCategory] .. " (L/R to Change Categories)", (11 + djui_hud_measure_text(TEXT_CHAR_COUNT) * 0.2) * widthScale, height - 12, 0.4)
+        djui_hud_print_text("- "..characterCategories[currCategory] .. " (L/R)", (11 + djui_hud_measure_text(TEXT_CHAR_COUNT) * 0.2) * widthScale, height - 12, 0.4)
 
         --Character Select Header
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
@@ -1575,54 +1574,7 @@ local function before_mario_update(m)
     local cameraToObject = m.marioObj.header.gfx.cameraToObject
     if menuAndTransition and not options then
         if menu then
-            if inputStallTimerDirectional == 0 and optionTable[optionTableRef.localModels].toggle ~= 0 and not charBeingSet then
-                if (controller.buttonPressed & D_JPAD) ~= 0 or (controller.buttonPressed & D_CBUTTONS) ~= 0 or controller.stickY < -60 then
-                    currCharRender = currCharRender + 1
-                    local character = characterTableRender[currCharRender]
-                    if character ~= nil and character.locked then
-                        currCharRender = get_next_unlocked_char()
-                    end
-                    if (controller.buttonPressed & D_CBUTTONS) == 0 then
-                        inputStallTimerDirectional = inputStallToDirectional
-                    else
-                        inputStallTimerDirectional = 3 -- C-Scrolling
-                    end
-                    if currCharRender > #characterTableRender then
-                        buttonScroll = -buttonScrollCap * #characterTableRender
-                    else
-                        buttonScroll = buttonScrollCap
-                    end
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                    if currCharRender > #characterTableRender then currCharRender = 1 end
-                    currChar = characterTableRender[currCharRender].ogNum
-                    if characterColorPresets[characterTable[currChar]] ~= nil then
-                        characterColorPresets[characterTable[currChar]].currPalette = 0
-                    end
-                end
-                if (controller.buttonPressed & U_JPAD) ~= 0 or (controller.buttonPressed & U_CBUTTONS) ~= 0 or controller.stickY > 60 then
-                    currCharRender = currCharRender - 1
-                    local character = characterTableRender[currCharRender]
-                    if character ~= nil and character.locked then
-                        currCharRender = get_last_unlocked_char()
-                    end
-                    if (controller.buttonPressed & U_CBUTTONS) == 0 then
-                        inputStallTimerDirectional = inputStallToDirectional
-                    else
-                        inputStallTimerDirectional = 3 -- C-Scrolling
-                    end
-                    if currCharRender < 1 then
-                        buttonScroll = buttonScrollCap * (#characterTableRender - 1)
-                    else
-                        buttonScroll = -buttonScrollCap
-                    end
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                    if currCharRender < 1 then currCharRender = #characterTableRender end
-                    currChar = characterTableRender[currCharRender].ogNum
-                    if characterColorPresets[characterTable[currChar]] ~= nil then
-                        characterColorPresets[characterTable[currChar]].currPalette = 0
-                    end
-                end
-
+            if inputStallTimerDirectional == 0 and not charBeingSet then
                 -- Alt switcher
                 if #characterTable[currChar] > 1 then
                     local character = characterTable[currChar]
@@ -1642,26 +1594,75 @@ local function before_mario_update(m)
                     if character.currAlt < 1 then character.currAlt = #character end
                 end
 
-                -- Tab Switcher
-                if (controller.buttonPressed & L_TRIG) ~= 0 then
-                    local renderEmpty = true
-                    while renderEmpty do
-                        currCategory = currCategory - 1
-                        if currCategory < 1 then currCategory = #characterCategories end
-                        renderEmpty = not update_character_render_table()
+                if optionTable[optionTableRef.localModels].toggle ~= 0 then    
+                    if (controller.buttonPressed & D_JPAD) ~= 0 or (controller.buttonPressed & D_CBUTTONS) ~= 0 or controller.stickY < -60 then
+                        currCharRender = currCharRender + 1
+                        local character = characterTableRender[currCharRender]
+                        if character ~= nil and character.locked then
+                            currCharRender = get_next_unlocked_char()
+                        end
+                        if (controller.buttonPressed & D_CBUTTONS) == 0 then
+                            inputStallTimerDirectional = inputStallToDirectional
+                        else
+                            inputStallTimerDirectional = 3 -- C-Scrolling
+                        end
+                        if currCharRender > #characterTableRender then
+                            buttonScroll = -buttonScrollCap * #characterTableRender
+                        else
+                            buttonScroll = buttonScrollCap
+                        end
+                        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                        if currCharRender > #characterTableRender then currCharRender = 1 end
+                        currChar = characterTableRender[currCharRender].ogNum
+                        if characterColorPresets[characterTable[currChar]] ~= nil then
+                            characterColorPresets[characterTable[currChar]].currPalette = 0
+                        end
                     end
-                    inputStallTimerDirectional = inputStallToDirectional
-                    play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
-                end
-                if (controller.buttonPressed & R_TRIG) ~= 0 then
-                    local renderEmpty = true
-                    while renderEmpty do
-                        currCategory = currCategory + 1
-                        if currCategory > #characterCategories then currCategory = 1 end
-                        renderEmpty = not update_character_render_table()
+                    if (controller.buttonPressed & U_JPAD) ~= 0 or (controller.buttonPressed & U_CBUTTONS) ~= 0 or controller.stickY > 60 then
+                        currCharRender = currCharRender - 1
+                        local character = characterTableRender[currCharRender]
+                        if character ~= nil and character.locked then
+                            currCharRender = get_last_unlocked_char()
+                        end
+                        if (controller.buttonPressed & U_CBUTTONS) == 0 then
+                            inputStallTimerDirectional = inputStallToDirectional
+                        else
+                            inputStallTimerDirectional = 3 -- C-Scrolling
+                        end
+                        if currCharRender < 1 then
+                            buttonScroll = buttonScrollCap * (#characterTableRender - 1)
+                        else
+                            buttonScroll = -buttonScrollCap
+                        end
+                        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                        if currCharRender < 1 then currCharRender = #characterTableRender end
+                        currChar = characterTableRender[currCharRender].ogNum
+                        if characterColorPresets[characterTable[currChar]] ~= nil then
+                            characterColorPresets[characterTable[currChar]].currPalette = 0
+                        end
                     end
-                    inputStallTimerDirectional = inputStallToDirectional
-                    play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
+
+                    -- Tab Switcher
+                    if (controller.buttonPressed & L_TRIG) ~= 0 then
+                        local renderEmpty = true
+                        while renderEmpty do
+                            currCategory = currCategory - 1
+                            if currCategory < 1 then currCategory = #characterCategories end
+                            renderEmpty = not update_character_render_table()
+                        end
+                        inputStallTimerDirectional = inputStallToDirectional
+                        play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
+                    end
+                    if (controller.buttonPressed & R_TRIG) ~= 0 then
+                        local renderEmpty = true
+                        while renderEmpty do
+                            currCategory = currCategory + 1
+                            if currCategory > #characterCategories then currCategory = 1 end
+                            renderEmpty = not update_character_render_table()
+                        end
+                        inputStallTimerDirectional = inputStallToDirectional
+                        play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
+                    end
                 end
             end
 

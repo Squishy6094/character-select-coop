@@ -78,6 +78,8 @@ for i in pairs(gActiveMods) do
     end
 end
 
+E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
+
 local saveableCharacters = {
     ["1"] = true,
     ["2"] = true,
