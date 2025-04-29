@@ -202,22 +202,27 @@ characterAnims = {}
 characterMovesets = {[1] = {}}
 characterUnlock = {}
 
+tableRefNum = 0
+local function make_table_ref_num()
+    tableRefNum = tableRefNum + 1
+    return tableRefNum
+end
+
 optionTableRef = {
     -- Menu
-    openInputs = 1,
-    notification = 2,
-    menuColor = 3,
-    anims = 4,
-    inputLatency = 5,
-    showLocked = 6,
+    openInputs = make_table_ref_num(),
+    notification = make_table_ref_num(),
+    menuColor = make_table_ref_num(),
+    anims = make_table_ref_num(),
+    inputLatency = make_table_ref_num(),
     -- Characters
-    localMoveset = 7,
-    localModels = 8,
-    localVoices = 9,
+    localMoveset = make_table_ref_num(),
+    localModels = make_table_ref_num(),
+    localVoices = make_table_ref_num(),
     -- CS
-    credits = 10,
-    debugInfo = 11,
-    resetSaveData = 12,
+    credits = make_table_ref_num(),
+    debugInfo = make_table_ref_num(),
+    resetSaveData = make_table_ref_num(),
 }
 
 optionTable = {
@@ -265,14 +270,6 @@ optionTable = {
         toggleMax = 2,
         toggleNames = {"Slow", "Normal", "Fast"},
         description = {"Sets how fast you scroll", "throughout the Menu"}
-    },
-    [optionTableRef.showLocked] = {
-        name = "Show Locked Chars",
-        toggle = tonumber(mod_storage_load("showLocked")),
-        toggleSaveName = "showLocked",
-        toggleDefault = 1,
-        toggleMax = 1,
-        description = {"Toggles if Locked Characters", "Display In-Menu"}
     },
     [optionTableRef.localMoveset] = {
         name = "Character Moveset",
@@ -1023,7 +1020,7 @@ local function on_hud_render()
             end
 
             local menuText = {
-                TEXT_PREF_SAVE .. " -" .. TEXT_PREF_LOAD_NAME
+                TEXT_PREF_SAVE .. " - " .. TEXT_PREF_LOAD_NAME
             }
             local modelId = gCSPlayers[0].modelId
             local TEXT_PRESET_TOGGLE = ((paletteCount > 1 and "("..currPaletteTable.currPalette.."/"..paletteCount..")" or (currPaletteTable.currPalette > 0 and "On" or "Off")) or "Off")
