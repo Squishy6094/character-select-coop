@@ -762,3 +762,15 @@ _G.charSelect = {
     hook_render_in_menu = hook_render_in_menu,
     character_hook_moveset = character_hook_moveset,
 }
+
+---@description The "Reference Sheet" or IDs for all of Character Select's Options
+---@forcedoc optionTableRef
+
+---@description The info for inputs from `gMarioStates[0]` before Character Select's Menu cancels inputs
+---@forcedoc controller
+
+---@description A table containing player info from Character Select's custom networking system 
+---@forcedoc gCSPlayers
+
+---@description The ID for Character Select's Menu "Cutscene"
+---@forcedoc CUTSCENE_CS_MENU
