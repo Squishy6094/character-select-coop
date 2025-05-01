@@ -199,6 +199,7 @@ end
 
 ---Gets the specified custom hud element's state
 ---@param hudElement HUDDisplayFlag
+---@return boolean
 function hud_get_element(hudElement)
     if sHudElements[hudElement] == nil then return false end
     return sHudElements[hudElement]

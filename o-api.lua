@@ -46,6 +46,10 @@ local TYPE_TABLE = "table"
 local TYPE_TEX_INFO = "userdata"
 local TYPE_FUNCTION = "function"
 
+-------------------------
+-- Character Functions --
+-------------------------
+
 ---@description A function that adds a Character to the Character Table
 ---@param name string|nil `"Custom Model"`
 ---@param description table|string|nil `{"string"}`
@@ -584,6 +588,23 @@ local function character_get_moveset(charNum)
     return characterMovesets[charNum]
 end
 
+---------------------------
+-- HUD Element Functions --
+---------------------------
+
+---@description Hides the specified custom hud element
+---@param hudElement HUDDisplayFlag
+---@forcedoc hud_hide_element
+
+---@description Shows the specified custom hud element
+---@param hudElement HUDDisplayFlag
+---@forcedoc hud_show_element
+
+---@description Gets the specified custom hud element's state
+---@param hudElement HUDDisplayFlag
+---@return boolean
+---@forcedoc hud_get_element
+
 ---@description A function that checks if the options menu is open inside of the CS menu
 ---@return boolean
 local function is_options_open()
@@ -708,8 +729,8 @@ _G.charSelect = {
     character_get_current_table = character_get_current_table,
     character_get_full_table = character_get_full_table,
     character_get_current_number = character_get_current_number,
-    character_get_current_costume = character_get_current_costume,
     character_get_current_model_number = character_get_current_number, -- Outdated function name, Not recommended for use
+    character_get_current_costume = character_get_current_costume,
     character_set_current_number = character_set_current_number,
     character_get_current_palette = character_get_current_palette,
     character_get_current_palette_number = character_get_current_palette_number,
@@ -728,9 +749,9 @@ _G.charSelect = {
     character_get_moveset = character_get_moveset,
 
     -- Hud Element Functions --
-    hud_hide_element = hud_hide_element,
-    hud_show_element = hud_show_element,
-    hud_get_element = hud_get_element,
+    hud_hide_element = hud_hide_element, -- Function located in n-hud.lua
+    hud_show_element = hud_show_element, -- Function located in n-hud.lua
+    hud_get_element = hud_get_element, -- Function located in n-hud.lua
 
     -- Menu Functions --
     header_set_texture = header_set_texture, -- Function located in main.lua
