@@ -216,4 +216,6 @@ jobs:
           destination-repository-name: 'character-select-coop.wiki'
           user-email: squishy6094@gmail.com
           target-branch: master
+          commit-message: Autogen Docs
+          
         
