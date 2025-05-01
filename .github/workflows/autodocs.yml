@@ -28,6 +28,8 @@ jobs:
           python-version: '3.x'
       - uses: jannekem/run-python-script-action@v1
         with:
+          fail-on-error: false
+          id: script
           script: |
             import re
             import os
@@ -131,3 +133,11 @@ jobs:
             return documentation
           
             print(parse_lua_file(str(os.getcwd())/o-api.lua))
+      - name: Print errors
+        if: steps.script.outputs.error == 'true'
+        run: |
+          printenv "SCRIPT_STDOUT"
+          printenv "SCRIPT_STDERR"
+        env:
+          SCRIPT_STDOUT: ${{ steps.script.outputs.stdout }}
+          SCRIPT_STDERR: ${{ steps.script.outputs.stderr }} 
