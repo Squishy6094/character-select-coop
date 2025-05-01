@@ -38,7 +38,6 @@ jobs:
         name: Generate Documenation
         id: script
         with:
-          fail-on-error: false
           script: |
             import re
             import os
@@ -197,7 +196,7 @@ jobs:
             
             if __name__ == "__main__":
                 lua_file_path = str(os.getcwd() + "/o-api.lua")
-                output_file_path = str(os.getcwd() + "/${{ github.repository }}.wiki/API-Documentation.md")
+                output_file_path = str(os.getcwd() + "/" + ("${{ github.repository }}").replace("${{ github.repository_owner }}/", "") + ".wiki/API-Documentation.md")
             
                 print("Debug: Starting script execution.")
                 documentation = parse_lua_file(lua_file_path)
@@ -207,15 +206,6 @@ jobs:
                 else:
                     print("No functions found in the Lua file.")
                 print("Debug: Script execution completed.")
-            
-      - name: Print errors
-        if: steps.script.outputs.error == 'true'
-        run: |
-          printenv "SCRIPT_STDOUT"
-          printenv "SCRIPT_STDERR"
-        env:
-          SCRIPT_STDOUT: ${{ steps.script.outputs.stdout }}
-          SCRIPT_STDERR: ${{ steps.script.outputs.stderr }}
       - name: Push API File to Wiki
         run: |
         
