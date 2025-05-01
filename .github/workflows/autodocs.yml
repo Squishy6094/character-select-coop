@@ -132,8 +132,8 @@ jobs:
                 print(f"Debug: Completed parsing. Documentation: {documentation}")
                 return documentation
 
-            print(str(os.chdir))
-            print(parse_lua_file(str(os.chdir) + "/o-api.lua"))
+            print(str(os.getcwd()))
+            print(parse_lua_file(str(os.getcwd()) + "/o-api.lua"))
       - name: Print errors
         if: steps.script.outputs.error == 'true'
         run: |
