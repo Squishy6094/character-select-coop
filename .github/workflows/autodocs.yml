@@ -132,9 +132,6 @@ jobs:
                 print(f"Debug: Completed parsing. Documentation: {documentation}")
                 return documentation
 
-            print(str(os.getcwd()))
-            print(parse_lua_file(str(os.getcwd()) + "/o-api.lua"))
-
             def func_to_link(text, functions):
               """
               Converts mentions of Lua functions in the text into markdown links and replaces groups of five spaces with new lines.
@@ -209,4 +206,12 @@ jobs:
           printenv "SCRIPT_STDERR"
         env:
           SCRIPT_STDOUT: ${{ steps.script.outputs.stdout }}
-          SCRIPT_STDERR: ${{ steps.script.outputs.stderr }} 
+          SCRIPT_STDERR: ${{ steps.script.outputs.stderr }}
+      - name: Push API File to Wiki
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "Autogen Commit"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git
+          git push
