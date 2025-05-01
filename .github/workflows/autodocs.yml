@@ -211,11 +211,11 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source-directory: '/home/runner/work/character-select-coop/character-select-coop/character-select-coop.wiki'
+          source-directory: './character-select-coop.wiki'
           destination-github-username: 'Squishy6094'
           destination-repository-name: 'character-select-coop.wiki'
           user-email: squishy6094@gmail.com
           target-branch: master
           commit-message: Autogen Docs
-          
+
         
