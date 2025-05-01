@@ -133,7 +133,7 @@ jobs:
                 return documentation
 
             print(str(os.chdir))
-            print(str(os.chdir) + "/o-api.lua")
+            print(parse_lua_file(str(os.chdir) + "/o-api.lua"))
       - name: Print errors
         if: steps.script.outputs.error == 'true'
         run: |
