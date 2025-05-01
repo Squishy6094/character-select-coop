@@ -207,5 +207,13 @@ jobs:
                     print("No functions found in the Lua file.")
                 print("Debug: Script execution completed.")
       - name: Push API File to Wiki
-        run: |
+        uses: cpina/github-action-push-to-another-repository@v1.7.2
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: '${{ github.repository }}'
+          destination-github-username: 'Squishy6094'
+          destination-repository-name: '${{ github.repository }}.wiki.git'
+          user-email: squishy6094@gmail.com
+          target-branch: master
         
