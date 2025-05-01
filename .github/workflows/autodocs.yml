@@ -213,7 +213,7 @@ jobs:
         with:
           source-directory: '${{ github.repository }}'
           destination-github-username: 'Squishy6094'
-          destination-repository-name: '${{ github.repository }}.wiki.git'
+          destination-repository-name: '${{ github.repository }}.wiki'
           user-email: squishy6094@gmail.com
           target-branch: master
         
