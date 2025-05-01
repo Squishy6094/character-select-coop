@@ -27,9 +27,9 @@ jobs:
         with:
           python-version: '3.x'
       - uses: jannekem/run-python-script-action@v1
+        id: script
         with:
           fail-on-error: false
-          id: script
           script: |
             import re
             import os
