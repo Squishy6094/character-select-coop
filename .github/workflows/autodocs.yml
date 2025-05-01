@@ -31,7 +31,8 @@ jobs:
           python-version: '3.x'
       - name: Pull Wiki
         run: |
-          git clone github.com/${{ github.repository }}.wiki.git
+          git clone https://github.com/${{ github.repository }}.wiki.git
+          
       - uses: jannekem/run-python-script-action@v1
         name: Generate Documenation
         id: script
