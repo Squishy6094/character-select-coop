@@ -197,7 +197,7 @@ jobs:
             
             if __name__ == "__main__":
                 lua_file_path = str(os.getcwd() + "/o-api.lua")
-                output_file_path = str(os.getcwd() + "/API-Documentation.md")
+                output_file_path = str(os.getcwd() + "/${{ github.repository }}.wiki/API-Documentation.md")
             
                 print("Debug: Starting script execution.")
                 documentation = parse_lua_file(lua_file_path)
