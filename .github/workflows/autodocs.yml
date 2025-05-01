@@ -134,6 +134,74 @@ jobs:
 
             print(str(os.getcwd()))
             print(parse_lua_file(str(os.getcwd()) + "/o-api.lua"))
+
+            def func_to_link(text, functions):
+              """
+              Converts mentions of Lua functions in the text into markdown links and replaces groups of five spaces with new lines.
+              """
+              text = text.replace("     ", "\n")
+              
+              for func in functions:
+                  # Replace function mentions with markdown links
+                  pattern = r"\b" + re.escape(func["function"]) + r"\b"
+                  replacement = f"[`{func['function']}()`](#{func['function']})"
+                  text = re.sub(pattern, replacement, text)
+              return text
+          
+            def write_readme(documentation, output_file_path):
+                """
+                Writes the extracted documentation to a README file.
+                """
+                print(f"Debug: Writing documentation to {output_file_path}")
+            
+                with open(output_file_path, 'w') as readme_file:
+                    readme_file.write("# Note Before Reading\n")
+                    readme_file.write("We highly recommend messing around with our [Character Select Template](https://github.com/Squishy6094/character-select-coop/raw/main/char-select-template.zip) while first reading this doc to get a handle on everything here. DO NOT modify/add any content within the Character Select mod itself, please use the API and an individual mod when adding characters. If you're confused about anything from outside of Character Select's Documentation, Please refer to [SM64CoopDX's Lua Documentation](https://github.com/coop-deluxe/sm64coopdx/blob/main/docs/lua/lua.md).\n\n")
+            
+                    for entry in documentation:
+                        print(f"Debug: Writing documentation for function: {entry['function']}")
+                        readme_file.write(f"## {entry['function']}\n")
+                        readme_file.write(f"`charSelect.{entry['function']}` - " + func_to_link(entry['description'], documentation) + "\n\n")
+            
+                        if entry['params']:
+                            readme_file.write(f"| Variable | Input Types | Description/Examples |\n")
+                            readme_file.write(f"| ----- | ----- | ----- |\n")
+                            for param in entry['params']:
+                                # Replace existing "|" with ", " and split at the first 3 spaces
+                                param = param.replace("|", "/")
+                                parts = param.split(" ", 2)
+                                formatted_param = " | ".join(parts) if len(parts) > 3 else " | ".join(parts + [""] * (4 - len(parts)))
+                                readme_file.write(f"| " + func_to_link(formatted_param, documentation) + "\n")
+            
+                        readme_file.write("\n")
+                        if entry['returns']:
+                            for ret in entry['returns']:
+                                # Split the return description using "--" as a delimiter
+                                parts = ret.split("--", 1)
+                                formatted_return = f"{parts[0].strip()} - {parts[1].strip()}" if len(parts) > 1 else parts[0].strip()
+                                readme_file.write(f"**Returns**: {formatted_return}\n\n")
+                        if entry['note']:
+                            readme_file.write(f"**Notes**:\n")
+                            for note in entry['note']:
+                                # Check if the line is inside a code block
+                                readme_file.write(f"> {func_to_link(note, documentation)}\n")
+                            readme_file.write("\n\n")
+            
+                print(f"Debug: Documentation successfully written to {output_file_path}")
+            
+            if __name__ == "__main__":
+                lua_file_path = str(os.getcwd() + "/o-api.lua")
+                output_file_path = str(os.getcwd() + "/API-Documentation.md")
+            
+                print("Debug: Starting script execution.")
+                documentation = parse_lua_file(lua_file_path)
+                if documentation:
+                    write_readme(documentation, output_file_path)
+                    print(f"Documentation written to {output_file_path}")
+                else:
+                    print("No functions found in the Lua file.")
+                print("Debug: Script execution completed.")
+            
       - name: Print errors
         if: steps.script.outputs.error == 'true'
         run: |
