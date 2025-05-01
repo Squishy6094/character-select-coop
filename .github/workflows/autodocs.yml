@@ -211,9 +211,9 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source-directory: '${{ github.repository }}'
+          source-directory: '/home/runner/work/character-select-coop/character-select-coop/character-select-coop.wiki'
           destination-github-username: 'Squishy6094'
-          destination-repository-name: '${{ github.repository }}.wiki'
+          destination-repository-name: 'character-select-coop.wiki'
           user-email: squishy6094@gmail.com
           target-branch: master
         
