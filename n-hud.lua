@@ -5,7 +5,7 @@
 if incompatibleClient then return 0 end
 
 -- localize functions to improve performance - n-hud.lua
-local hud_get_value,hud_set_value,djui_hud_print_text,tostring,hud_set_flash,get_global_timer,hud_get_flash,djui_hud_get_screen_width,math_ceil,obj_get_first_with_behavior_id,get_behavior_from_id,count_objects_with_behavior,djui_hud_render_rect,djui_hud_set_resolution,djui_hud_get_screen_height,djui_hud_set_color,djui_hud_set_font,djui_hud_measure_text,djui_chat_message_create,hud_is_hidden,djui_is_playerlist_open = hud_get_value,hud_set_value,djui_hud_print_text,tostring,hud_set_flash,get_global_timer,hud_get_flash,djui_hud_get_screen_width,math.ceil,obj_get_first_with_behavior_id,get_behavior_from_id,count_objects_with_behavior,djui_hud_render_rect,djui_hud_set_resolution,djui_hud_get_screen_height,djui_hud_set_color,djui_hud_set_font,djui_hud_measure_text,djui_chat_message_create,hud_is_hidden,djui_is_playerlist_open
+local og_hud_get_value,og_hud_set_value,djui_hud_print_text,tostring,hud_set_flash,get_global_timer,hud_get_flash,djui_hud_get_screen_width,math_ceil,obj_get_first_with_behavior_id,get_behavior_from_id,count_objects_with_behavior,djui_hud_render_rect,djui_hud_set_resolution,djui_hud_get_screen_height,djui_hud_set_color,djui_hud_set_font,djui_hud_measure_text,djui_chat_message_create,hud_is_hidden,djui_is_playerlist_open = hud_get_value,hud_set_value,djui_hud_print_text,tostring,hud_set_flash,get_global_timer,hud_get_flash,djui_hud_get_screen_width,math.ceil,obj_get_first_with_behavior_id,get_behavior_from_id,count_objects_with_behavior,djui_hud_render_rect,djui_hud_set_resolution,djui_hud_get_screen_height,djui_hud_set_color,djui_hud_set_font,djui_hud_measure_text,djui_chat_message_create,hud_is_hidden,djui_is_playerlist_open
 
 --[[
     Some functions we need for the hud
@@ -175,25 +175,56 @@ end
 -- Real HUD Stuffs --
 ---------------------
 
-local sHudElements = {
-    [HUD_DISPLAY_FLAG_LIVES] = true,
-    [HUD_DISPLAY_FLAG_STAR_COUNT] = true,
-    [HUD_DISPLAY_FLAG_CAMERA] = true
-}
+-- Modified Vanilla Functions --
+--[[
+    These are `_G` on their own to replace vanilla functions
+]]
+
+local sCharSelectHudDisplayFlags -- `local` because we aren't exposing this
+
+-- Here to make sure the flags are at the default state
+hook_event(HOOK_UPDATE, function ()
+    if not sCharSelectHudDisplayFlags or sCharSelectHudDisplayFlags == 0 then
+        sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_DEFAULT
+    end
+end)
+
+--- @param type HudDisplayValue
+--- @return integer
+function _G.hud_get_value(type)
+    if type == HUD_DISPLAY_FLAGS then
+        return sCharSelectHudDisplayFlags
+    else
+        return og_hud_get_value(type)
+    end
+end
+
+--- @param type HudDisplayValue
+--- @param value integer
+--- Sets a HUD display value
+function _G.hud_set_value(type, value)
+    if type == HUD_DISPLAY_FLAGS then
+        sCharSelectHudDisplayFlags = value
+    else
+        og_hud_set_value(type, value)
+    end
+end
+
+-- Old CS Hud Functions --
 
 ---Hides the specified custom hud element
 ---@param hudElement HUDDisplayFlag
 function hud_hide_element(hudElement)
-    if sHudElements[hudElement] == nil then return false end
-    sHudElements[hudElement] = false
+    log_to_console("The `charSelect.hud_hide_element()` function is deprecated, please use normal vanilla functions as they have been modified to work with Character Select.", CONSOLE_MESSAGE_WARNING)
+    hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~hudElement)
     return true
 end
 
 ---Shows the specified custom hud element
 ---@param hudElement HUDDisplayFlag
 function hud_show_element(hudElement)
-    if sHudElements[hudElement] == nil then return false end
-    sHudElements[hudElement] = true
+    log_to_console("The `charSelect.hud_show_element()` function is deprecated, please use normal vanilla functions as they have been modified to work with Character Select.", CONSOLE_MESSAGE_WARNING)
+    hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) | hudElement)
     return true
 end
 
@@ -201,8 +232,9 @@ end
 ---@param hudElement HUDDisplayFlag
 ---@return boolean
 function hud_get_element(hudElement)
-    if sHudElements[hudElement] == nil then return false end
-    return sHudElements[hudElement]
+    log_to_console("The `charSelect.hud_get_element()` function is deprecated, please use normal vanilla functions as they have been modified to work with Character Select.", CONSOLE_MESSAGE_WARNING)
+    djui_chat_message_create(tostring(sCharSelectHudDisplayFlags))
+    return (hud_get_value(HUD_DISPLAY_FLAGS) & hudElement) ~= 0
 end
 
 local MATH_DIVIDE_16 = 1/16
@@ -470,9 +502,9 @@ local function render_hud_act_select_course()
 end
 
 local function render_hud_mario_lives()
-    hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_LIVES)
+    og_hud_set_value(HUD_DISPLAY_FLAGS, og_hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_LIVES)
 
-    if not hud_get_element(HUD_DISPLAY_FLAG_LIVES) then return end
+    if (hud_get_value(HUD_DISPLAY_FLAGS) & HUD_DISPLAY_FLAG_LIVES) == 0 then return end
 
     local x = 22
     local y = 15 -- SCREEN_HEIGHT - 209 - 16
@@ -482,9 +514,9 @@ local function render_hud_mario_lives()
 end
 
 local function render_hud_stars()
-    hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_STAR_COUNT)
+    og_hud_set_value(HUD_DISPLAY_FLAGS, og_hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_STAR_COUNT)
 
-    if not hud_get_element(HUD_DISPLAY_FLAG_STAR_COUNT) then return end
+    if (hud_get_value(HUD_DISPLAY_FLAGS) & HUD_DISPLAY_FLAG_STAR_COUNT) == 0 then return end
     if hud_get_flash ~= nil then
         -- prevent star count from flashing outside of castle
         if gNetworkPlayers[0].currCourseNum ~= COURSE_NONE then hud_set_flash(0) end
@@ -514,9 +546,9 @@ end
 local function render_hud_camera_status()
     if not HUD_DISPLAY_CAMERA_STATUS then return end
 
-    hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_CAMERA)
+    og_hud_set_value(HUD_DISPLAY_FLAGS, og_hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_CAMERA)
 
-    if not hud_get_element(HUD_DISPLAY_FLAG_CAMERA) then return end
+    if (hud_get_value(HUD_DISPLAY_FLAGS) & HUD_DISPLAY_FLAG_CAMERA) == 0 then return end
 
     local x = djui_hud_get_screen_width() - 54
     local y = 205
