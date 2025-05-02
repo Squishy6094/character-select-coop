@@ -51,9 +51,10 @@ local TYPE_FUNCTION = "function"
 -------------------------
 
 ---@header
----@forcedoc Character Functions
+---@forcedoc Character_Functions
 
 ---@description A function that adds a Character to the Character Table
+---@added 1
 ---@param name string|nil `"Custom Model"`
 ---@param description table|string|nil `{"string"}`
 ---@param credit string|nil `"You!"`, Credit the creators
