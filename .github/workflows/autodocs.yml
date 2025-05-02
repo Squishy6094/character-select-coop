@@ -154,9 +154,9 @@ jobs:
                       "header": True if header else False,
                   }
                   documentation.append(doc_entry)
-  
-              print(f"Debug: Completed parsing. Documentation: {documentation}")
-              return documentation
+    
+                print(f"Debug: Completed parsing. Documentation: {documentation}")
+                return documentation
 
             def func_to_link(text, functions):
               """
