@@ -128,35 +128,35 @@ jobs:
                   print(f"Debug: Annotation block for {func}:\n{annotation_block}")
 
 
-                    # Check for ignore annotation
-                    if ignore_pattern.search(annotation_block):
-                        print(f"Debug: Function {func} is marked to be ignored. Skipping documentation.")
-                        continue
+                # Check for ignore annotation
+                if ignore_pattern.search(annotation_block):
+                    print(f"Debug: Function {func} is marked to be ignored. Skipping documentation.")
+                    continue
 
-                    params = param_pattern.findall(annotation_block)
-                    returns = return_pattern.findall(annotation_block)
-                    description = description_pattern.findall(annotation_block)
-                    note = [match.lstrip(" ") if match.startswith(" ") else match for match in note_pattern.findall(annotation_block)]
-                    version = version_pattern.findall(annotation_block)
-                    header = header_pattern.findall(annotation_block)
+                params = param_pattern.findall(annotation_block)
+                returns = return_pattern.findall(annotation_block)
+                description = description_pattern.findall(annotation_block)
+                note = [match.lstrip(" ") if match.startswith(" ") else match for match in note_pattern.findall(annotation_block)]
+                version = version_pattern.findall(annotation_block)
+                header = header_pattern.findall(annotation_block)
 
-                    # Preserve indentation for notes
-                    note = [match.replace("---@note ", "") for match in note_pattern.findall(annotation_block)]
+                # Preserve indentation for notes
+                note = [match.replace("---@note ", "") for match in note_pattern.findall(annotation_block)]
 
-                    # Build documentation entry
-                    doc_entry = {
-                        "function": func,
-                        "params": params,
-                        "returns": returns,
-                        "description": description[0] if description else "No description provided.",
-                        "note": note,
-                        "version": version[0] if version else "?",
-                        "header": True if header else False,
-                    }
-                    documentation.append(doc_entry)
+                # Build documentation entry
+                doc_entry = {
+                    "function": func,
+                    "params": params,
+                    "returns": returns,
+                    "description": description[0] if description else "No description provided.",
+                    "note": note,
+                    "version": version[0] if version else "?",
+                    "header": True if header else False,
+                }
+                documentation.append(doc_entry)
 
-                print(f"Debug: Completed parsing. Documentation: {documentation}")
-                return documentation
+            print(f"Debug: Completed parsing. Documentation: {documentation}")
+            return documentation
 
             def func_to_link(text, functions):
               """
