@@ -84,39 +84,48 @@ jobs:
                 # Add forcedoc functions to the list of functions
                 forcedoc_functions = forcedoc_pattern.findall(lua_content)
                 print(f"Debug: Found forcedoc functions: {forcedoc_functions}")
-                functions.extend(forcedoc_functions)
+
+                # Combine functions and forcedoc functions in order of appearance
+                all_functions = []
+                for match in re.finditer(r"(function\s+(\w+))|(@@forcedoc\s+(\w+))", lua_content):
+                  if match.group(2):  # Real function
+                    all_functions.append(match.group(2))
+                  elif match.group(4):  # Forcedoc function
+                    all_functions.append(match.group(4))
+
+                print(f"Debug: Combined functions in order: {all_functions}")
 
                 documentation = []
 
-                for func in functions:
-                    print(f"Debug: Processing function: {func}")
-                    # Find the function block
-                    func_start = lua_content.find(f"function {func}(")
-                    if func_start == -1 and func not in forcedoc_functions:
-                        print(f"Warning: Function {func} not found.")
-                        continue
+                for func in all_functions:
+                  print(f"Debug: Processing function: {func}")
+                  # Find the function block
+                  func_start = lua_content.find(f"function {func}(")
+                  if func_start == -1 and func not in forcedoc_functions:
+                    print(f"Warning: Function {func} not found.")
+                    continue
 
-                    func_end = lua_content.find("end", func_start) + 3 if func_start != -1 else -1
-                    func_block = lua_content[func_start:func_end] if func_start != -1 else ""
-                    print(f"Debug: Function block for {func}:\n{func_block}")
+                  func_end = lua_content.find("end", func_start) + 3 if func_start != -1 else -1
+                  func_block = lua_content[func_start:func_end] if func_start != -1 else ""
+                  print(f"Debug: Function block for {func}:\n{func_block}")
 
-                    # Extract annotations ABOVE the function definition, stopping at an empty line
-                    annotation_lines = []
-                    current_line_start = func_start if func_start != -1 else lua_content.find(f"---@forcedoc {func}")
+                  # Extract annotations ABOVE the function definition, stopping at an empty line
+                  annotation_lines = []
+                  current_line_start = func_start if func_start != -1 else lua_content.find(f"---@forcedoc {func}")
 
-                    while True:
-                        current_line_start = lua_content.rfind("\n", 0, current_line_start)
-                        if current_line_start == -1:
-                            break  # Reached the start of the file
-                        line_start = current_line_start + 1
-                        line_end = lua_content.find("\n", line_start)
-                        line = lua_content[line_start:line_end].strip()
-                        if line == "":
-                            break  # Stop at the first empty line
-                        annotation_lines.insert(0, line)
+                  while True:
+                    current_line_start = lua_content.rfind("\n", 0, current_line_start)
+                    if current_line_start == -1:
+                      break  # Reached the start of the file
+                    line_start = current_line_start + 1
+                    line_end = lua_content.find("\n", line_start)
+                    line = lua_content[line_start:line_end].strip()
+                    if line == "":
+                      break  # Stop at the first empty line
+                    annotation_lines.insert(0, line)
 
-                    annotation_block = "\n".join(annotation_lines)
-                    print(f"Debug: Annotation block for {func}:\n{annotation_block}")
+                  annotation_block = "\n".join(annotation_lines)
+                  print(f"Debug: Annotation block for {func}:\n{annotation_block}")
 
 
                     # Check for ignore annotation
