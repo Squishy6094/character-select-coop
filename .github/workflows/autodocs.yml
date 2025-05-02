@@ -35,7 +35,6 @@ jobs:
         run: |
           git clone https://github.com/${{ github.repository }}.wiki.git
           ls -a
-          
       # - uses: jannekem/run-python-script-action@v1
       #   name: Generate Documenation
       #   id: script
@@ -43,7 +42,7 @@ jobs:
       #     script: |
       - name: Generate Documenation
         run: |
-          python /.github/workflows/autodocs.py
+          python ./.github/workflows/autodocs.py
         
       - name: Push API File to Wiki
         uses: cpina/github-action-push-to-another-repository@v1.7.2
