@@ -43,6 +43,7 @@ jobs:
           script: |
             import re
             import os
+            import datetime
 
             def parse_lua_file(lua_file_path):
                 """
@@ -76,6 +77,7 @@ jobs:
                 description_pattern = re.compile(r"---@description\s+(.+)")
                 ignore_pattern = re.compile(r"---@ignore\s+(.+)")
                 note_pattern = re.compile(r"---@note\s+(.+)")
+                version_pattern = re.compile(r"---@version\s+(.+)")
                 forcedoc_pattern = re.compile(r"---@forcedoc\s+(\w+)")
 
                 # Add forcedoc functions to the list of functions
@@ -125,6 +127,7 @@ jobs:
                     returns = return_pattern.findall(annotation_block)
                     description = description_pattern.findall(annotation_block)
                     note = [match.lstrip(" ") if match.startswith(" ") else match for match in note_pattern.findall(annotation_block)]
+                    version = version_pattern.findall(annotation_block)
 
                     # Preserve indentation for notes
                     note = [match.replace("---@note ", "") for match in note_pattern.findall(annotation_block)]
@@ -136,6 +139,7 @@ jobs:
                         "returns": returns,
                         "description": description[0] if description else "No description provided.",
                         "note": note,
+                        "version": version[0] if version else "?",
                     }
                     documentation.append(doc_entry)
 
@@ -168,7 +172,7 @@ jobs:
                     for entry in documentation:
                         print(f"Debug: Writing documentation for function: {entry['function']}")
                         readme_file.write(f"## {entry['function']}\n")
-                        readme_file.write(f"`charSelect.{entry['function']}` - " + func_to_link(entry['description'], documentation) + "\n\n")
+                        readme_file.write(f"`charSelect.{entry['function']}` - " + "v" + entry['version'] + "-" + func_to_link(entry['description'], documentation) + "\n\n")
             
                         if entry['params']:
                             readme_file.write(f"| Variable | Input Types | Description/Examples |\n")
@@ -193,7 +197,8 @@ jobs:
                                 # Check if the line is inside a code block
                                 readme_file.write(f"> {func_to_link(note, documentation)}\n")
                             readme_file.write("\n\n")
-            
+                
+                readme_file.write("-# Automatic Documentation for ${{ github.repository }} written at ", datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
                 print(f"Debug: Documentation successfully written to {output_file_path}")
             
             if __name__ == "__main__":
