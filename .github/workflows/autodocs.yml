@@ -43,7 +43,7 @@ jobs:
           script: |
             import re
             import os
-            import datetime
+            from datetime import datetime
 
             def parse_lua_file(lua_file_path):
                 """
