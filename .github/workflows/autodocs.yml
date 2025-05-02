@@ -197,8 +197,8 @@ jobs:
                                 # Check if the line is inside a code block
                                 readme_file.write(f"> {func_to_link(note, documentation)}\n")
                             readme_file.write("\n\n")
-                now = datetime.now()
-                readme_file.write("-# Automatic Documentation for ${{ github.repository }} written at " + now.strftime("%m/%d/%Y %H:%M:%S"))
+                    now = datetime.now()
+                    readme_file.write("-# Automatic Documentation for ${{ github.repository }} written at " + now.strftime("%m/%d/%Y %H:%M:%S"))
                 print(f"Debug: Documentation successfully written to {output_file_path}")
             
             if __name__ == "__main__":
