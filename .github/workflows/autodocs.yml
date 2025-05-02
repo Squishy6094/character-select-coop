@@ -174,7 +174,7 @@ jobs:
                     readme_file.write("<sub>Automatic Documentation for ${{ github.repository }} written at " + datetime.now().strftime("%m/%d/%Y - %H:%M:%S") + "</sub>\n\n")
                     for entry in documentation:
                         if entry['header']:
-                            readme_file.write(f("# {entry['function']}\n").replace("_", " "))
+                            readme_file.write((f"# {entry['function']}\n").replace("_", " "))
                         else:
                             print(f"Debug: Writing documentation for function: {entry['function']}")
                             readme_file.write(f"## {entry['function']}\n")
