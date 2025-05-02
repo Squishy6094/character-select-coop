@@ -77,7 +77,8 @@ jobs:
                 description_pattern = re.compile(r"---@description\s+(.+)")
                 ignore_pattern = re.compile(r"---@ignore\s+(.+)")
                 note_pattern = re.compile(r"---@note\s+(.+)")
-                version_pattern = re.compile(r"---@version\s+(.+)")
+                version_pattern = re.compile(r"---@added\s+(.+)")
+                header_pattern = re.compile(r"---@header\s+(.+)")
                 forcedoc_pattern = re.compile(r"---@forcedoc\s+(\w+)")
 
                 # Add forcedoc functions to the list of functions
@@ -128,6 +129,7 @@ jobs:
                     description = description_pattern.findall(annotation_block)
                     note = [match.lstrip(" ") if match.startswith(" ") else match for match in note_pattern.findall(annotation_block)]
                     version = version_pattern.findall(annotation_block)
+                    header = header_pattern.findall(annotation_block)
 
                     # Preserve indentation for notes
                     note = [match.replace("---@note ", "") for match in note_pattern.findall(annotation_block)]
@@ -140,6 +142,7 @@ jobs:
                         "description": description[0] if description else "No description provided.",
                         "note": note,
                         "version": version[0] if version else "?",
+                        "header": True if header else False,
                     }
                     documentation.append(doc_entry)
 
@@ -168,35 +171,38 @@ jobs:
                 with open(output_file_path, 'w') as readme_file:
                     readme_file.write("# Note Before Reading\n")
                     readme_file.write("We highly recommend messing around with our [Character Select Template](https://github.com/Squishy6094/character-select-coop/raw/main/char-select-template.zip) while first reading this doc to get a handle on everything here. DO NOT modify/add any content within the Character Select mod itself, please use the API and an individual mod when adding characters. If you're confused about anything from outside of Character Select's Documentation, Please refer to [SM64CoopDX's Lua Documentation](https://github.com/coop-deluxe/sm64coopdx/blob/main/docs/lua/lua.md).\n\n")
-                    readme_file.write("##### Automatic Documentation for ${{ github.repository }} written at " + datetime.now().strftime("%m/%d/%Y - %H:%M:%S") + "\n\n")
+                    readme_file.write("<sub>Automatic Documentation for ${{ github.repository }} written at " + datetime.now().strftime("%m/%d/%Y - %H:%M:%S") + "</sub>\n\n")
                     for entry in documentation:
-                        print(f"Debug: Writing documentation for function: {entry['function']}")
-                        readme_file.write(f"## {entry['function']}\n")
-                        readme_file.write(f"`charSelect.{entry['function']}` - " + "v" + entry['version'] + " - " + func_to_link(entry['description'], documentation) + "\n\n")
-            
-                        if entry['params']:
-                            readme_file.write(f"| Variable | Input Types | Description/Examples |\n")
-                            readme_file.write(f"| ----- | ----- | ----- |\n")
-                            for param in entry['params']:
-                                # Replace existing "|" with ", " and split at the first 3 spaces
-                                param = param.replace("|", "/")
-                                parts = param.split(" ", 2)
-                                formatted_param = " | ".join(parts) if len(parts) > 3 else " | ".join(parts + [""] * (4 - len(parts)))
-                                readme_file.write(f"| " + func_to_link(formatted_param, documentation) + "\n")
-            
-                        readme_file.write("\n")
-                        if entry['returns']:
-                            for ret in entry['returns']:
-                                # Split the return description using "--" as a delimiter
-                                parts = ret.split("--", 1)
-                                formatted_return = f"{parts[0].strip()} - {parts[1].strip()}" if len(parts) > 1 else parts[0].strip()
-                                readme_file.write(f"**Returns**: {formatted_return}\n\n")
-                        if entry['note']:
-                            readme_file.write(f"**Notes**:\n")
-                            for note in entry['note']:
-                                # Check if the line is inside a code block
-                                readme_file.write(f"> {func_to_link(note, documentation)}\n")
-                            readme_file.write("\n\n")
+                        if entry['header']:
+                            readme_file.write(f"# {entry['function']}\n")
+                        else:
+                            print(f"Debug: Writing documentation for function: {entry['function']}")
+                            readme_file.write(f"## {entry['function']}\n")
+                            readme_file.write(f"`charSelect.{entry['function']}` - " + "v" + entry['version'] + " - " + func_to_link(entry['description'], documentation) + "\n\n")
+                
+                            if entry['params']:
+                                readme_file.write(f"| Variable | Input Types | Description/Examples |\n")
+                                readme_file.write(f"| ----- | ----- | ----- |\n")
+                                for param in entry['params']:
+                                    # Replace existing "|" with ", " and split at the first 3 spaces
+                                    param = param.replace("|", "/")
+                                    parts = param.split(" ", 2)
+                                    formatted_param = " | ".join(parts) if len(parts) > 3 else " | ".join(parts + [""] * (4 - len(parts)))
+                                    readme_file.write(f"| " + func_to_link(formatted_param, documentation) + "\n")
+                
+                            readme_file.write("\n")
+                            if entry['returns']:
+                                for ret in entry['returns']:
+                                    # Split the return description using "--" as a delimiter
+                                    parts = ret.split("--", 1)
+                                    formatted_return = f"{parts[0].strip()} - {parts[1].strip()}" if len(parts) > 1 else parts[0].strip()
+                                    readme_file.write(f"**Returns**: {formatted_return}\n\n")
+                            if entry['note']:
+                                readme_file.write(f"**Notes**:\n")
+                                for note in entry['note']:
+                                    # Check if the line is inside a code block
+                                    readme_file.write(f"> {func_to_link(note, documentation)}\n")
+                                readme_file.write("\n\n")
 
                 print(f"Debug: Documentation successfully written to {output_file_path}")
             

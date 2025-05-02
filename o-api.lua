@@ -50,6 +50,9 @@ local TYPE_FUNCTION = "function"
 -- Character Functions --
 -------------------------
 
+---@header
+---@forcedoc Character Functions
+
 ---@description A function that adds a Character to the Character Table
 ---@param name string|nil `"Custom Model"`
 ---@param description table|string|nil `{"string"}`
