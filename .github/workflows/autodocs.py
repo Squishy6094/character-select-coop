@@ -18,50 +18,48 @@ def parse_lua_file(lua_file_path):
     with open(lua_file_path, 'r') as lua_file:
         lua_content = lua_file.read()
 
-        print("Debug: Successfully read Lua file content.")
+    print("Debug: Successfully read Lua file content.")
 
-        # Remove comments from the Lua content to avoid false positives
-        lua_content_no_comments = re.sub(r"--.*", "", lua_content)  # Remove single-line comments
-        lua_content_no_comments = re.sub(r"--\[\[.*?\]\]", "", lua_content_no_comments, flags=re.DOTALL)  # Remove multi-line comments
+    # Remove comments from the Lua content to avoid false positives
+    lua_content_no_comments = re.sub(r"--.*", "", lua_content)  # Remove single-line comments
+    lua_content_no_comments = re.sub(r"--\[\[.*?\]\]", "", lua_content_no_comments, flags=re.DOTALL)  # Remove multi-line comments
 
-        print("Debug: Removed comments from Lua content.")
+    print("Debug: Removed comments from Lua content.")
 
-        # Initialize lists for functions and forcedoc functions
-        functions = []
-        forcedoc_functions = []
+    # Initialize lists for functions and forcedoc functions
+    functions = []
+    forcedoc_functions = []
 
-        # Regex patterns for functions and annotations
-        function_pattern = re.compile(r"function\s+(\w+)")
-        forcedoc_pattern = re.compile(r"---@forcedoc\s+(\w+)")
+    # Regex patterns for functions and annotations
+    function_pattern = re.compile(r"function\s+(\w+)")
+    forcedoc_pattern = re.compile(r"---@forcedoc\s+(\w+)")
 
-        # Process the Lua content line by line
-        for line in lua_content_no_comments.splitlines():
-            line = line.strip()
-            print(f"Debug: Processing line: {line}")
-            # Check for function definitions
-            function_match = function_pattern.match(line)
-            if function_match:
-                functions.append(function_match.group(1))
-                print(f"Debug: Found function: {function_match.group(1)}")
-            # Check for forcedoc annotations
-            forcedoc_match = forcedoc_pattern.match(line)
-            if forcedoc_match:
-                forcedoc_functions.append(forcedoc_match.group(1))
-                print(f"Debug: Found forcedoc function: {forcedoc_match.group(1)}")
+    # Process the Lua content line by line
+    for line in lua_content_no_comments.splitlines():
+        line = line.strip()
+        # Check for function definitions
+        function_match = function_pattern.match(line)
+        if function_match:
+            functions.append(function_match.group(1))
+            print(f"Debug: Found function: {function_match.group(1)}")
+        # Check for forcedoc annotations
+        forcedoc_match = forcedoc_pattern.match(line)
+        if forcedoc_match:
+            forcedoc_functions.append(forcedoc_match.group(1))
+            print(f"Debug: Found forcedoc function: {forcedoc_match.group(1)}")
 
-        print(f"Debug: Final list of functions: {functions}")
-        print(f"Debug: Final list of forcedoc functions: {forcedoc_functions}")
+    print(f"Debug: Final list of functions: {functions}")
+    print(f"Debug: Final list of forcedoc functions: {forcedoc_functions}")
 
-        # Regex to find annotations
-        param_pattern = re.compile(r"---@param\s+(.+)")
-        return_pattern = re.compile(r"---@return\s+(.+)")
-        description_pattern = re.compile(r"---@description\s+(.+)")
-        ignore_pattern = re.compile(r"---@ignore\s+(.+)")
-        note_pattern = re.compile(r"---@note\s+(.+)")
-        version_pattern = re.compile(r"---@added\s+(.+)")
-        header_pattern = re.compile(r"---@header\s+(.+)")
-        
-        functions.extend(forcedoc_functions)
+    # Regex to find annotations
+    param_pattern = re.compile(r"---@param\s+(.+)")
+    return_pattern = re.compile(r"---@return\s+(.+)")
+    description_pattern = re.compile(r"---@description\s+(.+)")
+    ignore_pattern = re.compile(r"---@ignore\s+(.+)")
+    note_pattern = re.compile(r"---@note\s+(.+)")
+    version_pattern = re.compile(r"---@added\s+(.+)")
+    header_pattern = re.compile(r"---@header\s+(.+)")
+    functions.extend(forcedoc_functions)
 
     documentation = []
 
