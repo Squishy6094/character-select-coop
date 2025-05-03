@@ -536,6 +536,7 @@ end
 ---@note    minor = 3,
 ---@note    indev = true
 ---@note }
+---@note ```
 local function version_get_full()
     return {
         api = MOD_VERSION_API,
