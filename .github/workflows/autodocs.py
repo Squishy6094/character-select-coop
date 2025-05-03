@@ -99,7 +99,14 @@ def parse_lua_file(lua_file_path):
         header = header_pattern.findall(annotation_block)
 
         # Preserve indentation for notes
-        note = [match.replace("---@note ", "") for match in note_pattern.findall(annotation_block)]
+        note = []
+        for match in note_pattern.finditer(annotation_block):
+            start_index = match.start()
+            line_start = annotation_block.rfind("\n", 0, start_index) + 1
+            note_line = annotation_block[line_start:match.end()]
+            print(f"Debug: Found note line: {note_line.strip()}")
+            note.append(note_line.replace("---@note ", ""))
+        print(f"Debug: Extracted notes: {note}")
 
         # Build documentation entry
         doc_entry = {
