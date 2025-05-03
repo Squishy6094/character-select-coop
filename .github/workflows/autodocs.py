@@ -60,7 +60,8 @@ def parse_lua_file(lua_file_path):
         note_pattern = re.compile(r"---@note\s+(.+)")
         version_pattern = re.compile(r"---@added\s+(.+)")
         header_pattern = re.compile(r"---@header\s+(.+)")
-    functions.extend(forcedoc_functions)
+        
+        functions.extend(forcedoc_functions)
 
     documentation = []
 
