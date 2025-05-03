@@ -44,14 +44,14 @@ def parse_lua_file(lua_file_path):
         lines = lua_content_no_comments.splitlines()
         for line in lines:
             line = line.strip()
-            if line.startswith("function "):
+            if line.startswith("function ") or line.startswith("local function "):
                 match = function_pattern.match(line)
                 if match:
-                    all_functions.append(match.group(1))
+                    all_functions.extend(match.group(1))
             elif line.startswith("---@forcedoc "):
                 match = forcedoc_pattern.match(line)
                 if match:
-                    all_functions.append(match.group(1))
+                    all_functions.extend(match.group(1))
 
         print(f"Debug: Ordered functions and forcedoc functions: {all_functions}")
 
