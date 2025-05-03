@@ -20,8 +20,8 @@ def parse_lua_file(lua_file_path):
 
     print("Debug: Successfully read Lua file content.")
 
-    # Remove comments from the Lua content to avoid false positives
-    lua_content_no_comments = re.sub(r"--.*", "", lua_content)  # Remove single-line comments
+    # Remove comments from the Lua content to avoid false positives, excluding annotations ("---")
+    lua_content_no_comments = re.sub(r"(?<!-)--(?!-).*", "", lua_content)  # Remove single-line comments but not annotations
     lua_content_no_comments = re.sub(r"--\[\[.*?\]\]", "", lua_content_no_comments, flags=re.DOTALL)  # Remove multi-line comments
 
     print("Debug: Removed comments from Lua content.")
@@ -29,16 +29,11 @@ def parse_lua_file(lua_file_path):
     forcedoc_functions = []
 
     # Iterate through each line to find functions and forcedoc annotations
-    for line in lua_content.splitlines():
-        function_match = re.search(r"function\s+(\w+)", line)
+    for line in lua_content_no_comments.splitlines():
+        function_match = re.search(r"function\s+(\w+)", line) or re.search(r"---@forcedoc\s+(\w+)", line)
         if function_match:
             functions.append(function_match.group(1))
             print(f"Debug: Found function: {function_match.group(1)}")
-
-        forcedoc_match = re.search(r"---@forcedoc\s+(\w+)", line)
-        if forcedoc_match:
-            forcedoc_functions.append(forcedoc_match.group(1))
-            print(f"Debug: Found forcedoc function: {forcedoc_match.group(1)}")
 
     # Add forcedoc functions to the list of functions
     functions.extend(forcedoc_functions)
