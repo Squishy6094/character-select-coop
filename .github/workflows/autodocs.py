@@ -21,7 +21,7 @@ def parse_lua_file(lua_file_path):
     print("Debug: Successfully read Lua file content.")
 
     # Remove comments from the Lua content to avoid false positives, excluding lines starting with ---
-    lua_content_no_comments = re.sub(r"(?<!---)--.*", "", lua_content)  # Remove single-line comments unless preceded by ---
+    # lua_content_no_comments = re.sub(r"(?<!---)--.*", "", lua_content)  # Remove single-line comments unless preceded by ---
     lua_content_no_comments = re.sub(r"--\[\[.*?\]\]", "", lua_content_no_comments, flags=re.DOTALL)  # Remove multi-line comments
 
     print("Debug: Removed comments from Lua content.")
