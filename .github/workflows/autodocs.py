@@ -28,8 +28,18 @@ def parse_lua_file(lua_file_path):
 
     # Regex to find functions
     function_pattern = re.compile(r"function\s+(\w+)")
-    functions = function_pattern.findall(lua_content_no_comments)
+    functions = []
+    for match in function_pattern.finditer(lua_content_no_comments):
+        functions.append(match.group(1))
     print(f"Debug: Found functions: {functions}")
+
+    # Add forcedoc functions to the list of functions
+    forcedoc_pattern = re.compile(r"---@forcedoc\s+(\w+)")
+    forcedoc_functions = []
+    for match in forcedoc_pattern.finditer(lua_content):
+        forcedoc_functions.append(match.group(1))
+    print(f"Debug: Found forcedoc functions: {forcedoc_functions}")
+    functions.extend(forcedoc_functions)
 
     # Regex to find annotations
     param_pattern = re.compile(r"---@param\s+(.+)")
@@ -39,12 +49,6 @@ def parse_lua_file(lua_file_path):
     note_pattern = re.compile(r"---@note\s+(.+)")
     version_pattern = re.compile(r"---@added\s+(.+)")
     header_pattern = re.compile(r"---@header\s+(.+)")
-    forcedoc_pattern = re.compile(r"---@forcedoc\s+(\w+)")
-
-    # Add forcedoc functions to the list of functions
-    forcedoc_functions = forcedoc_pattern.findall(lua_content)
-    print(f"Debug: Found forcedoc functions: {forcedoc_functions}")
-    functions.extend(forcedoc_functions)
 
     documentation = []
 
