@@ -53,11 +53,15 @@ def parse_lua_file(lua_file_path):
         print(f"Debug: Processing function: {func}")
         # Find the function block
         func_start = lua_content.find(f"function {func}(") or lua_content.find(f"---@forcedoc {func}")
-        if func_start == -1 and func not in forcedoc_functions:
+        func_end = -1
+        if lua_content.find(f"---@forcedoc {func}") == func_start:
+            print(f"Debug: Function {func} to forced.")
+            func_end = func_start
+        if func_start == -1:
             print(f"Warning: Function {func} not found.")
             continue
 
-        func_end = lua_content.find("end", func_start) + 3 if func_start != -1 else -1
+        func_end = (lua_content.find("end", func_start) + 3 if func_start != -1 else -1) if func_end == -1 else func_end
         func_block = lua_content[func_start:func_end] if func_start != -1 else ""
         print(f"Debug: Function block for {func}:\n{func_block}")
 
