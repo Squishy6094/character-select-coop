@@ -205,32 +205,32 @@ end
 ---@param clips table A Table with your Character's Sound File Names
 ---@note ```lua
 ---@note local VOICETABLE_CHAR = {
----@note [CHAR_SOUND_ATTACKED] = 'NES-Hit.ogg',
----@note [CHAR_SOUND_DOH] = 'NES-Bump.ogg',
----@note [CHAR_SOUND_DROWNING] = 'NES-Die.ogg',
----@note [CHAR_SOUND_DYING] = 'NES-Die.ogg',
----@note [CHAR_SOUND_GROUND_POUND_WAH] = 'NES-Squish.ogg',
----@note [CHAR_SOUND_HAHA] = 'NES-1up.ogg',
----@note [CHAR_SOUND_HAHA_2] = 'NES-1up.ogg',
----@note [CHAR_SOUND_HERE_WE_GO] = 'NES-Flagpole.ogg',
----@note [CHAR_SOUND_HOOHOO] = 'NES-Jump.ogg',
----@note [CHAR_SOUND_MAMA_MIA] = 'NES-Warp.ogg',
----@note [CHAR_SOUND_OKEY_DOKEY] = 'NES-1up.ogg',
----@note [CHAR_SOUND_ON_FIRE] = 'NES-Enemy_Fire.ogg',
----@note [CHAR_SOUND_OOOF] = 'NES-Hit.ogg',
----@note [CHAR_SOUND_OOOF2] = 'NES-Hit.ogg',
----@note [CHAR_SOUND_PUNCH_HOO] = 'NES-Kick.ogg',
----@note [CHAR_SOUND_PUNCH_WAH] = 'NES-Thwomp.ogg',
----@note [CHAR_SOUND_PUNCH_YAH] = 'NES-Thwomp.ogg',
----@note [CHAR_SOUND_SO_LONGA_BOWSER] = 'NES-Bowser_Die.ogg',
----@note [CHAR_SOUND_TWIRL_BOUNCE] = 'NES-Item.ogg',
----@note [CHAR_SOUND_WAAAOOOW] = 'NES-Vine.ogg',
----@note [CHAR_SOUND_WAH2] = 'NES-Kick.ogg',
----@note [CHAR_SOUND_WHOA] = 'NES-Item.ogg',
----@note [CHAR_SOUND_YAHOO] = 'NES-Jump.ogg',
----@note [CHAR_SOUND_YAHOO_WAHA_YIPPEE] = 'NES-Jump.ogg',
----@note [CHAR_SOUND_YAH_WAH_HOO] = 'NES-Big_Jump.ogg',
----@note [CHAR_SOUND_YAWNING] = 'NES-Pause.ogg',
+---@note     [CHAR_SOUND_ATTACKED] = 'NES-Hit.ogg',
+---@note     [CHAR_SOUND_DOH] = 'NES-Bump.ogg',
+---@note     [CHAR_SOUND_DROWNING] = 'NES-Die.ogg',
+---@note     [CHAR_SOUND_DYING] = 'NES-Die.ogg',
+---@note     [CHAR_SOUND_GROUND_POUND_WAH] = 'NES-Squish.ogg',
+---@note     [CHAR_SOUND_HAHA] = 'NES-1up.ogg',
+---@note     [CHAR_SOUND_HAHA_2] = 'NES-1up.ogg',
+---@note     [CHAR_SOUND_HERE_WE_GO] = 'NES-Flagpole.ogg',
+---@note     [CHAR_SOUND_HOOHOO] = 'NES-Jump.ogg',
+---@note     [CHAR_SOUND_MAMA_MIA] = 'NES-Warp.ogg',
+---@note     [CHAR_SOUND_OKEY_DOKEY] = 'NES-1up.ogg',
+---@note     [CHAR_SOUND_ON_FIRE] = 'NES-Enemy_Fire.ogg',
+---@note     [CHAR_SOUND_OOOF] = 'NES-Hit.ogg',
+---@note     [CHAR_SOUND_OOOF2] = 'NES-Hit.ogg',
+---@note     [CHAR_SOUND_PUNCH_HOO] = 'NES-Kick.ogg',
+---@note     [CHAR_SOUND_PUNCH_WAH] = 'NES-Thwomp.ogg',
+---@note     [CHAR_SOUND_PUNCH_YAH] = 'NES-Thwomp.ogg',
+---@note     [CHAR_SOUND_SO_LONGA_BOWSER] = 'NES-Bowser_Die.ogg',
+---@note     [CHAR_SOUND_TWIRL_BOUNCE] = 'NES-Item.ogg',
+---@note     [CHAR_SOUND_WAAAOOOW] = 'NES-Vine.ogg',
+---@note     [CHAR_SOUND_WAH2] = 'NES-Kick.ogg',
+---@note     [CHAR_SOUND_WHOA] = 'NES-Item.ogg',
+---@note     [CHAR_SOUND_YAHOO] = 'NES-Jump.ogg',
+---@note     [CHAR_SOUND_YAHOO_WAHA_YIPPEE] = 'NES-Jump.ogg',
+---@note     [CHAR_SOUND_YAH_WAH_HOO] = 'NES-Big_Jump.ogg',
+---@note     [CHAR_SOUND_YAWNING] = 'NES-Pause.ogg',
 ---@note }
 ---@note ```
 local function character_add_voice(modelInfo, clips)
@@ -242,10 +242,10 @@ end
 ---@param caps table Cap 
 ---@note ```lua
 ---@note local CAPTABLE_CHAR = {
----@note normal = smlua_model_util_get_id("custom_model_cap_normal_geo"),
----@note wing = smlua_model_util_get_id("custom_model_cap_wing_geo"),
----@note metal = smlua_model_util_get_id("custom_model_cap_metal_geo"),
----@note metalWing = smlua_model_util_get_id("custom_model_cap_wing_geo")
+---@note     normal = smlua_model_util_get_id("custom_model_cap_normal_geo"),
+---@note     wing = smlua_model_util_get_id("custom_model_cap_wing_geo"),
+---@note     metal = smlua_model_util_get_id("custom_model_cap_metal_geo"),
+---@note     metalWing = smlua_model_util_get_id("custom_model_cap_wing_geo")
 ---@note }
 ---@note ```
 local function character_add_caps(modelInfo, caps)

@@ -175,7 +175,7 @@ def write_readme(documentation, output_file_path):
                     readme_file.write(f"**Notes**:\n")
                     for note in entry['note']:
                         # Check if the line is inside a code block
-                        readme_file.write(f"> {func_to_link(note, documentation)}\n")
+                        readme_file.write(f"{func_to_link(note, documentation)}\n")
                     readme_file.write("\n\n")
 
     print(f"Debug: Documentation successfully written to {output_file_path}")
