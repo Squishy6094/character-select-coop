@@ -565,44 +565,6 @@ local function get_menu_color()
     return menuColor
 end
 
----@header
----@forcedoc Character_Select_Hooks
-
----@description A function that allows you to add a condition for if the CS Menu can be opened
----@param func function
-local function hook_allow_menu_open(func)
-    if type(func) ~= TYPE_FUNCTION then return end
-    table_insert(allowMenu, func)
-end
-
----@description A function that allows you to render HUD Elements in the menu (Behind transistions such as Option and going in/out of menu)
----@param func function
-local function hook_render_in_menu(func, underText)
-    if type(func) ~= TYPE_FUNCTION then return end
-    if underText then
-        table_insert(renderInMenuTable.back, func)
-    else
-        table_insert(renderInMenuTable.front, func)
-    end
-end
-
----@description A function that allows you to hook a function, much like hook_event, to a specific character number
----@param charNum integer|nil
----@param hookEventType LuaHookedEventType|integer
----@param func function
-local function character_hook_moveset(charNum, hookEventType, func)
-    if charNum > #characterTable then return end
-    if type(func) ~= TYPE_FUNCTION then return end
-    characterMovesets[charNum][hookEventType] = func
-    characterTable[charNum].hasMoveset = true
-end
-
----@description A function that returns the Character's moveset functions
----@param charNum integer
-local function character_get_moveset(charNum)
-    return characterMovesets[charNum]
-end
-
 ---------------------------
 -- HUD Element Functions --
 ---------------------------
@@ -662,27 +624,6 @@ local function restrict_movesets(bool)
     if bool == nil then bool = true end
     stopMovesets = bool
 end
-
-
----@description A function that sets the name to be replaced in Dialog, Default is `"Mario"`
----@param name string
----@note This function does *NOT* change what NPCs will refer to your character as, this function is intended for Rom-Hack ports with alternate protagonists.
----@forcedoc dialog_set_replace_name
-
----@header
----@forcedoc Tables & Variables
-
----@description The "Reference Sheet" or IDs for all of Character Select's Options
----@forcedoc optionTableRef
-
----@description The info for inputs from `gMarioStates[0]` before Character Select's Menu cancels inputs
----@forcedoc controller
-
----@description A table containing player info from Character Select's custom networking system 
----@forcedoc gCSPlayers
-
----@description The ID for Character Select's Menu "Cutscene"
----@forcedoc CUTSCENE_CS_MENU
 
 ---@description A table that contains the local mario's controller before Character Select's menu cancels them
 local controller = {
@@ -745,6 +686,67 @@ local function set_options_status(tableNum, toggle)
     if currOption == nil or type(toggle) ~= TYPE_INTEGER or toggle > currOption.toggleMax or toggle < 1 then return end
     optionTable[tableNum].toggle = toggle
     optionTable[tableNum].optionBeingSet = true
+end
+
+---@header
+---@forcedoc Misc
+
+---@description A function that sets the name to be replaced in Dialog, Default is `"Mario"`
+---@param name string
+---@note This function does *NOT* change what NPCs will refer to your character as, this function is intended for Rom-Hack ports with alternate protagonists.
+---@forcedoc dialog_set_replace_name
+
+---@header
+---@forcedoc Tables & Variables
+
+---@description The "Reference Sheet" or IDs for all of Character Select's Options
+---@forcedoc optionTableRef
+
+---@description The info for inputs from `gMarioStates[0]` before Character Select's Menu cancels inputs
+---@forcedoc controller
+
+---@description A table containing player info from Character Select's custom networking system 
+---@forcedoc gCSPlayers
+
+---@description The ID for Character Select's Menu "Cutscene"
+---@forcedoc CUTSCENE_CS_MENU
+
+---@header
+---@forcedoc Character_Select_Hooks
+
+---@description A function that allows you to add a condition for if the CS Menu can be opened
+---@param func function
+local function hook_allow_menu_open(func)
+    if type(func) ~= TYPE_FUNCTION then return end
+    table_insert(allowMenu, func)
+end
+
+---@description A function that allows you to render HUD Elements in the menu (Behind transistions such as Option and going in/out of menu)
+---@param func function
+local function hook_render_in_menu(func, underText)
+    if type(func) ~= TYPE_FUNCTION then return end
+    if underText then
+        table_insert(renderInMenuTable.back, func)
+    else
+        table_insert(renderInMenuTable.front, func)
+    end
+end
+
+---@description A function that allows you to hook a function, much like hook_event, to a specific character number
+---@param charNum integer|nil
+---@param hookEventType LuaHookedEventType|integer
+---@param func function
+local function character_hook_moveset(charNum, hookEventType, func)
+    if charNum > #characterTable then return end
+    if type(func) ~= TYPE_FUNCTION then return end
+    characterMovesets[charNum][hookEventType] = func
+    characterTable[charNum].hasMoveset = true
+end
+
+---@description A function that returns the Character's moveset functions
+---@param charNum integer
+local function character_get_moveset(charNum)
+    return characterMovesets[charNum]
 end
 
 _G.charSelectExists = true
