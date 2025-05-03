@@ -20,8 +20,8 @@ def parse_lua_file(lua_file_path):
 
     print("Debug: Successfully read Lua file content.")
 
-    # Remove comments from the Lua content to avoid false positives, excluding annotations ("---")
-    lua_content_no_comments = re.sub(r"(?<!-)--(?!-).*", "", lua_content)  # Remove single-line comments but not annotations
+    # Remove comments from the Lua content to avoid false positives, excluding lines starting with ---
+    lua_content_no_comments = re.sub(r"(?<!---)--.*", "", lua_content)  # Remove single-line comments unless preceded by ---
     lua_content_no_comments = re.sub(r"--\[\[.*?\]\]", "", lua_content_no_comments, flags=re.DOTALL)  # Remove multi-line comments
 
     print("Debug: Removed comments from Lua content.")
@@ -52,7 +52,7 @@ def parse_lua_file(lua_file_path):
     for func in functions:
         print(f"Debug: Processing function: {func}")
         # Find the function block
-        func_start = lua_content.find(f"function {func}(")
+        func_start = lua_content.find(f"function {func}(") or lua_content.find(f"---@forcedoc {func}")
         if func_start == -1 and func not in forcedoc_functions:
             print(f"Warning: Function {func} not found.")
             continue
