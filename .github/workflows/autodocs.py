@@ -29,13 +29,12 @@ def parse_lua_file(lua_file_path):
     forcedoc_functions = []
 
     # Iterate through each line to find functions and forcedoc annotations
-    for line in lua_content_no_comments.splitlines():
+    for line in lua_content.splitlines():
         function_match = re.search(r"function\s+(\w+)", line)
         if function_match:
             functions.append(function_match.group(1))
             print(f"Debug: Found function: {function_match.group(1)}")
 
-    for line in lua_content.splitlines():
         forcedoc_match = re.search(r"---@forcedoc\s+(\w+)", line)
         if forcedoc_match:
             forcedoc_functions.append(forcedoc_match.group(1))
