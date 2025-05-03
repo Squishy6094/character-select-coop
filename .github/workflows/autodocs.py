@@ -127,7 +127,7 @@ def func_to_link(text, functions):
     """
     Converts mentions of Lua functions in the text into markdown links and replaces groups of five spaces with new lines.
     """
-    text = text.replace("     ", "\n")
+    #text = text.replace("     ", "\n")
     
     for func in functions:
         # Replace function mentions with markdown links
