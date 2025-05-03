@@ -28,21 +28,22 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.x'
-          run: |
-            python -m pip install --upgrade pip
-            pip install pytz
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytz
+
       - name: Pull Wiki
         run: |
           git clone https://github.com/${{ github.repository }}.wiki.git
           ls -a
-      # - uses: jannekem/run-python-script-action@v1
-      #   name: Generate Documenation
-      #   id: script
-      #   with:
-      #     script: |
+
       - name: Generate Documenation
         run: |
           python ./.github/workflows/autodocs.py
