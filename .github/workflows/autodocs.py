@@ -37,6 +37,7 @@ def parse_lua_file(lua_file_path):
         # Process the Lua content line by line
         for line in lua_content_no_comments.splitlines():
             line = line.strip()
+            print(f"Debug: Processing line: {line}")
             # Check for function definitions
             function_match = function_pattern.match(line)
             if function_match:
