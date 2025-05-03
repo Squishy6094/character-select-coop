@@ -513,6 +513,13 @@ local function character_set_category(charNum, category)
     characterTable[charNum].category = characterTable[charNum].category .. "_" .. category
 end
 
+---@header
+---@forcedoc Menu_Functions
+
+---@description A function that sets the big "Character Select" texture in the Character Select Menu
+---@param texture TextureInfo|nil
+---@forcedoc header_set_texture
+
 ---@description A function that returns the version string
 ---@return string --`"v1.2.3"`
 local function version_get()
@@ -557,6 +564,9 @@ local function get_menu_color()
     return menuColor
 end
 
+---@header
+---@forcedoc Character_Select_Hooks
+
 ---@description A function that allows you to add a condition for if the CS Menu can be opened
 ---@param func function
 local function hook_allow_menu_open(func)
@@ -595,6 +605,9 @@ end
 ---------------------------
 -- HUD Element Functions --
 ---------------------------
+
+---@header
+---@forcedoc HUD_Element_Functions
 
 ---@description Hides the specified custom hud element
 ---@param hudElement HUDDisplayFlag
@@ -648,6 +661,27 @@ local function restrict_movesets(bool)
     if bool == nil then bool = true end
     stopMovesets = bool
 end
+
+
+---@description A function that sets the name to be replaced in Dialog, Default is `"Mario"`
+---@param name string
+---@note This function does *NOT* change what NPCs will refer to your character as, this function is intended for Rom-Hack ports with alternate protagonists.
+---@forcedoc dialog_set_replace_name
+
+---@header
+---@forcedoc Tables & Variables
+
+---@description The "Reference Sheet" or IDs for all of Character Select's Options
+---@forcedoc optionTableRef
+
+---@description The info for inputs from `gMarioStates[0]` before Character Select's Menu cancels inputs
+---@forcedoc controller
+
+---@description A table containing player info from Character Select's custom networking system 
+---@forcedoc gCSPlayers
+
+---@description The ID for Character Select's Menu "Cutscene"
+---@forcedoc CUTSCENE_CS_MENU
 
 ---@description A table that contains the local mario's controller before Character Select's menu cancels them
 local controller = {
@@ -782,20 +816,8 @@ _G.charSelect = {
     gCSPlayers = gCSPlayers,
     CUTSCENE_CS_MENU = CUTSCENE_CS_MENU,
 
-    -- Custom Hooks --
+    -- Character Select Hooks --
     hook_allow_menu_open = hook_allow_menu_open,
     hook_render_in_menu = hook_render_in_menu,
     character_hook_moveset = character_hook_moveset,
 }
-
----@description The "Reference Sheet" or IDs for all of Character Select's Options
----@forcedoc optionTableRef
-
----@description The info for inputs from `gMarioStates[0]` before Character Select's Menu cancels inputs
----@forcedoc controller
-
----@description A table containing player info from Character Select's custom networking system 
----@forcedoc gCSPlayers
-
----@description The ID for Character Select's Menu "Cutscene"
----@forcedoc CUTSCENE_CS_MENU
