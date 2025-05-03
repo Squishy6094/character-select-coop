@@ -18,40 +18,42 @@ def parse_lua_file(lua_file_path):
     with open(lua_file_path, 'r') as lua_file:
         lua_content = lua_file.read()
 
-    print("Debug: Successfully read Lua file content.")
+        print("Debug: Successfully read Lua file content.")
 
-    # Remove comments from the Lua content to avoid false positives
-    lua_content_no_comments = re.sub(r"--.*", "", lua_content)  # Remove single-line comments
-    lua_content_no_comments = re.sub(r"--\[\[.*?\]\]", "", lua_content_no_comments, flags=re.DOTALL)  # Remove multi-line comments
+        # Remove comments from the Lua content to avoid false positives
+        lua_content_no_comments = re.sub(r"--.*", "", lua_content)  # Remove single-line comments
+        lua_content_no_comments = re.sub(r"--\[\[.*?\]\]", "", lua_content_no_comments, flags=re.DOTALL)  # Remove multi-line comments
 
-    print("Debug: Removed comments from Lua content.")
+        print("Debug: Removed comments from Lua content.")
 
-    # Regex to find functions
-    function_pattern = re.compile(r"function\s+(\w+)")
-    functions = function_pattern.findall(lua_content_no_comments)
-    print(f"Debug: Found functions: {functions}")
+        # Regex to find functions and forcedoc annotations
+        function_pattern = re.compile(r"function\s+(\w+)")
+        forcedoc_pattern = re.compile(r"---@forcedoc\s+(\w+)")
 
-    # Regex to find annotations
-    param_pattern = re.compile(r"---@param\s+(.+)")
-    return_pattern = re.compile(r"---@return\s+(.+)")
-    description_pattern = re.compile(r"---@description\s+(.+)")
-    ignore_pattern = re.compile(r"---@ignore\s+(.+)")
-    note_pattern = re.compile(r"---@note\s+(.+)")
-    version_pattern = re.compile(r"---@added\s+(.+)")
-    header_pattern = re.compile(r"---@header\s+(.+)")
-    forcedoc_pattern = re.compile(r"---@forcedoc\s+(\w+)")
+        # Regex to find annotations
+        param_pattern = re.compile(r"---@param\s+(.+)")
+        return_pattern = re.compile(r"---@return\s+(.+)")
+        description_pattern = re.compile(r"---@description\s+(.+)")
+        ignore_pattern = re.compile(r"---@ignore\s+(.+)")
+        note_pattern = re.compile(r"---@note\s+(.+)")
+        version_pattern = re.compile(r"---@added\s+(.+)")
+        header_pattern = re.compile(r"---@header\s+(.+)")
 
-    # Add forcedoc functions to the list of functions
-    forcedoc_functions = forcedoc_pattern.findall(lua_content)
-    print(f"Debug: Found forcedoc functions: {forcedoc_functions}")
+        # Process the Lua content line by line to maintain proper order
+        all_functions = []
+        lines = lua_content_no_comments.splitlines()
+        for line in lines:
+            line = line.strip()
+            if line.startswith("function "):
+                match = function_pattern.match(line)
+                if match:
+                    all_functions.append(match.group(1))
+            elif line.startswith("---@forcedoc "):
+                match = forcedoc_pattern.match(line)
+                if match:
+                    all_functions.append(match.group(1))
 
-    # Combine functions and forcedoc functions in order of appearance
-    all_functions = []
-    for match in re.finditer(r"(function\s+(\w+))|(@@forcedoc\s+(\w+))", lua_content):
-        if match.group(2):  # Real function
-            all_functions.append(match.group(2))
-        elif match.group(4):  # Forcedoc function
-            all_functions.append(match.group(4))
+        print(f"Debug: Ordered functions and forcedoc functions: {all_functions}")
 
     print(f"Debug: Combined functions in order: {all_functions}")
 
@@ -61,9 +63,6 @@ def parse_lua_file(lua_file_path):
         print(f"Debug: Processing function: {func}")
         # Find the function block
         func_start = lua_content.find(f"function {func}(")
-        if func_start == -1 and func not in forcedoc_functions:
-            print(f"Warning: Function {func} not found.")
-            continue
 
         func_end = lua_content.find("end", func_start) + 3 if func_start != -1 else -1
         func_block = lua_content[func_start:func_end] if func_start != -1 else ""
