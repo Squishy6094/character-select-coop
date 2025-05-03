@@ -37,7 +37,7 @@ def parse_lua_file(lua_file_path):
             print(f"Debug: Found function: {function_match.group(1)}")
 
         # Check for forcedoc annotations
-        forcedoc_match = re.search(r"---@forcedoc\s+(\w+)", line)
+        forcedoc_match = re.search(r"---@forcedoc\s+(.+)", line)
         if forcedoc_match:
             forcedoc_functions.append(forcedoc_match.group(1))
             print(f"Debug: Found forcedoc function: {forcedoc_match.group(1)}")
