@@ -26,9 +26,30 @@ def parse_lua_file(lua_file_path):
 
         print("Debug: Removed comments from Lua content.")
 
-        # Regex to find functions and forcedoc annotations
+        # Initialize lists for functions and forcedoc functions
+        functions = []
+        forcedoc_functions = []
+
+        # Regex patterns for functions and annotations
         function_pattern = re.compile(r"function\s+(\w+)")
         forcedoc_pattern = re.compile(r"---@forcedoc\s+(\w+)")
+
+        # Process the Lua content line by line
+        for line in lua_content_no_comments.splitlines():
+            line = line.strip()
+            # Check for function definitions
+            function_match = function_pattern.match(line)
+            if function_match:
+                functions.append(function_match.group(1))
+                print(f"Debug: Found function: {function_match.group(1)}")
+            # Check for forcedoc annotations
+            forcedoc_match = forcedoc_pattern.match(line)
+            if forcedoc_match:
+                forcedoc_functions.append(forcedoc_match.group(1))
+                print(f"Debug: Found forcedoc function: {forcedoc_match.group(1)}")
+
+        print(f"Debug: Final list of functions: {functions}")
+        print(f"Debug: Final list of forcedoc functions: {forcedoc_functions}")
 
         # Regex to find annotations
         param_pattern = re.compile(r"---@param\s+(.+)")
@@ -38,31 +59,17 @@ def parse_lua_file(lua_file_path):
         note_pattern = re.compile(r"---@note\s+(.+)")
         version_pattern = re.compile(r"---@added\s+(.+)")
         header_pattern = re.compile(r"---@header\s+(.+)")
-
-        # Process the Lua content line by line to maintain proper order
-        all_functions = []
-        lines = lua_content_no_comments.splitlines()
-        for line in lines:
-            line = line.strip()
-            if line.startswith("function ") or line.startswith("local function "):
-                match = function_pattern.match(line)
-                if match:
-                    all_functions.extend(match.group(1))
-            elif line.startswith("---@forcedoc "):
-                match = forcedoc_pattern.match(line)
-                if match:
-                    all_functions.extend(match.group(1))
-
-        print(f"Debug: Ordered functions and forcedoc functions: {all_functions}")
-
-    print(f"Debug: Combined functions in order: {all_functions}")
+    functions.extend(forcedoc_functions)
 
     documentation = []
 
-    for func in all_functions:
+    for func in functions:
         print(f"Debug: Processing function: {func}")
         # Find the function block
         func_start = lua_content.find(f"function {func}(")
+        if func_start == -1 and func not in forcedoc_functions:
+            print(f"Warning: Function {func} not found.")
+            continue
 
         func_end = lua_content.find("end", func_start) + 3 if func_start != -1 else -1
         func_block = lua_content[func_start:func_end] if func_start != -1 else ""
@@ -83,8 +90,8 @@ def parse_lua_file(lua_file_path):
                 break  # Stop at the first empty line
             annotation_lines.insert(0, line)
 
-            annotation_block = "\n".join(annotation_lines)
-            print(f"Debug: Annotation block for {func}:\n{annotation_block}")
+        annotation_block = "\n".join(annotation_lines)
+        print(f"Debug: Annotation block for {func}:\n{annotation_block}")
 
 
         # Check for ignore annotation
