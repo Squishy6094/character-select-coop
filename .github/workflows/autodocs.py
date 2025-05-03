@@ -25,21 +25,26 @@ def parse_lua_file(lua_file_path):
     lua_content_no_comments = re.sub(r"--\[\[.*?\]\]", "", lua_content_no_comments, flags=re.DOTALL)  # Remove multi-line comments
 
     print("Debug: Removed comments from Lua content.")
-
-    # Regex to find functions
-    function_pattern = re.compile(r"function\s+(\w+)")
     functions = []
-    for match in function_pattern.finditer(lua_content_no_comments):
-        functions.append(match.group(1))
-    print(f"Debug: Found functions: {functions}")
+    forcedoc_functions = []
+
+    # Iterate through each line of the Lua content
+    for line in lua_content_no_comments.splitlines():
+        # Check for function definitions
+        function_match = re.search(r"function\s+(\w+)", line)
+        if function_match:
+            functions.append(function_match.group(1))
+            print(f"Debug: Found function: {function_match.group(1)}")
+
+        # Check for forcedoc annotations
+        forcedoc_match = re.search(r"---@forcedoc\s+(\w+)", line)
+        if forcedoc_match:
+            forcedoc_functions.append(forcedoc_match.group(1))
+            print(f"Debug: Found forcedoc function: {forcedoc_match.group(1)}")
 
     # Add forcedoc functions to the list of functions
-    forcedoc_pattern = re.compile(r"---@forcedoc\s+(\w+)")
-    forcedoc_functions = []
-    for match in forcedoc_pattern.finditer(lua_content):
-        forcedoc_functions.append(match.group(1))
-    print(f"Debug: Found forcedoc functions: {forcedoc_functions}")
     functions.extend(forcedoc_functions)
+    print(f"Debug: Final list of functions: {functions}")
 
     # Regex to find annotations
     param_pattern = re.compile(r"---@param\s+(.+)")
