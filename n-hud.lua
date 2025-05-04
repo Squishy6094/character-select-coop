@@ -215,7 +215,7 @@ end
 ---Hides the specified custom hud element
 ---@param hudElement HUDDisplayFlag
 function hud_hide_element(hudElement)
-    log_to_console("The `charSelect.hud_hide_element()` function is deprecated, please use normal vanilla functions as they have been modified to work with Character Select.", CONSOLE_MESSAGE_WARNING)
+    --log_to_console("The `charSelect.hud_hide_element()` function is deprecated, please use normal vanilla functions as they have been modified to work with Character Select.", CONSOLE_MESSAGE_WARNING)
     hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~hudElement)
     return true
 end
@@ -223,7 +223,7 @@ end
 ---Shows the specified custom hud element
 ---@param hudElement HUDDisplayFlag
 function hud_show_element(hudElement)
-    log_to_console("The `charSelect.hud_show_element()` function is deprecated, please use normal vanilla functions as they have been modified to work with Character Select.", CONSOLE_MESSAGE_WARNING)
+    --log_to_console("The `charSelect.hud_show_element()` function is deprecated, please use normal vanilla functions as they have been modified to work with Character Select.", CONSOLE_MESSAGE_WARNING)
     hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) | hudElement)
     return true
 end
@@ -232,7 +232,7 @@ end
 ---@param hudElement HUDDisplayFlag
 ---@return boolean
 function hud_get_element(hudElement)
-    log_to_console("The `charSelect.hud_get_element()` function is deprecated, please use normal vanilla functions as they have been modified to work with Character Select.", CONSOLE_MESSAGE_WARNING)
+    --log_to_console("The `charSelect.hud_get_element()` function is deprecated, please use normal vanilla functions as they have been modified to work with Character Select.", CONSOLE_MESSAGE_WARNING)
     djui_chat_message_create(tostring(sCharSelectHudDisplayFlags))
     return (hud_get_value(HUD_DISPLAY_FLAGS) & hudElement) ~= 0
 end

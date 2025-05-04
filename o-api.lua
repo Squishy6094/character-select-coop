@@ -337,6 +337,7 @@ end
 ---@description A function that adds a palette preset to a character
 ---@param modelInfo ModelExtendedId|integer
 ---@param paletteTable table
+---@param paletteName string|nil
 ---@note ```lua
 ---@note local PALETTE_CHAR = {
 ---@note     [PANTS]  = {r = 0x00, g = 0x00, b = 0xff},
@@ -349,8 +350,10 @@ end
 ---@note }
 ---@note ```
 ---@note Strings can also be used rather than RGB tables, ex. `[PANTS] = "0000ff"`
-local function character_add_palette_preset(modelInfo, paletteTable)
-    local paletteTableOut = {}
+local function character_add_palette_preset(modelInfo, paletteTable, paletteName)
+    local paletteTableOut = {
+        name = paletteName,
+    }
     local defaultColors = characterColorPresets[E_MODEL_MARIO]
     for i = 0, 7 do
         local color = paletteTable[i]

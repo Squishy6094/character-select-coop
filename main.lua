@@ -1041,7 +1041,7 @@ local function on_hud_render()
                 TEXT_PREF_SAVE .. " - " .. TEXT_PREF_LOAD_NAME
             }
             local modelId = gCSPlayers[0].modelId
-            local TEXT_PRESET_TOGGLE = ((paletteCount > 1 and "("..currPaletteTable.currPalette.."/"..paletteCount..")" or (currPaletteTable.currPalette > 0 and "On" or "Off")) or "Off")
+            local TEXT_PRESET_TOGGLE = ((currPaletteTable[currPaletteTable.currPalette] ~= nil and currPaletteTable[currPaletteTable.currPalette].name ~= nil) and (currPaletteTable[currPaletteTable.currPalette].name .. " - ") or "") .. ((paletteCount > 1 and "("..currPaletteTable.currPalette.."/"..paletteCount..")" or (currPaletteTable.currPalette > 0 and "On" or "Off")) or "Off")
             if characterColorPresets[modelId] and not stopPalettes then
                 table_insert(menuText, TEXT_PREF_PALETTE .. " - " .. TEXT_PRESET_TOGGLE)
             elseif stopPalettes then
