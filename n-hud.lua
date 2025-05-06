@@ -332,6 +332,9 @@ function render_life_icon_from_local_index(localIndex, x, y, scale)
 end
 
 --- @param localIndex integer
+--- @param prevX integer
+--- @param prevY integer
+--- @param prevScale integer
 --- @param x integer
 --- @param y integer
 --- @param scale integer

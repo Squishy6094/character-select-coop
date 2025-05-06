@@ -481,6 +481,68 @@ function character_get_voice(m)
     return characterVoices[gCSPlayers[m.playerIndex].modelId]
 end
 
+-- Located in n-hud.lua
+
+---@description A function that gets a persons life icon texture / string based off of local index
+---@param localIndex integer
+---@return TextureInfo|string
+---@note This assumes multiple characters will not have the same model, Icons can only be seen by users who have the character avalible to them. This function can return nil. if this is the case, render `djui_hud_print_text("?", x, y, 1)`
+---@forcedoc character_get_life_icon
+
+---@description A function that renders a persons life icon texture / string based off of local index
+---@param localIndex integer
+---@param x integer
+---@param y integer
+---@param scale integer
+---@forcedoc character_render_life_icon
+
+---@description A function that acts as character_render_life_icon with support for interpolation
+---@param localIndex integer
+---@param prevX integer
+---@param prevY integer
+---@param prevScale integer
+---@param x integer
+---@param y integer
+---@param scale integer
+---@forcedoc character_render_life_icon_interpolated
+
+---@description A function that gets a persons star icon texture / string based off of local index
+---@param localIndex integer
+---@return TextureInfo
+---@note This assumes multiple characters will not have the same model, Icons can only be seen by users who have the character avalible to them
+---@forcedoc character_get_star_icon
+
+---@description A function that renders a persons star icon texture / string based off of local index
+---@param localIndex integer
+---@param x integer
+---@param y integer
+---@param scale integer
+---@forcedoc character_render_star_icon
+
+---@description A function that acts as character_render_star_icon with support for interpolation
+---@param localIndex integer
+---@param prevX integer
+---@param prevY integer
+---@param prevScale integer
+---@param x integer
+---@param y integer
+---@param scale integer
+---@forcedoc character_render_star_icon_interpolated
+
+---@description A function that gets a persons health meter texture table (example of which is at character_add_health_meter)
+---@param localIndex integer
+---@return table
+---@note This assumes multiple characters will not have the same model, Meters can only be seen by users who have the character avalible to them
+---@forcedoc character_get_health_meter
+
+---@description A function that renders a persons health meter texture table
+---@param localIndex integer
+---@param x integer
+---@param y integer
+---@param scaleX integer
+---@param scaleY integer
+---@forcedoc character_render_health_meter
+
 ---@description A function that locks a character under an unlock condition
 ---@param charNum integer|nil The number of the Character you want to Lock
 ---@param unlockCondition function|boolean|nil The condition for if the character stays locked
