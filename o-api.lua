@@ -103,6 +103,7 @@ local function character_add(name, description, credit, color, modelInfo, forceC
 end
 
 ---@description A function that adds a Costume to an Existing Character, all inputs mimic character_edit
+---@added 1.11
 ---@param charNum integer The number/table position of the Character you want to add a costume to
 ---@param name string|nil `"Custom Model"`
 ---@param description table|string|nil `{"string"}`
@@ -143,6 +144,7 @@ local function character_add_costume(charNum, name, description, credit, color, 
 end
 
 ---@description A function that Edits an existing Costume
+---@added 1.11
 ---@param charNum integer The number/table position of the Character you want to edit the costume of
 ---@param charAlt integer The number/table position of the Costume you want to edit, this can be found by making a variable equal
 ---@param name string|nil `"Custom Model"`
@@ -187,6 +189,7 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
 end
 
 ---@description A function that Edits an Existing Character
+---@added 1
 ---@param charNum integer The number/table position of the Character you want to edit
 ---@param name string|nil `"Custom Model"`
 ---@param description table|string|nil `{"string"}`
@@ -201,8 +204,12 @@ local function character_edit(charNum, name, description, credit, color, modelIn
 end
 
 ---@description A function that adds a voice table to a character
+---@added 1.5
 ---@param modelInfo ModelExtendedId|integer Model Information Received from smlua_model_util_get_id
 ---@param clips table A Table with your Character's Sound File Names
+---@note In order for sound files to function, please run config_character_sounds in your pack
+---@note 
+---@note Table Example:
 ---@note ```lua
 ---@note local VOICETABLE_CHAR = {
 ---@note     [CHAR_SOUND_ATTACKED] = 'NES-Hit.ogg',
@@ -238,6 +245,7 @@ local function character_add_voice(modelInfo, clips)
 end
 
 ---@description A function that adds a caps table to a character
+---@added 1.6
 ---@param modelInfo ModelExtendedId|integer Model Information Received from smlua_model_util_get_id
 ---@param caps table Cap 
 ---@note ```lua
@@ -253,6 +261,7 @@ local function character_add_caps(modelInfo, caps)
 end
 
 ---@description A function that gets a model's cap table
+---@added 1.13
 ---@param modelInfo ModelExtendedId|integer|nil Model Information Received from smlua_model_util_get_id
 local function character_get_caps(modelInfo)
     if modelInfo == nil then modelInfo = characterTable[currChar][characterTable[currChar].currAlt].model end
@@ -260,6 +269,7 @@ local function character_get_caps(modelInfo)
 end
 
 ---@description A function that adds health meter textures to a costume
+---@added 1.12
 ---@param charNum integer The number/table position of the Character you want to add a meter to
 ---@param charAlt integer The number/table position of the Costume you want to add a meter to
 ---@param healthTexture table|nil A Table with your Character's Health Textures (Table Shown in character_add_health_meter)
@@ -270,6 +280,7 @@ local function character_add_costume_health_meter(charNum, charAlt, healthTextur
 end
 
 ---@description A function that adds health meter textures to a character
+---@added 1.9
 ---@param charNum integer The number/table position of the Character you want to add a meter to
 ---@param healthTexture table|nil A Table with your Character's Health Textures (Table Shown Below)
 ---@note ```lua
@@ -295,6 +306,7 @@ local function character_add_health_meter(charNum, healthTexture)
 end
 
 ---@description A function that adds course textures to a costume in the Star Select
+---@added 1.12
 ---@param charNum integer The number/table position of the Character you want to add a course textures to
 ---@param charAlt integer The number/table position of the Costume you want to add a course textures to
 ---@param courseTexture table|nil A Table with your Character's Health Textures (Table Shown in character_add_course)
@@ -305,6 +317,7 @@ local function character_add_costume_course(charNum, charAlt, courseTexture)
 end
 
 ---@description A function that adds course textures to a character in the Star Select
+---@added 1.12
 ---@param charNum integer The number/table position of the Character you want to add a course textures to
 ---@param courseTexture table|nil A Table with your Character's Health Textures (Table Shown Below)
 ---@note ```lua
@@ -318,6 +331,7 @@ local function character_add_course(charNum, courseTexture)
 end
 
 ---@description A function that adds a celebration star model to a character
+---@added 1.7
 ---@param modelInfo ModelExtendedId|integer Model Information Received from smlua_model_util_get_id()	
 ---@param starModel ModelExtendedId|integer Model Information Received from smlua_model_util_get_id()	
 ---@param starIcon TextureInfo|nil Texture Information Received from get_texture_info()
@@ -335,6 +349,7 @@ local function character_add_celebration_star(modelInfo, starModel, starIcon)
 end
 
 ---@description A function that adds a palette preset to a character
+---@added 1.8
 ---@param modelInfo ModelExtendedId|integer
 ---@param paletteTable table
 ---@param paletteName string|nil
@@ -378,6 +393,7 @@ local function character_add_palette_preset(modelInfo, paletteTable, paletteName
 end
 
 ---@description A function that adds animations to a model
+---@added 1.10
 ---@param modelInfo ModelExtendedId|integer
 ---@param animTable table
 local function character_add_animations(modelInfo, animTable)
@@ -385,12 +401,14 @@ local function character_add_animations(modelInfo, animTable)
 end
 
 ---@description A function that gets any animation table from a model
+---@added 1.10
 ---@param modelInfo ModelExtendedId|integer
 local function character_get_animations(modelInfo)
     return characterAnims[modelInfo]
 end
 
 ---@description A function that gets a character's full Character Select Table
+---@added 1
 ---@param tablePos integer|nil
 ---@param charAlt integer|nil
 ---@return CharacterTable
@@ -401,12 +419,14 @@ local function character_get_current_table(tablePos, charAlt)
 end
 
 ---@description A function that gets Character Select's Entire Character Table
+---@added 1.11.1
 ---@return table
 local function character_get_full_table()
     return characterTable
 end
 
 ---@description A function that gets the current character's table position in CS
+---@added 1
 --- @param localIndex integer|nil
 --- @return integer|nil
 local function character_get_current_number(localIndex)
@@ -423,8 +443,9 @@ local function character_get_current_number(localIndex)
 end
 
 ---@description A function that gets the current costumes's table position in CS
---- @param localIndex integer|nil
---- @return integer|nil
+---@added 1.12
+---@param localIndex integer|nil
+---@return integer|nil
 local function character_get_current_costume(localIndex)
     if localIndex == nil or localIndex == 0 then
         return characterTable[currChar].currAlt
@@ -439,6 +460,7 @@ local function character_get_current_costume(localIndex)
 end
 
 ---@description A function that sets the current character based only table position
+---@added 1.9
 ---@param charNum integer|nil
 local function character_set_current_number(charNum)
     if type(charNum) ~= TYPE_INTEGER or characterTable[charNum] == nil then return end
@@ -447,6 +469,7 @@ local function character_set_current_number(charNum)
 end
 
 ---@description A function that gets the current character's palette data
+---@added 1.12
 --- @return table|nil
 local function character_get_current_palette()
     local model = characterTable[currChar][characterTable[currChar].currAlt].model
@@ -454,6 +477,7 @@ local function character_get_current_palette()
 end
 
 ---@description A function that gets the current character's palette number
+---@added 1.12
 --- @param localIndex integer|nil
 --- @return integer|nil
 local function character_get_current_palette_number(localIndex)
@@ -462,6 +486,7 @@ local function character_get_current_palette_number(localIndex)
 end
 
 ---@description A function that searches for a character's table posision based on name
+---@added 1
 ---@param name string
 local function character_get_number_from_string(name)
     if type(name) ~= TYPE_STRING then return nil end
@@ -476,6 +501,7 @@ local function character_get_number_from_string(name)
 end
 
 ---@description A function that gets the current character's voice table
+---@added 1.5
 ---@param m MarioState
 function character_get_voice(m)
     return characterVoices[gCSPlayers[m.playerIndex].modelId]
@@ -484,12 +510,14 @@ end
 -- Located in n-hud.lua
 
 ---@description A function that gets a persons life icon texture / string based off of local index
+---@added 1.7
 ---@param localIndex integer
 ---@return TextureInfo|string
 ---@note This assumes multiple characters will not have the same model, Icons can only be seen by users who have the character avalible to them. This function can return nil. if this is the case, render `djui_hud_print_text("?", x, y, 1)`
 ---@forcedoc character_get_life_icon
 
 ---@description A function that renders a persons life icon texture / string based off of local index
+---@added 1.11
 ---@param localIndex integer
 ---@param x integer
 ---@param y integer
@@ -497,6 +525,7 @@ end
 ---@forcedoc character_render_life_icon
 
 ---@description A function that acts as character_render_life_icon with support for interpolation
+---@added 1.13
 ---@param localIndex integer
 ---@param prevX integer
 ---@param prevY integer
@@ -507,12 +536,14 @@ end
 ---@forcedoc character_render_life_icon_interpolated
 
 ---@description A function that gets a persons star icon texture / string based off of local index
+---@added 1.8
 ---@param localIndex integer
 ---@return TextureInfo
 ---@note This assumes multiple characters will not have the same model, Icons can only be seen by users who have the character avalible to them
 ---@forcedoc character_get_star_icon
 
 ---@description A function that renders a persons star icon texture / string based off of local index
+---@added 1.11
 ---@param localIndex integer
 ---@param x integer
 ---@param y integer
@@ -520,6 +551,7 @@ end
 ---@forcedoc character_render_star_icon
 
 ---@description A function that acts as character_render_star_icon with support for interpolation
+---@added 1.13
 ---@param localIndex integer
 ---@param prevX integer
 ---@param prevY integer
@@ -530,12 +562,14 @@ end
 ---@forcedoc character_render_star_icon_interpolated
 
 ---@description A function that gets a persons health meter texture table (example of which is at character_add_health_meter)
+---@added 1.12
 ---@param localIndex integer
 ---@return table
 ---@note This assumes multiple characters will not have the same model, Meters can only be seen by users who have the character avalible to them
 ---@forcedoc character_get_health_meter
 
 ---@description A function that renders a persons health meter texture table
+---@added 1.12
 ---@param localIndex integer
 ---@param x integer
 ---@param y integer
@@ -544,6 +578,7 @@ end
 ---@forcedoc character_render_health_meter
 
 ---@description A function that locks a character under an unlock condition
+---@added 1.10
 ---@param charNum integer|nil The number of the Character you want to Lock
 ---@param unlockCondition function|boolean|nil The condition for if the character stays locked
 ---@param notify boolean|nil Wheather Character Select should notify the user when the character is unlocked
@@ -562,6 +597,7 @@ local function character_set_locked(charNum, unlockCondition, notify)
 end
 
 ---@description A function that sets a character under a specific category
+---@added 1.14
 ---@param charNum integer|nil The number of the Character you want to Lock
 ---@param category string The Category Name (Will create a new category if category does not exist)
 local function character_set_category(charNum, category)
@@ -582,16 +618,19 @@ end
 ---@forcedoc Menu_Functions
 
 ---@description A function that sets the big "Character Select" texture in the Character Select Menu
+---@added 1.7
 ---@param texture TextureInfo|nil
 ---@forcedoc header_set_texture
 
 ---@description A function that returns the version string
+---@added 1
 ---@return string --`"v1.2.3"`
 local function version_get()
     return MOD_VERSION_STRING
 end
 
 ---@description A function that returns the version in table format
+---@added 1.11
 ---@return table
 ---@note Returns the following table (Will differ based on version)
 ---@note ```lua
@@ -612,12 +651,14 @@ local function version_get_full()
 end
 
 ---@description A function that checks is the Character Select Menu is currently open
+---@added 1
 ---@return boolean
 local function is_menu_open()
     return menuAndTransition
 end
 
 ---@description A function that forces they Character Select Menu state
+---@added 1.8
 ---@param bool boolean|nil Sets if the menu is open
 local function set_menu_open(bool)
     if bool == nil then bool = true end
@@ -625,6 +666,7 @@ local function set_menu_open(bool)
 end
 
 ---@description A function that gets Character Select's current Menu color
+---@added 1.8
 ---@return table
 local function get_menu_color()
     return menuColor
@@ -638,25 +680,30 @@ end
 ---@forcedoc HUD_Element_Functions
 
 ---@description Hides the specified custom hud element
+---@added 1.5
 ---@param hudElement HUDDisplayFlag
 ---@forcedoc hud_hide_element
 
 ---@description Shows the specified custom hud element
+---@added 1.5
 ---@param hudElement HUDDisplayFlag
 ---@forcedoc hud_show_element
 
 ---@description Gets the specified custom hud element's state
+---@added 1.5
 ---@param hudElement HUDDisplayFlag
 ---@return boolean
 ---@forcedoc hud_get_element
 
 ---@description A function that checks if the options menu is open inside of the CS menu
+---@added 1
 ---@return boolean
 local function is_options_open()
     return options
 end
 
 ---@description A function that adds a line of credit to the CS Options' Credit section
+---@added 1.10
 ---@param modName string The Name of your Character Select Mod
 ---@param creditTo string The person you want to Credit
 ---@param creditFor string What the Person helped with
@@ -677,6 +724,7 @@ local function credit_add(modName, creditTo, creditFor)
 end
 
 ---@description A function that sets if palettes are restricted (Default `false` unless a mod with the incompatible `gamemode` is on)
+---@added 1.8
 ---@param bool boolean
 local function restrict_palettes(bool)
     if bool == nil then bool = true end
@@ -684,6 +732,7 @@ local function restrict_palettes(bool)
 end
 
 ---@description A function that sets if movesets are restricted (Default `false`)
+---@added 1.10
 ---@param bool boolean
 local function restrict_movesets(bool)
     if bool == nil then bool = true end
@@ -691,6 +740,7 @@ local function restrict_movesets(bool)
 end
 
 ---@description A table that contains the local mario's controller before Character Select's menu cancels them
+---@added 1
 local controller = {
     buttonDown = 0,
     buttonPressed = 0,
@@ -704,6 +754,7 @@ local controller = {
 }
 
 ---@description A function that adds an option to the Character Select Options Menu
+---@added 1.9
 ---@param name string The Name of the Option
 ---@param toggleDefault number|nil The default number that the option toggles to (Defaults to `0`)
 ---@param toggleMax number|nil The max number the option can be toggled to (Defaults to `1`)
@@ -728,6 +779,7 @@ local function add_option(name, toggleDefault, toggleMax, toggleNames, descripti
 end
 
 ---@description A function that gets an option's data from the Character Select Options Menu
+---@added 1.9
 ---@param tableNum integer The table position of the option
 ---@return table|nil
 local function get_option(tableNum)
@@ -736,6 +788,7 @@ local function get_option(tableNum)
 end
 
 ---@description A function that gets an option's status from the Character Select Options Menu
+---@added 1.9
 ---@param tableNum integer The table position of the option
 ---@return number|nil
 local function get_options_status(tableNum)
@@ -744,6 +797,7 @@ local function get_options_status(tableNum)
 end
 
 ---@description A function that sets an option's status from the Character Select Options Menu
+---@added 1.9
 ---@param tableNum integer The table position of the option
 ---@param toggle integer What you want to set the option to
 local function set_options_status(tableNum, toggle)
@@ -757,29 +811,40 @@ end
 ---@forcedoc Misc
 
 ---@description A function that sets the name to be replaced in Dialog, Default is `"Mario"`
+---@added 1.10
 ---@param name string
 ---@note This function does *NOT* change what NPCs will refer to your character as, this function is intended for Rom-Hack ports with alternate protagonists.
 ---@forcedoc dialog_set_replace_name
+
+---@description A function that sets the preset palette for a network player forcefully
+---@added 1.11
+---@param np NetworkPlayer
+---@forcedoc update_preset_palette
 
 ---@header
 ---@forcedoc Tables & Variables
 
 ---@description The "Reference Sheet" or IDs for all of Character Select's Options
+---@added 1
 ---@forcedoc optionTableRef
 
 ---@description The info for inputs from `gMarioStates[0]` before Character Select's Menu cancels inputs
+---@added 1
 ---@forcedoc controller
 
----@description A table containing player info from Character Select's custom networking system 
+---@description A table containing player info from Character Select's custom networking system
+---@added 1.11.1
 ---@forcedoc gCSPlayers
 
 ---@description The ID for Character Select's Menu "Cutscene"
+---@added 1
 ---@forcedoc CUTSCENE_CS_MENU
 
 ---@header
 ---@forcedoc Character_Select_Hooks
 
 ---@description A function that allows you to add a condition for if the CS Menu can be opened
+---@added 1
 ---@param func function
 local function hook_allow_menu_open(func)
     if type(func) ~= TYPE_FUNCTION then return end
@@ -787,6 +852,7 @@ local function hook_allow_menu_open(func)
 end
 
 ---@description A function that allows you to render HUD Elements in the menu (Behind transistions such as Option and going in/out of menu)
+---@added 1.5
 ---@param func function
 local function hook_render_in_menu(func, underText)
     if type(func) ~= TYPE_FUNCTION then return end
@@ -797,7 +863,12 @@ local function hook_render_in_menu(func, underText)
     end
 end
 
+---@description A function that adds the necessary hooks in order for your pack to have function voicelines
+---@added 1.12
+---@forcedoc config_character_sounds
+
 ---@description A function that allows you to hook a function, much like hook_event, to a specific character number
+---@added 1.10
 ---@param charNum integer|nil
 ---@param hookEventType LuaHookedEventType|integer
 ---@param func function
@@ -809,6 +880,7 @@ local function character_hook_moveset(charNum, hookEventType, func)
 end
 
 ---@description A function that returns the Character's moveset functions
+---@added 1.14
 ---@param charNum integer
 local function character_get_moveset(charNum)
     return characterMovesets[charNum]
