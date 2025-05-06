@@ -642,7 +642,7 @@ local function mario_update(m)
             gLakituState.pos.x = m.pos.x + sins(faceAngle) * 500 * camScale
             gLakituState.pos.y = m.pos.y + 100 * camScale
             gLakituState.pos.z = m.pos.z + coss(faceAngle) * 500 * camScale
-            set_window_title("Character Select v".. MOD_VERSION_STRING .. " - " .. string_underscore_to_space(charTable[charTable.currAlt].name))
+            set_window_title("Character Select v".. MOD_VERSION_STRING .. " - " .. string_underscore_to_space(charTable[charTable.currAlt].name) .. " (CoopDX)")
             p.inMenu = true
         else
             if p.inMenu then
@@ -900,7 +900,7 @@ local targetMenuColor = {r = 0 , g = 0, b = 0}
 menuColor = targetMenuColor
 local menuColorHalf = menuColor
 local transSpeed = 0.1
-local menuTimer = 0
+local bindTextTimer = 0
 function update_menu_color()
     if optionTable[optionTableRef.menuColor].toggle == nil then return end
     if optionTable[optionTableRef.localModels].toggle == 1 then
@@ -940,7 +940,7 @@ end
 
 local buttonAltAnim = 0
 local menuOpacity = 245
-local menuTimerLoop = 150
+local bindTextTimerLoop = 150
 local function on_hud_render()
     local FONT_USER = djui_menu_get_font()
     djui_hud_set_resolution(RESOLUTION_N64)
@@ -1047,26 +1047,14 @@ local function on_hud_render()
             elseif stopPalettes then
                 table_insert(menuText, TEXT_PALETTE_RESTRICTED)
             end
-            menuTimer = (menuTimer + 1)%(menuTimerLoop*#menuText)
-            local currText = menuText[math.ceil(menuTimer/menuTimerLoop)]
+            bindTextTimer = (bindTextTimer + 1)%(bindTextTimerLoop*#menuText)
+            local currText = menuText[math.ceil(bindTextTimer/bindTextTimerLoop)]
             if currText ~= nil then
-                local currTextOpacity = clamp(math.abs(math.sin(menuTimer*MATH_PI/menuTimerLoop)), 0, 0.2) * 5 * 255
+                local currTextOpacity = clamp(math.abs(math.sin(bindTextTimer*MATH_PI/bindTextTimerLoop)), 0, 0.2) * 5 * 255
                 djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, currTextOpacity)
                 djui_hud_print_text(currText, width - textX - djui_hud_measure_text(currText) * 0.15, height - 15, 0.3)
                 djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
             end
-            --[[
-            djui_hud_print_text(TEXT_PREF, width - textX - djui_hud_measure_text(TEXT_PREF) * 0.15, height - 22, 0.3)
-            local text = TEXT_PREF_SAVE
-            if characterColorPresets[modelId] and not stopPalettes then
-                djui_hud_print_text(TEXT_PRESET, width - textX - djui_hud_measure_text(TEXT_PRESET) * 0.15, height - 31, 0.3)
-                text = TEXT_PREF_SAVE_AND_PALETTE
-            elseif stopPalettes then
-                djui_hud_print_text(TEXT_PALETTE_RESTRICTED, width - textX - djui_hud_measure_text(TEXT_PALETTE_RESTRICTED) * 0.15, height - 31, 0.3)
-            end
-            djui_hud_set_font(FONT_TINY)
-            djui_hud_print_text(text, width - textX - djui_hud_measure_text(TEXT_PREF_SAVE) * 0.25, height - 13, 0.5)
-            ]]
         else
             -- Debugging Info --
             local TEXT_NAME = "Name: " .. character.name
@@ -1482,7 +1470,7 @@ local function on_hud_render()
         optionAnimTimer = optionAnimTimerCap
         credits = false
         creditsCrossFade = 0
-        menuTimer = 0
+        bindTextTimer = 0
     end
 
     -- Fade in/out of menu
@@ -1560,6 +1548,8 @@ local function on_hud_render()
     djui_hud_render_rect(0, 0, width, height)
 end
 
+local prevMouseScroll = 0
+local mouseScroll = 0
 local function before_mario_update(m)
     if m.playerIndex ~= 0 then return end
     local controller = m.controller
@@ -1586,6 +1576,8 @@ local function before_mario_update(m)
         return
     end
 
+    mouseScroll = mouseScroll + djui_hud_get_mouse_scroll_y()
+
     local cameraToObject = m.marioObj.header.gfx.cameraToObject
     if menuAndTransition and not options then
         if menu then
@@ -1610,7 +1602,7 @@ local function before_mario_update(m)
                 end
 
                 if optionTable[optionTableRef.localModels].toggle ~= 0 then    
-                    if (controller.buttonPressed & D_JPAD) ~= 0 or (controller.buttonPressed & D_CBUTTONS) ~= 0 or controller.stickY < -60 then
+                    if (controller.buttonPressed & D_JPAD) ~= 0 or (controller.buttonPressed & D_CBUTTONS) ~= 0 or controller.stickY < -60 or prevMouseScroll < mouseScroll then
                         currCharRender = currCharRender + 1
                         local character = characterTableRender[currCharRender]
                         if character ~= nil and character.locked then
@@ -1632,8 +1624,9 @@ local function before_mario_update(m)
                         if characterColorPresets[characterTable[currChar]] ~= nil then
                             characterColorPresets[characterTable[currChar]].currPalette = 0
                         end
+                        prevMouseScroll = mouseScroll
                     end
-                    if (controller.buttonPressed & U_JPAD) ~= 0 or (controller.buttonPressed & U_CBUTTONS) ~= 0 or controller.stickY > 60 then
+                    if (controller.buttonPressed & U_JPAD) ~= 0 or (controller.buttonPressed & U_CBUTTONS) ~= 0 or controller.stickY > 60 or prevMouseScroll > mouseScroll then
                         currCharRender = currCharRender - 1
                         local character = characterTableRender[currCharRender]
                         if character ~= nil and character.locked then
@@ -1655,6 +1648,7 @@ local function before_mario_update(m)
                         if characterColorPresets[characterTable[currChar]] ~= nil then
                             characterColorPresets[characterTable[currChar]].currPalette = 0
                         end
+                        prevMouseScroll = mouseScroll
                     end
 
                     -- Tab Switcher
