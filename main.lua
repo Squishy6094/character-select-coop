@@ -179,20 +179,19 @@ local function update_character_render_table()
     local category = characterCategories[currCategory]
     if category == nil then return false end
     characterTableRender = {}
+    local listCount = 0
     for i = 1, #characterTable do
         local charCategories = string_split(characterTable[i].category, "_")
         for c = 1, #charCategories do
-            --djui_chat_message_create(charCategories[c] .. " " .. category)
             if category == charCategories[c] and not characterTable[i].locked then
                 table_insert(characterTableRender, characterTable[i])
                 if ogNum == i then
-                    currCharRender = i
-                    currChar = i
+                    currChar = ogNum
+                    currCharRender = #characterTableRender
                 end
             end
         end
     end
-    --djui_chat_message_create(category .. " - " .. #characterTableRender)
     if #characterTableRender > 0 then
         currChar = (characterTableRender[currCharRender] and characterTableRender[currCharRender].ogNum or characterTableRender[1].ogNum)
         return true
@@ -200,19 +199,6 @@ local function update_character_render_table()
         return false
     end
 end
---[[
-local function update_locked_render_list()
-    string_split()
-end
-
-local function get_curr_char_num()
-    for i = 1, #characterTable do
-        if characterTable[i].ogNum == currCharRender then
-            return characterTable[i].ogNum
-        end
-    end
-end
-]]
 
 characterCaps = {}
 characterCelebrationStar = {}
