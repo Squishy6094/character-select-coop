@@ -840,6 +840,10 @@ end
 ---@added 1
 ---@forcedoc CUTSCENE_CS_MENU
 
+---@description The ID for Character Select's Menu Animation ID, Used in combination with character_add_animations to display a specific pose in the menu.
+---@added 1.14
+---@forcedoc CS_ANIM_MENU
+
 ---@header
 ---@forcedoc Character_Select_Hooks
 
@@ -955,6 +959,7 @@ _G.charSelect = {
     controller = controller,
     gCSPlayers = gCSPlayers,
     CUTSCENE_CS_MENU = CUTSCENE_CS_MENU,
+    CS_ANIM_MENU = CS_ANIM_MENU,
 
     -- Character Select Hooks --
     hook_allow_menu_open = hook_allow_menu_open,

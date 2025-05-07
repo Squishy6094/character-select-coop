@@ -54,6 +54,8 @@ function header_set_texture(texture)
     TEX_OVERRIDE_HEADER = texture
 end
 
+CS_ANIM_MENU = CHAR_ANIM_MAX + 1
+
 local TEXT_PREF_LOAD_NAME = "Default"
 local TEXT_PREF_LOAD_ALT = 1
 
@@ -611,7 +613,6 @@ local function mario_update(m)
             currCharRender = 1
         end
 
-        local defaultTable = characterTable[1]
         local charTable = characterTable[currChar]
         p.saveName = charTable.saveName
         p.currAlt = charTable.currAlt
@@ -703,7 +704,7 @@ local function mario_update(m)
     end
     
     if p.inMenu and m.action & ACT_FLAG_ALLOW_FIRST_PERSON ~= 0 then
-        set_mario_animation(m, MARIO_ANIM_IDLE_HEAD_LEFT)
+        set_mario_animation(m, (characterAnims[p.modelId] and characterAnims[p.modelId][CS_ANIM_MENU]) and CS_ANIM_MENU or MARIO_ANIM_IDLE_HEAD_LEFT)
         m.marioObj.header.gfx.angle.y = m.faceAngle.y
     end
 
@@ -714,12 +715,7 @@ local function mario_update(m)
     end
     animTimer = animTimer + 1
         
-
-    if p.forceChar ~= nil then
-        np.overrideModelIndex = p.forceChar
-    else
-        np.overrideModelIndex = CT_MARIO
-    end
+    np.overrideModelIndex = p.forceChar ~= nil and p.forceChar or CT_MARIO
 
     -- Character Animations
     if characterAnims[p.modelId] then
@@ -982,7 +978,6 @@ local function on_hud_render()
         djui_hud_render_rect(2, 2 + 46, x - 4, height - 4 - 46)
         -- Header
         djui_hud_render_rect(2, 2, width - 4, 46)
-
 
         -- API Rendering (Below Text)
         if #renderInMenuTable.back > 0 then
