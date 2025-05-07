@@ -83,7 +83,7 @@ end
 --- @param sound CharacterSound
 local function custom_character_sound(m, sound)
     if m.playerIndex == 0 then
-        if stallTimer < stallSayLine - 1 then
+        if stallTimer < stallSayLine then
             return NO_SOUND
         end
     end
