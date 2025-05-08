@@ -26,11 +26,13 @@ jobs:
           COMMIT_ID=$(git rev-parse --short HEAD)
           echo "COMMIT_TIME=$COMMIT_TIME" >> $GITHUB_ENV
           echo "COMMIT_ID=$COMMIT_ID" >> $GITHUB_ENV
+          echo "GITHUB_REPO=${{ github.repository }}" >> $GITHUB_ENV
 
       - name: Create .github.lua file
         run: |
           echo "GITHUB_COMMIT_TIME = '${{ env.COMMIT_TIME }}'" > .github.lua
           echo "GITHUB_COMMIT_ID = '${{ env.COMMIT_ID }}'" >> .github.lua
+          echo "GITHUB_REPO = '${{ env.GITHUB_REPO }}'" >> .github.lua
 
       - name: Push Github File to Main
         uses: cpina/github-action-push-to-another-repository@v1.7.2

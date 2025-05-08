@@ -1237,7 +1237,7 @@ local function on_hud_render()
         end
         djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
         djui_hud_set_font(FONT_TINY)
-        djui_hud_print_text(TEXT_VERSION, 5, 3, 0.5)
+        djui_hud_print_text(optionTable[optionTableRef.debugInfo].toggle == 0 and TEXT_VERSION or MOD_VERSION_DEBUG, 5, 3, 0.5)
 
         --Unsupported Res Warning
         if width < 321.2 or width > 575 then
