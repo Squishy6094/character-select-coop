@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-    # Exclude the .github.lua file from triggering the workflow
+    # Exclude the a-github.lua file from triggering the workflow
     paths-ignore:
-      - '.github.lua'
+      - 'a-github.lua'
 
 permissions:
   contents: write
@@ -28,11 +28,11 @@ jobs:
           echo "COMMIT_ID=$COMMIT_ID" >> $GITHUB_ENV
           echo "GITHUB_REPO=${{ github.repository }}" >> $GITHUB_ENV
 
-      - name: Create .github.lua file
+      - name: Create a-github.lua file
         run: |
-          echo "GITHUB_COMMIT_TIME = '${{ env.COMMIT_TIME }}'" > .github.lua
-          echo "GITHUB_COMMIT_ID = '${{ env.COMMIT_ID }}'" >> .github.lua
-          echo "GITHUB_REPO = '${{ env.GITHUB_REPO }}'" >> .github.lua
+          echo "GITHUB_COMMIT_TIME = '${{ env.COMMIT_TIME }}'" > a-github.lua
+          echo "GITHUB_COMMIT_ID = '${{ env.COMMIT_ID }}'" >> a-github.lua
+          echo "GITHUB_REPO = '${{ env.GITHUB_REPO }}'" >> a-github.lua
 
       - name: Push Github File to Main
         uses: cpina/github-action-push-to-another-repository@v1.7.2
