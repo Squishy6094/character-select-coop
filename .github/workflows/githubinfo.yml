@@ -7,9 +7,6 @@ on:
     # Exclude the .github.lua file from triggering the workflow
     paths-ignore:
       - '.github.lua'
-      - '.github/workflows/**'
-    paths:
-      - '.github/workflows/githubinfo.yml'
 
 permissions:
   contents: write
