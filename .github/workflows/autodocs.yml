@@ -10,6 +10,8 @@ on:
     paths:
       - 'o-api.lua'
       - '.github/workflows/**'
+    paths-ignore:
+      - '.github/workflows/githubinfo.yml'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:

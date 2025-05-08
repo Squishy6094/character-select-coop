@@ -7,10 +7,13 @@ on:
     # Exclude the .github.lua file from triggering the workflow
     paths-ignore:
       - '.github.lua'
+      - '.github/workflows/**'
+    paths:
+      - '.github/workflows/githubinfo.yml'
 
 permissions:
   contents: write
-  
+
 jobs:
   create-lua-file:
     runs-on: ubuntu-latest
@@ -22,7 +25,7 @@ jobs:
       - name: Get current commit time and commit ID
         id: commit_info
         run: |
-          COMMIT_TIME=$(date --utc +"%Y-%m-%dT%H:%M:%SZ")
+          COMMIT_TIME=$(TZ=PST8PDT date +"%m/%d/%Y %I:%M:%S %p PST")
           COMMIT_ID=$(git rev-parse --short HEAD)
           echo "COMMIT_TIME=$COMMIT_TIME" >> $GITHUB_ENV
           echo "COMMIT_ID=$COMMIT_ID" >> $GITHUB_ENV
