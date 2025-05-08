@@ -8,6 +8,9 @@ on:
     paths-ignore:
       - '.github.lua'
 
+permissions:
+  contents: write
+  
 jobs:
   create-lua-file:
     runs-on: ubuntu-latest
