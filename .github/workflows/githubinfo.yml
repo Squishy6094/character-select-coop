@@ -1,0 +1,36 @@
+name: Generate Github Commit Info
+
+on:
+  push:
+    branches:
+      - main
+    # Exclude the .github.lua file from triggering the workflow
+    paths-ignore:
+      - '.github.lua'
+
+jobs:
+  create-lua-file:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get current commit time and commit ID
+        id: commit_info
+        run: |
+          COMMIT_TIME=$(date --utc +"%Y-%m-%dT%H:%M:%SZ")
+          COMMIT_ID=$(git rev-parse --short HEAD)
+          echo "COMMIT_TIME=$COMMIT_TIME" >> $GITHUB_ENV
+          echo "COMMIT_ID=$COMMIT_ID" >> $GITHUB_ENV
+
+      - name: Create .github.lua file
+        run: |
+          echo "GITHUB_COMMIT_TIME = '${{ env.COMMIT_TIME }}'" > .github.lua
+          echo "GITHUB_COMMIT_ID = '${{ env.COMMIT_ID }}'" >> .github.lua
+
+      - name: Commit and push .github.lua file
+        run: |
+          git add .github.lua
+          git commit -m "Add .github.lua with commit time and id"
+          git push
