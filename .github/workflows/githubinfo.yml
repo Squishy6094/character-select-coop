@@ -29,8 +29,14 @@ jobs:
           echo "GITHUB_COMMIT_TIME = '${{ env.COMMIT_TIME }}'" > .github.lua
           echo "GITHUB_COMMIT_ID = '${{ env.COMMIT_ID }}'" >> .github.lua
 
-      - name: Commit and push .github.lua file
-        run: |
-          git add .github.lua
-          git commit -m "Add .github.lua with commit time and id"
-          git push
+      - name: Push Github File to Main
+        uses: cpina/github-action-push-to-another-repository@v1.7.2
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: '.'
+          destination-github-username: 'Squishy6094'
+          destination-repository-name: 'character-select-coop'
+          user-email: squishy6094@gmail.com
+          target-branch: main
+          commit-message: Autogen Github Info
