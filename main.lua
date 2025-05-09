@@ -385,6 +385,7 @@ local prefCharColor = {r = 255, g = 50, b = 50}
 local function load_preferred_char()
     local savedChar = mod_storage_load("PrefChar")
     local savedAlt = tonumber(mod_storage_load("PrefAlt"))
+    local savedPalette = tonumber(mod_storage_load("PrefPalette"))
     if savedChar == nil or savedChar == "" then
         mod_storage_save("PrefChar", "Default")
         savedChar = "Default"
@@ -411,6 +412,14 @@ local function load_preferred_char()
             end
         end
     end
+    if savedPalette == nil then
+        local paletteSave = currChar > 1 and 1 or 0
+        mod_storage_save("PrefAlt", tostring(paletteSave))
+        savedPalette = paletteSave
+    end
+    gCSPlayers[0].presetPalette = savedPalette
+    local model = characterTable[currChar][characterTable[currChar].currAlt].model
+    characterColorPresets[model].currPalette = savedPalette
 
     characterTable[1].currAlt = gNetworkPlayers[0].modelIndex + 1
 
@@ -440,6 +449,7 @@ local function mod_storage_save_pref_char(charTable)
     mod_storage_save("PrefChar", charTable.saveName)
     mod_storage_save("PrefAlt", tostring(charTable.currAlt))
     mod_storage_save("PrefCharColor", tostring(charTable[charTable.currAlt].color.r) .. "_" .. tostring(charTable[charTable.currAlt].color.g) .. "_" .. tostring(charTable[charTable.currAlt].color.b))
+    mod_storage_save("PrefPalette", tostring(gCSPlayers[0].presetPalette))
     TEXT_PREF_LOAD_NAME = charTable.saveName
     TEXT_PREF_LOAD_ALT = charTable.currAlt
     prefCharColor = charTable[charTable.currAlt].color
