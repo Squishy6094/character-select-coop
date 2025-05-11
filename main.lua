@@ -417,10 +417,12 @@ local function load_preferred_char()
         mod_storage_save("PrefAlt", tostring(paletteSave))
         savedPalette = paletteSave
     end
-    gCSPlayers[0].presetPalette = savedPalette
     local model = characterTable[currChar][characterTable[currChar].currAlt].model
-    characterColorPresets[model].currPalette = savedPalette
-
+    if characterColorPresets[model] ~= nil then
+        gCSPlayers[0].presetPalette = savedPalette
+        characterColorPresets[model].currPalette = savedPalette
+    end
+    
     characterTable[1].currAlt = gNetworkPlayers[0].modelIndex + 1
 
     local savedCharColors = mod_storage_load("PrefCharColor")
