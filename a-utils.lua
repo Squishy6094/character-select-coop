@@ -21,7 +21,6 @@ local dependacyFiles = {
     "actors/armature_geo.bin",
 }
 local legacyFiles = {
-    "a-utils.lua",
     "voice.lua",
     "palettes.lua",
     "z-anims.lua",
@@ -44,25 +43,23 @@ for i = 1, #legacyFiles do
     end
 end
 if #fileErrorList > 0 then
-    djui_popup_create("\\#FFAAAA\\Character Select is having\nfile issues and cannot load!\n\nErrors have been logged in chat!", 4)
-    local errorString = "\\#FFAAAA\\Character Select File Issues"
-    for i = 1, #fileErrorList do
-        log_to_console(errorString)
-        errorString = errorString .. "\n" .. fileErrorList[i]
-    end
-    errorString = errorString + "\n\nThe best way to resolve these issues is to delete your current version of Character Select and then install the latest version!"
-    
-    
-    log_to_console(errorString)
-    local stallTimer = 0
+    incompatibleClient = true
+    local frameCount = 0
     hook_event(HOOK_UPDATE, function ()
-        stallTimer = stallTimer + 1
-        if stallTimer == 3 then
+        frameCount = frameCount + 1
+        if frameCount == 5 then
+            local errorString = "\\#FFAAAA\\Character Select File Issues:"
+            djui_popup_create("\\#FFAAAA\\Character Select is having\nfile issues and cannot load!\n\nErrors have been logged in chat!", 4)
+            for i = 1, #fileErrorList do
+                log_to_console(errorString)
+                errorString = errorString .. "\n" .. fileErrorList[i]
+            end
+            errorString = errorString .. "\n\nThe best way to resolve these issues is to delete your current version of Character Select and then install the latest version!"
+            
+            log_to_console(errorString)
             djui_chat_message_create(errorString)
         end
     end)
-
-    incompatibleClient = true
     return 0
 end
 
@@ -85,48 +82,48 @@ end
 E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 
 local saveableCharacters = {
-    ["1"] = true,
-    ["2"] = true,
-    ["3"] = true,
-    ["4"] = true,
-    ["5"] = true,
-    ["6"] = true,
-    ["7"] = true,
-    ["8"] = true,
-    ["9"] = true,
-    ["0"] = true,
-    ["a"] = true,
-    ["b"] = true,
-    ["c"] = true,
-    ["d"] = true,
-    ["e"] = true,
-    ["f"] = true,
-    ["g"] = true,
-    ["h"] = true,
-    ["i"] = true,
-    ["j"] = true,
-    ["k"] = true,
-    ["l"] = true,
-    ["m"] = true,
-    ["n"] = true,
-    ["o"] = true,
-    ["p"] = true,
-    ["q"] = true,
-    ["r"] = true,
-    ["s"] = true,
-    ["t"] = true,
-    ["u"] = true,
-    ["v"] = true,
-    ["w"] = true,
-    ["x"] = true,
-    ["y"] = true,
-    ["z"] = true,
-    ["_"] = true,
-    ["-"] = true,
-    ["."] = true,
+    ["1"] = 1,
+    ["2"] = 1,
+    ["3"] = 1,
+    ["4"] = 1,
+    ["5"] = 1,
+    ["6"] = 1,
+    ["7"] = 1,
+    ["8"] = 1,
+    ["9"] = 1,
+    ["0"] = 1,
+    ["a"] = 1,
+    ["b"] = 1,
+    ["c"] = 1,
+    ["d"] = 1,
+    ["e"] = 1,
+    ["f"] = 1,
+    ["g"] = 1,
+    ["h"] = 1,
+    ["i"] = 1,
+    ["j"] = 1,
+    ["k"] = 1,
+    ["l"] = 1,
+    ["m"] = 1,
+    ["n"] = 1,
+    ["o"] = 1,
+    ["p"] = 1,
+    ["q"] = 1,
+    ["r"] = 1,
+    ["s"] = 1,
+    ["t"] = 1,
+    ["u"] = 1,
+    ["v"] = 1,
+    ["w"] = 1,
+    ["x"] = 1,
+    ["y"] = 1,
+    ["z"] = 1,
+    ["_"] = 1,
+    ["-"] = 1,
+    ["."] = 1,
 
     -- Replace with Underscore
-    [" "] = false,
+    [" "] = 0,
 }
 
 --- @param string string
@@ -143,9 +140,9 @@ function string_space_to_underscore(string)
     local s = ''
     for i = 1, #string do
         local c = string:sub(i,i)
-        if saveableCharacters[string_lower(c)] then
+        if saveableCharacters[string_lower(c)] == 1 then
             s = s .. c
-        elseif saveableCharacters[string_lower(c)] ~= nil then
+        elseif saveableCharacters[string_lower(c)] == 0 then
             s = s .. "_"
         end
     end

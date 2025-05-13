@@ -1,3 +1,5 @@
+if incompatibleClient then return 0 end
+
 -- Original Made by EliteMasterEric along with CoopDX PR #321 to replace dialog depending on character --
 -- https://github.com/coop-deluxe/sm64coopdx/pull/321 --
 -- Eric's Original stuffs will be added as soon as there is some way to directly get dialog strings
