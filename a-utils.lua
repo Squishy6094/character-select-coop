@@ -51,7 +51,6 @@ if #fileErrorList > 0 then
             local errorString = "\\#FFAAAA\\Character Select File Issues:"
             djui_popup_create("\\#FFAAAA\\Character Select is having\nfile issues and cannot load!\n\nErrors have been logged in chat!", 4)
             for i = 1, #fileErrorList do
-                log_to_console(errorString)
                 errorString = errorString .. "\n" .. fileErrorList[i]
             end
             errorString = errorString .. "\n\nThe best way to resolve these issues is to delete your current version of Character Select and then install the latest version!"
