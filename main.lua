@@ -535,6 +535,7 @@ local function menu_is_allowed(m)
     return true
 end
 
+--[[
 local function get_next_unlocked_char()
     for i = currChar, #characterTable do
         if not characterTable[i].locked then
@@ -552,6 +553,7 @@ local function get_last_unlocked_char()
     end
     return 1
 end
+]]
 
 -------------------
 -- Model Handler --
@@ -668,14 +670,17 @@ local function mario_update(m)
                 if type(unlock) == TYPE_FUNCTION then
                     if unlock() then
                         currChar.locked = false
-                        if stallFrame == 3 and notif then
-                            if optionTable[optionTableRef.notification].toggle > 0 then
-                                djui_popup_create('Character Select:\nUnlocked '..currChar.name..'\nas a Playable Character!', 3)
-                            end
-                        end
                     end
                 elseif type(unlock) == TYPE_BOOLEAN then
                     currChar.locked = not unlock
+                end
+                if not currChar.locked then -- Character was unlocked
+                    update_character_render_table()
+                    if stallFrame == 3 and notif then
+                        if optionTable[optionTableRef.notification].toggle > 0 then
+                            djui_popup_create('Character Select:\nUnlocked '..tostring(currChar[1].name)..'\nas a Playable Character!', 3)
+                        end
+                    end
                 end
             end
         end
@@ -1599,10 +1604,12 @@ local function before_mario_update(m)
                 if optionTable[optionTableRef.localModels].toggle ~= 0 then    
                     if (controller.buttonPressed & D_JPAD) ~= 0 or (controller.buttonPressed & D_CBUTTONS) ~= 0 or controller.stickY < -60 or prevMouseScroll < mouseScroll then
                         currCharRender = currCharRender + 1
+                        --[[
                         local character = characterTableRender[currCharRender]
                         if character ~= nil and character.locked then
                             currCharRender = get_next_unlocked_char()
                         end
+                        ]]
                         if (controller.buttonPressed & D_CBUTTONS) == 0 then
                             inputStallTimerDirectional = inputStallToDirectional
                         else
@@ -1623,10 +1630,12 @@ local function before_mario_update(m)
                     end
                     if (controller.buttonPressed & U_JPAD) ~= 0 or (controller.buttonPressed & U_CBUTTONS) ~= 0 or controller.stickY > 60 or prevMouseScroll > mouseScroll then
                         currCharRender = currCharRender - 1
+                        --[[
                         local character = characterTableRender[currCharRender]
                         if character ~= nil and character.locked then
                             currCharRender = get_last_unlocked_char()
                         end
+                        ]]
                         if (controller.buttonPressed & U_CBUTTONS) == 0 then
                             inputStallTimerDirectional = inputStallToDirectional
                         else
