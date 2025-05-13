@@ -703,6 +703,7 @@ local function mario_update(m)
     
     if p.inMenu and m.action & ACT_FLAG_ALLOW_FIRST_PERSON ~= 0 then
         set_mario_animation(m, (characterAnims[p.modelId] and characterAnims[p.modelId][CS_ANIM_MENU]) and CS_ANIM_MENU or MARIO_ANIM_IDLE_HEAD_LEFT)
+        set_anim_to_frame(m, 0)
         m.marioObj.header.gfx.angle.y = m.faceAngle.y
     end
 
@@ -935,6 +936,7 @@ end
 local buttonAltAnim = 0
 local menuOpacity = 245
 local bindTextTimerLoop = 150
+local menuText = {}
 local function on_hud_render()
     local FONT_USER = djui_menu_get_font()
     djui_hud_set_resolution(RESOLUTION_N64)
@@ -1030,7 +1032,7 @@ local function on_hud_render()
                 end
             end
 
-            local menuText = {
+            menuText = {
                 TEXT_PREF_SAVE .. " - " .. TEXT_PREF_LOAD_NAME
             }
             local modelId = gCSPlayers[0].modelId
@@ -1040,7 +1042,9 @@ local function on_hud_render()
             elseif stopPalettes then
                 table_insert(menuText, TEXT_PALETTE_RESTRICTED)
             end
-            bindTextTimer = (bindTextTimer + 1)%(bindTextTimerLoop*#menuText)
+            if #menuText > 1 or bindTextTimer < 10 then
+                bindTextTimer = (bindTextTimer + 1)%(bindTextTimerLoop*#menuText)
+            end
             local currText = menuText[math.ceil(bindTextTimer/bindTextTimerLoop)]
             if currText ~= nil then
                 local currTextOpacity = clamp(math.abs(math.sin(bindTextTimer*MATH_PI/bindTextTimerLoop)), 0, 0.2) * 5 * 255
@@ -1677,6 +1681,15 @@ local function before_mario_update(m)
                     else
                         play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
                     end
+                    
+                    -- Set bottom right text
+                    if #menuText > 1 then
+                        if bindTextTimer > 10 then
+                            bindTextTimer = bindTextTimerLoop * #menuText - 10
+                        else
+                            bindTextTimer = bindTextTimerLoop * (#menuText - 1) + 10
+                        end
+                    end
                 end
                 if (controller.buttonPressed & B_BUTTON) ~= 0 then
                     menu = false
@@ -1696,6 +1709,15 @@ local function before_mario_update(m)
                     else
                         play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
                         inputStallTimerButton = inputStallToButton
+                    end
+
+                    -- Set bottom right text
+                    if #menuText > 1 then
+                        if bindTextTimer < bindTextTimerLoop + 10 then
+                            bindTextTimer = bindTextTimerLoop - 10
+                        else
+                            bindTextTimer = bindTextTimerLoop + 10
+                        end
                     end
                 end
                 if characterColorPresets[gCSPlayers[0].modelId] ~= nil then
