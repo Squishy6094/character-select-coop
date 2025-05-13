@@ -394,7 +394,12 @@ local function load_preferred_char()
         mod_storage_save("PrefAlt", "1")
         savedAlt = 1
     end
-    if savedChar ~= nil and savedChar ~= "Default" then
+    if savedPalette == nil then
+        local paletteSave = savedChar ~= "Default" and 1 or 0
+        mod_storage_save("PrefAlt", tostring(paletteSave))
+        savedPalette = paletteSave
+    end
+    if savedChar ~= "Default" and optionTable[optionTableRef.localModels].toggle == 1 then
         for i = 2, #characterTable do
             local char = characterTable[i]
             if char.saveName == savedChar and not char.locked then
@@ -403,24 +408,17 @@ local function load_preferred_char()
                 if savedAlt > 0 and savedAlt <= #char then
                     char.currAlt = savedAlt
                 end
-                if optionTable[optionTableRef.localModels].toggle == 1 then
-                    if optionTable[optionTableRef.notification].toggle > 0 then
-                        djui_popup_create('Character Select:\nYour Preferred Character\n"' .. string_underscore_to_space(char[char.currAlt].name) .. '"\nwas applied successfully!', 4)
-                    end
+                local model = characterTable[currChar][savedAlt].model
+                if characterColorPresets[model] ~= nil then
+                    gCSPlayers[0].presetPalette = savedPalette
+                    characterColorPresets[model].currPalette = savedPalette
+                end
+                if optionTable[optionTableRef.notification].toggle > 0 then
+                    djui_popup_create('Character Select:\nYour Preferred Character\n"' .. string_underscore_to_space(char[char.currAlt].name) .. '"\nwas applied successfully!', 4)
                 end
                 break
             end
         end
-    end
-    if savedPalette == nil then
-        local paletteSave = currChar > 1 and 1 or 0
-        mod_storage_save("PrefAlt", tostring(paletteSave))
-        savedPalette = paletteSave
-    end
-    local model = characterTable[currChar][characterTable[currChar].currAlt].model
-    if characterColorPresets[model] ~= nil then
-        gCSPlayers[0].presetPalette = savedPalette
-        characterColorPresets[model].currPalette = savedPalette
     end
     
     characterTable[1].currAlt = gNetworkPlayers[0].modelIndex + 1

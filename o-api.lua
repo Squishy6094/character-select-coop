@@ -182,9 +182,8 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
         healthTexture = tableCache.healthTexture,
     } or nil
 
-    local ccp = characterColorPresets
-    if modelInfo ~= nil and ccp[modelInfo] ~= nil and ccp[tableCache.model] ~= nil and ccp[modelInfo].currPalette <= ccp[tableCache.model].currPalette then
-        ccp[modelInfo].currPalette = ccp[tableCache.model].currPalette
+    if modelInfo and characterColorPresets[modelInfo] and tableCache.model and characterColorPresets[tableCache.model] and #characterColorPresets[modelInfo] == #characterColorPresets[tableCache.model] then
+        characterColorPresets[modelInfo].currPalette = characterColorPresets[tableCache.model].currPalette
     end
 end
 
