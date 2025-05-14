@@ -108,6 +108,12 @@ characterTable = {
             lifeIcon = gTextures.luigi_head,
             starIcon = gTextures.star,
             camScale = 1.0,
+            healthTexture = {
+                label = {
+                    left = get_texture_info("char-select-luigi-meter-left"),
+                    right = get_texture_info("char-select-luigi-meter-right"),
+                }
+            }
         },
         [3] = {
             name = "Toad",
@@ -125,6 +131,12 @@ characterTable = {
             lifeIcon = gTextures.toad_head,
             starIcon = gTextures.star,
             camScale = 0.8,
+            healthTexture = {
+                label = {
+                    left = get_texture_info("char-select-toad-meter-left"),
+                    right = get_texture_info("char-select-toad-meter-right"),
+                }
+            }
         },
         [4] = {
             name = "Waluigi",
@@ -142,6 +154,12 @@ characterTable = {
             lifeIcon = gTextures.waluigi_head,
             starIcon = gTextures.star,
             camScale = 1.1,
+            healthTexture = {
+                label = {
+                    left = get_texture_info("char-select-waluigi-meter-left"),
+                    right = get_texture_info("char-select-waluigi-meter-right"),
+                }
+            }
         },
         [5] = {
             name = "Wario",
@@ -160,6 +178,12 @@ characterTable = {
             lifeIcon = gTextures.wario_head,
             starIcon = gTextures.star,
             camScale = 1.0,
+            healthTexture = {
+                label = {
+                    left = get_texture_info("char-select-wario-meter-left"),
+                    right = get_texture_info("char-select-wario-meter-right"),
+                }
+            }
         },
     },
 }

@@ -377,6 +377,7 @@ function render_star_icon_from_local_index_interpolated(localIndex, prevX, prevY
     djui_hud_render_texture_interpolated(starIcon, prevX, prevY, prevScale / (starIcon.width * MATH_DIVIDE_16), prevScale / (starIcon.height * MATH_DIVIDE_16), x, y, scale / (starIcon.width * MATH_DIVIDE_16), scale / (starIcon.height * MATH_DIVIDE_16))
 end
 
+-- Health Meter --
 local TEXT_DEFAULT_METER_PREFIX = "char-select-custom-meter-"
 local TEX_DEFAULT_METER_LEFT = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."left")
 local TEX_DEFAULT_METER_RIGHT = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."right")
@@ -460,7 +461,7 @@ local pieTextureNames = {
 }
 
 local function render_hud_health()
-    if currChar == 1 then
+    if currChar == 1 and characterTable[1].currAlt == 1 then
         texture_override_reset("texture_power_meter_left_side")
         texture_override_reset("texture_power_meter_right_side")
 		for i = 1, 8 do
@@ -474,9 +475,9 @@ local function render_hud_health()
 			texture_override_set("texture_power_meter_left_side", textureTable.label.left)
 			texture_override_set("texture_power_meter_right_side", textureTable.label.right)
 		end
-		for i = 1, 8 do
-			texture_override_set("texture_power_meter_" .. pieTextureNames[i], textureTable.pie[i])
-		end
+        for i = 1, 8 do
+            texture_override_set("texture_power_meter_" .. pieTextureNames[i], (textureTable.pie and textureTable.pie[i]) and textureTable.pie[i] or defaultMeterInfo.pie[i])
+        end
 	else -- resets the health HUD
         texture_override_set("texture_power_meter_left_side", defaultMeterInfo.label.left)
         texture_override_set("texture_power_meter_right_side", defaultMeterInfo.label.right)
