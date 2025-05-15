@@ -580,7 +580,7 @@ end
 ---@added 1.10
 ---@param charNum integer|nil The number of the Character you want to Lock
 ---@param unlockCondition function|boolean|nil The condition for if the character stays locked
----@param notify boolean|nil Wheather Character Select should notify the user when the character is unlocked
+---@param notify boolean|nil Toggles whether Character Select should notify the user when the character is unlocked
 local function character_set_locked(charNum, unlockCondition, notify)
     if charNum == nil or charNum > #characterTable or charNum < 2 then return end
     if unlockCondition == nil then unlockCondition = false end
@@ -759,7 +759,7 @@ local controller = {
 ---@param toggleMax number|nil The max number the option can be toggled to (Defaults to `1`)
 ---@param toggleNames table|nil A table of strings, each entry being for a toggle's name `{"Off", "On"}`
 ---@param description table|nil A table of strings, each entry being a new line `{"This toggle allows your", "character to feel everything."}`
----@param save boolean|nil Wheather the option retains between sessions (Defaults to `true`)
+---@param save boolean|nil Toggles whether the option retains between sessions (Defaults to `true`)
 ---@return number --The table position of the option added
 local function add_option(name, toggleDefault, toggleMax, toggleNames, description, save)
     if save == nil then save = true end

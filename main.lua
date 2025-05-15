@@ -271,7 +271,7 @@ optionTable = {
         toggleDefault = 1,
         toggleMax = 2,
         toggleNames = {"Off", "On", "Pop-ups Only"},
-        description = {"Toggles wheather Pop-ups and", "Chat Messages display"}
+        description = {"Toggles whether Pop-ups and", "Chat Messages display"}
     },
     [optionTableRef.menuColor] = {
         name = "Menu Color",
