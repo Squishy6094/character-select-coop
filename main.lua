@@ -922,7 +922,12 @@ local targetMenuColor = {r = 0 , g = 0, b = 0}
 menuColor = targetMenuColor
 local menuColorHalf = menuColor
 local transSpeed = 0.1
+local prevBindText = 1
+local bindText = 1
+local bindTextTimerLoop = 150
+local bindTextTimerLoopCount = 0
 local bindTextTimer = 0
+local bindTextOpacity = -255
 function update_menu_color()
     if optionTable[optionTableRef.menuColor].toggle == nil then return end
     if optionTable[optionTableRef.localModels].toggle == 1 then
@@ -962,7 +967,6 @@ end
 
 local buttonAltAnim = 0
 local menuOpacity = 245
-local bindTextTimerLoop = 150
 local menuText = {}
 local function on_hud_render()
     local FONT_USER = djui_menu_get_font()
@@ -1069,16 +1073,33 @@ local function on_hud_render()
             elseif stopPalettes then
                 table_insert(menuText, TEXT_PALETTE_RESTRICTED)
             end
-            if #menuText > 1 or bindTextTimer < 10 then
-                bindTextTimer = (bindTextTimer + 1)%(bindTextTimerLoop*#menuText)
+            if #menuText > 1 then
+                bindTextTimer = (bindTextTimer + 1)%(bindTextTimerLoop)
             end
-            local currText = menuText[math.ceil(bindTextTimer/bindTextTimerLoop)]
-            if currText ~= nil then
-                local currTextOpacity = clamp(math.abs(math.sin(bindTextTimer*MATH_PI/bindTextTimerLoop)), 0, 0.2) * 5 * 255
-                djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, currTextOpacity)
-                djui_hud_print_text(currText, width - textX - djui_hud_measure_text(currText) * 0.15, height - 15, 0.3)
-                djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
+            if bindText ~= prevBindText or bindTextTimer == 0 then
+                if bindTextTimer == 0 then
+                    bindText = (bindText%#menuText) + 1
+                end
+                bindTextOpacity = -254
             end
+            if bindTextOpacity > -255 and bindTextOpacity < 255 then
+                bindTextOpacity = math.min(bindTextOpacity + 10, 255)
+                if bindTextOpacity == 255 then
+                    bindTextOpacity = -255
+                    prevBindText = bindText
+                end
+            end
+            djui_chat_message_create(tostring(bindTextTimer))
+            djui_chat_message_create(tostring(bindText))
+            djui_chat_message_create(tostring(prevBindText))
+            --local bindTextOpacity = clamp(math.abs(math.sin(bindTextTimer*MATH_PI/bindTextTimerLoop)), 0, 0.2) * 5 * 255
+            local fadeOut = math_abs(clamp(bindTextOpacity, -255, 0))
+            local fadeIn = math_abs(clamp(bindTextOpacity, 0, 255))
+            djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, fadeOut)
+            djui_hud_print_text(menuText[bindText], width - textX - djui_hud_measure_text(menuText[bindText]) * 0.15, height - 15, 0.3)
+            djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, fadeIn)
+            djui_hud_print_text(menuText[bindText], width - textX - djui_hud_measure_text(menuText[bindText]) * 0.15, height - 15, 0.3)
+            djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
         else
             -- Debugging Info --
             local TEXT_NAME = "Name: " .. character.name
