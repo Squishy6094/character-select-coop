@@ -9,7 +9,7 @@ end
 
 local dependacyFiles = {
     -- Required Lua File
-    "a-github.lua",
+    --"a-github.lua",
     "dialog.lua",
     "main.lua",
     "n-hud.lua",
@@ -66,7 +66,7 @@ end
 MOD_VERSION_API = 1
 MOD_VERSION_MAJOR = 14
 MOD_VERSION_MINOR = 0
-MOD_VERSION_INDEV = true
+MOD_VERSION_INDEV = false
 MOD_VERSION_STRING = tostring(MOD_VERSION_API) .. "." .. tostring(MOD_VERSION_MAJOR) .. (MOD_VERSION_MINOR > 0 and ("." .. tostring(MOD_VERSION_MINOR)) or "") .. (MOD_VERSION_INDEV and " (In-Dev)" or "")
 MOD_VERSION_DEBUG = tostring(GITHUB_REPO) .. " | " .. tostring(GITHUB_COMMIT_ID) .. " | " .. tostring(GITHUB_COMMIT_TIME)
 

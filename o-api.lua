@@ -17,6 +17,10 @@ local table_insert,djui_hud_measure_text,smlua_model_util_get_id,type,tonumber =
 local characterVoices = {}
 local saveNameTable = {}
 
+-- Here for functions below api
+---@ignore
+local function placeholder() end
+
 ---@ignore
 local function split_text_into_lines(text)
     local words = {}
@@ -952,6 +956,7 @@ _G.charSelect = {
 
     -- Misc --
     dialog_set_replace_name = dialog_set_replace_name, -- Function located in dialog.lua
+    update_preset_palette = placeholder, -- Function located in z-palettes.lua
 
     -- Tables & Variables --
     optionTableRef = optionTableRef,
@@ -963,5 +968,6 @@ _G.charSelect = {
     -- Character Select Hooks --
     hook_allow_menu_open = hook_allow_menu_open,
     hook_render_in_menu = hook_render_in_menu,
+    config_character_sounds = placeholder, -- Function located in z-voice.lua
     character_hook_moveset = character_hook_moveset,
 }
