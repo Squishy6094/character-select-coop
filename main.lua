@@ -1080,10 +1080,10 @@ local function on_hud_render()
             end
             if bindTextTimer == 0 then
                 bindText = bindText + 1
-                if bindText > #menuText then
-                    bindText = 1
-                end
                 bindTextOpacity = -254
+            end
+            if bindText > #menuText or not menuText[bindText] then
+                bindText = 1
             end
             if bindTextOpacity > -255 and bindTextOpacity < 255 then
                 bindTextOpacity = math.min(bindTextOpacity + 25, 255)
