@@ -1,5 +1,5 @@
 -- name: Character Select
--- description:\\#ffff33\\--- Character Select Coop v1.14 ---\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
+-- description:\\#ffff33\\-- Character Select Coop v1.14.1 --\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
 -- pausable: false
 -- category: cs
 
@@ -1097,10 +1097,12 @@ local function on_hud_render()
             --local bindTextOpacity = clamp(math.abs(math.sin(bindTextTimer*MATH_PI/bindTextTimerLoop)), 0, 0.2) * 5 * 255
             local fadeOut = math_abs(clamp(bindTextOpacity, -255, 0))
             local fadeIn = math_abs(clamp(bindTextOpacity, 0, 255))
+            local bindTextScale = math.min((x - 10)/(djui_hud_measure_text(menuText[bindText]) * 0.3), 1)*0.3
+            local prevBindTextScale = math.min((x - 10)/(djui_hud_measure_text(prevBindText) * 0.3), 1)*0.3
             djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, fadeOut)
-            djui_hud_print_text(prevBindText, width - textX - djui_hud_measure_text(prevBindText) * 0.15, height - 15, 0.3)
+            djui_hud_print_text(prevBindText, width - textX - djui_hud_measure_text(prevBindText) * prevBindTextScale*0.5, height - 15, prevBindTextScale)
             djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, fadeIn)
-            djui_hud_print_text(menuText[bindText], width - textX - djui_hud_measure_text(menuText[bindText]) * 0.15, height - 15, 0.3)
+            djui_hud_print_text(menuText[bindText], width - textX - djui_hud_measure_text(menuText[bindText]) * bindTextScale*0.5, height - 15, bindTextScale)
             djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
         else
             -- Debugging Info --

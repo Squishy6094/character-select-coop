@@ -980,7 +980,7 @@ local obj_set_model_extended_original = obj_set_model_extended
 local function obj_set_model_extended(obj, modelInfo)
     for i = 0, MAX_PLAYERS - 1 do
         if gMarioStates[i].marioObj == obj then
-            log_to_console("Character Select: Mario Object cannot be changed with obj_set_model_extended while Character Select is Active, please use character_edit!!", CONSOLE_MESSAGE_WARNING)
+            log_to_console("Character Select: Mario Object cannot be changed with 'obj_set_model_extended' while Character Select is Active, please use 'character_edit'!!", CONSOLE_MESSAGE_WARNING)
         end
     end
     return obj_set_model_extended_original(obj, modelInfo)
