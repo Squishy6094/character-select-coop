@@ -203,7 +203,7 @@ end
 ---@param lifeIcon TextureInfo|string|nil Use get_texture_info
 ---@param camScale integer|nil Zooms the camera based on a multiplier (Default `1`)
 local function character_edit(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
-    character_edit_costume(charNum, 1, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
+    character_edit_costume(charNum, characterTable[charNum] and characterTable[charNum].currAlt or 1, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
 end
 
 ---@description A function that adds a voice table to a character
@@ -971,3 +971,19 @@ _G.charSelect = {
     config_character_sounds = placeholder, -- Function located in z-voice.lua
     character_hook_moveset = character_hook_moveset,
 }
+
+-- Replace base functions
+local obj_set_model_extended_original = obj_set_model_extended
+
+-- Replace obj_set_model_extended to error for mario models
+---@ignore
+local function obj_set_model_extended(obj, modelInfo)
+    for i = 0, MAX_PLAYERS - 1 do
+        if gMarioStates[i].marioObj == obj then
+            log_to_console("Character Select: Mario Object cannot be changed with 'obj_set_model_extended' while Character Select is Active, please use 'character_edit'!!", CONSOLE_MESSAGE_WARNING)
+        end
+    end
+    return obj_set_model_extended_original(obj, modelInfo)
+end
+
+_G.obj_set_model_extended = obj_set_model_extended

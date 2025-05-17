@@ -1,6 +1,14 @@
 -- localize functions to improve performance - a-utils.lua
 local string_lower,string_format,table_insert,get_date_and_time = string.lower,string.format,table.insert,get_date_and_time
 
+-- Version Data --
+MOD_VERSION_API = 1
+MOD_VERSION_MAJOR = 14
+MOD_VERSION_MINOR = 1
+MOD_VERSION_INDEV = false
+MOD_VERSION_STRING = tostring(MOD_VERSION_API) .. "." .. tostring(MOD_VERSION_MAJOR) .. (MOD_VERSION_MINOR > 0 and ("." .. tostring(MOD_VERSION_MINOR)) or "") .. (MOD_VERSION_INDEV and " (In-Dev)" or "")
+MOD_VERSION_DEBUG = tostring(GITHUB_REPO) .. " | " .. tostring(GITHUB_COMMIT_ID) .. " | " .. tostring(GITHUB_COMMIT_TIME)
+
 if VERSION_NUMBER < 38 then
     djui_popup_create("\n\\#FFAAAA\\Character Select requires\n the latest version of CoopDX to use!\n\nYou can find CoopDX here:\n\\#6666FF\\https://sm64coopdx.com", 5)
     incompatibleClient = true
@@ -61,14 +69,6 @@ if #fileErrorList > 0 then
     end)
     return 0
 end
-
--- Version Data --
-MOD_VERSION_API = 1
-MOD_VERSION_MAJOR = 14
-MOD_VERSION_MINOR = 0
-MOD_VERSION_INDEV = false
-MOD_VERSION_STRING = tostring(MOD_VERSION_API) .. "." .. tostring(MOD_VERSION_MAJOR) .. (MOD_VERSION_MINOR > 0 and ("." .. tostring(MOD_VERSION_MINOR)) or "") .. (MOD_VERSION_INDEV and " (In-Dev)" or "")
-MOD_VERSION_DEBUG = tostring(GITHUB_REPO) .. " | " .. tostring(GITHUB_COMMIT_ID) .. " | " .. tostring(GITHUB_COMMIT_TIME)
 
 ommActive = false
 for i in pairs(gActiveMods) do
