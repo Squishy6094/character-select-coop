@@ -973,25 +973,17 @@ _G.charSelect = {
 }
 
 -- Replace base functions
-
----@ignore
 local obj_set_model_extended_original = obj_set_model_extended
 
--- Replace obj_set_model_extended with our own function to redirect to edit if needbe
+-- Replace obj_set_model_extended to error for mario models
 ---@ignore
 local function obj_set_model_extended(obj, modelInfo)
-    local isMario = false
     for i = 0, MAX_PLAYERS - 1 do
         if gMarioStates[i].marioObj == obj then
-            if i == 0 then
-                character_edit(character_get_current_number(0), nil, nil, nil, nil, modelInfo)
-            end
-            isMario = true
+            log_to_console("Character Select: Mario Object cannot be changed with obj_set_model_extended while Character Select is Active, please use character_edit!!", CONSOLE_MESSAGE_WARNING)
         end
     end
-    if not isMario then
-        obj_set_model_extended_original(obj, modelInfo)
-    end
+    return obj_set_model_extended_original(obj, modelInfo)
 end
 
 _G.obj_set_model_extended = obj_set_model_extended
