@@ -969,14 +969,16 @@ local menuOpacity = 245
 local menuText = {}
 local function on_hud_render()
     local FONT_USER = djui_menu_get_font()
-    djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_font(FONT_ALIASED)
-
-    local width = djui_hud_get_screen_width() + 1.4
+    djui_hud_set_resolution(RESOLUTION_DJUI)
+    local djuiWidth = djui_hud_get_screen_width()
+    local djuiHeight = djui_hud_get_screen_height()
+    djui_hud_set_resolution(RESOLUTION_N64)
+    local width = djuiWidth * (240/djuiHeight) -- Get accurate, unrounded width
     local height = 240
     local widthHalf = width * 0.5
     local heightHalf = height * 0.5
-    local widthScale = maxf(width, 321.4) * MATH_DIVIDE_320
+    local widthScale = maxf(width, 320) * MATH_DIVIDE_320
 
     update_menu_color()
 
@@ -1304,7 +1306,7 @@ local function on_hud_render()
         djui_hud_print_text(optionTable[optionTableRef.debugInfo].toggle == 0 and TEXT_VERSION or MOD_VERSION_DEBUG, 5, 3, 0.5)
 
         --Unsupported Res Warning
-        if width < 321.2 or width > 575 then
+        if width < 319 or width > 575 then
             djui_hud_print_text(TEXT_RATIO_UNSUPPORTED, 5, 39, 0.5)
         end
 
