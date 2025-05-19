@@ -665,7 +665,6 @@ local function mario_update(m)
             gLakituState.pos.x = m.pos.x + sins(faceAngle) * 500 * camScale
             gLakituState.pos.y = m.pos.y + 100 * camScale
             gLakituState.pos.z = m.pos.z + coss(faceAngle) * 500 * camScale
-            set_window_title("Character Select v".. MOD_VERSION_STRING .. " - " .. string_underscore_to_space(charTable[charTable.currAlt].name) .. " (CoopDX)")
             p.inMenu = true
         else
             if p.inMenu then
@@ -677,7 +676,6 @@ local function mario_update(m)
                     m.area.camera.cutscene = CUTSCENE_STOP
                 end
                 p.inMenu = false
-                reset_window_title()
             end
             local currFOV = get_current_fov()
             if currFOV ~= menuFOV then
