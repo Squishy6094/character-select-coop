@@ -198,7 +198,7 @@ local characterTableRender = {}
 
 local function update_character_render_table()
     local ogNum = currChar
-    currChar = 1
+    --currChar = 1
     currCharRender = 1
     local category = characterCategories[currCategory]
     if category == nil then return false end
@@ -216,7 +216,7 @@ local function update_character_render_table()
             end
         end
     end
-    if #characterTableRender > 0 then
+    if #characterTableRender > 1 then
         currChar = (characterTableRender[currCharRender] and characterTableRender[currCharRender].ogNum or characterTableRender[1].ogNum)
         return true
     else
@@ -359,7 +359,7 @@ creditTable = {
         {creditTo = "xLuigiGamerx",    creditFor = "Main Contributer"},
         {creditTo = "OneCalledRPG",    creditFor = "Contributer"},
         {creditTo = "SuperKirbyLover", creditFor = "Custom Health Meters"},
-        {creditTo = "EliteMasterEric", creditFor = "Dialog Replacement"}
+        --{creditTo = "EliteMasterEric", creditFor = "Dialog Replacement"}
     }
 }
 
