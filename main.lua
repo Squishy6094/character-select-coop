@@ -809,7 +809,8 @@ function set_model(o, model)
     end
 
     if sCapBhvs[get_id_from_behavior(o.behavior)] then
-        o.globalPlayerIndex = nearest_player_to_object(o.parentObj).globalPlayerIndex
+        local playerToObj = nearest_player_to_object(o.parentObj)
+        o.globalPlayerIndex = playerToObj and playerToObj.globalPlayerIndex or 0
     end
     local i = network_local_index_from_global(o.globalPlayerIndex)
 
