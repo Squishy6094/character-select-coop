@@ -205,7 +205,6 @@ local function update_character_render_table()
     characterTableRender = {}
     for i = 1, #characterTable do
         local charCategories = string_split(characterTable[i].category, "_")
-        djui_chat_message_create(tostring(i) .. " - " .. tostring(characterTable[i].locked))
         if not characterTable[i].locked then
             for c = 1, #charCategories do
                 if category == charCategories[c] then
