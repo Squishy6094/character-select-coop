@@ -203,15 +203,17 @@ local function update_character_render_table()
     local category = characterCategories[currCategory]
     if category == nil then return false end
     characterTableRender = {}
-    local listCount = 0
     for i = 1, #characterTable do
         local charCategories = string_split(characterTable[i].category, "_")
-        for c = 1, #charCategories do
-            if category == charCategories[c] and not characterTable[i].locked then
-                table_insert(characterTableRender, characterTable[i])
-                if ogNum == i then
-                    currChar = ogNum
-                    currCharRender = #characterTableRender
+        djui_chat_message_create(tostring(i) .. " - " .. tostring(characterTable[i].locked))
+        if not characterTable[i].locked then
+            for c = 1, #charCategories do
+                if category == charCategories[c] then
+                    table_insert(characterTableRender, characterTable[i])
+                    if ogNum == i then
+                        currChar = ogNum
+                        currCharRender = #characterTableRender
+                    end
                 end
             end
         end
@@ -694,7 +696,7 @@ local function mario_update(m)
                         currChar.locked = false
                     end
                 elseif type(unlock) == TYPE_BOOLEAN then
-                    currChar.locked = not unlock
+                    currChar.locked = unlock
                 end
                 if not currChar.locked then -- Character was unlocked
                     update_character_render_table()
