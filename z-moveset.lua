@@ -16,7 +16,10 @@ local function mario_update(m)
     local hook = HOOK_MARIO_UPDATE
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    return currMoveset[hook](m)
+    local returnVar = currMoveset[hook](m)
+    if returnVar ~= nil then
+        return returnVar
+    end
 end
 hook_event(HOOK_MARIO_UPDATE, mario_update)
 
@@ -25,7 +28,10 @@ local function before_mario_update(m)
     local hook = HOOK_BEFORE_MARIO_UPDATE
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    return currMoveset[hook](m)
+    local returnVar = currMoveset[hook](m)
+    if returnVar ~= nil then
+        return returnVar
+    end
 end
 hook_event(HOOK_BEFORE_MARIO_UPDATE, before_mario_update)
 
@@ -34,7 +40,10 @@ local function before_phys_step(m, stepType)
     local hook = HOOK_BEFORE_PHYS_STEP
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    return currMoveset[hook](m, stepType)
+    local returnVar = currMoveset[hook](m, stepType)
+    if returnVar ~= nil then
+        return returnVar
+    end
 end
 hook_event(HOOK_BEFORE_PHYS_STEP, before_phys_step)
 
@@ -43,14 +52,21 @@ local function allow_pvp_attack(attacker, victim, int)
     local hook = HOOK_ALLOW_PVP_ATTACK
     local attackerMoveset = characterMovesets[find_character_number(attacker.playerIndex)]
     local victimMoveset = characterMovesets[find_character_number(victim.playerIndex)]
+    local returnVar
     if gCSPlayers[attacker.playerIndex].movesetToggle then
         if (attackerMoveset ~= nil and attackerMoveset[hook] ~= nil) then
-            attackerMoveset[hook](attacker, victim, int)
+            returnVar = attackerMoveset[hook](attacker, victim, int)
+            if returnVar ~= nil then
+                return returnVar
+            end
         end
     end
     if gCSPlayers[victim.playerIndex].movesetToggle then
         if (victimMoveset ~= nil and victimMoveset[hook] ~= nil) then
-            victimMoveset[hook](attacker, victim, int)
+            returnVar = victimMoveset[hook](attacker, victim, int)
+            if returnVar ~= nil then
+                return returnVar
+            end
         end
     end
 end
@@ -63,12 +79,18 @@ local function on_pvp_attack(attacker, victim, int)
     local victimMoveset = characterMovesets[find_character_number(victim.playerIndex)]
     if gCSPlayers[attacker.playerIndex].movesetToggle then
         if (attackerMoveset ~= nil and attackerMoveset[hook] ~= nil) then
-            attackerMoveset[hook](attacker, victim, int)
+            local returnVar = attackerMoveset[hook](attacker, victim, int)
+            if returnVar ~= nil then
+                return returnVar
+            end
         end
     end
     if gCSPlayers[victim.playerIndex].movesetToggle then
         if (victimMoveset ~= nil and victimMoveset[hook] ~= nil) then
-            victimMoveset[hook](attacker, victim, int)
+            local returnVar = victimMoveset[hook](attacker, victim, int)
+            if returnVar ~= nil then
+                return returnVar
+            end
         end
     end
 end
@@ -79,7 +101,10 @@ local function on_interact(m, o, intType, intValue)
     local hook = HOOK_ON_INTERACT
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    return currMoveset[hook](m, o, intType, intValue)
+    local returnVar = currMoveset[hook](m, o, intType, intValue)
+    if returnVar ~= nil then
+        return returnVar
+    end
 end
 hook_event(HOOK_ON_INTERACT, on_interact)
 
@@ -88,7 +113,10 @@ local function allow_interact(m, o, intType)
     local hook = HOOK_ALLOW_INTERACT
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    return currMoveset[hook](m, o, intType)
+    local returnVar = currMoveset[hook](m, o, intType)
+    if returnVar ~= nil then
+        return returnVar
+    end
 end
 hook_event(HOOK_ALLOW_INTERACT, allow_interact)
 
@@ -97,7 +125,10 @@ local function on_set_mario_action(m)
     local hook = HOOK_ON_SET_MARIO_ACTION
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    return currMoveset[hook](m)
+    local returnVar = currMoveset[hook](m)
+    if returnVar ~= nil then
+        return returnVar
+    end
 end
 hook_event(HOOK_ON_SET_MARIO_ACTION, on_set_mario_action)
 
@@ -106,7 +137,10 @@ local function before_set_mario_action(m, nextAct)
     local hook = HOOK_BEFORE_SET_MARIO_ACTION
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    return currMoveset[hook](m, nextAct)
+    local returnVar = currMoveset[hook](m, nextAct)
+    if returnVar ~= nil then
+        return returnVar
+    end
 end
 hook_event(HOOK_BEFORE_SET_MARIO_ACTION, before_set_mario_action)
 
@@ -115,7 +149,10 @@ local function on_death(m)
     local hook = HOOK_ON_DEATH
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    return currMoveset[hook](m)
+    local returnVar = currMoveset[hook](m)
+    if returnVar ~= nil then
+        return returnVar
+    end
 end
 hook_event(HOOK_ON_DEATH, on_death)
 
@@ -124,7 +161,10 @@ local function hud_render()
     local hook = HOOK_ON_HUD_RENDER
     local currMoveset = characterMovesets[find_character_number(0)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    return currMoveset[hook]()
+    local returnVar = currMoveset[hook]()
+    if returnVar ~= nil then
+        return returnVar
+    end
 end
 hook_event(HOOK_ON_HUD_RENDER, hud_render)
 
@@ -133,7 +173,10 @@ local function hud_render_behind()
     local hook = HOOK_ON_HUD_RENDER_BEHIND
     local currMoveset = characterMovesets[find_character_number(0)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    return currMoveset[hook]()
+    local returnVar = currMoveset[hook]()
+    if returnVar ~= nil then
+        return returnVar
+    end
 end
 hook_event(HOOK_ON_HUD_RENDER_BEHIND, hud_render_behind)
 
@@ -142,7 +185,10 @@ local function level_init()
     local hook = HOOK_ON_LEVEL_INIT
     local currMoveset = characterMovesets[find_character_number(0)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    return currMoveset[hook]()
+    local returnVar = currMoveset[hook]()
+    if returnVar ~= nil then
+        return returnVar
+    end
 end
 hook_event(HOOK_ON_LEVEL_INIT, level_init)
 
@@ -151,7 +197,10 @@ local function sync_valid()
     local hook = HOOK_ON_SYNC_VALID
     local currMoveset = characterMovesets[find_character_number(0)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    return currMoveset[hook]()
+    local returnVar = currMoveset[hook]()
+    if returnVar ~= nil then
+        return returnVar
+    end
 end
 hook_event(HOOK_ON_SYNC_VALID, sync_valid)
 
@@ -160,7 +209,10 @@ local function object_render(obj)
     local hook = HOOK_ON_OBJECT_RENDER
     local currMoveset = characterMovesets[find_character_number(0)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    return currMoveset[hook](obj)
+    local returnVar = currMoveset[hook](obj)
+    if returnVar ~= nil then
+        return returnVar
+    end
 end
 hook_event(HOOK_ON_OBJECT_RENDER, object_render)
 
@@ -169,6 +221,9 @@ local function allow_water_action(m, water)
     local hook = HOOK_ALLOW_FORCE_WATER_ACTION
     local currMoveset = characterMovesets[find_character_number(0)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    return currMoveset[hook](m, water)
+    local returnVar = currMoveset[hook](m, water)
+    if returnVar ~= nil then
+        return returnVar
+    end
 end
 hook_event(HOOK_ALLOW_FORCE_WATER_ACTION, allow_water_action)
