@@ -23,6 +23,9 @@ local function placeholder() end
 
 ---@ignore
 local function split_text_into_lines(text)
+    djui_hud_set_resolution(RESOLUTION_N64)
+    djui_hud_set_font(FONT_ALIASED)
+
     local words = {}
     for word in text:gmatch("%S+") do
         table_insert(words, word)

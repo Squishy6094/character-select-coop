@@ -23,7 +23,7 @@ end
 cs_hook_mario_update = create_hook_wrapper(HOOK_MARIO_UPDATE)
 
 -- localize functions to improve performance - main.lua
-local mod_storage_load,tonumber,mod_storage_save,djui_popup_create,tostring,djui_chat_message_create,is_game_paused,obj_get_first_with_behavior_id,djui_hud_is_pause_menu_created,camera_freeze,hud_hide,vec3f_copy,set_mario_action,set_mario_animation,camera_unfreeze,hud_show,type,get_id_from_behavior,obj_has_behavior_id,network_local_index_from_global,obj_has_model_extended,obj_set_model_extended,nearest_player_to_object,math_random,djui_hud_set_resolution,djui_hud_set_font,djui_hud_get_screen_width,maxf,djui_hud_set_color,djui_hud_render_rect,djui_hud_measure_text,djui_hud_print_text,min,math_min,math_ceil,math_abs,math_sin,minf,djui_hud_set_rotation,table_insert,djui_hud_print_text_interpolated,math_max,play_sound,play_character_sound,string_lower = mod_storage_load,tonumber,mod_storage_save,djui_popup_create,tostring,djui_chat_message_create,is_game_paused,obj_get_first_with_behavior_id,djui_hud_is_pause_menu_created,camera_freeze,hud_hide,vec3f_copy,set_mario_action,set_mario_animation,camera_unfreeze,hud_show,type,get_id_from_behavior,obj_has_behavior_id,network_local_index_from_global,obj_has_model_extended,obj_set_model_extended,nearest_player_to_object,math.random,djui_hud_set_resolution,djui_hud_set_font,djui_hud_get_screen_width,maxf,djui_hud_set_color,djui_hud_render_rect,djui_hud_measure_text,djui_hud_print_text,min,math.min,math.ceil,math.abs,math.sin,minf,djui_hud_set_rotation,table.insert,djui_hud_print_text_interpolated,math.max,play_sound,play_character_sound,string.lower
+local mod_storage_load,tonumber,mod_storage_save,djui_popup_create,tostring,djui_chat_message_create,is_game_paused,obj_get_first_with_behavior_id,djui_hud_is_pause_menu_created,camera_freeze,hud_hide,vec3f_copy,set_mario_action,set_character_animation,camera_unfreeze,hud_show,type,get_id_from_behavior,obj_has_behavior_id,network_local_index_from_global,obj_has_model_extended,obj_set_model_extended,nearest_player_to_object,math_random,djui_hud_set_resolution,djui_hud_set_font,djui_hud_get_screen_width,maxf,djui_hud_set_color,djui_hud_render_rect,djui_hud_measure_text,djui_hud_print_text,min,math_min,math_ceil,math_abs,math_sin,minf,djui_hud_set_rotation,table_insert,djui_hud_print_text_interpolated,math_max,play_sound,play_character_sound,string_lower = mod_storage_load,tonumber,mod_storage_save,djui_popup_create,tostring,djui_chat_message_create,is_game_paused,obj_get_first_with_behavior_id,djui_hud_is_pause_menu_created,camera_freeze,hud_hide,vec3f_copy,set_mario_action,set_character_animation,camera_unfreeze,hud_show,type,get_id_from_behavior,obj_has_behavior_id,network_local_index_from_global,obj_has_model_extended,obj_set_model_extended,nearest_player_to_object,math.random,djui_hud_set_resolution,djui_hud_set_font,djui_hud_get_screen_width,maxf,djui_hud_set_color,djui_hud_render_rect,djui_hud_measure_text,djui_hud_print_text,min,math.min,math.ceil,math.abs,math.sin,minf,djui_hud_set_rotation,table.insert,djui_hud_print_text_interpolated,math.max,play_sound,play_character_sound,string.lower
 
 menu = false
 menuAndTransition = false
@@ -597,8 +597,7 @@ local TYPE_TABLE = "table"
 local MATH_PI = math.pi
 
 local prevBaseCharFrame = gNetworkPlayers[0].modelIndex
-local prevAnim = 0
-local animTimer = 0
+local prevModelId = 0
 local faceAngle = 0
 local eyeState = MARIO_EYES_OPEN
 local prevFOV = 40
@@ -726,20 +725,25 @@ local function mario_update(m)
 
         p.movesetToggle = optionTable[optionTableRef.localMoveset].toggle ~= 0
     end
-    
+
     if p.inMenu and m.action & ACT_FLAG_ALLOW_FIRST_PERSON ~= 0 then
-        set_mario_animation(m, (characterAnims[p.modelId] and characterAnims[p.modelId][CS_ANIM_MENU]) and CS_ANIM_MENU or MARIO_ANIM_IDLE_HEAD_LEFT)
-        set_anim_to_frame(m, 0)
+        m.action = ACT_IDLE
+        m.actionArg = 0
+        m.actionState = 0xFFFF
+
+        -- reset menu anim on character change, starts them at frame 0 and prevents lua anim issues
+        if prevModelId ~= p.modelId then
+            m.marioObj.header.gfx.animInfo.animID = -1
+            prevModelId = p.modelId
+        end
+        set_character_animation(m, (characterAnims[p.modelId] and characterAnims[p.modelId][CS_ANIM_MENU]) and CS_ANIM_MENU or CHAR_ANIM_FIRST_PERSON)
+
         m.marioObj.header.gfx.angle.y = m.faceAngle.y
+    elseif m.actionState == 0xFFFF and m.action == ACT_IDLE then
+        -- snap back to normal idle when out of the menu
+        m.actionState = 0
     end
 
-    local marioGfx = m.marioObj.header.gfx
-    if prevAnim ~= marioGfx.animInfo.animID then
-        prevAnim = marioGfx.animInfo.animID
-        animTimer = 0
-    end
-    animTimer = animTimer + 1
-        
     np.overrideModelIndex = p.forceChar ~= nil and p.forceChar or CT_MARIO
 
     -- Character Animations
