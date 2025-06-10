@@ -433,6 +433,7 @@ local function load_preferred_char()
                 if savedAlt > 0 and savedAlt <= #char then
                     char.currAlt = savedAlt
                 end
+                savedAlt = clamp(savedAlt, 1, #characterTable[currChar])
                 local model = characterTable[currChar][savedAlt].model
                 if characterColorPresets[model] ~= nil then
                     gCSPlayers[0].presetPalette = savedPalette
