@@ -745,6 +745,20 @@ local function restrict_movesets(bool)
     stopMovesets = bool
 end
 
+---@description A function that checks if palettes are restricted
+---@added 1.14.3
+---@return boolean
+local function are_palettes_restricted()
+    return stopPalettes
+end
+
+---@description A function that checks if movesets are restricted
+---@added 1.14.3
+---@return boolean
+local function are_movesets_restricted()
+    return stopMovesets
+end
+
 ---@description A table that contains the local mario's controller before Character Select's menu cancels them
 ---@added 1
 local controller = {
@@ -956,6 +970,8 @@ _G.charSelect = {
     credit_add = credit_add,
     restrict_palettes = restrict_palettes,
     restrict_movesets = restrict_movesets,
+    are_palettes_restricted = are_palettes_restricted,
+    are_movesets_restricted = are_movesets_restricted,
 
     -- Misc --
     dialog_set_replace_name = dialog_set_replace_name, -- Function located in dialog.lua
