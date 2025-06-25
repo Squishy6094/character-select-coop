@@ -49,7 +49,7 @@ local creditsCrossFadeMath = 255 / creditsCrossFade
 local TEX_HEADER = get_texture_info("char-select-text")
 local TEX_OVERRIDE_HEADER = nil
 
----@param texture TextureInfo|nil
+---@param texture TextureInfo?
 function header_set_texture(texture)
     TEX_OVERRIDE_HEADER = texture
 end
@@ -433,7 +433,7 @@ local function load_preferred_char()
                 if savedAlt > 0 and savedAlt <= #char then
                     char.currAlt = savedAlt
                 end
-                savedAlt = clamp(savedAlt, 1, #characterTable[currChar])
+                savedAlt = math.clamp(savedAlt, 1, #characterTable[currChar])
                 local model = characterTable[currChar][savedAlt].model
                 if characterColorPresets[model] ~= nil then
                     gCSPlayers[0].presetPalette = savedPalette
@@ -948,9 +948,9 @@ function update_menu_color()
         targetMenuColor = menuColorTable[9]
     end
     if optionTable[optionTableRef.anims].toggle > 0 then
-        menuColor.r = lerp(menuColor.r, targetMenuColor.r, transSpeed)
-        menuColor.g = lerp(menuColor.g, targetMenuColor.g, transSpeed)
-        menuColor.b = lerp(menuColor.b, targetMenuColor.b, transSpeed)
+        menuColor.r = math.lerp(menuColor.r, targetMenuColor.r, transSpeed)
+        menuColor.g = math.lerp(menuColor.g, targetMenuColor.g, transSpeed)
+        menuColor.b = math.lerp(menuColor.b, targetMenuColor.b, transSpeed)
     else
         menuColor.r = targetMenuColor.r
         menuColor.g = targetMenuColor.g
@@ -1099,9 +1099,9 @@ local function on_hud_render()
                     prevBindText = menuText[bindText]
                 end
             end
-            --local bindTextOpacity = clamp(math.abs(math.sin(bindTextTimer*MATH_PI/bindTextTimerLoop)), 0, 0.2) * 5 * 255
-            local fadeOut = math_abs(clamp(bindTextOpacity, -255, 0))
-            local fadeIn = math_abs(clamp(bindTextOpacity, 0, 255))
+            --local bindTextOpacity = math.clamp(math.abs(math.sin(bindTextTimer*MATH_PI/bindTextTimerLoop)), 0, 0.2) * 5 * 255
+            local fadeOut = math_abs(math.clamp(bindTextOpacity, -255, 0))
+            local fadeIn = math_abs(math.clamp(bindTextOpacity, 0, 255))
             local bindTextScale = math.min((x - 10)/(djui_hud_measure_text(menuText[bindText]) * 0.3), 1)*0.3
             local prevBindTextScale = math.min((x - 10)/(djui_hud_measure_text(prevBindText) * 0.3), 1)*0.3
             djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, fadeOut)

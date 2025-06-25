@@ -62,25 +62,26 @@ local TYPE_FUNCTION = "function"
 
 ---@description A function that adds a Character to the Character Table
 ---@added 1
----@param name string|nil `"Custom Model"`
----@param description table|string|nil `{"string"}`
----@param credit string|nil `"You!"`, Credit the creators
----@param color Color|string|nil `{r, g, b}`
----@param modelInfo ModelExtendedId|integer|nil Use `smlua_model_util_get_id`
----@param forceChar CharacterType|nil Character Type, such as `CT_MARIO`
----@param lifeIcon TextureInfo|string|nil Use get_texture_info
----@param camScale integer|nil Zooms the camera based on a multiplier (Default `1`)
+---@param name string? `"Custom Model"`
+---@param description table|string? `{"string"}`
+---@param credit string? `"You!"`, Credit the creators
+---@param color Color|string? `{r, g, b}`
+---@param modelInfo ModelExtendedId|integer? Use `smlua_model_util_get_id`
+---@param forceChar CharacterType? Character Type, such as `CT_MARIO`
+---@param lifeIcon TextureInfo|string? Use get_texture_info
+---@param camScale integer? Zooms the camera based on a multiplier (Default `1`)
 ---@return integer --The index of the character in the character table
 local function character_add(name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
     if type(description) == TYPE_STRING then
         description = split_text_into_lines(description)
     end
-    if color ~= nil and type(color) == TYPE_STRING then
+    if color and type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
-    if lifeIcon ~= nil and type(lifeIcon) == TYPE_STRING then
+    if lifeIcon and type(lifeIcon) == TYPE_STRING then
         lifeIcon = lifeIcon:sub(1,1)
     end
+
     local addedModel = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or E_MODEL_ARMATURE
     local charNum = #characterTable + 1
 
@@ -118,28 +119,28 @@ end
 ---@description A function that adds a Costume to an Existing Character, all inputs mimic character_edit
 ---@added 1.11
 ---@param charNum integer The number/table position of the Character you want to add a costume to
----@param name string|nil `"Custom Model"`
----@param description table|string|nil `{"string"}`
----@param credit string|nil `"You!"`, Credit the creators
----@param color Color|string|nil `{r, g, b}`
----@param modelInfo ModelExtendedId|integer|nil Use `smlua_model_util_get_id`
----@param forceChar CharacterType|nil Character Type, such as `CT_MARIO`
----@param lifeIcon TextureInfo|string|nil Use get_texture_info
----@param camScale integer|nil Zooms the camera based on a multiplier (Default `1`)
----@return integer --The index of the costume in the character's table
+---@param name string? `"Custom Model"`
+---@param description table|string? `{"string"}`
+---@param credit string? `"You!"`, Credit the creators
+---@param color Color|string? `{r, g, b}`
+---@param modelInfo ModelExtendedId|integer? Use `smlua_model_util_get_id`
+---@param forceChar CharacterType? Character Type, such as `CT_MARIO`
+---@param lifeIcon TextureInfo|string? Use get_texture_info
+---@param camScale integer? Zooms the camera based on a multiplier (Default `1`)
+---@return integer? --The index of the costume in the character's table
 local function character_add_costume(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
-    if tonumber(charNum) == nil or charNum > #characterTable or charNum < 0 then return end
+    if not tonumber(charNum) or charNum > #characterTable or charNum < 0 then return end
     if type(description) == TYPE_STRING then
         description = split_text_into_lines(description)
     end
     if type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
-    if lifeIcon ~= nil and type(lifeIcon) == TYPE_STRING then
+    if lifeIcon and type(lifeIcon) == TYPE_STRING then
         lifeIcon = lifeIcon:sub(1,1)
     end
-    local addedModel = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model
     local tableCache = characterTable[charNum][1]
+    local addedModel = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model
     table_insert(characterTable[charNum], {
         name = type(name) == TYPE_STRING and name or tableCache.name,
         description = type(description) == TYPE_TABLE and description or tableCache.description,
@@ -160,14 +161,14 @@ end
 ---@added 1.11
 ---@param charNum integer The number/table position of the Character you want to edit the costume of
 ---@param charAlt integer The number/table position of the Costume you want to edit, this can be found by making a variable equal
----@param name string|nil `"Custom Model"`
----@param description table|string|nil `{"string"}`
----@param credit string|nil `"You!"`, Credit the creators
----@param color Color|string|nil `{r, g, b}`
----@param modelInfo ModelExtendedId|integer|nil Use `smlua_model_util_get_id`
----@param forceChar CharacterType|nil Character Type, such as `CT_MARIO`
----@param lifeIcon TextureInfo|string|nil Use get_texture_info
----@param camScale integer|nil Zooms the camera based on a multiplier (Default `1`)
+---@param name string? `"Custom Model"`
+---@param description table|string? `{"string"}`
+---@param credit string? `"You!"`, Credit the creators
+---@param color Color|string? `{r, g, b}`
+---@param modelInfo ModelExtendedId|integer? Use `smlua_model_util_get_id`
+---@param forceChar CharacterType? Character Type, such as `CT_MARIO`
+---@param lifeIcon TextureInfo|string? Use get_texture_info
+---@param camScale integer? Zooms the camera based on a multiplier (Default `1`)
 local function character_edit_costume(charNum, charAlt, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
     if tonumber(charNum) == nil or charNum > #characterTable or charNum < 0 then return end
     if type(description) == TYPE_STRING then
@@ -176,7 +177,7 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
     if type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
-    if lifeIcon ~= nil and type(lifeIcon) == TYPE_STRING then
+    if lifeIcon and type(lifeIcon) == TYPE_STRING then
         lifeIcon = lifeIcon:sub(1,1)
     end
     local tableCache = characterTable[charNum][charAlt]
@@ -203,14 +204,14 @@ end
 ---@description A function that Edits an Existing Character
 ---@added 1
 ---@param charNum integer The number/table position of the Character you want to edit
----@param name string|nil `"Custom Model"`
----@param description table|string|nil `{"string"}`
----@param credit string|nil `"You!"`, Credit the creators
----@param color Color|string|nil `{r, g, b}`
----@param modelInfo ModelExtendedId|integer|nil Use `smlua_model_util_get_id`
----@param forceChar CharacterType|nil Character Type, such as `CT_MARIO`
----@param lifeIcon TextureInfo|string|nil Use get_texture_info
----@param camScale integer|nil Zooms the camera based on a multiplier (Default `1`)
+---@param name string? `"Custom Model"`
+---@param description table|string? `{"string"}`
+---@param credit string? `"You!"`, Credit the creators
+---@param color Color|string? `{r, g, b}`
+---@param modelInfo ModelExtendedId|integer? Use `smlua_model_util_get_id`
+---@param forceChar CharacterType? Character Type, such as `CT_MARIO`
+---@param lifeIcon TextureInfo|string? Use get_texture_info
+---@param camScale integer? Zooms the camera based on a multiplier (Default `1`)
 local function character_edit(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
     character_edit_costume(charNum, characterTable[charNum] and characterTable[charNum].currAlt or 1, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
 end
@@ -274,7 +275,7 @@ end
 
 ---@description A function that gets a model's cap table
 ---@added 1.13
----@param modelInfo ModelExtendedId|integer|nil Model Information Received from smlua_model_util_get_id
+---@param modelInfo ModelExtendedId|integer? Model Information Received from smlua_model_util_get_id
 local function character_get_caps(modelInfo)
     if modelInfo == nil then modelInfo = characterTable[currChar][characterTable[currChar].currAlt].model end
     return characterCaps[modelInfo]
@@ -284,7 +285,7 @@ end
 ---@added 1.12
 ---@param charNum integer The number/table position of the Character you want to add a meter to
 ---@param charAlt integer The number/table position of the Costume you want to add a meter to
----@param healthTexture table|nil A Table with your Character's Health Textures (Table Shown in character_add_health_meter)
+---@param healthTexture table? A Table with your Character's Health Textures (Table Shown in character_add_health_meter)
 local function character_add_costume_health_meter(charNum, charAlt, healthTexture)
     if type(charNum) ~= TYPE_INTEGER or charNum == nil then return end
     if type(charAlt) ~= TYPE_INTEGER or charAlt == nil then return end
@@ -294,7 +295,7 @@ end
 ---@description A function that adds health meter textures to a character
 ---@added 1.9
 ---@param charNum integer The number/table position of the Character you want to add a meter to
----@param healthTexture table|nil A Table with your Character's Health Textures (Table Shown Below)
+---@param healthTexture table? A Table with your Character's Health Textures (Table Shown Below)
 ---@note ```lua
 ---@note local HEALTH_METER_CHAR = {
 ---@note     label = {
@@ -321,7 +322,7 @@ end
 ---@added 1.12
 ---@param charNum integer The number/table position of the Character you want to add a course textures to
 ---@param charAlt integer The number/table position of the Costume you want to add a course textures to
----@param courseTexture table|nil A Table with your Character's Health Textures (Table Shown in character_add_course)
+---@param courseTexture table? A Table with your Character's Health Textures (Table Shown in character_add_course)
 local function character_add_costume_course(charNum, charAlt, courseTexture)
     if type(charNum) ~= TYPE_INTEGER or charNum == nil then return end
     if type(charAlt) ~= TYPE_INTEGER or charAlt == nil then return end
@@ -331,7 +332,7 @@ end
 ---@description A function that adds course textures to a character in the Star Select
 ---@added 1.12
 ---@param charNum integer The number/table position of the Character you want to add a course textures to
----@param courseTexture table|nil A Table with your Character's Health Textures (Table Shown Below)
+---@param courseTexture table? A Table with your Character's Health Textures (Table Shown Below)
 ---@note ```lua
 ---@note local COURSE_CHAR = {
 ---@note     top = get_texture_info("char-course-top"),
@@ -346,7 +347,7 @@ end
 ---@added 1.7
 ---@param modelInfo ModelExtendedId|integer Model Information Received from smlua_model_util_get_id()	
 ---@param starModel ModelExtendedId|integer Model Information Received from smlua_model_util_get_id()	
----@param starIcon TextureInfo|nil Texture Information Received from get_texture_info()
+---@param starIcon TextureInfo? Texture Information Received from get_texture_info()
 local function character_add_celebration_star(modelInfo, starModel, starIcon)
     characterCelebrationStar[modelInfo] = starModel
     for i = 2, #characterTable do
@@ -364,7 +365,7 @@ end
 ---@added 1.8
 ---@param modelInfo ModelExtendedId|integer
 ---@param paletteTable table
----@param paletteName string|nil
+---@param paletteName string?
 ---@note ```lua
 ---@note local PALETTE_CHAR = {
 ---@note     [PANTS]  = {r = 0x00, g = 0x00, b = 0xff},
@@ -391,9 +392,9 @@ local function character_add_palette_preset(modelInfo, paletteTable, paletteName
             paletteTableOut[i].b = tonumber(color:sub(5,6), 16) and tonumber(color:sub(5,6), 16) or defaultColors[i].b
         end
         if type(color) == TYPE_TABLE then
-            paletteTableOut[i].r = (type(color) == TYPE_TABLE and color.r ~= nil) and color.r or defaultColors[i].r
-            paletteTableOut[i].g = (type(color) == TYPE_TABLE and color.g ~= nil) and color.g or defaultColors[i].g
-            paletteTableOut[i].b = (type(color) == TYPE_TABLE and color.b ~= nil) and color.b or defaultColors[i].b
+            paletteTableOut[i].r = (type(color) == TYPE_TABLE and color.r) and color.r or defaultColors[i].r
+            paletteTableOut[i].g = (type(color) == TYPE_TABLE and color.g) and color.g or defaultColors[i].g
+            paletteTableOut[i].b = (type(color) == TYPE_TABLE and color.b) and color.b or defaultColors[i].b
         end
     end
     if characterColorPresets[modelInfo] == nil then
@@ -421,8 +422,8 @@ end
 
 ---@description A function that gets a character's full Character Select Table
 ---@added 1
----@param tablePos integer|nil
----@param charAlt integer|nil
+---@param tablePos integer?
+---@param charAlt integer?
 ---@return CharacterTable
 local function character_get_current_table(tablePos, charAlt)
     tablePos = tablePos and tablePos or currChar
@@ -439,8 +440,8 @@ end
 
 ---@description A function that gets the current character's table position in CS
 ---@added 1
---- @param localIndex integer|nil
---- @return integer|nil
+--- @param localIndex integer?
+--- @return integer?
 local function character_get_current_number(localIndex)
     if localIndex == nil or localIndex == 0 then
         return currChar
@@ -456,8 +457,8 @@ end
 
 ---@description A function that gets the current costumes's table position in CS
 ---@added 1.12
----@param localIndex integer|nil
----@return integer|nil
+---@param localIndex integer?
+---@return integer?
 local function character_get_current_costume(localIndex)
     if localIndex == nil or localIndex == 0 then
         return characterTable[currChar].currAlt
@@ -473,7 +474,7 @@ end
 
 ---@description A function that sets the current character based only table position
 ---@added 1.9
----@param charNum integer|nil
+---@param charNum integer?
 local function character_set_current_number(charNum)
     if type(charNum) ~= TYPE_INTEGER or characterTable[charNum] == nil then return end
     currChar = charNum
@@ -482,7 +483,7 @@ end
 
 ---@description A function that gets the current character's palette data
 ---@added 1.12
---- @return table|nil
+--- @return table?
 local function character_get_current_palette()
     local model = characterTable[currChar][characterTable[currChar].currAlt].model
     return characterColorPresets[model][gCSPlayers[0].presetPalette]
@@ -490,8 +491,8 @@ end
 
 ---@description A function that gets the current character's palette number
 ---@added 1.12
---- @param localIndex integer|nil
---- @return integer|nil
+--- @param localIndex integer?
+--- @return integer?
 local function character_get_current_palette_number(localIndex)
     if localIndex == nil then localIndex = 0 end
     return gCSPlayers[localIndex].presetPalette
@@ -591,9 +592,9 @@ end
 
 ---@description A function that locks a character under an unlock condition
 ---@added 1.10
----@param charNum integer|nil The number of the Character you want to Lock
----@param unlockCondition function|boolean|nil The condition for if the character stays locked
----@param notify boolean|nil Toggles whether Character Select should notify the user when the character is unlocked
+---@param charNum integer? The number of the Character you want to Lock
+---@param unlockCondition function|boolean? The condition for if the character stays locked
+---@param notify boolean? Toggles whether Character Select should notify the user when the character is unlocked
 local function character_set_locked(charNum, unlockCondition, notify)
     if charNum == nil or charNum > #characterTable or charNum < 2 then return end
     if unlockCondition == nil then unlockCondition = false end
@@ -610,7 +611,7 @@ end
 
 ---@description A function that sets a character under a specific category
 ---@added 1.14
----@param charNum integer|nil The number of the Character you want to Lock
+---@param charNum integer? The number of the Character you want to Lock
 ---@param category string The Category Name (Will create a new category if category does not exist)
 local function character_set_category(charNum, category)
     category = string_underscore_to_space(category)
@@ -631,7 +632,7 @@ end
 
 ---@description A function that sets the big "Character Select" texture in the Character Select Menu
 ---@added 1.7
----@param texture TextureInfo|nil
+---@param texture TextureInfo?
 ---@forcedoc header_set_texture
 
 ---@description A function that returns the version string
@@ -671,7 +672,7 @@ end
 
 ---@description A function that forces they Character Select Menu state
 ---@added 1.8
----@param bool boolean|nil Sets if the menu is open
+---@param bool boolean? Sets if the menu is open
 local function set_menu_open(bool)
     if bool == nil then bool = true end
     menu = bool
@@ -782,11 +783,11 @@ local controller = {
 ---@description A function that adds an option to the Character Select Options Menu
 ---@added 1.9
 ---@param name string The Name of the Option
----@param toggleDefault number|nil The default number that the option toggles to (Defaults to `0`)
----@param toggleMax number|nil The max number the option can be toggled to (Defaults to `1`)
----@param toggleNames table|nil A table of strings, each entry being for a toggle's name `{"Off", "On"}`
----@param description table|nil A table of strings, each entry being a new line `{"This toggle allows your", "character to feel everything."}`
----@param save boolean|nil Toggles whether the option retains between sessions (Defaults to `true`)
+---@param toggleDefault number? The default number that the option toggles to (Defaults to `0`)
+---@param toggleMax number? The max number the option can be toggled to (Defaults to `1`)
+---@param toggleNames table? A table of strings, each entry being for a toggle's name `{"Off", "On"}`
+---@param description table? A table of strings, each entry being a new line `{"This toggle allows your", "character to feel everything."}`
+---@param save boolean? Toggles whether the option retains between sessions (Defaults to `true`)
 ---@return number --The table position of the option added
 local function add_option(name, toggleDefault, toggleMax, toggleNames, description, save)
     if save == nil then save = true end
@@ -807,7 +808,7 @@ end
 ---@description A function that gets an option's data from the Character Select Options Menu
 ---@added 1.9
 ---@param tableNum integer The table position of the option
----@return table|nil
+---@return table?
 local function get_option(tableNum)
     if type(tableNum) ~= TYPE_INTEGER then return nil end
     return optionTable[tableNum]
@@ -816,7 +817,7 @@ end
 ---@description A function that gets an option's status from the Character Select Options Menu
 ---@added 1.9
 ---@param tableNum integer The table position of the option
----@return number|nil
+---@return number?
 local function get_options_status(tableNum)
     if type(tableNum) ~= TYPE_INTEGER then return nil end
     return optionTable[tableNum].toggle
@@ -899,7 +900,7 @@ end
 
 ---@description A function that allows you to hook a function, much like hook_event, to a specific character number
 ---@added 1.10
----@param charNum integer|nil
+---@param charNum integer?
 ---@param hookEventType LuaHookedEventType|integer The hook event tied to a specific character. Supports the following hooks: `HOOK_MARIO_UPDATE`, `HOOK_BEFORE_MARIO_UPDATE`, `HOOK_BEFORE_PHYS_STEP`, `HOOK_ALLOW_PVP_ATTACK`, `HOOK_ON_PVP_ATTACK`, `HOOK_ON_INTERACT`, `HOOK_ALLOW_INTERACT`, `HOOK_ON_SET_MARIO_ACTION`, `HOOK_BEFORE_SET_MARIO_ACTION`, `HOOK_ON_DEATH`, `HOOK_ON_HUD_RENDER`, `HOOK_ON_HUD_RENDER_BEHIND`, `HOOK_ON_LEVEL_INIT`, `HOOK_ON_SYNC_VALID`, `HOOK_ON_OBJECT_RENDER`, `HOOK_ALLOW_FORCE_WATER_ACTION` `
 ---@param func function
 local function character_hook_moveset(charNum, hookEventType, func)
