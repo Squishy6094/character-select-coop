@@ -83,6 +83,12 @@ local function character_add(name, description, credit, color, modelInfo, forceC
     end
     local addedModel = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or E_MODEL_ARMATURE
     local charNum = #characterTable + 1
+
+    if name and type(name) == TYPE_STRING and not _G["CT_"..name:upper():gsub(" ", "_")] then
+        local charNum = charNum --- @type CharacterType
+        define_valid_global("CT_"..name:upper():gsub(" ", "_"), charNum)
+    end
+
     table_insert(characterTable, {
         saveName = type(name) == TYPE_STRING and string_space_to_underscore(name) or "Untitled",
         currAlt = 1,

@@ -62,7 +62,7 @@ if #fileErrorList > 0 then
                 errorString = errorString .. "\n" .. fileErrorList[i]
             end
             errorString = errorString .. "\n\nThe best way to resolve these issues is to delete your current version of Character Select and then install the latest version!"
-            
+
             log_to_console(errorString)
             djui_chat_message_create(errorString)
         end
@@ -171,12 +171,19 @@ function switch(param, caseTable)
     return def and def() or nil
 end
 
-function clamp(num, min, max)
-    return math.max(math.min(num, max), min)
-end
+--- @param s string
+--- @param v any
+--- Defines a global variable by name `s` with the value `v` and indexes it if it already exists
+function define_valid_global(s, v)
+    local name = s
+    local index = 1
 
-function lerp(a, b, t)
-    return a * (1 - t) + b * t
+    while _G[name] ~= nil do
+        name = s .. "_" .. index
+        index = index + 1
+    end
+
+    _G[name] = v
 end
 
 allowMenu = {}
