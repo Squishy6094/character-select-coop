@@ -323,7 +323,7 @@ end
 ---@param charNum integer The number/table position of the Character you want to add a course textures to
 ---@param charAlt integer The number/table position of the Costume you want to add a course textures to
 ---@param courseTexture table? A Table with your Character's Health Textures (Table Shown in character_add_course)
-local function character_add_costume_course(charNum, charAlt, courseTexture)
+local function character_add_costume_course_texture(charNum, charAlt, courseTexture)
     if type(charNum) ~= TYPE_INTEGER or charNum == nil then return end
     if type(charAlt) ~= TYPE_INTEGER or charAlt == nil then return end
     characterTable[charNum][charAlt].courseTexture = type(courseTexture) == TYPE_TABLE and courseTexture or nil
@@ -339,8 +339,8 @@ end
 ---@note     bottom = get_texture_info("char-course-bottom"),
 ---@note }
 ---@note ```
-local function character_add_course(charNum, courseTexture)
-    character_add_costume_course(charNum, 1, courseTexture)
+local function character_add_course_texture(charNum, courseTexture)
+    character_add_costume_course_texture(charNum, 1, courseTexture)
 end
 
 ---@description A function that adds a celebration star model to a character
@@ -486,7 +486,7 @@ end
 --- @return table?
 local function character_get_current_palette()
     local model = characterTable[currChar][characterTable[currChar].currAlt].model
-    return characterColorPresets[model][gCSPlayers[0].presetPalette]
+    return characterColorPresets[model] ~= nil and characterColorPresets[model][gCSPlayers[0].presetPalette] or nil
 end
 
 ---@description A function that gets the current character's palette number
@@ -930,8 +930,8 @@ _G.charSelect = {
     character_add_celebration_star = character_add_celebration_star,
     character_add_health_meter = character_add_health_meter,
     character_add_costume_health_meter = character_add_costume_health_meter,
-    character_add_course_texture = character_add_course,
-    character_add_costume_course_texture = character_add_costume_course,
+    character_add_course_texture = character_add_course_texture,
+    character_add_costume_course_texture = character_add_costume_course_texture,
     character_add_palette_preset = character_add_palette_preset,
     character_add_animations = character_add_animations,
     character_get_animations = character_get_animations,
