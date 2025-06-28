@@ -5,7 +5,7 @@
 
 if incompatibleClient then return 0 end
 
---- @param hookEventType LuaHookedEventType
+---@param hookEventType LuaHookedEventType
 local function create_hook_wrapper(hookEventType)
     local callbacks = {}
 
@@ -602,7 +602,7 @@ local prevBaseCharFrame = gNetworkPlayers[0].modelIndex
 local prevModelId = 0
 local faceAngle = 0
 local eyeState = MARIO_EYES_OPEN
---- @param m MarioState
+---@param m MarioState
 local function mario_update(m)
     local np = gNetworkPlayers[m.playerIndex]
     local p = gCSPlayers[m.playerIndex]
@@ -758,8 +758,8 @@ local sCapBhvs = {
     [id_bhvMetalCap] = true
 }
 
---- @param o Object
---- @param model integer
+---@param o Object
+---@param model integer
 local BowserKey = false
 local function on_star_or_key_grab(m, o, type)
     if type == INTERACT_STAR_OR_KEY then

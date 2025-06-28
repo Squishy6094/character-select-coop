@@ -83,7 +83,7 @@ local function network_player_set_full_override_palette(networkPlayer, colorTabl
     end
 end
 
---- @param np NetworkPlayer
+---@param np NetworkPlayer
 local function update_preset_palette(np)
     local p = gCSPlayers[np.localIndex]
     local modelId = p.modelId

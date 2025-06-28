@@ -125,14 +125,14 @@ local saveableCharacters = {
     [" "] = 0,
 }
 
---- @param string string
+---@param string string
 --- Replaces underscores in the string with spaces
 function string_underscore_to_space(string)
     if string == nil then return "" end
     return string:gsub("_", " ")
 end
 
---- @param string string
+---@param string string
 --- Constructs a new string but only with characters from `saveableCharacters`
 --- * Spaces are the notable character that gets turned into an underscore
 function string_space_to_underscore(string)
@@ -148,7 +148,7 @@ function string_space_to_underscore(string)
     return s
 end
 
---- @param string string
+---@param string string
 --- Splits a string into a table by spaces
 function string_split(string, splitAt)
     if splitAt == nil then
@@ -161,8 +161,8 @@ function string_split(string, splitAt)
     return result
 end
 
---- @param param number
---- @param caseTable table
+---@param param number
+---@param caseTable table
 --- Switch statement function
 function switch(param, caseTable)
     local case = caseTable[param]
@@ -171,8 +171,8 @@ function switch(param, caseTable)
     return def and def() or nil
 end
 
---- @param s string
---- @param v any
+---@param s string
+---@param v any
 --- Defines a global variable by name `s` with the value `v` and indexes it if it already exists
 function define_valid_global(s, v)
     local name = s

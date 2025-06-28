@@ -189,8 +189,8 @@ hook_event(HOOK_UPDATE, function ()
     end
 end)
 
---- @param type HudDisplayValue
---- @return integer
+---@param type HudDisplayValue
+---@return integer
 function _G.hud_get_value(type)
     if type == HUD_DISPLAY_FLAGS then
         return sCharSelectHudDisplayFlags
@@ -199,8 +199,8 @@ function _G.hud_get_value(type)
     end
 end
 
---- @param type HudDisplayValue
---- @param value integer
+---@param type HudDisplayValue
+---@param value integer
 --- Sets a HUD display value
 function _G.hud_set_value(type, value)
     if type == HUD_DISPLAY_FLAGS then
@@ -244,8 +244,8 @@ local MATH_DIVIDE_HEALTH = 1/0x100
 
 local FONT_USER = FONT_NORMAL
 
---- @param localIndex integer
---- @return string
+---@param localIndex integer
+---@return string
 --- This assumes multiple characters will not have the same model,
 --- Icons can only be seen by users who have the character avalible to them
 function name_from_local_index(localIndex)
@@ -259,8 +259,8 @@ function name_from_local_index(localIndex)
     return "???"
 end
 
---- @param localIndex integer
---- @return table
+---@param localIndex integer
+---@return table
 --- This assumes multiple characters will not have the same model,
 --- Icons can only be seen by users who have the character avalible to them
 function color_from_local_index(localIndex)
@@ -274,8 +274,8 @@ function color_from_local_index(localIndex)
     return {r = 255, g = 255, b = 255}
 end
 
---- @param localIndex integer
---- @return TextureInfo|string
+---@param localIndex integer
+---@return TextureInfo|string
 --- This assumes multiple characters will not have the same model,
 --- Icons can only be seen by users who have the character avalible to them.
 --- This function can return nil. if this is the case, render `djui_hud_print_text("?", x, y, 1)`
@@ -291,8 +291,8 @@ function life_icon_from_local_index(localIndex)
     return "?"
 end
 
---- @param localIndex integer
---- @return TextureInfo
+---@param localIndex integer
+---@return TextureInfo
 --- This assumes multiple characters will not have the same model,
 --- Icons can only be seen by users who have the character avalible to them
 function star_icon_from_local_index(localIndex)
@@ -308,10 +308,10 @@ function star_icon_from_local_index(localIndex)
 end
 
 local TYPE_STRING = "string"
---- @param localIndex integer
---- @param x integer
---- @param y integer
---- @param scale integer
+---@param localIndex integer
+---@param x integer
+---@param y integer
+---@param scale integer
 function render_life_icon_from_local_index(localIndex, x, y, scale)
     if localIndex == nil then localIndex = 0 end
     local lifeIcon = life_icon_from_local_index(localIndex)
@@ -331,13 +331,13 @@ function render_life_icon_from_local_index(localIndex, x, y, scale)
     end
 end
 
---- @param localIndex integer
---- @param prevX integer
---- @param prevY integer
---- @param prevScale integer
---- @param x integer
---- @param y integer
---- @param scale integer
+---@param localIndex integer
+---@param prevX integer
+---@param prevY integer
+---@param prevScale integer
+---@param x integer
+---@param y integer
+---@param scale integer
 function render_life_icon_from_local_index_interpolated(localIndex, prevX, prevY, prevScale, x, y, scale)
     if localIndex == nil then localIndex = 0 end
     local lifeIcon = life_icon_from_local_index(localIndex)
@@ -357,20 +357,20 @@ function render_life_icon_from_local_index_interpolated(localIndex, prevX, prevY
     end
 end
 
---- @param localIndex integer
---- @param x integer
---- @param y integer
---- @param scale integer
+---@param localIndex integer
+---@param x integer
+---@param y integer
+---@param scale integer
 function render_star_icon_from_local_index(localIndex, x, y, scale)
     if localIndex == nil then localIndex = 0 end
     local starIcon = star_icon_from_local_index(localIndex)
     djui_hud_render_texture(starIcon, x, y, scale / (starIcon.width * MATH_DIVIDE_16), scale / (starIcon.height * MATH_DIVIDE_16))
 end
 
---- @param localIndex integer
---- @param x integer
---- @param y integer
---- @param scale integer
+---@param localIndex integer
+---@param x integer
+---@param y integer
+---@param scale integer
 function render_star_icon_from_local_index_interpolated(localIndex, prevX, prevY, prevScale, x, y, scale)
     if localIndex == nil then localIndex = 0 end
     local starIcon = star_icon_from_local_index(localIndex)
@@ -414,8 +414,8 @@ local defaultCourseInfo = {
     bottom = TEX_DEFAULT_METER_RIGHT,
 }
 
---- @param localIndex integer
---- @return table
+---@param localIndex integer
+---@return table
 --- This assumes multiple characters will not have the same model,
 --- Icons can only be seen by users who have the character avalible to them
 function health_meter_from_local_index(localIndex)
@@ -430,11 +430,11 @@ function health_meter_from_local_index(localIndex)
     return defaultMeterInfo
 end
 
---- @param localIndex integer
---- @param x integer
---- @param y integer
---- @param scaleX integer
---- @param scaleY integer
+---@param localIndex integer
+---@param x integer
+---@param y integer
+---@param scaleX integer
+---@param scaleY integer
 function render_health_meter_from_local_index(localIndex, health, x, y, scaleX, scaleY)
     if localIndex == nil then localIndex = 0 end
     local health = math.floor(health*MATH_DIVIDE_HEALTH)

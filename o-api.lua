@@ -3,16 +3,16 @@ if incompatibleClient then return 0 end
 -- localize functions to improve performance - o-api.lua
 local table_insert,djui_hud_measure_text,smlua_model_util_get_id,type,tonumber = table.insert,djui_hud_measure_text,smlua_model_util_get_id,type,tonumber
 
---- @class CharacterTable
---- @field public name string
---- @field public saveName string
---- @field public description table
---- @field public credit string
---- @field public color Color
---- @field public model ModelExtendedId|integer
---- @field public forceChar CharacterType
---- @field public lifeIcon TextureInfo
---- @field public camScale integer
+---@class CharacterTable
+---@field public name string
+---@field public saveName string
+---@field public description table
+---@field public credit string
+---@field public color Color
+---@field public model ModelExtendedId|integer
+---@field public forceChar CharacterType
+---@field public lifeIcon TextureInfo
+---@field public camScale integer
 
 local characterVoices = {}
 local saveNameTable = {}
@@ -75,7 +75,7 @@ local function character_add(name, description, credit, color, modelInfo, forceC
     if type(description) == TYPE_STRING then
         description = split_text_into_lines(description)
     end
-    if color and type(color) == TYPE_STRING then
+    if color ~= nil and type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
     if lifeIcon and type(lifeIcon) == TYPE_STRING then
@@ -86,7 +86,7 @@ local function character_add(name, description, credit, color, modelInfo, forceC
     local charNum = #characterTable + 1
 
     if name and type(name) == TYPE_STRING and not _G["CT_"..name:upper():gsub(" ", "_")] then
-        local charNum = charNum --- @type CharacterType
+        local charNum = charNum ---@type CharacterType
         define_valid_global("CT_"..name:upper():gsub(" ", "_"), charNum)
     end
 
@@ -440,8 +440,8 @@ end
 
 ---@description A function that gets the current character's table position in CS
 ---@added 1
---- @param localIndex integer?
---- @return integer?
+---@param localIndex integer?
+---@return integer?
 local function character_get_current_number(localIndex)
     if localIndex == nil or localIndex == 0 then
         return currChar
@@ -483,7 +483,7 @@ end
 
 ---@description A function that gets the current character's palette data
 ---@added 1.12
---- @return table?
+---@return table?
 local function character_get_current_palette()
     local model = characterTable[currChar][characterTable[currChar].currAlt].model
     return characterColorPresets[model] ~= nil and characterColorPresets[model][gCSPlayers[0].presetPalette] or nil
@@ -491,8 +491,8 @@ end
 
 ---@description A function that gets the current character's palette number
 ---@added 1.12
---- @param localIndex integer?
---- @return integer?
+---@param localIndex integer?
+---@return integer?
 local function character_get_current_palette_number(localIndex)
     if localIndex == nil then localIndex = 0 end
     return gCSPlayers[localIndex].presetPalette

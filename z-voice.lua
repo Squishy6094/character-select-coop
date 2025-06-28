@@ -79,8 +79,8 @@ for i = 0, MAX_PLAYERS - 1 do
     playerSample[i] = nil
 end
 
---- @param m MarioState
---- @param sound CharacterSound
+---@param m MarioState
+---@param sound CharacterSound
 local function custom_character_sound(m, sound)
     if m.playerIndex == 0 then
         if stallTimer < stallSayLine then
@@ -138,7 +138,7 @@ local function custom_character_sound(m, sound)
     end
 end
 
---- @param m MarioState
+---@param m MarioState
 local function custom_character_snore(m)
     if is_game_paused() or optionTable[optionTableRef.localVoices].toggle == 0 then return end
 
