@@ -586,6 +586,7 @@ end
 -------------------
 
 local stallFrame = 0
+local stallComplete = 3
 
 CUTSCENE_CS_MENU = 0xFA
 
@@ -601,8 +602,6 @@ local prevBaseCharFrame = gNetworkPlayers[0].modelIndex
 local prevModelId = 0
 local faceAngle = 0
 local eyeState = MARIO_EYES_OPEN
-local prevFOV = 40
-local menuFOV = 45
 --- @param m MarioState
 local function mario_update(m)
     local np = gNetworkPlayers[m.playerIndex]
@@ -618,7 +617,7 @@ local function mario_update(m)
         queueStorageFailsafe = false
     end
 
-    if stallFrame < 3 then
+    if stallFrame < stallComplete then
         stallFrame = stallFrame + 1
     end
 
@@ -647,8 +646,11 @@ local function mario_update(m)
         p.modelEditOffset = charTable[charTable.currAlt].model - charTable[charTable.currAlt].ogModel
         m.marioObj.hookRender = 1
 
+        if menu and m.action == ACT_SLEEPING then
+            set_mario_action(m, ACT_WAKING_UP, m.actionArg)
+        end
+
         if menuAndTransition then
-            --play_secondary_music(0, 0, 0.5, 0)
             camera_freeze()
             hud_hide()
             if m.area.camera.cutscene == 0 then
@@ -660,7 +662,6 @@ local function mario_update(m)
                 y = m.pos.y + 120 * camScale,
                 z = m.pos.z,
             }
-            set_override_fov(menuFOV)
             vec3f_copy(gLakituState.focus, focusPos)
             m.marioBodyState.eyeState = eyeState
             gLakituState.pos.x = m.pos.x + sins(faceAngle) * 500 * camScale
@@ -672,15 +673,10 @@ local function mario_update(m)
                 --stop_secondary_music(50)
                 camera_unfreeze()
                 hud_show()
-                set_override_fov(prevFOV)
                 if m.area.camera.cutscene == CUTSCENE_CS_MENU then
                     m.area.camera.cutscene = CUTSCENE_STOP
                 end
                 p.inMenu = false
-            end
-            local currFOV = get_current_fov()
-            if currFOV ~= menuFOV then
-                prevFOV = currFOV
             end
         end
 
@@ -699,7 +695,7 @@ local function mario_update(m)
                 end
                 if not currChar.locked then -- Character was unlocked
                     update_character_render_table()
-                    if stallFrame == 3 and notif then
+                    if stallFrame == stallComplete and notif then
                         if optionTable[optionTableRef.notification].toggle > 0 then
                             djui_popup_create('Character Select:\nUnlocked '..tostring(currChar[1].name)..'\nas a Playable Character!', 3)
                         end
@@ -985,7 +981,9 @@ local function on_hud_render()
     local heightHalf = height * 0.5
     local widthScale = maxf(width, 320) * MATH_DIVIDE_320
 
-    update_menu_color()
+    if stallFrame == stallComplete then
+        update_menu_color()
+    end
 
     if menuAndTransition then
 
