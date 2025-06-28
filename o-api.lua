@@ -740,30 +740,32 @@ end
 ---@added 1.8
 ---@param bool boolean
 local function restrict_palettes(bool)
+    if not network_is_server() then return end
     if bool == nil then bool = true end
-    stopPalettes = bool
+    gGlobalSyncTable.charSelectRestrictPalettes = bool and 2 or 0
 end
 
 ---@description A function that sets if movesets are restricted (Default `false`)
 ---@added 1.10
 ---@param bool boolean
 local function restrict_movesets(bool)
+    if not network_is_server() then return end
     if bool == nil then bool = true end
-    stopMovesets = bool
+    gGlobalSyncTable.charSelectRestrictMovesets = bool and 2 or 0
 end
 
 ---@description A function that checks if palettes are restricted
 ---@added 1.14.3
 ---@return boolean
 local function are_palettes_restricted()
-    return stopPalettes
+    return gGlobalSyncTable.charSelectRestrictPalettes > 0
 end
 
 ---@description A function that checks if movesets are restricted
 ---@added 1.14.3
 ---@return boolean
 local function are_movesets_restricted()
-    return stopMovesets
+    return gGlobalSyncTable.charSelectRestrictMovesets > 0
 end
 
 ---@description A table that contains the local mario's controller before Character Select's menu cancels them

@@ -87,7 +87,7 @@ end
 local function update_preset_palette(np)
     local p = gCSPlayers[np.localIndex]
     local modelId = p.modelId
-    if np.connected and gCSPlayers[0].presetPalette > 0 and characterColorPresets[modelId] and not stopPalettes then
+    if np.connected and gCSPlayers[0].presetPalette > 0 and characterColorPresets[modelId] and gGlobalSyncTable.charSelectRestrictPalettes == 0 then
         network_player_set_full_override_palette(np, characterColorPresets[modelId][p.presetPalette])
     end
 end
@@ -114,7 +114,7 @@ local function mario_update(m)
     end
     
     if m.playerIndex == 0 then
-        if not stopPalettes then
+        if gGlobalSyncTable.charSelectRestrictPalettes == 0 then
             gCSPlayers[0].presetPalette = characterColorPresets[gCSPlayers[0].modelId] ~= nil and characterColorPresets[gCSPlayers[0].modelId].currPalette or 0
         end 
 
@@ -140,7 +140,7 @@ local function mario_update(m)
         prevPresetPalette[m.playerIndex] = p.presetPalette
         prevModel[m.playerIndex] = p.modelId
 
-        if p.presetPalette > 0 and characterColorPresets[p.modelId] and not stopPalettes then
+        if p.presetPalette > 0 and characterColorPresets[p.modelId] and gGlobalSyncTable.charSelectRestrictPalettes == 0 then
             network_player_set_full_override_palette(np, characterColorPresets[p.modelId][p.presetPalette])
         end
     else

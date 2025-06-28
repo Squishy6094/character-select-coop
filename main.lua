@@ -253,6 +253,9 @@ optionTableRef = {
     credits = make_table_ref_num(),
     debugInfo = make_table_ref_num(),
     resetSaveData = make_table_ref_num(),
+    -- Moderation
+    --restrictPalettes = make_table_ref_num(),
+    restrictMovesets = make_table_ref_num(),
 }
 
 optionTable = {
@@ -307,7 +310,12 @@ optionTable = {
         toggleSaveName = "localMoveset",
         toggleDefault = 1,
         toggleMax = 1,
-        description = {"Toggles if Custom Movesets", "are active on compatible", "characters"}
+        description = {"Toggles if Custom Movesets", "are active on compatible", "characters"},
+        lock = function ()
+            if gGlobalSyncTable.charSelectRestrictMovesets ~= 0 then
+                return "Forced Off"
+            end
+        end,
     },
     [optionTableRef.localModels] = {
         name = "Locally Display Models",
@@ -349,6 +357,22 @@ optionTable = {
         toggleNames = {"", ""},
         description = {"Resets Character Select's", "Save Data"}
     },
+    [optionTableRef.restrictMovesets] = {
+        name = "Restrict Movesets",
+        toggle = 0,
+        toggleDefault = 1,
+        toggleMax = 1,
+        description = {"Restricts turning on", "movesets", "(Host Only)"},
+        lock = function ()
+            if not network_is_server() then
+                if gGlobalSyncTable.charSelectRestrictMovesets < 2 then
+                    return "Host Only"
+                else
+                    return "API Only"
+                end
+            end
+        end,
+    },
 }
 
 creditTable = {
@@ -358,9 +382,9 @@ creditTable = {
         {creditTo = "AngelicMiracles", creditFor = "Concepts / CoopDX"},
         {creditTo = "AgentX",          creditFor = "Main Contributer / CoopDX"},
         {creditTo = "xLuigiGamerx",    creditFor = "Main Contributer"},
+        {creditTo = "Wibblus",         creditFor = "Contributer"},
         {creditTo = "OneCalledRPG",    creditFor = "Contributer"},
         {creditTo = "SuperKirbyLover", creditFor = "Custom Health Meters"},
-        --{creditTo = "EliteMasterEric", creditFor = "Dialog Replacement"}
     }
 }
 
@@ -561,26 +585,6 @@ local function menu_is_allowed(m)
     return true
 end
 
---[[
-local function get_next_unlocked_char()
-    for i = currChar, #characterTable do
-        if not characterTable[i].locked then
-            return i
-        end
-    end
-    return 1
-end
-
-local function get_last_unlocked_char()
-    for i = currChar, 1, -1 do
-        if not characterTable[i].locked then
-            return i
-        end
-    end
-    return 1
-end
-]]
-
 -------------------
 -- Model Handler --
 -------------------
@@ -615,6 +619,10 @@ local function mario_update(m)
             end
         end
         queueStorageFailsafe = false
+    end
+
+    if network_is_server() and gGlobalSyncTable.charSelectRestrictMovesets < 2 then
+        gGlobalSyncTable.charSelectRestrictMovesets = optionTable[optionTableRef.restrictMovesets].toggle
     end
 
     if stallFrame < stallComplete then
@@ -1072,9 +1080,9 @@ local function on_hud_render()
             }
             local modelId = gCSPlayers[0].modelId
             local TEXT_PRESET_TOGGLE = ((currPaletteTable[currPaletteTable.currPalette] ~= nil and currPaletteTable[currPaletteTable.currPalette].name ~= nil) and (currPaletteTable[currPaletteTable.currPalette].name .. " - ") or "") .. ((paletteCount > 1 and "("..currPaletteTable.currPalette.."/"..paletteCount..")" or (currPaletteTable.currPalette > 0 and "On" or "Off")) or "Off")
-            if characterColorPresets[modelId] and not stopPalettes then
+            if characterColorPresets[modelId] and not gGlobalSyncTable.charSelectRestrictPalettes then
                 table_insert(menuText, TEXT_PREF_PALETTE .. " - " .. TEXT_PRESET_TOGGLE)
-            elseif stopPalettes then
+            elseif gGlobalSyncTable.charSelectRestrictPalettes > 0 then
                 table_insert(menuText, TEXT_PALETTE_RESTRICTED)
             end
             if #menuText > 1 then
@@ -1358,21 +1366,28 @@ local function on_hud_render()
                         local toggleName = optionTable[i].name
                         local scale = 0.5
                         local yOffset = 100 - optionAnimTimer + (i - currOption + 2) * 9 * widthScaleLimited
+
+                        local lockName = nil
+                        if optionTable[i].lock ~= nil then
+                            lockName = optionTable[i].lock()
+                        end
+
                         if i == currOption then
                             djui_hud_set_font(FONT_ALIASED)
                             scale = 0.3
                             yOffset = yOffset - 1
                             local currToggleName = optionTable[i].toggleNames[optionTable[i].toggle + 1]
                             currToggleName = currToggleName and currToggleName or "???"
+                            if lockName ~= nil then
+                                currToggleName = lockName
+                            end
                             if currToggleName ~= "" then
                                 toggleName = toggleName .. " - " .. currToggleName
-                            else
-                                toggleName = toggleName
                             end
                         else
                             djui_hud_set_font(FONT_TINY)
                         end
-                        djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
+                        djui_hud_set_color(menuColorHalf.r * (lockName ~= nil and 0.5 or 1), menuColorHalf.g * (lockName ~= nil and 0.5 or 1), menuColorHalf.b * (lockName ~= nil and 0.5 or 1), 255)
                         scale = scale * widthScaleLimited
                         djui_hud_print_text(toggleName, widthHalf - djui_hud_measure_text(toggleName) * scale * 0.5, yOffset, scale)
                     end
@@ -1579,11 +1594,11 @@ local function on_hud_render()
         end
 
         local text = nil
-        if stopMovesets and stopPalettes then
+        if gGlobalSyncTable.charSelectRestrictMovesets > 0 and gGlobalSyncTable.charSelectRestrictPalettes > 0 then
             text = TEXT_MOVESET_AND_PALETTE_RESTRICTED
-        elseif stopMovesets then
+        elseif gGlobalSyncTable.charSelectRestrictMovesets > 0 then
             text = TEXT_MOVESET_RESTRICTED
-        elseif stopPalettes then
+        elseif gGlobalSyncTable.charSelectRestrictPalettes > 0 then
             text = TEXT_PALETTE_RESTRICTED
         end
         if text ~= nil then
@@ -1756,7 +1771,7 @@ local function before_mario_update(m)
                 local currPaletteTable = characterColorPresets[gCSPlayers[0].modelId] and characterColorPresets[gCSPlayers[0].modelId] or {currPalette = 0}
 
                 if (controller.buttonPressed & Y_BUTTON) ~= 0 then
-                    if characterColorPresets[modelId] and optionTable[optionTableRef.localModels].toggle > 0 and not stopPalettes then
+                    if characterColorPresets[modelId] and optionTable[optionTableRef.localModels].toggle > 0 and gGlobalSyncTable.charSelectRestrictPalettes == 0 then
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject)
                         currPaletteTable.currPalette = currPaletteTable.currPalette + 1
                         inputStallTimerButton = inputStallToButton
@@ -1808,7 +1823,7 @@ local function before_mario_update(m)
         end
 
         if inputStallTimerButton == 0 then
-            if (controller.buttonPressed & A_BUTTON) ~= 0 and not optionTable[currOption].optionBeingSet then
+            if (controller.buttonPressed & A_BUTTON) ~= 0 and not optionTable[currOption].optionBeingSet and (optionTable[currOption].lock == nil or optionTable[currOption].lock() == nil) then
                 optionTable[currOption].toggle = optionTable[currOption].toggle + 1
                 if optionTable[currOption].toggle > optionTable[currOption].toggleMax then optionTable[currOption].toggle = 0 end
                 if optionTable[currOption].toggleSaveName ~= nil then
