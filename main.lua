@@ -364,12 +364,12 @@ optionTable = {
         toggleMax = 1,
         description = {"Restricts turning on", "movesets", "(Host Only)"},
         lock = function ()
-            if not network_is_server() then
-                if gGlobalSyncTable.charSelectRestrictMovesets < 2 then
+            if gGlobalSyncTable.charSelectRestrictMovesets < 2 then
+                if not network_is_server() then
                     return "Host Only"
-                else
-                    return "API Only"
                 end
+            else
+                return "API Only"
             end
         end,
     },
