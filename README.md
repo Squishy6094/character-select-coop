@@ -12,6 +12,5 @@
 - **[CoopDX Forums - Character Select](http://mods.sm64coopdx.com/mods/categories/character-select.14/)** - Browse Character Select Packs hosted on the CoopDX Forums
 - **[API Documentation](https://github.com/Squishy6094/character-select-coop/wiki/API-Documentation)** - Gives Full Information on the Character Select's API, Including a Model Template Pack!
 - **[Squishy Community](https://discord.gg/2bg2FnFp6f)** - The Squishiest Server for Help and Support! >.<
-   - **[Discord Pack Catalog](https://discordapp.com/channels/1137469863741362297/1218005675389616220)** - Our Forum Channel for Community Made Packs! (Requires joining Squishy Community)
 - **[SM64CoopDX](https://sm64coopdx.com)** - The SM64CoopDX Website, Which this project was primarily made for!
 
