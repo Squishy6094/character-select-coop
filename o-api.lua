@@ -890,10 +890,19 @@ end
 local function hook_render_in_menu(func, underText)
     if type(func) ~= TYPE_FUNCTION then return end
     if underText then
-        table_insert(renderInMenuTable.back, func)
+        table_insert(hookTableRenderInMenu.back, func)
     else
-        table_insert(renderInMenuTable.front, func)
+        table_insert(hookTableRenderInMenu.front, func)
     end
+end
+
+---@description A function that allows you to render HUD Elements in the menu (Behind transistions such as Option and going in/out of menu)
+---@added 1.14.2
+---@param func function
+---@note Function gives `currChar` and `prevChar`
+local function hook_on_character_change(func)
+    if type(func) ~= TYPE_FUNCTION then return end
+    table_insert(hookTableOnCharacterChange, func)
 end
 
 ---@description A function that adds the necessary hooks in order for your pack to have function voicelines
@@ -996,6 +1005,7 @@ _G.charSelect = {
     -- Character Select Hooks --
     hook_allow_menu_open = hook_allow_menu_open,
     hook_render_in_menu = hook_render_in_menu,
+    hook_on_character_change = hook_on_character_change,
     config_character_sounds = placeholder, -- Function located in z-voice.lua
     character_hook_moveset = character_hook_moveset,
 }
