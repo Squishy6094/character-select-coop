@@ -751,7 +751,7 @@ end
 local function restrict_movesets(bool)
     if not network_is_server() then return end
     if bool == nil then bool = true end
-    gGlobalSyncTable.charSelectRestrictMovesets = bool and 2 or 0
+    gGlobalSyncTable.charSelectRestrictMovesets = bool and 2 or optionTable[optionTableRef.restrictMovesets].toggle
 end
 
 ---@description A function that checks if palettes are restricted
