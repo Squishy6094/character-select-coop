@@ -31,6 +31,7 @@ options = false
 local credits = false
 local creditsAndTransition = false
 currChar = 1
+local prevChar = 1
 currCharRender = 1
 currCategory = 1
 local currOption = 1
@@ -585,6 +586,30 @@ local function menu_is_allowed(m)
     return true
 end
 
+hookTableOnCharacterChange = {
+    [1] = function (prevChar, currChar) -- Check for Non-Vanilla Actions when switching Characters
+        local m = gMarioStates[0]
+        if is_mario_in_vanilla_action(m) or m.health < 256 then return end
+        if m.action & ACT_FLAG_ALLOW_FIRST_PERSON ~= 0 then
+            set_mario_action(m, ACT_IDLE, 0)
+        elseif m.action & ACT_GROUP_MOVING ~= 0 or m.action & ACT_FLAG_MOVING ~= 0 then
+            set_mario_action(m, ACT_WALKING, 0)
+        elseif m.action & ACT_GROUP_SUBMERGED ~= 0 or m.action & ACT_FLAG_SWIMMING ~= 0 then
+            -- Need to fix upwarping
+            set_mario_action(m, ACT_WATER_IDLE, 0)
+        else
+            set_mario_action(m, ACT_FREEFALL, 0)
+        end
+    end
+}
+
+local function on_character_change(prevChar, currChar)
+    for i = 1, #hookTableOnCharacterChange do
+        hookTableOnCharacterChange[i](prevChar, currChar)
+    end
+    djui_chat_message_create(tostring(is_mario_in_vanilla_action(gMarioStates[0])))
+end
+
 -------------------
 -- Model Handler --
 -------------------
@@ -729,6 +754,10 @@ local function mario_update(m)
         end
 
         p.movesetToggle = optionTable[optionTableRef.localMoveset].toggle ~= 0
+        if prevChar ~= currChar then
+            on_character_change(prevChar, currChar)
+            prevChar = currChar
+        end
     end
 
     if p.inMenu and m.action & ACT_FLAG_ALLOW_FIRST_PERSON ~= 0 then
@@ -1023,9 +1052,9 @@ local function on_hud_render()
         djui_hud_render_rect(2, 2, width - 4, 46)
 
         -- API Rendering (Below Text)
-        if #renderInMenuTable.back > 0 then
-            for i = 1, #renderInMenuTable.back do
-                renderInMenuTable.back[i]()
+        if #hookTableRenderInMenu.back > 0 then
+            for i = 1, #hookTableRenderInMenu.back do
+                hookTableRenderInMenu.back[i]()
             end
         end
 
@@ -1325,9 +1354,9 @@ local function on_hud_render()
 
         -- API Rendering (Above Text)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        if #renderInMenuTable.front > 0 then
-            for i = 1, #renderInMenuTable.front do
-                renderInMenuTable.front[i]()
+        if #hookTableRenderInMenu.front > 0 then
+            for i = 1, #hookTableRenderInMenu.front do
+                hookTableRenderInMenu.front[i]()
             end
         end
         djui_hud_set_resolution(RESOLUTION_N64)
