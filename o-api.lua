@@ -478,6 +478,7 @@ end
 local function character_set_current_number(charNum)
     if type(charNum) ~= TYPE_INTEGER or characterTable[charNum] == nil then return end
     currChar = charNum
+    currCharRender = charNum
     charBeingSet = true
 end
 
