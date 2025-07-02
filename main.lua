@@ -607,7 +607,6 @@ local function on_character_change(prevChar, currChar)
     for i = 1, #hookTableOnCharacterChange do
         hookTableOnCharacterChange[i](prevChar, currChar)
     end
-    djui_chat_message_create(tostring(is_mario_in_vanilla_action(gMarioStates[0])))
 end
 
 -------------------
