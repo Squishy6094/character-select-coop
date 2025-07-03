@@ -233,7 +233,7 @@ end
 ---@return boolean
 function hud_get_element(hudElement)
     --log_to_console("The `charSelect.hud_get_element()` function is deprecated, please use normal vanilla functions as they have been modified to work with Character Select.", CONSOLE_MESSAGE_WARNING)
-    djui_chat_message_create(tostring(sCharSelectHudDisplayFlags))
+    --djui_chat_message_create(tostring(sCharSelectHudDisplayFlags))
     return (hud_get_value(HUD_DISPLAY_FLAGS) & hudElement) ~= 0
 end
 
@@ -585,16 +585,24 @@ local function render_hud_camera_status()
 end
 
 -- Act Select Hud --
+local sVisibleStars = 0
 local function render_act_select_hud()
     local course = gNetworkPlayers[0].currCourseNum
     if gServerSettings.enablePlayersInLevelDisplay == 0 or course == 0 or obj_get_first_with_behavior_id(id_bhvActSelector) == nil then return end
-
-    local starBhvCount = count_objects_with_behavior(get_behavior_from_id(id_bhvActSelectorStarType))
-    local sVisibleStars = starBhvCount < 6 and starBhvCount or 6
+    
+    if sVisibleStars == 0 then
+        local starObj = obj_get_first_with_behavior_id(id_bhvActSelectorStarType)
+        while starObj ~= nil do
+            if starObj.oPosY ~= 24 then -- Pos of 100 coin star display
+                sVisibleStars = sVisibleStars + 1
+            end
+            starObj = obj_get_next_with_same_behavior_id(starObj)
+        end
+    end
 
     for a = 1, sVisibleStars do
         local x = (139 - sVisibleStars * 17 + a * 34) + (djui_hud_get_screen_width() / 2) - 160 + 0.5
-        for j = 1, MAX_PLAYERS - 1 do -- 0 is not needed due to the due to the fact that you are never supposed to see yourself in the act
+        for j = 1, MAX_PLAYERS - 1 do -- 0 is not needed, you're never supposed to see yourself in act select
             local np = gNetworkPlayers[j]
             if np and np.connected and np.currCourseNum == course and np.currActNum == a then
                 djui_hud_render_rect(x - 4, 17, 16, 16)
@@ -824,6 +832,8 @@ local function on_hud_render()
 
     if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then
         render_act_select_hud()
+    else
+        sVisibleStars = 0
     end
 
     if gNetworkPlayers[0].currActNum == 99 then
