@@ -898,10 +898,10 @@ local function hook_render_in_menu(func, underText)
     end
 end
 
----@description A function that allows you to render HUD Elements in the menu (Behind transistions such as Option and going in/out of menu)
+---@description A function that runs the inputted function when the character is changed
 ---@added 1.14.2
 ---@param func function
----@note Function gives `currChar` and `prevChar`
+---@note Function gives `currChar` and `prevChar` as function inputs
 local function hook_on_character_change(func)
     if type(func) ~= TYPE_FUNCTION then return end
     table_insert(hookTableOnCharacterChange, func)
