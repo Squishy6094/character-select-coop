@@ -207,7 +207,6 @@ function _G.hud_set_value(type, value)
     if type == HUD_DISPLAY_FLAGS then
         sCharSelectHudDisplayFlags = value
         if isPowerMeter then
-            djui_chat_message_create("hello there")
             og_hud_set_value(type, value)
         end
     else
