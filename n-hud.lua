@@ -180,14 +180,7 @@ end
     These are `_G` on their own to replace vanilla functions
 ]]
 
-local sCharSelectHudDisplayFlags -- `local` because we aren't exposing this
-
--- Here to make sure the flags are at the default state
-hook_event(HOOK_UPDATE, function ()
-    if not sCharSelectHudDisplayFlags or sCharSelectHudDisplayFlags == 0 then
-        sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_DEFAULT
-    end
-end)
+local sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_DEFAULT -- `local` because we aren't exposing this
 
 ---@param type HudDisplayValue
 ---@return integer
@@ -199,14 +192,29 @@ function _G.hud_get_value(type)
     end
 end
 
+-- These display flags are the ones that we aren't using in the custom hud so they're needed to disable the vanilla hud
+local vanillaDisplayFlags = {
+    HUD_DISPLAY_FLAG_COIN_COUNT,
+    HUD_DISPLAY_FLAG_CAMERA_AND_POWER,
+    HUD_DISPLAY_FLAG_KEYS,
+    HUD_DISPLAY_FLAG_UNKNOWN_0020,
+    HUD_DISPLAY_FLAG_TIMER,
+    HUD_DISPLAY_FLAG_POWER,
+    HUD_DISPLAY_FLAG_EMPHASIZE_POWER,
+    HUD_DISPLAY_NONE,
+}
+
 ---@param type HudDisplayValue
 ---@param value integer
 --- Sets a HUD display value
 function _G.hud_set_value(type, value)
-    local isPowerMeter = value == (hud_get_value(type) & ~HUD_DISPLAY_FLAG_POWER) or value == (hud_get_value(type) | HUD_DISPLAY_FLAG_POWER) or value == (hud_get_value(type) & ~HUD_DISPLAY_FLAG_CAMERA_AND_POWER) or value == (hud_get_value(type) | HUD_DISPLAY_FLAG_CAMERA_AND_POWER)
+    local isVanilla
+    for i = 1, #vanillaDisplayFlags do
+        isVanilla = value == (hud_get_value(type) & ~vanillaDisplayFlags[i]) or value == (hud_get_value(type) | vanillaDisplayFlags[i])
+    end
     if type == HUD_DISPLAY_FLAGS then
         sCharSelectHudDisplayFlags = value
-        if isPowerMeter then
+        if isVanilla then
             og_hud_set_value(type, value)
         end
     else
