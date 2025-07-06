@@ -261,7 +261,7 @@ optionTableRef = {
 
 optionTable = {
     [optionTableRef.openInputs] = {
-        name = "Open Binds",
+        name = "Menu Bind",
         toggle = tonumber(mod_storage_load("MenuInput")),
         toggleSaveName = "MenuInput",
         toggleDefault = 1,
@@ -319,7 +319,7 @@ optionTable = {
         end,
     },
     [optionTableRef.localModels] = {
-        name = "Locally Display Models",
+        name = "Character Models",
         toggle = tonumber(mod_storage_load("localModels")),
         toggleSaveName = "localModels",
         toggleDefault = 1,
@@ -327,7 +327,7 @@ optionTable = {
         description = {"Toggles if Custom Models display", "on your client, practically", "disables Character Select if", "Toggled Off"}
     },
     [optionTableRef.localVoices] = {
-        name = "Custom Voices",
+        name = "Character Voices",
         toggle = tonumber(mod_storage_load("localVoices")),
         toggleSaveName = "localVoices",
         toggleDefault = 1,
@@ -590,7 +590,9 @@ hookTableOnCharacterChange = {
     [1] = function (prevChar, currChar) -- Check for Non-Vanilla Actions when switching Characters
         local m = gMarioStates[0]
         if is_mario_in_vanilla_action(m) or m.health < 256 then return end
-        if m.action & ACT_FLAG_ALLOW_FIRST_PERSON ~= 0 then
+        if m.action & ACT_FLAG_RIDING_SHELL ~= 0 then
+            set_mario_action(m, ACT_RIDING_SHELL_FALL, 0)
+        elseif m.action & ACT_FLAG_ALLOW_FIRST_PERSON ~= 0 then
             set_mario_action(m, ACT_IDLE, 0)
         elseif m.action & ACT_GROUP_MOVING ~= 0 or m.action & ACT_FLAG_MOVING ~= 0 then
             set_mario_action(m, ACT_WALKING, 0)
@@ -766,9 +768,9 @@ local function mario_update(m)
 
         -- reset menu anim on character change, starts them at frame 0 and prevents lua anim issues
         if prevModelId ~= p.modelId then
-            m.marioObj.header.gfx.animInfo.animID = -1
             prevModelId = p.modelId
         end
+        m.marioObj.header.gfx.animInfo.animID = -1
         set_character_animation(m, (characterAnims[p.modelId] and characterAnims[p.modelId][CS_ANIM_MENU]) and CS_ANIM_MENU or CHAR_ANIM_FIRST_PERSON)
 
         m.marioObj.header.gfx.angle.y = m.faceAngle.y
@@ -1108,7 +1110,7 @@ local function on_hud_render()
             }
             local modelId = gCSPlayers[0].modelId
             local TEXT_PRESET_TOGGLE = ((currPaletteTable[currPaletteTable.currPalette] ~= nil and currPaletteTable[currPaletteTable.currPalette].name ~= nil) and (currPaletteTable[currPaletteTable.currPalette].name .. " - ") or "") .. ((paletteCount > 1 and "("..currPaletteTable.currPalette.."/"..paletteCount..")" or (currPaletteTable.currPalette > 0 and "On" or "Off")) or "Off")
-            if characterColorPresets[modelId] and not gGlobalSyncTable.charSelectRestrictPalettes then
+            if characterColorPresets[modelId] and gGlobalSyncTable.charSelectRestrictPalettes == 0 then
                 table_insert(menuText, TEXT_PREF_PALETTE .. " - " .. TEXT_PRESET_TOGGLE)
             elseif gGlobalSyncTable.charSelectRestrictPalettes > 0 then
                 table_insert(menuText, TEXT_PALETTE_RESTRICTED)
