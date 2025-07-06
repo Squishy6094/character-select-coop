@@ -203,8 +203,13 @@ end
 ---@param value integer
 --- Sets a HUD display value
 function _G.hud_set_value(type, value)
+    local isPowerMeter = value == (hud_get_value(type) & ~HUD_DISPLAY_FLAG_POWER) or value == (hud_get_value(type) | HUD_DISPLAY_FLAG_POWER) or value == (hud_get_value(type) & ~HUD_DISPLAY_FLAG_CAMERA_AND_POWER) or value == (hud_get_value(type) | HUD_DISPLAY_FLAG_CAMERA_AND_POWER)
     if type == HUD_DISPLAY_FLAGS then
         sCharSelectHudDisplayFlags = value
+        if isPowerMeter then
+            djui_chat_message_create("hello there")
+            og_hud_set_value(type, value)
+        end
     else
         og_hud_set_value(type, value)
     end
@@ -548,11 +553,9 @@ local function render_hud_stars()
 end
 
 local function render_hud_camera_status()
-    if not HUD_DISPLAY_CAMERA_STATUS then return end
-
     og_hud_set_value(HUD_DISPLAY_FLAGS, og_hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_CAMERA)
 
-    if (hud_get_value(HUD_DISPLAY_FLAGS) & HUD_DISPLAY_FLAG_CAMERA) == 0 then return end
+    if (hud_get_value(HUD_DISPLAY_FLAGS) & HUD_DISPLAY_FLAG_CAMERA) == 0 or (hud_get_value(HUD_DISPLAY_FLAGS) & HUD_DISPLAY_FLAG_CAMERA_AND_POWER) == 0 then return end
 
     local x = djui_hud_get_screen_width() - 54
     local y = 205
