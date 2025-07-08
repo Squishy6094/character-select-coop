@@ -226,6 +226,15 @@ local function update_character_render_table()
     end
 end
 
+function force_set_character(charNum, charAlt)
+    if not charAlt then charAlt = 1 end
+    currCategory = 1
+    currChar = charNum
+    gCSPlayers[0].currAlt = charAlt
+    currCharRender = charNum
+    charBeingSet = true
+end
+
 characterCaps = {}
 characterCelebrationStar = {}
 characterColorPresets = {}
@@ -587,7 +596,8 @@ local function menu_is_allowed(m)
 end
 
 hookTableOnCharacterChange = {
-    [1] = function (prevChar, currChar) -- Check for Non-Vanilla Actions when switching Characters
+    [1] = function (prevChar, currChar)
+        -- Check for Non-Vanilla Actions when switching Characters
         local m = gMarioStates[0]
         if is_mario_in_vanilla_action(m) or m.health < 256 then return end
         if m.action & ACT_FLAG_RIDING_SHELL ~= 0 then
@@ -930,6 +940,13 @@ local TEXT_STAR_ICON = "Star Icon:"
 local TEXT_FORCED_CHAR = "Forced: "
 local TEXT_TABLE_POS = "Table Position: "
 local TEXT_PALETTE = "Palette: "
+local forceCharStrings = {
+    [CT_MARIO] = "CT_MARIO",
+    [CT_LUIGI] = "CT_LUIGI",
+    [CT_TOAD] = "CT_TOAD",
+    [CT_WALUIGI] = "CT_WALUIGI",
+    [CT_WARIO] = "CT_WARIO"
+}
 
 --Options Text
 local TEXT_OPTIONS_OPEN = "Press START to open Options"
@@ -942,14 +959,6 @@ local TEXT_LOCAL_MODEL_ERROR_FIX = "Please Verify the Integrity of the Pack!"
 
 --Credit Text
 local TEXT_CREDITS_HEADER = "Credits"
-
-local forceCharStrings = {
-    [CT_MARIO] = "CT_MARIO",
-    [CT_LUIGI] = "CT_LUIGI",
-    [CT_TOAD] = "CT_TOAD",
-    [CT_WALUIGI] = "CT_WALUIGI",
-    [CT_WARIO] = "CT_WARIO"
-}
 
 local MATH_DIVIDE_320 = 1/320
 local MATH_DIVIDE_64 = 1/64
@@ -1021,6 +1030,9 @@ local function on_hud_render()
 
     if stallFrame == stallComplete then
         update_menu_color()
+        if not menu_is_allowed() then
+            menu = false
+        end
     end
 
     if menuAndTransition then
@@ -1946,8 +1958,7 @@ local function chat_command(msg)
             local saveName = string_underscore_to_space(string_lower(characterTable[i].saveName))
             for a = 1, #characterTable[i] do
                 if msg == string_lower(characterTable[i][a].name) or msg == saveName then
-                    currCategory = 1
-                    currChar = i
+                    force_set_character(i)
                     update_character_render_table()
                     if msg ~= saveName then
                         characterTable[i].currAlt = a
