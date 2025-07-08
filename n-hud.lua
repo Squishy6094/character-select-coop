@@ -181,6 +181,16 @@ end
 ]]
 
 local sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_DEFAULT -- `local` because we aren't exposing this
+local sHudModified = false
+hook_event(HOOK_UPDATE, function ()
+    if sHudModified then return end
+
+    if gNetworkPlayers[0].currCourseNum >= COURSE_MIN then
+        sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | sCharSelectHudDisplayFlags | HUD_DISPLAY_FLAG_COIN_COUNT
+    else
+        sCharSelectHudDisplayFlags = hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_COIN_COUNT
+    end
+end)
 
 ---@param type HudDisplayValue
 ---@return integer
@@ -208,15 +218,9 @@ local vanillaDisplayFlags = {
 ---@param value integer
 --- Sets a HUD display value
 function _G.hud_set_value(type, value)
-    local isVanilla
-    for i = 1, #vanillaDisplayFlags do
-        isVanilla = value == (hud_get_value(type) & ~vanillaDisplayFlags[i]) or value == (hud_get_value(type) | vanillaDisplayFlags[i])
-    end
+    sHudModified = true
     if type == HUD_DISPLAY_FLAGS then
         sCharSelectHudDisplayFlags = value
-        if isVanilla then
-            og_hud_set_value(type, value)
-        end
     else
         og_hud_set_value(type, value)
     end
@@ -818,6 +822,14 @@ local function on_hud_render_behind()
 
     if gNetworkPlayers[0].currActNum == 99 or gMarioStates[0].action == ACT_INTRO_CUTSCENE or hud_is_hidden() then
         return
+    end
+
+    for _, flag in ipairs(vanillaDisplayFlags) do
+        if hud_get_value(HUD_DISPLAY_FLAGS) & flag ~= 0 then
+            og_hud_set_value(HUD_DISPLAY_FLAGS, og_hud_get_value(HUD_DISPLAY_FLAGS) | flag)
+        else
+            og_hud_set_value(HUD_DISPLAY_FLAGS, og_hud_get_value(HUD_DISPLAY_FLAGS) & ~flag)
+        end
     end
 
     if obj_get_first_with_behavior_id(id_bhvActSelector) == nil then
