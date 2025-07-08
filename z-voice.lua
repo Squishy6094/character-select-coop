@@ -58,22 +58,6 @@ local function stop_all_custom_character_sounds()
     end
 end
 
---[[local function stop_custom_character_sound(m, sound)
-    local voiceTable = character_get_voice(m)
-    -- if there's no pointer then it must be a sound clip table
-    if type(voiceTable[sound]) == "string" then return end
-    if voiceTable[sound]._pointer == nil then
-        for voice in pairs(voiceTable[sound]) do
-            if type(voiceTable[voice]) == "string" then
-                break
-            end
-            audio_sample_stop(voiceTable[sound][voice])
-        end
-    else
-        audio_sample_stop(voiceTable[sound])
-    end
-end]]
-
 local playerSample = {}
 for i = 0, MAX_PLAYERS - 1 do
     playerSample[i] = nil
@@ -108,7 +92,7 @@ local function custom_character_sound(m, sound)
 
     -- get the sample to play
     local voice = voiceTable[sound]
-    if voice == nil then return NO_SOUND end
+    if voice == nil or (type(voice) == TYPE_TABLE and #voice == 0) then return NO_SOUND end
     playerSample[index] = voice
     -- if there's no pointer then it must be a sound clip table
     if voice._pointer == nil and type(voice) ~= TYPE_STRING then
