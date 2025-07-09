@@ -233,6 +233,7 @@ function force_set_character(charNum, charAlt)
     gCSPlayers[0].currAlt = charAlt
     currCharRender = charNum
     charBeingSet = true
+    update_character_render_table()
 end
 
 characterCaps = {}
@@ -1959,7 +1960,6 @@ local function chat_command(msg)
             for a = 1, #characterTable[i] do
                 if msg == string_lower(characterTable[i][a].name) or msg == saveName then
                     force_set_character(i)
-                    update_character_render_table()
                     if msg ~= saveName then
                         characterTable[i].currAlt = a
                     end
