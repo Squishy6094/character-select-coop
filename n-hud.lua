@@ -137,12 +137,12 @@ local function djui_hud_print_text_with_color(text, x, y, scale, red, green, blu
     while render ~= nil do
         local r, g, b, a = convert_color(color)
         if alpha then a = alpha end
-        djui_hud_print_text(render, x + space, y, scale);
+        djui_hud_print_text(render, x + space, y, scale)
         if r then djui_hud_set_color(r, g, b, a) end
         space = space + djui_hud_measure_text(render) * scale
         text, color, render = remove_color(text, true)
     end
-    djui_hud_print_text(text, x + space, y, scale);
+    djui_hud_print_text(text, x + space, y, scale)
 end
 
 ---@param text string Message
@@ -598,15 +598,20 @@ local function render_hud_camera_status()
 end
 
 -- Act Select Hud --
+
+local STAR_SELECTOR_NOT_SELECTED = 0
+local STAR_SELECTOR_SELECTED     = 1
+local STAR_SELECTOR_100_COINS    = 2
+
 local sVisibleStars = 0
 local function render_act_select_hud()
     local course = gNetworkPlayers[0].currCourseNum
-    if gServerSettings.enablePlayersInLevelDisplay == 0 or course == 0 or obj_get_first_with_behavior_id(id_bhvActSelector) == nil then return end
-    
+    if course == 0 or not obj_get_first_with_behavior_id(id_bhvActSelector) then return end
+
     if sVisibleStars == 0 then
         local starObj = obj_get_first_with_behavior_id(id_bhvActSelectorStarType)
-        while starObj ~= nil do
-            if starObj.oPosY ~= 24 then -- Pos of 100 coin star display
+        while starObj do
+            if starObj.oStarSelectorType ~= STAR_SELECTOR_100_COINS then
                 sVisibleStars = sVisibleStars + 1
             end
             starObj = obj_get_next_with_same_behavior_id(starObj)
@@ -618,10 +623,59 @@ local function render_act_select_hud()
         for j = 1, MAX_PLAYERS - 1 do -- 0 is not needed, you're never supposed to see yourself in act select
             local np = gNetworkPlayers[j]
             if np and np.connected and np.currCourseNum == course and np.currActNum == a then
-                djui_hud_render_rect(x - 4, 17, 16, 16)
                 render_life_icon_from_local_index(j, x - 4, 17, 1)
                 break
             end
+        end
+    end
+
+    local selectedStar = obj_get_first_with_behavior_id(id_bhvActSelectorStarType)
+    local starsList = {}
+    while selectedStar do
+        table.insert(starsList, selectedStar)
+        selectedStar = obj_get_next_with_same_behavior_id(selectedStar)
+    end
+
+    if (sVisibleStars > 0) then
+        local playersInAct = 0
+        local sSelectedActIndex = 0
+        for i = 1, #starsList do
+            local curStar = starsList[i]
+            if curStar.oStarSelectorType == STAR_SELECTOR_SELECTED then
+                sSelectedActIndex = i - 1
+            end
+        end
+        local gCurrCourseNum = gNetworkPlayers[0].currCourseNum
+        for j = 1, MAX_PLAYERS - 1 do
+            local np = gNetworkPlayers[j]
+            if not (np or np.connected) then goto continue end
+            if (np.currCourseNum ~= gCurrCourseNum) then goto continue end
+            if (np.currActNum ~= sSelectedActIndex + 1) then goto continue end
+            playersInAct = playersInAct + 1
+            ::continue::
+        end
+
+        if (playersInAct > 0) then
+            local message = ""
+            if (playersInAct == 1) then
+                message = message .. "     Join      "
+            else
+                message = message .. string.format("%d Players", playersInAct)
+            end
+
+            djui_hud_set_font(FONT_NORMAL)
+            djui_hud_set_color(100, 100, 100, 255)
+            local textScale = .5
+            local textWidth = djui_hud_measure_text(message) * textScale
+
+            local xPos = ((sSelectedActIndex + 1) * 34 - sVisibleStars * 17 + 139 - (textWidth / 2) + 4) + (djui_hud_get_screen_width() / 2) - 160 + 2
+            local yPos = -1
+
+            if message:find("Players") then
+                message = string.format("%d Player", playersInAct)
+            end
+            djui_hud_print_text(message, xPos, yPos, textScale) -- Not fully accurate because the font in act select is stretched in a way unachievable with normal fonts, will revisit in the future
+
         end
     end
 end
@@ -813,6 +867,28 @@ local function render_hud_ending_dialog()
     end
 end
 
+local sServerSettings = gServerSettings
+
+_G.gServerSettings = {
+    enablePlayerList            = sServerSettings.enablePlayerList,
+    enablePlayersInLevelDisplay = sServerSettings.enablePlayersInLevelDisplay,
+}
+
+local sServerSettingsMetaTable = {
+    __index = function (t, k)
+        local csServerSettings = {
+            enablePlayerList            = true,
+            enablePlayersInLevelDisplay = true,
+        }
+        return not csServerSettings[k] and sServerSettings[k] or t[k]
+    end,
+    __newindex = function (_, k, v)
+        sServerSettings[k] = v
+    end,
+}
+
+setmetatable(gServerSettings, sServerSettingsMetaTable)
+
 local function on_hud_render_behind()
     FONT_USER = djui_menu_get_font()
     djui_hud_set_resolution(RESOLUTION_N64)
@@ -831,39 +907,36 @@ local function on_hud_render_behind()
         end
     end
 
+    sServerSettings.enablePlayersInLevelDisplay = false -- Disables the original playersInLevel Display
+
+    local enablePlayersInLevelDisplay = gServerSettings.enablePlayersInLevelDisplay
     if not obj_get_first_with_behavior_id(id_bhvActSelector) then
         render_hud_mario_lives()
         render_hud_stars()
         render_hud_camera_status()
         render_hud_health()
+        sVisibleStars = 0
     else
+        if enablePlayersInLevelDisplay then
+            render_act_select_hud()
+        end
         render_hud_act_select_course()
     end
 end
 
--- Can't name this charSelect due to o-api.lua overriding it, if I did so, using character select with no packs would make it nil
-_G.gServerSettingsCS = {
-    enablePlayerList = true -- Set to false to disable the playerlist
-}
 
 local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_font(FONT_HUD)
     djui_hud_set_color(255, 255, 255, 255)
 
-    if obj_get_first_with_behavior_id(id_bhvActSelector) then
-        render_act_select_hud()
-    else
-        sVisibleStars = 0
-    end
-
     if gNetworkPlayers[0].currActNum == 99 then
         render_hud_ending_dialog()
     end
 
-    gServerSettings.enablePlayerList = false -- Disables the original playerlist and modlist
+    sServerSettings.enablePlayerList = false -- Disables the original playerlist and modlist
 
-    local enablePlayerList = gServerSettingsCS.enablePlayerList -- gServerSettings.enablePlayerList but for the character select playerlist
+    local enablePlayerList = gServerSettings.enablePlayerList
     djui_hud_set_resolution(RESOLUTION_DJUI)
 
     if djui_attempting_to_open_playerlist() and enablePlayerList then
