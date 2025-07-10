@@ -179,14 +179,12 @@ end
 --[[
     These are `_G` on their own to replace vanilla functions
 ]]
-
-local sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_DEFAULT -- `local` because we aren't exposing this
-local sHudModified = false
-hook_event(HOOK_UPDATE, function ()
-    if sHudModified then return end
+local sCharSelectHudDisplayFlags = HUD_DISPLAY_NONE
+hook_event(HOOK_ON_LEVEL_INIT, function ()
+    sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | sCharSelectHudDisplayFlags -- `local` because we aren't exposing this
 
     if gNetworkPlayers[0].currCourseNum >= COURSE_MIN then
-        sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | sCharSelectHudDisplayFlags | HUD_DISPLAY_FLAG_COIN_COUNT
+        sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_DEFAULT
     else
         sCharSelectHudDisplayFlags = hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_COIN_COUNT
     end
@@ -218,9 +216,10 @@ local vanillaDisplayFlags = {
 ---@param value integer
 --- Sets a HUD display value
 function _G.hud_set_value(type, value)
-    sHudModified = true
     if type == HUD_DISPLAY_FLAGS then
         sCharSelectHudDisplayFlags = value
+        value = value & ~(HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_CAMERA | HUD_DISPLAY_FLAG_STAR_COUNT)
+        og_hud_set_value(type, value)
     else
         og_hud_set_value(type, value)
     end
@@ -825,14 +824,14 @@ local function on_hud_render_behind()
     end
 
     for _, flag in ipairs(vanillaDisplayFlags) do
-        if hud_get_value(HUD_DISPLAY_FLAGS) & flag ~= 0 then
+        if hud_get_value(HUD_DISPLAY_FLAGS) & flag ~= 0 and not obj_get_first_with_behavior_id(id_bhvActSelector) then
             og_hud_set_value(HUD_DISPLAY_FLAGS, og_hud_get_value(HUD_DISPLAY_FLAGS) | flag)
         else
             og_hud_set_value(HUD_DISPLAY_FLAGS, og_hud_get_value(HUD_DISPLAY_FLAGS) & ~flag)
         end
     end
 
-    if obj_get_first_with_behavior_id(id_bhvActSelector) == nil then
+    if not obj_get_first_with_behavior_id(id_bhvActSelector) then
         render_hud_mario_lives()
         render_hud_stars()
         render_hud_camera_status()
@@ -852,7 +851,7 @@ local function on_hud_render()
     djui_hud_set_font(FONT_HUD)
     djui_hud_set_color(255, 255, 255, 255)
 
-    if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then
+    if obj_get_first_with_behavior_id(id_bhvActSelector) then
         render_act_select_hud()
     else
         sVisibleStars = 0
