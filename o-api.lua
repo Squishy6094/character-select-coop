@@ -10,7 +10,7 @@ local table_insert,djui_hud_measure_text,smlua_model_util_get_id,type,tonumber =
 ---@field public credit string
 ---@field public color Color
 ---@field public model ModelExtendedId|integer
----@field public forceChar CharacterType
+---@field public baseChar CharacterType
 ---@field public lifeIcon TextureInfo
 ---@field public camScale integer
 
@@ -67,11 +67,11 @@ local TYPE_FUNCTION = "function"
 ---@param credit string? `"You!"`, Credit the creators
 ---@param color Color|string? `{r, g, b}`
 ---@param modelInfo ModelExtendedId|integer? Use `smlua_model_util_get_id`
----@param forceChar CharacterType? Character Type, such as `CT_MARIO`
+---@param baseChar CharacterType? Character Type, such as `CT_MARIO`
 ---@param lifeIcon TextureInfo|string? Use get_texture_info
 ---@param camScale integer? Zooms the camera based on a multiplier (Default `1`)
 ---@return integer --The index of the character in the character table
-local function character_add(name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
+local function character_add(name, description, credit, color, modelInfo, baseChar, lifeIcon, camScale)
     if type(description) == TYPE_STRING then
         description = split_text_into_lines(description)
     end
@@ -104,7 +104,7 @@ local function character_add(name, description, credit, color, modelInfo, forceC
             color = type(color) == TYPE_TABLE and color or {r = 255, g = 255, b = 255},
             model = addedModel,
             ogModel = addedModel,
-            forceChar = forceChar and forceChar or CT_MARIO,
+            baseChar = baseChar and baseChar or CT_MARIO,
             lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or "?",
             starIcon = gTextures.star,
             camScale = type(camScale) == TYPE_INTEGER and camScale or 1,
@@ -124,11 +124,11 @@ end
 ---@param credit string? `"You!"`, Credit the creators
 ---@param color Color|string? `{r, g, b}`
 ---@param modelInfo ModelExtendedId|integer? Use `smlua_model_util_get_id`
----@param forceChar CharacterType? Character Type, such as `CT_MARIO`
+---@param baseChar CharacterType? Character Type, such as `CT_MARIO`
 ---@param lifeIcon TextureInfo|string? Use get_texture_info
 ---@param camScale integer? Zooms the camera based on a multiplier (Default `1`)
 ---@return integer? --The index of the costume in the character's table
-local function character_add_costume(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
+local function character_add_costume(charNum, name, description, credit, color, modelInfo, baseChar, lifeIcon, camScale)
     if not tonumber(charNum) or charNum > #characterTable or charNum < 0 then return end
     if type(description) == TYPE_STRING then
         description = split_text_into_lines(description)
@@ -148,7 +148,7 @@ local function character_add_costume(charNum, name, description, credit, color, 
         color = type(color) == TYPE_TABLE and color or tableCache.color,
         model = addedModel,
         ogModel = addedModel,
-        forceChar = type(forceChar) == TYPE_INTEGER and forceChar or tableCache.forceChar,
+        baseChar = type(baseChar) == TYPE_INTEGER and baseChar or tableCache.baseChar,
         lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or tableCache.lifeIcon,
         starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce
         camScale = type(camScale) == TYPE_INTEGER and camScale or tableCache.camScale,
@@ -166,10 +166,10 @@ end
 ---@param credit string? `"You!"`, Credit the creators
 ---@param color Color|string? `{r, g, b}`
 ---@param modelInfo ModelExtendedId|integer? Use `smlua_model_util_get_id`
----@param forceChar CharacterType? Character Type, such as `CT_MARIO`
+---@param baseChar CharacterType? Character Type, such as `CT_MARIO`
 ---@param lifeIcon TextureInfo|string? Use get_texture_info
 ---@param camScale integer? Zooms the camera based on a multiplier (Default `1`)
-local function character_edit_costume(charNum, charAlt, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
+local function character_edit_costume(charNum, charAlt, name, description, credit, color, modelInfo, baseChar, lifeIcon, camScale)
     if tonumber(charNum) == nil or charNum > #characterTable or charNum < 0 then return end
     if type(description) == TYPE_STRING then
         description = split_text_into_lines(description)
@@ -189,7 +189,7 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
         color = type(color) == TYPE_TABLE and color or tableCache.color,
         model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model,
         ogModel = tableCache.ogModel,
-        forceChar = type(forceChar) == TYPE_INTEGER and forceChar or tableCache.forceChar,
+        baseChar = type(baseChar) == TYPE_INTEGER and baseChar or tableCache.baseChar,
         lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or tableCache.lifeIcon,
         starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce
         camScale = type(camScale) == TYPE_INTEGER and camScale or tableCache.camScale,
@@ -209,11 +209,11 @@ end
 ---@param credit string? `"You!"`, Credit the creators
 ---@param color Color|string? `{r, g, b}`
 ---@param modelInfo ModelExtendedId|integer? Use `smlua_model_util_get_id`
----@param forceChar CharacterType? Character Type, such as `CT_MARIO`
+---@param baseChar CharacterType? Character Type, such as `CT_MARIO`
 ---@param lifeIcon TextureInfo|string? Use get_texture_info
 ---@param camScale integer? Zooms the camera based on a multiplier (Default `1`)
-local function character_edit(charNum, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
-    character_edit_costume(charNum, characterTable[charNum] and characterTable[charNum].currAlt or 1, name, description, credit, color, modelInfo, forceChar, lifeIcon, camScale)
+local function character_edit(charNum, name, description, credit, color, modelInfo, baseChar, lifeIcon, camScale)
+    character_edit_costume(charNum, characterTable[charNum] and characterTable[charNum].currAlt or 1, name, description, credit, color, modelInfo, baseChar, lifeIcon, camScale)
 end
 
 ---@description A function that adds a voice table to a character

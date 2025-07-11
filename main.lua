@@ -87,7 +87,7 @@ characterTable = {
             color = { r = 255, g = 50,  b = 50  },
             model = E_MODEL_MARIO,
             ogModel = E_MODEL_MARIO,
-            forceChar = CT_MARIO,
+            baseChar = CT_MARIO,
             lifeIcon = gTextures.mario_head,
             starIcon = gTextures.star,
             camScale = 1.0,
@@ -105,7 +105,7 @@ characterTable = {
             color = { r = 50,  g = 255, b = 50  },
             model = E_MODEL_LUIGI,
             ogModel = E_MODEL_LUIGI,
-            forceChar = CT_LUIGI,
+            baseChar = CT_LUIGI,
             lifeIcon = gTextures.luigi_head,
             starIcon = gTextures.star,
             camScale = 1.0,
@@ -128,7 +128,7 @@ characterTable = {
             color = { r = 50,  g = 50,  b = 255 },
             model = E_MODEL_TOAD_PLAYER,
             ogModel = E_MODEL_TOAD_PLAYER,
-            forceChar = CT_TOAD,
+            baseChar = CT_TOAD,
             lifeIcon = gTextures.toad_head,
             starIcon = gTextures.star,
             camScale = 0.8,
@@ -151,7 +151,7 @@ characterTable = {
             color = { r = 130, g = 25,  b = 130 },
             model = E_MODEL_WALUIGI,
             ogModel = E_MODEL_WALUIGI,
-            forceChar = CT_WALUIGI,
+            baseChar = CT_WALUIGI,
             lifeIcon = gTextures.waluigi_head,
             starIcon = gTextures.star,
             camScale = 1.1,
@@ -175,7 +175,7 @@ characterTable = {
             color = { r = 255, g = 255, b = 50  },
             model = E_MODEL_WARIO,
             ogModel = E_MODEL_WARIO,
-            forceChar = CT_WARIO,
+            baseChar = CT_WARIO,
             lifeIcon = gTextures.wario_head,
             starIcon = gTextures.star,
             camScale = 1.0,
@@ -685,8 +685,8 @@ local function mario_update(m)
         p.currAlt = charTable.currAlt
     
         p.modelId = charTable[charTable.currAlt].model
-        if charTable[charTable.currAlt].forceChar ~= nil then
-            p.forceChar = charTable[charTable.currAlt].forceChar
+        if charTable[charTable.currAlt].baseChar ~= nil then
+            p.baseChar = charTable[charTable.currAlt].baseChar
         end
         p.modelEditOffset = charTable[charTable.currAlt].model - charTable[charTable.currAlt].ogModel
         m.marioObj.hookRender = 1
@@ -790,7 +790,7 @@ local function mario_update(m)
         m.actionState = 0
     end
 
-    np.overrideModelIndex = p.forceChar ~= nil and p.forceChar or CT_MARIO
+    np.overrideModelIndex = p.baseChar ~= nil and p.baseChar or CT_MARIO
 
     -- Character Animations
     if characterAnims[p.modelId] then
@@ -941,7 +941,7 @@ local TEXT_STAR_ICON = "Star Icon:"
 local TEXT_FORCED_CHAR = "Forced: "
 local TEXT_TABLE_POS = "Table Position: "
 local TEXT_PALETTE = "Palette: "
-local forceCharStrings = {
+local baseCharStrings = {
     [CT_MARIO] = "CT_MARIO",
     [CT_LUIGI] = "CT_LUIGI",
     [CT_TOAD] = "CT_TOAD",
@@ -1227,7 +1227,7 @@ local function on_hud_render()
             djui_hud_render_texture(TEX_STAR_ICON, width - x + 35, y + 1, 0.4 / (TEX_STAR_ICON.width * MATH_DIVIDE_16), 0.4 / (TEX_STAR_ICON.height * MATH_DIVIDE_16))
             y = y + 7
             djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-            djui_hud_print_text(TEXT_FORCED_CHAR .. forceCharStrings[character.forceChar], width - x + 8, y, 0.5)
+            djui_hud_print_text(TEXT_FORCED_CHAR .. baseCharStrings[character.baseChar], width - x + 8, y, 0.5)
             y = y + 7
             djui_hud_print_text(TEXT_TABLE_POS .. currChar, width - x + 8, y, 0.5)
             y = y + 7
