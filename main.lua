@@ -780,8 +780,8 @@ local function mario_update(m)
         -- reset menu anim on character change, starts them at frame 0 and prevents lua anim issues
         if prevModelId ~= p.modelId then
             prevModelId = p.modelId
+            m.marioObj.header.gfx.animInfo.animID = -1
         end
-        m.marioObj.header.gfx.animInfo.animID = -1
         set_character_animation(m, (characterAnims[p.modelId] and characterAnims[p.modelId][CS_ANIM_MENU]) and CS_ANIM_MENU or CHAR_ANIM_FIRST_PERSON)
 
         m.marioObj.header.gfx.angle.y = m.faceAngle.y
