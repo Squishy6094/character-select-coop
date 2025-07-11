@@ -180,15 +180,20 @@ end
     These are `_G` on their own to replace vanilla functions
 ]]
 local sCharSelectHudDisplayFlags = HUD_DISPLAY_NONE
-hook_event(HOOK_ON_LEVEL_INIT, function ()
+function flags_update()
     sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | sCharSelectHudDisplayFlags -- `local` because we aren't exposing this
 
-    if gNetworkPlayers[0].currCourseNum >= COURSE_MIN then
-        sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_DEFAULT
+    if not obj_get_first_with_behavior_id(id_bhvActSelector) then
+        if gNetworkPlayers[0].currCourseNum >= COURSE_MIN then
+            sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_DEFAULT
+        else
+            sCharSelectHudDisplayFlags = hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_COIN_COUNT
+        end
     else
-        sCharSelectHudDisplayFlags = hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_COIN_COUNT
+        sCharSelectHudDisplayFlags = HUD_DISPLAY_NONE
     end
-end)
+end
+hook_event(HOOK_UPDATE, flags_update)
 
 ---@param type HudDisplayValue
 ---@return integer
@@ -199,18 +204,6 @@ function _G.hud_get_value(type)
         return og_hud_get_value(type)
     end
 end
-
--- These display flags are the ones that we aren't using in the custom hud so they're needed to disable the vanilla hud
-local vanillaDisplayFlags = {
-    HUD_DISPLAY_FLAG_COIN_COUNT,
-    HUD_DISPLAY_FLAG_CAMERA_AND_POWER,
-    HUD_DISPLAY_FLAG_KEYS,
-    HUD_DISPLAY_FLAG_UNKNOWN_0020,
-    HUD_DISPLAY_FLAG_TIMER,
-    HUD_DISPLAY_FLAG_POWER,
-    HUD_DISPLAY_FLAG_EMPHASIZE_POWER,
-    HUD_DISPLAY_NONE,
-}
 
 ---@param type HudDisplayValue
 ---@param value integer
@@ -899,14 +892,7 @@ local function on_hud_render_behind()
         return
     end
 
-    for _, flag in ipairs(vanillaDisplayFlags) do
-        if hud_get_value(HUD_DISPLAY_FLAGS) & flag ~= 0 and not obj_get_first_with_behavior_id(id_bhvActSelector) then
-            og_hud_set_value(HUD_DISPLAY_FLAGS, og_hud_get_value(HUD_DISPLAY_FLAGS) | flag)
-        else
-            og_hud_set_value(HUD_DISPLAY_FLAGS, og_hud_get_value(HUD_DISPLAY_FLAGS) & ~flag)
-        end
-    end
-
+    og_hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~(HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_CAMERA | HUD_DISPLAY_FLAG_STAR_COUNT)) -- Sets the vanilla hud flags without the custom elements
     sServerSettings.enablePlayersInLevelDisplay = false -- Disables the original playersInLevel Display
 
     local enablePlayersInLevelDisplay = gServerSettings.enablePlayersInLevelDisplay
