@@ -70,6 +70,12 @@ if #fileErrorList > 0 then
     return 0
 end
 
+-- Failsafe printing nil text
+local djui_hud_print_text_original = djui_hud_print_text
+function djui_hud_print_text(string, x, y, scale)
+    djui_hud_print_text_original(tostring(string), x, y, scale)
+end
+
 ommActive = false
 for i in pairs(gActiveMods) do
     if gActiveMods[i].relativePath == "omm-coop" then
