@@ -175,25 +175,21 @@ end
 -- Real HUD Stuffs --
 ---------------------
 
+-- Updates the Chracter Select hud flags along with the vanilla hud flags
+
+local sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_STAR_COUNT | HUD_DISPLAY_FLAG_CAMERA -- Initializes custom hud flags
+
+function flags_update()
+    sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_STAR_COUNT | HUD_DISPLAY_FLAG_CAMERA -- Sets the custom hud flags
+
+    og_hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~(HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_CAMERA | HUD_DISPLAY_FLAG_STAR_COUNT)) -- Sets the vanilla hud flags without the custom elements
+end
+hook_event(HOOK_UPDATE, flags_update)
+
 -- Modified Vanilla Functions --
 --[[
     These are `_G` on their own to replace vanilla functions
 ]]
-local sCharSelectHudDisplayFlags = HUD_DISPLAY_NONE
-function flags_update()
-    sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | sCharSelectHudDisplayFlags -- `local` because we aren't exposing this
-
-    if not obj_get_first_with_behavior_id(id_bhvActSelector) then
-        if gNetworkPlayers[0].currCourseNum >= COURSE_MIN then
-            sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_DEFAULT
-        else
-            sCharSelectHudDisplayFlags = hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_COIN_COUNT
-        end
-    else
-        sCharSelectHudDisplayFlags = HUD_DISPLAY_NONE
-    end
-end
-hook_event(HOOK_UPDATE, flags_update)
 
 ---@param type HudDisplayValue
 ---@return integer
@@ -892,7 +888,6 @@ local function on_hud_render_behind()
         return
     end
 
-    og_hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~(HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_CAMERA | HUD_DISPLAY_FLAG_STAR_COUNT)) -- Sets the vanilla hud flags without the custom elements
     sServerSettings.enablePlayersInLevelDisplay = false -- Disables the original playersInLevel Display
 
     local enablePlayersInLevelDisplay = gServerSettings.enablePlayersInLevelDisplay
