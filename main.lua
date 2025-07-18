@@ -47,6 +47,12 @@ local creditsCrossFade = 7
 local creditsCrossFadeCap = creditsCrossFade
 local creditsCrossFadeMath = 255 / creditsCrossFade
 
+local TYPE_FUNCTION = "function"
+local TYPE_BOOLEAN = "boolean"
+local TYPE_STRING = "string"
+local TYPE_INTEGER = "number"
+local TYPE_TABLE = "table"
+
 local TEX_HEADER = get_texture_info("char-select-text")
 local TEX_OVERRIDE_HEADER = nil
 
@@ -353,12 +359,12 @@ optionTable = {
         description = {"Thank you for choosing", "Character Select!"}
     },
     [optionTableRef.debugInfo] = {
-        name = "Debugging Info",
+        name = "Developer Mode",
         toggle = tonumber(mod_storage_load("debuginfo")),
         toggleSaveName = "debuginfo",
         toggleDefault = 0,
         toggleMax = 1,
-        description = {"Replaces the Character", "Description with Character", "Debugging Information"}
+        description = {"Replaces the Character", "Description with Character", "Debugging Information,", "And shows hidden console logs."}
     },
     [optionTableRef.resetSaveData] = {
         name = "Reset Save Data",
@@ -385,6 +391,19 @@ optionTable = {
         end,
     },
 }
+
+---@description A function that gets an option's status from the Character Select Options Menu
+---@param tableNum integer The table position of the option
+---@return number?
+function get_options_status(tableNum)
+    if type(tableNum) ~= TYPE_INTEGER then return nil end
+    return optionTable[tableNum].toggle
+end
+
+function dev_mode_log_to_console(message, level)
+    if get_options_status(optionTableRef.debugInfo) == 0 then return end
+    log_to_console(message, level)
+end
 
 creditTable = {
     {
@@ -630,12 +649,6 @@ local stallFrame = 0
 local stallComplete = 3
 
 CUTSCENE_CS_MENU = 0xFA
-
-local TYPE_FUNCTION = "function"
-local TYPE_BOOLEAN = "boolean"
-local TYPE_STRING = "string"
-local TYPE_INTEGER = "number"
-local TYPE_TABLE = "table"
 
 local MATH_PI = math.pi
 
