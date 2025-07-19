@@ -820,10 +820,7 @@ end
 ---@added 1.9
 ---@param tableNum integer The table position of the option
 ---@return number?
-local function get_options_status(tableNum)
-    if type(tableNum) ~= TYPE_INTEGER then return nil end
-    return optionTable[tableNum].toggle
-end
+---@forcedoc get_options_status
 
 ---@description A function that sets an option's status from the Character Select Options Menu
 ---@added 1.9
