@@ -180,11 +180,10 @@ end
 local sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_STAR_COUNT | HUD_DISPLAY_FLAG_CAMERA -- Initializes custom hud flags
 
 function flags_update()
-    sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_STAR_COUNT | HUD_DISPLAY_FLAG_CAMERA -- Sets the custom hud flags
-
-    og_hud_set_value(HUD_DISPLAY_FLAGS, hud_get_value(HUD_DISPLAY_FLAGS) & ~(HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_CAMERA | HUD_DISPLAY_FLAG_STAR_COUNT)) -- Sets the vanilla hud flags without the custom elements
+    sCharSelectHudDisplayFlags = sCharSelectHudDisplayFlags & (og_hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_STAR_COUNT | HUD_DISPLAY_FLAG_CAMERA) -- Updated the custom flags
+    og_hud_set_value(HUD_DISPLAY_FLAGS, og_hud_get_value(HUD_DISPLAY_FLAGS) & ~(HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_STAR_COUNT | HUD_DISPLAY_FLAG_CAMERA)) -- Update the vanilla flags
 end
-hook_event(HOOK_UPDATE, flags_update)
+hook_event(HOOK_ON_HUD_RENDER_BEHIND, flags_update)
 
 -- Modified Vanilla Functions --
 --[[
@@ -195,7 +194,7 @@ hook_event(HOOK_UPDATE, flags_update)
 ---@return integer
 function _G.hud_get_value(type)
     if type == HUD_DISPLAY_FLAGS then
-        return sCharSelectHudDisplayFlags
+        return sCharSelectHudDisplayFlags | og_hud_get_value(HUD_DISPLAY_FLAGS)
     else
         return og_hud_get_value(type)
     end
@@ -207,8 +206,7 @@ end
 function _G.hud_set_value(type, value)
     if type == HUD_DISPLAY_FLAGS then
         sCharSelectHudDisplayFlags = value
-        value = value & ~(HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_CAMERA | HUD_DISPLAY_FLAG_STAR_COUNT)
-        og_hud_set_value(type, value)
+        og_hud_set_value(type, value & ~(HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_STAR_COUNT | HUD_DISPLAY_FLAG_CAMERA))
     else
         og_hud_set_value(type, value)
     end
@@ -510,8 +508,6 @@ local function render_hud_act_select_course()
 end
 
 local function render_hud_mario_lives()
-    og_hud_set_value(HUD_DISPLAY_FLAGS, og_hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_LIVES)
-
     if (hud_get_value(HUD_DISPLAY_FLAGS) & HUD_DISPLAY_FLAG_LIVES) == 0 then return end
 
     local x = 22
@@ -522,8 +518,6 @@ local function render_hud_mario_lives()
 end
 
 local function render_hud_stars()
-    og_hud_set_value(HUD_DISPLAY_FLAGS, og_hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_STAR_COUNT)
-
     if (hud_get_value(HUD_DISPLAY_FLAGS) & HUD_DISPLAY_FLAG_STAR_COUNT) == 0 then return end
     if hud_get_flash ~= nil then
         -- prevent star count from flashing outside of castle
@@ -552,8 +546,6 @@ local function render_hud_stars()
 end
 
 local function render_hud_camera_status()
-    og_hud_set_value(HUD_DISPLAY_FLAGS, og_hud_get_value(HUD_DISPLAY_FLAGS) & ~HUD_DISPLAY_FLAG_CAMERA)
-
     if (hud_get_value(HUD_DISPLAY_FLAGS) & HUD_DISPLAY_FLAG_CAMERA) == 0 or (hud_get_value(HUD_DISPLAY_FLAGS) & HUD_DISPLAY_FLAG_CAMERA_AND_POWER) == 0 then return end
 
     local x = djui_hud_get_screen_width() - 54
