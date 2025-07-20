@@ -927,7 +927,7 @@ end
 
 ---@description A function that returns if the character number is of a character that is included with CoopDX
 ---@added 1.15.1
----@param charNum integer
+---@param charNum integer The character number you want to check, Default is the local character
 ---@note Function was made in preperation for v1.16, in which the Base Cast are individual characters rather than Costumes of each other. 
 local function character_is_vanilla(charNum)
     if charNum == nil then charNum = character_get_current_number(0) end
