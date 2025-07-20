@@ -755,14 +755,14 @@ local function restrict_movesets(bool)
 end
 
 ---@description A function that checks if palettes are restricted
----@added 1.14.3
+---@added 1.15
 ---@return boolean
 local function are_palettes_restricted()
     return gGlobalSyncTable.charSelectRestrictPalettes > 0
 end
 
 ---@description A function that checks if movesets are restricted
----@added 1.14.3
+---@added 1.15
 ---@return boolean
 local function are_movesets_restricted()
     return gGlobalSyncTable.charSelectRestrictMovesets > 0
@@ -894,7 +894,7 @@ local function hook_render_in_menu(func, underText)
 end
 
 ---@description A function that runs the inputted function when the character is changed
----@added 1.14.2
+---@added 1.15
 ---@param func function
 ---@note Function gives `currChar` and `prevChar` as function inputs
 local function hook_on_character_change(func)
@@ -923,6 +923,14 @@ end
 ---@param charNum integer
 local function character_get_moveset(charNum)
     return characterMovesets[charNum]
+end
+
+---@description A function that returns if the character number is of a character that is included with CoopDX
+---@added 1.15.1
+---@param charNum integer
+---@note Function was made in preperation for v1.16, in which the Base Cast are individual characters rather than Costumes of each other. 
+local function character_is_vanilla(charNum)
+    return charNum == 1
 end
 
 _G.charSelectExists = true
@@ -964,6 +972,7 @@ _G.charSelect = {
     character_set_locked = character_set_locked,
     character_set_category = character_set_category,
     character_get_moveset = character_get_moveset,
+    character_is_vanilla = character_is_vanilla,
 
     -- Hud Element Functions --
     hud_hide_element = hud_hide_element, -- Function located in n-hud.lua
