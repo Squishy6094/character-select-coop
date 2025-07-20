@@ -236,7 +236,7 @@ function force_set_character(charNum, charAlt)
     if not charAlt then charAlt = 1 end
     currCategory = 1
     currChar = charNum
-    gCSPlayers[0].currAlt = charAlt
+    characterTable[currChar].currAlt = charAlt
     currCharRender = charNum
     charBeingSet = true
     update_character_render_table()
