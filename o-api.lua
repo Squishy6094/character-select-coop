@@ -440,7 +440,7 @@ end
 
 ---@description A function that gets the current character's table position in CS
 ---@added 1
----@param localIndex integer?
+---@param localIndex integer? The local player index you want to get the character number from, Default is `0`
 ---@return integer?
 local function character_get_current_number(localIndex)
     if localIndex == nil or localIndex == 0 then
@@ -930,6 +930,7 @@ end
 ---@param charNum integer
 ---@note Function was made in preperation for v1.16, in which the Base Cast are individual characters rather than Costumes of each other. 
 local function character_is_vanilla(charNum)
+    if charNum == nil then charNum = character_get_current_number(0) end
     return charNum == 1
 end
 
