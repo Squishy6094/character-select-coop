@@ -241,7 +241,6 @@ end
 local MATH_DIVIDE_16 = 1/16
 local MATH_DIVIDE_32 = 1/32
 local MATH_DIVIDE_64 = 1/64
-local MATH_DIVIDE_HEALTH = 1/0x100
 
 local FONT_USER = FONT_NORMAL
 
@@ -408,11 +407,11 @@ local defaultMeterInfo = {
 }
 
 local TEXT_DEFAULT_COURSE_PREFIX = "char-select-custom-course-"
-local TEX_DEFAULT_METER_LEFT = get_texture_info(TEXT_DEFAULT_COURSE_PREFIX.."top")
-local TEX_DEFAULT_METER_RIGHT = get_texture_info(TEXT_DEFAULT_COURSE_PREFIX.."bottom")
+local TEX_DEFAULT_COURSE_TOP = get_texture_info(TEXT_DEFAULT_COURSE_PREFIX.."top")
+local TEX_DEFAULT_COURSE_BOTTOM = get_texture_info(TEXT_DEFAULT_COURSE_PREFIX.."bottom")
 local defaultCourseInfo = {
-    top = TEX_DEFAULT_METER_LEFT,
-    bottom = TEX_DEFAULT_METER_RIGHT,
+    top = TEX_DEFAULT_COURSE_TOP,
+    bottom = TEX_DEFAULT_COURSE_BOTTOM,
 }
 
 ---@param localIndex integer
@@ -420,11 +419,16 @@ local defaultCourseInfo = {
 --- This assumes multiple characters will not have the same model,
 --- Icons can only be seen by users who have the character avalible to them
 function health_meter_from_local_index(localIndex)
-    if localIndex == nil then localIndex = 0 end
+    localIndex = localIndex or 0
     local p = gCSPlayers[localIndex]
     for i = 1, #characterTable do
         local char = characterTable[i]
         if char.saveName == p.saveName and char[(p.currAlt and p.currAlt or 1)].healthTexture ~= nil then
+            if not char[(p.currAlt and p.currAlt or 1)].healthTexture.label then
+                char[(p.currAlt and p.currAlt or 1)].healthTexture.label = defaultMeterInfo.label
+            elseif not char[(p.currAlt and p.currAlt or 1)].healthTexture.pie then
+                char[(p.currAlt and p.currAlt or 1)].healthTexture.pie = defaultMeterInfo.pie
+            end
             return char[(p.currAlt and p.currAlt or 1)].healthTexture
         end
     end
@@ -432,21 +436,46 @@ function health_meter_from_local_index(localIndex)
 end
 
 ---@param localIndex integer
+---@param health integer
 ---@param x integer
 ---@param y integer
 ---@param scaleX integer
 ---@param scaleY integer
 function render_health_meter_from_local_index(localIndex, health, x, y, scaleX, scaleY)
-    if localIndex == nil then localIndex = 0 end
-    local health = math.floor(health*MATH_DIVIDE_HEALTH)
+    localIndex = localIndex or 0
+    health = health >> 8
     local textureTable = health_meter_from_local_index(localIndex)
     local tex = textureTable.label.left
     djui_hud_render_texture(tex, x, y, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64)
-    local tex = textureTable.label.right
+    tex = textureTable.label.right
     djui_hud_render_texture(tex, x + 31*scaleX*MATH_DIVIDE_64, y, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64)
     if health > 0 then
-        local tex = textureTable.pie[health]
+        tex = textureTable.pie[health]
         djui_hud_render_texture(tex, x + 15*scaleX*MATH_DIVIDE_64, y + 16*scaleY*MATH_DIVIDE_64, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_32) * MATH_DIVIDE_64)
+    end
+end
+
+---@param localIndex integer
+---@param health integer
+---@param x integer
+---@param y integer
+---@param scaleX integer
+---@param scaleY integer
+---@param prevX integer
+---@param prevY integer
+---@param prevScaleX integer
+---@param prevScaleY integer
+function render_health_meter_from_local_index_interpolated(localIndex, health, prevX, prevY, prevScaleX, prevScaleY, x, y, scaleX, scaleY)
+    localIndex = localIndex or 0
+    health = health >> 8
+    local textureTable = health_meter_from_local_index(localIndex)
+    local tex = textureTable.label.left
+    djui_hud_render_texture_interpolated(tex, prevX, prevY, prevScaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, prevScaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64, x, y, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64)
+    tex = textureTable.label.right
+    djui_hud_render_texture_interpolated(tex, prevX + 31*prevScaleX*MATH_DIVIDE_64, prevY, prevScaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, prevScaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64, x + 31*scaleX*MATH_DIVIDE_64, y, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64)
+    if health > 0 then
+        tex = textureTable.pie[health]
+        djui_hud_render_texture_interpolated(tex, prevX + 15*prevScaleX*MATH_DIVIDE_64, prevY + 16*scaleY*MATH_DIVIDE_64, prevScaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, prevScaleY / (tex.height * MATH_DIVIDE_32) * MATH_DIVIDE_64, x + 15*scaleX*MATH_DIVIDE_64, y + 16*scaleY*MATH_DIVIDE_64, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_32) * MATH_DIVIDE_64)
     end
 end
 
@@ -549,7 +578,7 @@ local function render_hud_camera_status()
 
     local x = djui_hud_get_screen_width() - 54
     local y = 205
-    local cameraHudStatus = hud_get_value(HUD_DISPLAY_CAMERA_STATUS)
+    local cameraHudStatus = hud_get_value(HUD_DISPLAY_CAMERA_STATUS) -- doesn't show the status of freecam because it's currently bugged when we hide the hud camera -- TODO: keep nagging the coopers to "fix `hud_get_value(HUD_DISPLAY_CAMERA_STATUS)` when using freecam and hiding the hud camera" :trollface:
 
     if cameraHudStatus == CAM_STATUS_NONE then return end
 
@@ -847,27 +876,142 @@ local function render_hud_ending_dialog()
     end
 end
 
+-- Nametags Powermeter Hud --
+
+local nametagsActionBlacklist = {
+    [ACT_START_CROUCHING] = true,
+    [ACT_CROUCHING]       = true,
+    [ACT_STOP_CROUCHING]  = true,
+    [ACT_START_CRAWLING]  = true,
+    [ACT_CRAWLING]        = true,
+    [ACT_STOP_CRAWLING]   = true,
+    [ACT_IN_CANNON]       = true,
+    [ACT_DISAPPEARED]     = true,
+}
+
+local FADE_SCALE = 4.0
+
+--- @class StateExtras
+--- @field public prevPos Vec3f
+--- @field public prevScale number
+--- @field public inited boolean
+
+--- @type StateExtras[]
+local sStateExtras = {}
+
+for i = 0, MAX_PLAYERS - 1 do
+    sStateExtras[i] = {}
+    local _ENV = setmetatable(sStateExtras[i], { __index = _G })
+    prevPos   = gVec3fZero()
+    prevScale = 0.0
+    inited    = false
+end
+
+local function render_nametag_powermeter()
+    local sGlobalTimer = get_global_timer()
+    for i = 1, MAX_PLAYERS - 1 do
+        local m = gMarioStates[i]
+        if is_player_active(m) == 0 then goto continue end
+        local np = gNetworkPlayers[i]
+        if not np.currAreaSyncValid then goto continue end
+
+        if nametagsActionBlacklist[m.action] then goto continue end
+
+        if (m.marioBodyState.mirrorMario or m.marioBodyState.updateHeadPosTime ~= sGlobalTimer) then goto continue end
+
+        local pos = gVec3fZero()
+        local out = gVec3fZero()
+
+        vec3f_copy(pos, m.marioBodyState.headPos)
+        pos.y = pos.y + 100
+
+        if not djui_hud_world_pos_to_screen_pos(pos, out) then
+            goto continue
+        end
+
+        local scale = -300 / out.z * djui_hud_get_fov_coeff()
+
+        out.y = out.y - 16 * scale
+
+        local alpha = (math.min(np.fadeOpacity << 3, 255)) * math.clamp(FADE_SCALE - scale, 0.0, 1.0)
+
+        local e = sStateExtras[i]
+        if not e.inited then
+            vec3f_copy(e.prevPos, out)
+            e.prevScale = scale
+            e.inited = true
+        end
+
+        if gNametagsSettings.showHealth then
+            djui_hud_set_color(255, 255, 255, alpha)
+            local healthScale = 90 * scale
+            local prevHealthScale = 90 * e.prevScale
+            render_health_meter_from_local_index_interpolated(i, m.health,
+                e.prevPos.x - (prevHealthScale * 0.5), e.prevPos.y - 72 * scale, prevHealthScale, prevHealthScale,
+                        out.x - (    healthScale * 0.5),        out.y - 72 * scale,     healthScale,     healthScale
+            )
+        end
+
+        vec3f_copy(e.prevPos, out)
+        e.prevScale = scale
+
+        ::continue::
+    end
+end
+
+local function nametags_reset()
+    for i = 0, MAX_PLAYERS - 1 do
+        sStateExtras[i].inited = false
+    end
+end
+
+local function on_level_init()
+    nametags_reset()
+end
+
+hook_event(HOOK_ON_LEVEL_INIT, on_level_init)
+
 local sServerSettings = gServerSettings
+local sNametagsSettings = gNametagsSettings
 
 _G.gServerSettings = {
     enablePlayerList            = sServerSettings.enablePlayerList,
     enablePlayersInLevelDisplay = sServerSettings.enablePlayersInLevelDisplay,
 }
 
-local sServerSettingsMetaTable = {
+_G.gNametagsSettings = {
+    showHealth  = sNametagsSettings.showHealth,
+}
+
+local _ServerSettingsMetaTable = {
     __index = function (t, k)
-        local csServerSettings = {
-            enablePlayerList            = true,
-            enablePlayersInLevelDisplay = true,
-        }
-        return not csServerSettings[k] and sServerSettings[k] or t[k]
+        return rawget(t, k) or sServerSettings[k]
     end,
     __newindex = function (_, k, v)
         sServerSettings[k] = v
     end,
 }
 
-setmetatable(gServerSettings, sServerSettingsMetaTable)
+local _NametagsSettingsMetaTable = {
+    __index = function (t, k)
+        return rawget(t, k) or sNametagsSettings[k]
+    end,
+    __newindex = function (_, k, v)
+        sNametagsSettings[k] = v
+    end,
+}
+
+setmetatable(gServerSettings,   _ServerSettingsMetaTable)
+setmetatable(gNametagsSettings, _NametagsSettingsMetaTable)
+
+function nametags_settings()
+    if sNametagsSettings.showHealth then
+        gNametagsSettings.showHealth = not gNametagsSettings.showHealth
+    end
+    sNametagsSettings.showHealth = false
+end
+
+hook_event(HOOK_ON_NAMETAGS_RENDER, nametags_settings)
 
 local function on_hud_render_behind()
     FONT_USER = djui_menu_get_font()
@@ -875,9 +1019,9 @@ local function on_hud_render_behind()
     djui_hud_set_font(FONT_HUD)
     djui_hud_set_color(255, 255, 255, 255)
 
-    if gNetworkPlayers[0].currActNum == 99 or gMarioStates[0].action == ACT_INTRO_CUTSCENE or hud_is_hidden() then
-        return
-    end
+    render_nametag_powermeter()
+
+    if gNetworkPlayers[0].currActNum == 99 or gMarioStates[0].action == ACT_INTRO_CUTSCENE or hud_is_hidden() then return end
 
     sServerSettings.enablePlayersInLevelDisplay = false -- Disables the original playersInLevel Display
 
