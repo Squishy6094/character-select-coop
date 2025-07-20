@@ -472,12 +472,16 @@ local function character_get_current_costume(localIndex)
     end
 end
 
----@description A function that sets the current character based only table position
+---@description A function that sets the current character based only table position with an optional second argument for setting a specific costume
 ---@added 1.9
----@param charNum integer?
-local function character_set_current_number(charNum)
+---@param charNum integer? The number/table position of the Character you want the local player to become
+---@param charAlt integer? The number/table position of a costume in the corresponding character's costume table to switch to. If nil will use the 1st costume
+local function character_set_current_number(charNum,charAlt)
     if type(charNum) ~= TYPE_INTEGER or characterTable[charNum] == nil then return end
-    force_set_character(charNum)
+    if (charAlt ~= nil) and (characterTable[charNum][charAlt] == nil)  then
+        charAlt = 1
+    end
+    force_set_character(charNum,charAlt)
     charBeingSet = true
 end
 
