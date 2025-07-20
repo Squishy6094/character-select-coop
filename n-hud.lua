@@ -1017,9 +1017,10 @@ local function on_hud_render_behind()
     FONT_USER = djui_menu_get_font()
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_font(FONT_HUD)
-    djui_hud_set_color(255, 255, 255, 255)
 
-    render_nametag_powermeter()
+    render_nametag_powermeter() -- Render before setting the color, it sets its own
+
+    djui_hud_set_color(255, 255, 255, 255)
 
     if gNetworkPlayers[0].currActNum == 99 or gMarioStates[0].action == ACT_INTRO_CUTSCENE or hud_is_hidden() then return end
 
