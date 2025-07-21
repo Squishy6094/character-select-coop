@@ -1,5 +1,5 @@
 -- name: Character Select
--- description:\\#ffff33\\-- Character Select Coop v1.15 --\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
+-- description:\\#ffff33\\-- Character Select Coop v1.15.1 --\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
 -- pausable: false
 -- category: cs
 
@@ -402,7 +402,7 @@ end
 
 function dev_mode_log_to_console(message, level)
     if get_options_status(optionTableRef.debugInfo) == 0 then return end
-    log_to_console(message, level)
+    log_to_console(message, level and level or CONSOLE_MESSAGE_WARNING)
 end
 
 creditTable = {
@@ -653,7 +653,6 @@ CUTSCENE_CS_MENU = 0xFA
 local MATH_PI = math.pi
 
 local prevBaseCharFrame = gNetworkPlayers[0].modelIndex
-local prevModelId = 0
 local faceAngle = 0
 local eyeState = MARIO_EYES_OPEN
 ---@param m MarioState
@@ -791,8 +790,8 @@ local function mario_update(m)
         m.actionState = 0xFFFF
 
         -- reset menu anim on character change, starts them at frame 0 and prevents lua anim issues
-        if prevModelId ~= p.modelId then
-            prevModelId = p.modelId
+        if p.prevModelId ~= p.modelId then
+            p.prevModelId = p.modelId
             m.marioObj.header.gfx.animInfo.animID = -1
         end
         set_character_animation(m, (characterAnims[p.modelId] and characterAnims[p.modelId][CS_ANIM_MENU]) and CS_ANIM_MENU or CHAR_ANIM_FIRST_PERSON)

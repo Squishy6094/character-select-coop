@@ -5,7 +5,7 @@ local string_lower,string_format,table_insert,get_date_and_time = string.lower,s
 MOD_VERSION_API = 1
 MOD_VERSION_MAJOR = 15
 MOD_VERSION_MINOR = 1
-MOD_VERSION_INDEV = true
+MOD_VERSION_INDEV = false
 MOD_VERSION_STRING = tostring(MOD_VERSION_API) .. "." .. tostring(MOD_VERSION_MAJOR) .. (MOD_VERSION_MINOR > 0 and ("." .. tostring(MOD_VERSION_MINOR)) or "") .. (MOD_VERSION_INDEV and " (In-Dev)" or "")
 MOD_VERSION_DEBUG = tostring(GITHUB_REPO) .. " | " .. tostring(GITHUB_COMMIT_ID) .. " | " .. tostring(GITHUB_COMMIT_TIME)
 
@@ -192,6 +192,12 @@ function define_valid_global(s, v)
     _G[name] = v
 end
 
+---@param n integer
+---@return boolean
+function num_power_of_two(n)
+    return n ~= 0 and (n & (n - 1)) == 0
+end
+
 allowMenu = {}
 
 hookTableRenderInMenu = {
@@ -231,6 +237,7 @@ for i = 0, MAX_PLAYERS - 1 do
         offset = 0,
         baseChar = 0,
         modelId = E_MODEL_MARIO,
+        prevModelId = E_MODEL_MARIO,
         isUpdating = false,
         movesetToggle = true,
         modelEditOffset = 0,

@@ -289,6 +289,43 @@ end
 local function character_add_costume_health_meter(charNum, charAlt, healthTexture)
     if type(charNum) ~= TYPE_INTEGER or charNum == nil then return end
     if type(charAlt) ~= TYPE_INTEGER or charAlt == nil then return end
+    
+    -- Check texture width and height before adding
+    if healthTexture ~= nil then
+        if healthTexture.label.left ~= nil then
+            if not num_power_of_two(healthTexture.label.left.width) then
+                dev_mode_log_to_console("Texture '" .. healthTexture.label.left.name .. "' has an inproper width of " .. tostring(healthTexture.label.left.width) .. " (Must be a power of 2)", CONSOLE_MESSAGE_WARNING)
+                return
+            end
+            if not num_power_of_two(healthTexture.label.left.height) then
+                dev_mode_log_to_console("Texture '" .. healthTexture.label.left.name .. "' has an inproper height of " .. tostring(healthTexture.label.left.height) .. " (Must be a power of 2)", CONSOLE_MESSAGE_WARNING)
+                return
+            end
+        end
+        if healthTexture.label.right ~= nil then
+            if not num_power_of_two(healthTexture.label.right.width) then
+                dev_mode_log_to_console("Texture '" .. healthTexture.label.right.name .. "' has an inproper width of " .. tostring(healthTexture.label.right.width) .. " (Must be a power of 2)", CONSOLE_MESSAGE_WARNING)
+                return
+            end
+            if not num_power_of_two(healthTexture.label.right.height) then
+                dev_mode_log_to_console("Texture '" .. healthTexture.label.right.name .. "' has an inproper height of " .. tostring(healthTexture.label.right.height) .. " (Must be a power of 2)", CONSOLE_MESSAGE_WARNING)
+                return
+            end
+        end
+        for i = 1, 8 do
+            if healthTexture.pie[i] ~= nil then
+                if not num_power_of_two(healthTexture.pie[i].width) then
+                    dev_mode_log_to_console("Texture '" .. healthTexture.pie[i].name .. "' has an inproper width of " .. tostring(healthTexture.pie[i].width) .. " (Must be a power of 2)", CONSOLE_MESSAGE_WARNING)
+                    return
+                end
+                if not num_power_of_two(healthTexture.pie[i].height) then
+                    dev_mode_log_to_console("Texture '" .. healthTexture.pie[i].name .. "' has an inproper height of " .. tostring(healthTexture.pie[i].height) .. " (Must be a power of 2)", CONSOLE_MESSAGE_WARNING)
+                    return
+                end
+            end
+        end
+    end
+
     characterTable[charNum][charAlt].healthTexture = type(healthTexture) == TYPE_TABLE and healthTexture or nil
 end
 
@@ -474,14 +511,13 @@ end
 
 ---@description A function that sets the current character based only table position with an optional second argument for setting a specific costume
 ---@added 1.9
----@param charNum integer? The number/table position of the Character you want the local player to become
+---@param charNum integer The number/table position of the Character you want the local player to become
 ---@param charAlt integer? The number/table position of a costume in the corresponding character's costume table to switch to. If nil will use the 1st costume
-local function character_set_current_number(charNum,charAlt)
+local function character_set_current_number(charNum, charAlt)
     if type(charNum) ~= TYPE_INTEGER or characterTable[charNum] == nil then return end
-    if (charAlt ~= nil) and (characterTable[charNum][charAlt] == nil)  then
-        charAlt = 1
-    end
-    force_set_character(charNum,charAlt)
+    if charAlt == nil then charAlt = 1 end
+    charAlt = clamp(charAlt, 1, #characterTable[charNum])
+    force_set_character(charNum, charAlt)
     charBeingSet = true
 end
 
@@ -931,7 +967,7 @@ end
 
 ---@description A function that returns if the character number is of a character that is included with CoopDX
 ---@added 1.15.1
----@param charNum integer The character number you want to check, Default is the local character
+---@param charNum integer? The character number you want to check, Default is the local character
 ---@note Function was made in preperation for v1.16, in which the Base Cast are individual characters rather than Costumes of each other. 
 local function character_is_vanilla(charNum)
     if charNum == nil then charNum = character_get_current_number(0) end
