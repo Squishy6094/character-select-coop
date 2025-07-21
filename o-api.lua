@@ -21,32 +21,6 @@ local saveNameTable = {}
 ---@ignore
 local function placeholder() end
 
----@ignore
-local function split_text_into_lines(text)
-    djui_hud_set_resolution(RESOLUTION_N64)
-    djui_hud_set_font(FONT_ALIASED)
-
-    local words = {}
-    for word in text:gmatch("%S+") do
-        table_insert(words, word)
-    end
-
-    local lines = {}
-    local currentLine = ""
-    for i, word in ipairs(words) do
-        local measuredWidth = djui_hud_measure_text(currentLine .. " " .. word)*0.3
-        if measuredWidth <= 100 then
-            currentLine = currentLine .. " " .. word
-        else
-            table_insert(lines, currentLine)
-            currentLine = word
-        end
-    end
-    table_insert(lines, currentLine) -- add the last line
-
-    return lines
-end
-
 local TYPE_INTEGER = "number"
 local TYPE_STRING = "string"
 local TYPE_TABLE = "table"
@@ -63,7 +37,7 @@ local TYPE_FUNCTION = "function"
 ---@description A function that adds a Character to the Character Table
 ---@added 1
 ---@param name string? `"Custom Model"`
----@param description table|string? `{"string"}`
+---@param description string|table? `{"string"}`
 ---@param credit string? `"You!"`, Credit the creators
 ---@param color Color|string? `{r, g, b}`
 ---@param modelInfo ModelExtendedId|integer? Use `smlua_model_util_get_id`
@@ -72,8 +46,12 @@ local TYPE_FUNCTION = "function"
 ---@param camScale integer? Zooms the camera based on a multiplier (Default `1`)
 ---@return integer --The index of the character in the character table
 local function character_add(name, description, credit, color, modelInfo, baseChar, lifeIcon, camScale)
-    if type(description) == TYPE_STRING then
-        description = split_text_into_lines(description)
+    if type(description) == TYPE_TABLE then
+        local table = description
+        description = ""
+        for i = 1, #table do
+            description = description .. table[i] .. " "
+        end
     end
     if color ~= nil and type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
@@ -99,7 +77,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         ogNum = charNum,
         [1] = {
             name = type(name) == TYPE_STRING and name or "Untitled",
-            description = type(description) == TYPE_TABLE and description or {"No description has been provided"},
+            description = type(description) == TYPE_STRING and description or "No description has been provided",
             credit = type(credit) == TYPE_STRING and credit or "Unknown",
             color = type(color) == TYPE_TABLE and color or {r = 255, g = 255, b = 255},
             model = addedModel,
@@ -969,10 +947,7 @@ end
 ---@added 1.15.1
 ---@param charNum integer? The character number you want to check, Default is the local character
 ---@note Function was made in preperation for v1.16, in which the Base Cast are individual characters rather than Costumes of each other. 
-local function character_is_vanilla(charNum)
-    if charNum == nil then charNum = character_get_current_number(0) end
-    return charNum == 1
-end
+---@forcedoc character_is_vanilla
 
 _G.charSelectExists = true
 _G.charSelect = {
@@ -1013,7 +988,7 @@ _G.charSelect = {
     character_set_locked = character_set_locked,
     character_set_category = character_set_category,
     character_get_moveset = character_get_moveset,
-    character_is_vanilla = character_is_vanilla,
+    character_is_vanilla = character_is_vanilla, -- Function located in main.lua
 
     -- Hud Element Functions --
     hud_hide_element = hud_hide_element, -- Function located in n-hud.lua

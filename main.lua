@@ -1,5 +1,5 @@
 -- name: Character Select
--- description:\\#ffff33\\-- Character Select Coop v1.15.1 --\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
+-- description:\\#ffff33\\-- Character Select Coop v1.16 --\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
 -- pausable: false
 -- category: cs
 
@@ -54,6 +54,8 @@ local TYPE_INTEGER = "number"
 local TYPE_TABLE = "table"
 
 local TEX_HEADER = get_texture_info("char-select-text")
+local TEX_WALL_LEFT = get_texture_info("char-select-wall-left")
+local TEX_WALL_RIGHT = get_texture_info("char-select-wall-right")
 local TEX_OVERRIDE_HEADER = nil
 
 ---@param texture TextureInfo?
@@ -74,21 +76,16 @@ local TEXT_PREF_LOAD_ALT = 1
 ]]
 
 characterTable = {
-    [1] = {
-        saveName = "Default",
+    [CT_MARIO] = {
+        saveName = "Mario_Default",
         category = "All_CoopDX",
-        ogNum = 1,
+        ogNum = CT_MARIO,
         currAlt = 1,
         hasMoveset = false,
         locked = false,
         [1] = {
             name = "Mario",
-            description = {
-                "The iconic Italian plumber himself!",
-                "He's quite confident and brave,",
-                "always prepared to jump into action",
-                "to save the Mushroom Kingdom!",
-            },
+            description = "The iconic Italian plumber himself! He's quite confident and brave, always prepared to jump into action to save the Mushroom Kingdom!",
             credit = "Nintendo / Coop Team",
             color = { r = 255, g = 50,  b = 50  },
             model = E_MODEL_MARIO,
@@ -98,15 +95,17 @@ characterTable = {
             starIcon = gTextures.star,
             camScale = 1.0,
         },
-        [2] = {
+    },
+    [CT_LUIGI] = {
+        saveName = "Luigi_Default",
+        category = "All_CoopDX",
+        ogNum = CT_LUIGI,
+        currAlt = 1,
+        hasMoveset = false,
+        locked = false,
+        [1] = {
             name = "Luigi",
-            description = {
-                "The other iconic Italian plumber!",
-                "He's a bit shy and scares easily,",
-                "but he's willing to follow his brother",
-                "Mario through any battle that may",
-                "come their way!",
-            },
+            description = "The other iconic Italian plumber! He's a bit shy and scares easily, but he's willing to follow his brother Mario through any battle that may come their way!",
             credit = "Nintendo / Coop Team",
             color = { r = 50,  g = 255, b = 50  },
             model = E_MODEL_LUIGI,
@@ -122,14 +121,17 @@ characterTable = {
                 }
             }
         },
-        [3] = {
+    },
+    [CT_TOAD] = {
+        saveName = "Toad_Default",
+        category = "All_CoopDX",
+        ogNum = CT_TOAD,
+        currAlt = 1,
+        hasMoveset = false,
+        locked = false,
+        [1] = {
             name = "Toad",
-            description = {
-                "Princess Peach's little attendant!",
-                "He's an energetic little mushroom",
-                "that's never afraid to follow",
-                "Mario and Luigi on their adventures!",
-            },
+            description = "Princess Peach's little attendant! He's an energetic little mushroom that's never afraid to follow Mario and Luigi on their adventures!",
             credit = "Nintendo / Coop Team",
             color = { r = 50,  g = 50,  b = 255 },
             model = E_MODEL_TOAD_PLAYER,
@@ -145,14 +147,17 @@ characterTable = {
                 }
             }
         },
-        [4] = {
+    },
+    [CT_WALUIGI] = {
+        saveName = "Waluigi_Default",
+        category = "All_CoopDX",
+        ogNum = CT_WALUIGI,
+        currAlt = 1,
+        hasMoveset = false,
+        locked = false,
+        [1] = {
             name = "Waluigi",
-            description = {
-                "The mischievous rival of Luigi!",
-                "He's a narcissistic competitor",
-                "that takes great taste in others",
-                "getting pummeled from his success!",
-            },
+            description = "The mischievous rival of Luigi! He's a narcissistic competitor that takes great taste in others getting pummeled from his success!",
             credit = "Nintendo / Coop Team",
             color = { r = 130, g = 25,  b = 130 },
             model = E_MODEL_WALUIGI,
@@ -168,15 +173,17 @@ characterTable = {
                 }
             }
         },
-        [5] = {
+    },
+    [CT_WARIO] = {
+        saveName = "Wario_Default",
+        category = "All_CoopDX",
+        ogNum = CT_WARIO,
+        currAlt = 1,
+        hasMoveset = false,
+        locked = false,
+        [1] = {
             name = "Wario",
-            description = {
-                "The mischievous rival of Mario!",
-                "He's a greed-filled treasure hunter",
-                "obsessed with money and gold coins.",
-                "He's always ready for a brawl if his",
-                "money is on the line!",
-            },
+            description = "The mischievous rival of Mario! He's a greed-filled treasure hunter obsessed with money and gold coins. He's always ready for a brawl if his money is on the line!",
             credit = "Nintendo / Coop Team",
             color = { r = 255, g = 255, b = 50  },
             model = E_MODEL_WARIO,
@@ -195,6 +202,11 @@ characterTable = {
     },
 }
 
+function character_is_vanilla(charNum)
+    if charNum == nil then charNum = currChar end
+    return charNum < CT_MAX
+end
+
 characterCategories = {
     "All",
     "CoopDX",
@@ -210,7 +222,7 @@ local function update_character_render_table()
     local category = characterCategories[currCategory]
     if category == nil then return false end
     characterTableRender = {}
-    for i = 1, #characterTable do
+    for i = 0, #characterTable do
         local charCategories = string_split(characterTable[i].category, "_")
         if not characterTable[i].locked then
             for c = 1, #charCategories do
@@ -479,7 +491,7 @@ local function load_preferred_char()
         savedPalette = paletteSave
     end
     if savedChar ~= "Default" and optionTable[optionTableRef.localModels].toggle == 1 then
-        for i = 2, #characterTable do
+        for i = CT_MAX, #characterTable do
             local char = characterTable[i]
             if char.saveName == savedChar and not char.locked then
                 currChar = i
@@ -501,7 +513,7 @@ local function load_preferred_char()
         end
     end
     
-    characterTable[1].currAlt = gNetworkPlayers[0].modelIndex + 1
+    currChar = gNetworkPlayers[0].modelIndex
 
     local savedCharColors = mod_storage_load("PrefCharColor")
     if savedCharColors ~= nil and savedCharColors ~= "" then
@@ -515,7 +527,7 @@ local function load_preferred_char()
         mod_storage_save("PrefCharColor", "255_50_50")
     end
 
-    if #characterTable == 1 then
+    if #characterTable < CT_MAX then
         if optionTable[optionTableRef.notification].toggle > 0 then
             djui_popup_create("Character Select:\nNo Characters were Found", 2)
         end
@@ -526,10 +538,16 @@ local function load_preferred_char()
 end
 
 local function mod_storage_save_pref_char(charTable)
-    mod_storage_save("PrefChar", charTable.saveName)
-    mod_storage_save("PrefAlt", tostring(charTable.currAlt))
+    if character_is_vanilla(charTable.ogNum) then
+        mod_storage_save("PrefChar", "Default")
+        mod_storage_save("PrefAlt", "1")
+        mod_storage_save("PrefPalette", "0")
+    else
+        mod_storage_save("PrefChar", charTable.saveName)
+        mod_storage_save("PrefAlt", tostring(charTable.currAlt))
+        mod_storage_save("PrefPalette", tostring(gCSPlayers[0].presetPalette))
+    end
     mod_storage_save("PrefCharColor", tostring(charTable[charTable.currAlt].color.r) .. "_" .. tostring(charTable[charTable.currAlt].color.g) .. "_" .. tostring(charTable[charTable.currAlt].color.b))
-    mod_storage_save("PrefPalette", tostring(gCSPlayers[0].presetPalette))
     TEXT_PREF_LOAD_NAME = charTable.saveName
     TEXT_PREF_LOAD_ALT = charTable.currAlt
     prefCharColor = charTable[charTable.currAlt].color
@@ -572,7 +590,7 @@ local function reset_options(wasChatTriggered)
             end
         end
         currChar = 1
-        for i = 1, #characterTable do
+        for i = 0, #characterTable do
             characterTable[i].currAlt = 1
         end
         mod_storage_save_pref_char(characterTable[1])
@@ -581,7 +599,7 @@ local function reset_options(wasChatTriggered)
 end
 
 local function boot_note()
-    if #characterTable > 1 then
+    if #characterTable >= CT_MAX then
         djui_chat_message_create("Character Select has " .. (#characterTable - 1) .. " character" .. (#characterTable > 2 and "s" or "") .." available!\nYou can use \\#ffff33\\/char-select \\#ffffff\\to open the menu!")
         if #characterTable > 32 and network_is_server() then
             djui_chat_message_create("\\#FFAAAA\\Warning: Having more than 32 Characters\nmay be unstable, For a better experience please\ndisable a few packs!")
@@ -653,7 +671,7 @@ CUTSCENE_CS_MENU = 0xFA
 local MATH_PI = math.pi
 
 local prevBaseCharFrame = gNetworkPlayers[0].modelIndex
-local faceAngle = 0
+local camAngle = 0
 local eyeState = MARIO_EYES_OPEN
 ---@param m MarioState
 local function mario_update(m)
@@ -680,8 +698,7 @@ local function mario_update(m)
 
     if m.playerIndex == 0 and stallFrame > 1 then
         if djui_hud_is_pause_menu_created() and prevBaseCharFrame ~= np.modelIndex then
-            characterTable[1].currAlt = np.modelIndex + 1
-            currChar = 1
+            currChar = np.modelIndex
             p.presetPalette = 0
         end
         prevBaseCharFrame = np.modelIndex
@@ -714,16 +731,18 @@ local function mario_update(m)
                 m.area.camera.cutscene = CUTSCENE_CS_MENU
             end
             local camScale = charTable[charTable.currAlt].camScale
+            djui_hud_set_resolution(RESOLUTION_N64)
+            local widthScale = djui_hud_get_screen_width()/320
             local focusPos = {
-                x = m.pos.x,
+                x = m.pos.x + sins(camAngle - 0x4000)*190*camScale*widthScale,
                 y = m.pos.y + 120 * camScale,
-                z = m.pos.z,
+                z = m.pos.z + coss(camAngle - 0x4000)*190*camScale*widthScale,
             }
             vec3f_copy(gLakituState.focus, focusPos)
             m.marioBodyState.eyeState = eyeState
-            gLakituState.pos.x = m.pos.x + sins(faceAngle) * 500 * camScale
-            gLakituState.pos.y = m.pos.y + 100 * camScale
-            gLakituState.pos.z = m.pos.z + coss(faceAngle) * 500 * camScale
+            gLakituState.pos.x = m.pos.x + sins(camAngle) * 450 * camScale
+            gLakituState.pos.y = m.pos.y + 10
+            gLakituState.pos.z = m.pos.z + coss(camAngle) * 450 * camScale
             p.inMenu = true
         else
             if p.inMenu then
@@ -738,23 +757,23 @@ local function mario_update(m)
         end
 
         -- Check for Locked Chars
-        for i = 2, #characterTable do
-            local currChar = characterTable[i]
-            if currChar.locked then
+        for i = CT_MAX, #characterTable do
+            local char = characterTable[i]
+            if char.locked then
                 local unlock = characterUnlock[i].check
                 local notif = characterUnlock[i].notif
                 if type(unlock) == TYPE_FUNCTION then
                     if unlock() then
-                        currChar.locked = false
+                        char.locked = false
                     end
                 elseif type(unlock) == TYPE_BOOLEAN then
-                    currChar.locked = unlock
+                    char.locked = unlock
                 end
-                if not currChar.locked then -- Character was unlocked
+                if not char.locked then -- Character was unlocked
                     update_character_render_table()
                     if stallFrame == stallComplete and notif then
                         if optionTable[optionTableRef.notification].toggle > 0 then
-                            djui_popup_create('Character Select:\nUnlocked '..tostring(currChar[1].name)..'\nas a Playable Character!', 3)
+                            djui_popup_create('Character Select:\nUnlocked '..tostring(char[1].name)..'\nas a Playable Character!', 3)
                         end
                     end
                 end
@@ -840,10 +859,11 @@ function set_model(o, model)
         local i = network_local_index_from_global(o.globalPlayerIndex)
         local prevModelData = obj_get_model_id_extended(o)
         local localModelData = nil
-        for c = 1, #characterTable do
+        for c = 0, #characterTable do
             if gCSPlayers[i].saveName == characterTable[c].saveName then
                 if gCSPlayers[i].currAlt <= #characterTable[c] then
                     localModelData = characterTable[c][gCSPlayers[i].currAlt].ogModel + gCSPlayers[i].modelEditOffset
+                    break
                 end
             end
         end
@@ -908,6 +928,30 @@ hook_event(HOOK_OBJECT_SET_MODEL, set_model)
 ------------------
 -- Menu Handler --
 ------------------
+
+local TEX_CAUTION_TAPE = get_texture_info("char-select-caution-tape")
+local tapeScale = 0.5
+-- Renders caution tape from xy1 to xy2, tape extends based on dist (0 - 1)
+local function djui_hud_render_caution_tape(x1, y1, x2, y2, dist)
+    local totalDist = math.sqrt((y2 - y1)^2 + (x2 - x1)^2) * dist
+    local angle = angle_from_2d_points(x1, y1, x2, y2)
+    djui_hud_set_rotation(angle, 0, 0.5)
+    local texWidth = TEX_CAUTION_TAPE.width*tapeScale
+    local texHeight = TEX_CAUTION_TAPE.height*tapeScale
+    local tapeSegments = totalDist/texWidth
+    local tapeRemainder = tapeSegments
+    while tapeRemainder > 1 do
+        tapeRemainder = tapeRemainder - 1
+    end
+    for i = 0, math.floor(tapeSegments) do
+        local remainder = i == math.floor(tapeSegments) and tapeRemainder or 1
+        djui_hud_render_texture_tile(TEX_CAUTION_TAPE,
+        x1 + texWidth*coss(angle)*i,
+        y1 - texWidth*sins(angle)*i,
+        TEX_CAUTION_TAPE.height/TEX_CAUTION_TAPE.width*tapeScale, 1*tapeScale, 0, 0, TEX_CAUTION_TAPE.width*remainder, TEX_CAUTION_TAPE.height)
+    end
+    djui_hud_set_rotation(0, 0, 0)
+end
 
 local buttonAnimTimer = 0
 local buttonScroll = 0
@@ -1068,6 +1112,7 @@ local function on_hud_render()
 
         local x = 135 * widthScale * 0.8
 
+        --[[
         -- Render All Black Squares Behind Below API
         djui_hud_set_color(menuColorHalf.r * 0.1, menuColorHalf.g * 0.1, menuColorHalf.b * 0.1, menuOpacity)
         -- Description
@@ -1076,6 +1121,7 @@ local function on_hud_render()
         djui_hud_render_rect(2, 2 + 46, x - 4, height - 4 - 46)
         -- Header
         djui_hud_render_rect(2, 2, width - 4, 46)
+        ]]
 
         -- API Rendering (Below Text)
         if #hookTableRenderInMenu.back > 0 then
@@ -1084,6 +1130,7 @@ local function on_hud_render()
             end
         end
 
+        --[[
         --Character Description
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_rect(width - x, 50, 2, height - 50)
@@ -1268,6 +1315,7 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_PREF_COLOR, width - x + 8, height - 15, 0.5)
             djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
         end
+        ]]
 
         --Character Buttons
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
@@ -1357,6 +1405,7 @@ local function on_hud_render()
         djui_hud_print_text(TEXT_CHAR_COUNT, (11 - djui_hud_measure_text(TEXT_CHAR_COUNT) * 0.2) * widthScale, height - 12, 0.4)
         djui_hud_print_text("- "..characterCategories[currCategory] .. " (L/R)", (11 + djui_hud_measure_text(TEXT_CHAR_COUNT) * 0.2) * widthScale, height - 12, 0.4)
 
+        --[[
         --Character Select Header
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_rect(0, 0, width, 2)
@@ -1372,6 +1421,7 @@ local function on_hud_render()
         djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
         djui_hud_set_font(FONT_TINY)
         djui_hud_print_text(optionTable[optionTableRef.debugInfo].toggle == 0 and TEXT_VERSION or MOD_VERSION_DEBUG, 5, 3, 0.5)
+        ]]
 
         --Unsupported Res Warning
         if width < 319 or width > 575 then
@@ -1567,6 +1617,36 @@ local function on_hud_render()
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_rect(width * 0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
 
+        -- Render Background Wall
+        local playerShirt = network_player_get_override_palette_color(gNetworkPlayers[0], SHIRT)
+        local playerPants = network_player_get_override_palette_color(gNetworkPlayers[0], PANTS)
+        djui_hud_set_rotation(angle_from_2d_points(-10, 35, width*0.7 - 5, 50), 1, 0)
+        local wallWidth = TEX_WALL_LEFT.width
+        local wallHeight = TEX_WALL_LEFT.height
+        local wallScale = 0.61
+        djui_hud_set_color(playerShirt.r, playerShirt.g, playerShirt.b, 255)
+        djui_hud_render_texture(TEX_WALL_LEFT, width*0.7 - 10 - wallWidth*wallScale, 50, wallScale, wallScale)
+        djui_hud_set_color(playerPants.r, playerPants.g, playerPants.b, 255)
+        djui_hud_render_texture(TEX_WALL_RIGHT, width*0.7 - 10 - wallWidth*wallScale, 50, wallScale, wallScale)
+        djui_hud_set_rotation(0, 0, 0)
+
+        -- Render Character Description
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_print_text(characterTable[currChar][characterTable[currChar].currAlt].description, 5, height - 16, 1)
+
+        -- Render Header
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_set_rotation(angle_from_2d_points(-10, 35, width*0.7 - 5, 50), 0, 0)
+        djui_hud_render_texture(TEX_HEADER, 5, -5, 0.4, 0.4)
+        djui_hud_set_rotation(0, 0, 0)
+
+        -- Render Tape
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_render_caution_tape(-10, 35, width*0.7 - 5, 50, 1) -- Top Tape
+        djui_hud_render_caution_tape(width*0.7, -10, width*0.7 - 25, height - 35, 1) -- Side Tape
+        djui_hud_render_caution_tape(-10, height - 50, width + 10, height - 35, 1) -- Bottom Tape
+
+        djui_chat_message_create(tostring(charNum))
 
         -- Anim logic
         if options then
@@ -1846,14 +1926,14 @@ local function before_mario_update(m)
         end
 
         -- Handles Camera Posistioning
-        faceAngle = m.faceAngle.y
+        camAngle = m.faceAngle.y + 0x800
         eyeState = MARIO_EYES_OPEN
         if controller.buttonPressed & R_CBUTTONS ~= 0 then
-            faceAngle = faceAngle + 0x1000
+            camAngle = camAngle + 0x1000
             eyeState = MARIO_EYES_LOOK_RIGHT
         end
         if controller.buttonPressed & L_CBUTTONS ~= 0 then
-            faceAngle = faceAngle - 0x1000
+            camAngle = camAngle - 0x1000
             eyeState = MARIO_EYES_LOOK_LEFT
         end
 
@@ -1966,7 +2046,7 @@ local function chat_command(msg)
     end
 
     -- Name Check
-    for i = 1, #characterTable do
+    for i = 0, #characterTable do
         if not characterTable[i].locked then
             local saveName = string_underscore_to_space(string_lower(characterTable[i].saveName))
             for a = 1, #characterTable[i] do

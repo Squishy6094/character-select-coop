@@ -198,6 +198,10 @@ function num_power_of_two(n)
     return n ~= 0 and (n & (n - 1)) == 0
 end
 
+function angle_from_2d_points(x1, y1, x2, y2)
+    return atan2s(y2 - y1, x2 - x1) - 0x4000
+end
+
 allowMenu = {}
 
 hookTableRenderInMenu = {
