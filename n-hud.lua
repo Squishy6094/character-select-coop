@@ -251,7 +251,7 @@ local FONT_USER = FONT_NORMAL
 function name_from_local_index(localIndex)
     if localIndex == nil then localIndex = 0 end
     local p = gCSPlayers[localIndex]
-    for i = 1, #characterTable do
+    for i = 0, #characterTable do
         if characterTable[i].saveName == p.saveName then
             return characterTable[i][(p.currAlt and p.currAlt or 1)].name
         end
@@ -266,7 +266,7 @@ end
 function color_from_local_index(localIndex)
     if localIndex == nil then localIndex = 0 end
     local p = gCSPlayers[localIndex]
-    for i = 1, #characterTable do
+    for i = 0, #characterTable do
         if characterTable[i].saveName == p.saveName then
             return characterTable[i][(p.currAlt and p.currAlt or 1)].color
         end
@@ -282,7 +282,7 @@ end
 function life_icon_from_local_index(localIndex)
     if localIndex == nil then localIndex = 0 end
     local p = gCSPlayers[localIndex]
-    for i = 1, #characterTable do
+    for i = 0, #characterTable do
         local char = characterTable[i]
         if char.saveName == p.saveName then
             return char[(p.currAlt and p.currAlt or 1)].lifeIcon
@@ -298,7 +298,7 @@ end
 function star_icon_from_local_index(localIndex)
     if localIndex == nil then localIndex = 0 end
     local p = gCSPlayers[localIndex]
-    for i = 1, #characterTable do
+    for i = 0, #characterTable do
         local char = characterTable[i]
         if char.saveName == p.saveName then
             return char[(p.currAlt and p.currAlt or 1)].starIcon
@@ -421,7 +421,7 @@ local defaultCourseInfo = {
 function health_meter_from_local_index(localIndex)
     localIndex = localIndex or 0
     local p = gCSPlayers[localIndex]
-    for i = 1, #characterTable do
+    for i = 0, #characterTable do
         local char = characterTable[i]
         if char.saveName == p.saveName and char[(p.currAlt and p.currAlt or 1)].healthTexture ~= nil then
             if not char[(p.currAlt and p.currAlt or 1)].healthTexture.label then

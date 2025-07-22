@@ -58,6 +58,9 @@ local TEX_WALL_LEFT = get_texture_info("char-select-wall-left")
 local TEX_WALL_RIGHT = get_texture_info("char-select-wall-right")
 local TEX_OVERRIDE_HEADER = nil
 
+local SOUND_CHAR_SELECT_THEME = audio_stream_load("char-select-menu-theme.ogg")
+audio_stream_set_looping(SOUND_CHAR_SELECT_THEME, true)
+
 ---@param texture TextureInfo?
 function header_set_texture(texture)
     TEX_OVERRIDE_HEADER = texture
@@ -260,6 +263,7 @@ characterColorPresets = {}
 characterAnims = {}
 characterMovesets = {[1] = {}}
 characterUnlock = {}
+characterInstrumentals = {}
 
 tableRefNum = 0
 local function make_table_ref_num()
@@ -425,8 +429,8 @@ creditTable = {
         {creditTo = "AgentX",          creditFor = "Main Contributer / CoopDX"},
         {creditTo = "xLuigiGamerx",    creditFor = "Main Contributer"},
         {creditTo = "Wibblus",         creditFor = "Contributer"},
-        {creditTo = "OneCalledRPG",    creditFor = "Contributer"},
-        {creditTo = "SuperKirbyLover", creditFor = "Custom Health Meters"},
+        {creditTo = "SuperKirbyLover", creditFor = "Contributer"},
+        {creditTo = "Sprsn64",         creditFor = "Character Select Logo"},
     }
 }
 
@@ -725,6 +729,14 @@ local function mario_update(m)
         end
 
         if menuAndTransition then
+            audio_stream_play(SOUND_CHAR_SELECT_THEME, false, 1)
+            for i = 0, #characterTable do
+                if characterInstrumentals[i] ~= nil then
+                    audio_stream_play(characterInstrumentals[i], false, 1)
+                    audio_stream_set_volume(characterInstrumentals[i], i == currChar and 1 or 0)
+                end
+            end
+            play_secondary_music(0, 0, 0, 50)
             camera_freeze()
             hud_hide()
             if m.area.camera.cutscene == 0 then
@@ -746,7 +758,13 @@ local function mario_update(m)
             p.inMenu = true
         else
             if p.inMenu then
-                --stop_secondary_music(50)
+                audio_stream_pause(SOUND_CHAR_SELECT_THEME)
+                for i = 0, #characterTable do
+                    if characterInstrumentals[i] ~= nil then
+                        audio_stream_pause(characterInstrumentals[i])
+                    end
+                end
+                stop_secondary_music(50)
                 camera_unfreeze()
                 hud_show()
                 if m.area.camera.cutscene == CUTSCENE_CS_MENU then
@@ -930,14 +948,14 @@ hook_event(HOOK_OBJECT_SET_MODEL, set_model)
 ------------------
 
 local TEX_CAUTION_TAPE = get_texture_info("char-select-caution-tape")
-local tapeScale = 0.5
 -- Renders caution tape from xy1 to xy2, tape extends based on dist (0 - 1)
-local function djui_hud_render_caution_tape(x1, y1, x2, y2, dist)
+local function djui_hud_render_caution_tape(x1, y1, x2, y2, dist, scale)
+    if not scale then scale = 0.5 end
     local totalDist = math.sqrt((y2 - y1)^2 + (x2 - x1)^2) * dist
     local angle = angle_from_2d_points(x1, y1, x2, y2)
     djui_hud_set_rotation(angle, 0, 0.5)
-    local texWidth = TEX_CAUTION_TAPE.width*tapeScale
-    local texHeight = TEX_CAUTION_TAPE.height*tapeScale
+    local texWidth = TEX_CAUTION_TAPE.width*scale
+    local texHeight = TEX_CAUTION_TAPE.height*scale
     local tapeSegments = totalDist/texWidth
     local tapeRemainder = tapeSegments
     while tapeRemainder > 1 do
@@ -948,7 +966,7 @@ local function djui_hud_render_caution_tape(x1, y1, x2, y2, dist)
         djui_hud_render_texture_tile(TEX_CAUTION_TAPE,
         x1 + texWidth*coss(angle)*i,
         y1 - texWidth*sins(angle)*i,
-        TEX_CAUTION_TAPE.height/TEX_CAUTION_TAPE.width*tapeScale, 1*tapeScale, 0, 0, TEX_CAUTION_TAPE.width*remainder, TEX_CAUTION_TAPE.height)
+        TEX_CAUTION_TAPE.height/TEX_CAUTION_TAPE.width*scale, 1*scale, 0, 0, TEX_CAUTION_TAPE.width*remainder, TEX_CAUTION_TAPE.height)
     end
     djui_hud_set_rotation(0, 0, 0)
 end
@@ -1632,7 +1650,30 @@ local function on_hud_render()
 
         -- Render Character Description
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_print_text(characterTable[currChar][characterTable[currChar].currAlt].description, 5, height - 16, 1)
+        local credit = characterTable[currChar][characterTable[currChar].currAlt].credit
+        local desc = characterTable[currChar][characterTable[currChar].currAlt].description
+        local descRender = desc .. " - " .. desc
+        while djui_hud_measure_text(descRender)*0.8 < width do
+            descRender = descRender .. " - " .. desc
+        end
+        descRender = descRender .. " - " .. desc
+        djui_hud_print_text("Creator: " .. credit, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8, height - 25, 0.8)
+        djui_hud_print_text(descRender, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8, height - 17, 0.8)
+
+        -- Render Character Name
+        djui_hud_set_font(FONT_MENU)
+        local charName = characterTable[currChar][characterTable[currChar].currAlt].name
+        local nameScale = math.min(80/djui_hud_measure_text(charName), 0.8)
+        local nameScaleCapped = math.max(nameScale, 0.3)
+        djui_hud_set_color(menuColor.r*0.5, menuColor.g*0.5, menuColor.b*0.5, 255)
+        djui_hud_render_rect(width*0.7 - 5, 30 - 35*nameScaleCapped, width*0.5, 70*nameScaleCapped)
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        math.randomseed(hash(charName))
+        djui_hud_render_caution_tape(width*0.7 - 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Top Tape
+        djui_hud_render_caution_tape(width*0.7 - 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Bottom Tape
+        djui_hud_print_text(charName, width*0.85 - djui_hud_measure_text(charName)*0.5*nameScale - 2, 30 - 32*nameScale, nameScale)
+
+        djui_chat_message_create(tostring(nameScale))
 
         -- Render Header
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
@@ -1645,8 +1686,6 @@ local function on_hud_render()
         djui_hud_render_caution_tape(-10, 35, width*0.7 - 5, 50, 1) -- Top Tape
         djui_hud_render_caution_tape(width*0.7, -10, width*0.7 - 25, height - 35, 1) -- Side Tape
         djui_hud_render_caution_tape(-10, height - 50, width + 10, height - 35, 1) -- Bottom Tape
-
-        djui_chat_message_create(tostring(charNum))
 
         -- Anim logic
         if options then
@@ -1778,7 +1817,7 @@ local function before_mario_update(m)
         return
     end
 
-    mouseScroll = mouseScroll + djui_hud_get_mouse_scroll_y()
+    mouseScroll = mouseScroll - djui_hud_get_mouse_scroll_y()
 
     local cameraToObject = m.marioObj.header.gfx.cameraToObject
     if menuAndTransition and not options then

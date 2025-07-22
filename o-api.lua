@@ -50,7 +50,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         local table = description
         description = ""
         for i = 1, #table do
-            description = description .. table[i] .. " "
+            description = description .. table[i] .. (i ~= #table and " " or "")
         end
     end
     if color ~= nil and type(color) == TYPE_STRING then
@@ -108,8 +108,12 @@ end
 ---@return integer? --The index of the costume in the character's table
 local function character_add_costume(charNum, name, description, credit, color, modelInfo, baseChar, lifeIcon, camScale)
     if not tonumber(charNum) or charNum > #characterTable or charNum < 0 then return end
-    if type(description) == TYPE_STRING then
-        description = split_text_into_lines(description)
+    if type(description) == TYPE_TABLE then
+        local table = description
+        description = ""
+        for i = 1, #table do
+            description = description .. table[i] .. (i ~= #table and " " or "")
+        end
     end
     if type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
@@ -121,7 +125,7 @@ local function character_add_costume(charNum, name, description, credit, color, 
     local addedModel = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model
     table_insert(characterTable[charNum], {
         name = type(name) == TYPE_STRING and name or tableCache.name,
-        description = type(description) == TYPE_TABLE and description or tableCache.description,
+        description = type(description) == TYPE_STRING and description or tableCache.description,
         credit = type(credit) == TYPE_STRING and credit or tableCache.credit,
         color = type(color) == TYPE_TABLE and color or tableCache.color,
         model = addedModel,
@@ -149,8 +153,12 @@ end
 ---@param camScale integer? Zooms the camera based on a multiplier (Default `1`)
 local function character_edit_costume(charNum, charAlt, name, description, credit, color, modelInfo, baseChar, lifeIcon, camScale)
     if tonumber(charNum) == nil or charNum > #characterTable or charNum < 0 then return end
-    if type(description) == TYPE_STRING then
-        description = split_text_into_lines(description)
+    if type(description) == TYPE_TABLE then
+        local table = description
+        description = ""
+        for i = 1, #table do
+            description = description .. table[i] .. (i ~= #table and " " or "")
+        end
     end
     if type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
@@ -162,7 +170,7 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
     characterTable[charNum][charAlt] = characterTable[charNum][charAlt] and {
         name = type(name) == TYPE_STRING and name or tableCache.name,
         saveName = saveNameTable[charNum],
-        description = type(description) == TYPE_TABLE and description or tableCache.description,
+        description = type(description) == TYPE_STRING and description or tableCache.description,
         credit = type(credit) == TYPE_STRING and credit or tableCache.credit,
         color = type(color) == TYPE_TABLE and color or tableCache.color,
         model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model,
@@ -949,6 +957,12 @@ end
 ---@note Function was made in preperation for v1.16, in which the Base Cast are individual characters rather than Costumes of each other. 
 ---@forcedoc character_is_vanilla
 
+---@description A function that adds an instrument track to a specific character
+---@note Original Song is **82 BPM**
+local function character_add_menu_instrumental(charNum, loadedAudio)
+    characterInstrumentals[charNum] = loadedAudio
+end
+
 _G.charSelectExists = true
 _G.charSelect = {
     -- Character Functions --
@@ -989,6 +1003,7 @@ _G.charSelect = {
     character_set_category = character_set_category,
     character_get_moveset = character_get_moveset,
     character_is_vanilla = character_is_vanilla, -- Function located in main.lua
+    character_add_menu_instrumental = character_add_menu_instrumental,
 
     -- Hud Element Functions --
     hud_hide_element = hud_hide_element, -- Function located in n-hud.lua

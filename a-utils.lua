@@ -3,9 +3,9 @@ local string_lower,string_format,table_insert,get_date_and_time = string.lower,s
 
 -- Version Data --
 MOD_VERSION_API = 1
-MOD_VERSION_MAJOR = 15
-MOD_VERSION_MINOR = 1
-MOD_VERSION_INDEV = false
+MOD_VERSION_MAJOR = 16
+MOD_VERSION_MINOR = 0
+MOD_VERSION_INDEV = true
 MOD_VERSION_STRING = tostring(MOD_VERSION_API) .. "." .. tostring(MOD_VERSION_MAJOR) .. (MOD_VERSION_MINOR > 0 and ("." .. tostring(MOD_VERSION_MINOR)) or "") .. (MOD_VERSION_INDEV and " (In-Dev)" or "")
 MOD_VERSION_DEBUG = tostring(GITHUB_REPO) .. " | " .. tostring(GITHUB_COMMIT_ID) .. " | " .. tostring(GITHUB_COMMIT_TIME)
 
@@ -200,6 +200,14 @@ end
 
 function angle_from_2d_points(x1, y1, x2, y2)
     return atan2s(y2 - y1, x2 - x1) - 0x4000
+end
+
+function hash(word)
+    local result = 5381
+    for i = 1, #word do
+        result = (result << 5) + result + word:byte(i)
+    end
+    return result
 end
 
 allowMenu = {}
