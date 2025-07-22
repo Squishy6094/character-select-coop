@@ -60,6 +60,7 @@ local TEX_OVERRIDE_HEADER = nil
 
 local SOUND_CHAR_SELECT_THEME = audio_stream_load("char-select-menu-theme.ogg")
 audio_stream_set_looping(SOUND_CHAR_SELECT_THEME, true)
+audio_stream_set_loop_points(SOUND_CHAR_SELECT_THEME, 0, 93.659*22050)
 
 ---@param texture TextureInfo?
 function header_set_texture(texture)
@@ -1655,6 +1656,17 @@ local function on_hud_render()
         djui_hud_render_texture(TEX_WALL_LEFT, width*0.7 - 10 - wallWidth*wallScale, 40, wallScale, wallScale)
         djui_hud_set_color(playerPants.r, playerPants.g, playerPants.b, 255)
         djui_hud_render_texture(TEX_WALL_RIGHT, width*0.7 - 10 - wallWidth*wallScale, 40, wallScale, wallScale)
+
+        -- Render Background Top
+        djui_hud_set_rotation(angle_from_2d_points(-10, 35, width*0.7 - 5, 50), 0, 1)
+        djui_hud_set_color(0, 0, 0, 255)
+        djui_hud_render_rect(-10, -30, width*0.7, 70)
+        djui_hud_set_rotation(0, 0, 0)
+
+        -- Render Background Bottom
+        djui_hud_set_rotation(angle_from_2d_points(-10, height - 50, width + 10, height - 35), 0, 0)
+        djui_hud_set_color(0, 0, 0, 255)
+        djui_hud_render_rect(-10, height - 50, width*1.5, 100)
         djui_hud_set_rotation(0, 0, 0)
 
         -- Render Character Description
@@ -1666,7 +1678,7 @@ local function on_hud_render()
             descRender = descRender .. " - " .. desc
         end
         descRender = descRender .. " - " .. desc
-        djui_hud_print_text("Creator: " .. credit, 5, height - 33, 0.8)
+        djui_hud_print_text("Creator: " .. credit, 5, height - 30, 0.8)
         djui_hud_print_text(descRender, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8, height - 17, 0.8)
 
         -- Render Character Name
