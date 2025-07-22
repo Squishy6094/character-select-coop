@@ -260,7 +260,14 @@ end
 characterCaps = {}
 characterCelebrationStar = {}
 characterColorPresets = {}
-characterAnims = {}
+characterAnims = {
+    [E_MODEL_MARIO] = {
+        [CS_ANIM_MENU] = MARIO_ANIM_CS_MENU
+    },
+    [E_MODEL_LUIGI] = {
+        [CS_ANIM_MENU] = LUIGI_ANIM_CS_MENU
+    },
+}
 characterMovesets = {[1] = {}}
 characterUnlock = {}
 characterInstrumentals = {}
@@ -425,12 +432,14 @@ creditTable = {
     {
         packName = "Character Select Coop",
         {creditTo = "Squishy6094",     creditFor = "Creator"},
+        {creditTo = "Sprsn64",         creditFor = "Logo Design"},
+        {creditTo = "JerThePear",      creditFor = "Menu Poses"},
+        {creditTo = "Trashcam",        creditFor = "Menu Music"},
         {creditTo = "AngelicMiracles", creditFor = "Concepts / CoopDX"},
-        {creditTo = "AgentX",          creditFor = "Main Contributer / CoopDX"},
-        {creditTo = "xLuigiGamerx",    creditFor = "Main Contributer"},
+        {creditTo = "AgentX",          creditFor = "Contributer / CoopDX"},
+        {creditTo = "xLuigiGamerx",    creditFor = "Contributer"},
         {creditTo = "Wibblus",         creditFor = "Contributer"},
         {creditTo = "SuperKirbyLover", creditFor = "Contributer"},
-        {creditTo = "Sprsn64",         creditFor = "Character Select Logo"},
     }
 }
 
@@ -746,9 +755,9 @@ local function mario_update(m)
             djui_hud_set_resolution(RESOLUTION_N64)
             local widthScale = djui_hud_get_screen_width()/320
             local focusPos = {
-                x = m.pos.x + sins(camAngle - 0x4000)*190*camScale*widthScale,
+                x = m.pos.x + sins(camAngle - 0x4000)*175*camScale*widthScale,
                 y = m.pos.y + 120 * camScale,
-                z = m.pos.z + coss(camAngle - 0x4000)*190*camScale*widthScale,
+                z = m.pos.z + coss(camAngle - 0x4000)*175*camScale*widthScale,
             }
             vec3f_copy(gLakituState.focus, focusPos)
             m.marioBodyState.eyeState = eyeState
@@ -1638,14 +1647,14 @@ local function on_hud_render()
         -- Render Background Wall
         local playerShirt = network_player_get_override_palette_color(gNetworkPlayers[0], SHIRT)
         local playerPants = network_player_get_override_palette_color(gNetworkPlayers[0], PANTS)
-        djui_hud_set_rotation(angle_from_2d_points(-10, 35, width*0.7 - 5, 50), 1, 0)
+        --djui_hud_set_rotation(angle_from_2d_points(width*0.7, -10, width*0.7 - 25, height - 35) + 0x4000, 1, 0)
         local wallWidth = TEX_WALL_LEFT.width
         local wallHeight = TEX_WALL_LEFT.height
-        local wallScale = 0.61
+        local wallScale = 0.65 * widthScale
         djui_hud_set_color(playerShirt.r, playerShirt.g, playerShirt.b, 255)
-        djui_hud_render_texture(TEX_WALL_LEFT, width*0.7 - 10 - wallWidth*wallScale, 50, wallScale, wallScale)
+        djui_hud_render_texture(TEX_WALL_LEFT, width*0.7 - 10 - wallWidth*wallScale, 40, wallScale, wallScale)
         djui_hud_set_color(playerPants.r, playerPants.g, playerPants.b, 255)
-        djui_hud_render_texture(TEX_WALL_RIGHT, width*0.7 - 10 - wallWidth*wallScale, 50, wallScale, wallScale)
+        djui_hud_render_texture(TEX_WALL_RIGHT, width*0.7 - 10 - wallWidth*wallScale, 40, wallScale, wallScale)
         djui_hud_set_rotation(0, 0, 0)
 
         -- Render Character Description
@@ -1657,7 +1666,7 @@ local function on_hud_render()
             descRender = descRender .. " - " .. desc
         end
         descRender = descRender .. " - " .. desc
-        djui_hud_print_text("Creator: " .. credit, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8, height - 25, 0.8)
+        djui_hud_print_text("Creator: " .. credit, 5, height - 33, 0.8)
         djui_hud_print_text(descRender, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8, height - 17, 0.8)
 
         -- Render Character Name
@@ -1673,8 +1682,6 @@ local function on_hud_render()
         djui_hud_render_caution_tape(width*0.7 - 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Bottom Tape
         djui_hud_print_text(charName, width*0.85 - djui_hud_measure_text(charName)*0.5*nameScale - 2, 30 - 32*nameScale, nameScale)
 
-        djui_chat_message_create(tostring(nameScale))
-
         -- Render Header
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_set_rotation(angle_from_2d_points(-10, 35, width*0.7 - 5, 50), 0, 0)
@@ -1684,7 +1691,7 @@ local function on_hud_render()
         -- Render Tape
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_caution_tape(-10, 35, width*0.7 - 5, 50, 1) -- Top Tape
-        djui_hud_render_caution_tape(width*0.7, -10, width*0.7 - 25, height - 35, 1) -- Side Tape
+        djui_hud_render_caution_tape(width*0.7 - 2, -10, width*0.7 - 15, height - 35, 1, 0.6) -- Side Tape
         djui_hud_render_caution_tape(-10, height - 50, width + 10, height - 35, 1) -- Bottom Tape
 
         -- Anim logic
