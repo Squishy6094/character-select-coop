@@ -423,13 +423,14 @@ function health_meter_from_local_index(localIndex)
     local p = gCSPlayers[localIndex]
     for i = 0, #characterTable do
         local char = characterTable[i]
-        if char.saveName == p.saveName and char[(p.currAlt and p.currAlt or 1)].healthTexture ~= nil then
-            if not char[(p.currAlt and p.currAlt or 1)].healthTexture.label then
-                char[(p.currAlt and p.currAlt or 1)].healthTexture.label = defaultMeterInfo.label
-            elseif not char[(p.currAlt and p.currAlt or 1)].healthTexture.pie then
-                char[(p.currAlt and p.currAlt or 1)].healthTexture.pie = defaultMeterInfo.pie
+        local healthTexture = char[(p.currAlt and p.currAlt or 1)].healthTexture
+        if char.saveName == p.saveName and healthTexture ~= nil then
+            if not healthTexture.label then
+                healthTexture.label = defaultMeterInfo.label
+            elseif not healthTexture.pie then
+                healthTexture.pie = defaultMeterInfo.pie
             end
-            return char[(p.currAlt and p.currAlt or 1)].healthTexture
+            return healthTexture
         end
     end
     return defaultMeterInfo
@@ -491,7 +492,7 @@ local pieTextureNames = {
 }
 
 local function render_hud_health()
-    if currChar == 1 and characterTable[1].currAlt == 1 then
+    if currChar == CT_MARIO then
         texture_override_reset("texture_power_meter_left_side")
         texture_override_reset("texture_power_meter_right_side")
 		for i = 1, 8 do

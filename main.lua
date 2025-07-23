@@ -268,6 +268,15 @@ characterAnims = {
     [E_MODEL_LUIGI] = {
         [CS_ANIM_MENU] = LUIGI_ANIM_CS_MENU
     },
+    [E_MODEL_TOAD_PLAYER] = {
+        [CS_ANIM_MENU] = TOAD_PLAYER_ANIM_CS_MENU
+    },
+    [E_MODEL_WALUIGI] = {
+        [CS_ANIM_MENU] = WALUIGI_ANIM_CS_MENU
+    },
+    [E_MODEL_WARIO] = {
+        [CS_ANIM_MENU] = WARIO_ANIM_CS_MENU
+    },
 }
 characterMovesets = {[1] = {}}
 characterUnlock = {}
@@ -500,11 +509,11 @@ local function load_preferred_char()
         savedAlt = 1
     end
     if savedPalette == nil then
-        local paletteSave = savedChar ~= "Default" and 1 or 0
+        local paletteSave = 1
         mod_storage_save("PrefAlt", tostring(paletteSave))
         savedPalette = paletteSave
     end
-    if savedChar ~= "Default" and optionTable[optionTableRef.localModels].toggle == 1 then
+    if optionTable[optionTableRef.localModels].toggle == 1 then
         for i = CT_MAX, #characterTable do
             local char = characterTable[i]
             if char.saveName == savedChar and not char.locked then
@@ -526,8 +535,12 @@ local function load_preferred_char()
             end
         end
     end
-    
-    currChar = gNetworkPlayers[0].modelIndex
+    if savedChar == "Default" then
+        currChar = gNetworkPlayers[0].modelIndex
+        local model = characterTable[currChar][1].model
+        gCSPlayers[0].presetPalette = savedPalette
+        characterColorPresets[model].currPalette = savedPalette
+    end
 
     local savedCharColors = mod_storage_load("PrefCharColor")
     if savedCharColors ~= nil and savedCharColors ~= "" then
@@ -554,13 +567,11 @@ end
 local function mod_storage_save_pref_char(charTable)
     if character_is_vanilla(charTable.ogNum) then
         mod_storage_save("PrefChar", "Default")
-        mod_storage_save("PrefAlt", "1")
-        mod_storage_save("PrefPalette", "0")
     else
         mod_storage_save("PrefChar", charTable.saveName)
-        mod_storage_save("PrefAlt", tostring(charTable.currAlt))
-        mod_storage_save("PrefPalette", tostring(gCSPlayers[0].presetPalette))
     end
+    mod_storage_save("PrefAlt", tostring(charTable.currAlt))
+    mod_storage_save("PrefPalette", tostring(gCSPlayers[0].presetPalette))
     mod_storage_save("PrefCharColor", tostring(charTable[charTable.currAlt].color.r) .. "_" .. tostring(charTable[charTable.currAlt].color.g) .. "_" .. tostring(charTable[charTable.currAlt].color.b))
     TEXT_PREF_LOAD_NAME = charTable.saveName
     TEXT_PREF_LOAD_ALT = charTable.currAlt
@@ -687,6 +698,12 @@ local MATH_PI = math.pi
 local prevBaseCharFrame = gNetworkPlayers[0].modelIndex
 local camAngle = 0
 local eyeState = MARIO_EYES_OPEN
+local worldColor = {
+    lighting = {r = 255, g = 255, b = 255},
+    skybox = {r = 255, g = 255, b = 255},
+    fog = {r = 255, g = 255, b = 255},
+    vertex = {r = 255, g = 255, b = 255},
+}
 ---@param m MarioState
 local function mario_update(m)
     local np = gNetworkPlayers[m.playerIndex]
@@ -766,6 +783,19 @@ local function mario_update(m)
             gLakituState.pos.y = m.pos.y + 10
             gLakituState.pos.z = m.pos.z + coss(camAngle) * 450 * camScale
             p.inMenu = true
+
+            set_lighting_color(0, (menuColor.r*0.33 + 255*0.66) * worldColor.lighting.r/255)
+            set_lighting_color(1, (menuColor.g*0.33 + 255*0.66) * worldColor.lighting.r/255)
+            set_lighting_color(2, (menuColor.b*0.33 + 255*0.66) * worldColor.lighting.r/255)
+            set_skybox_color(0, menuColor.r * worldColor.lighting.r/255)
+            set_skybox_color(1, menuColor.g * worldColor.lighting.r/255)
+            set_skybox_color(2, menuColor.b * worldColor.lighting.r/255)
+            set_fog_color(0, menuColor.r * worldColor.lighting.r/255)
+            set_fog_color(1, menuColor.g * worldColor.lighting.r/255)
+            set_fog_color(2, menuColor.b * worldColor.lighting.r/255)
+            set_vertex_color(0, menuColor.r * worldColor.lighting.r/255)
+            set_vertex_color(1, menuColor.g * worldColor.lighting.r/255)
+            set_vertex_color(2, menuColor.b * worldColor.lighting.r/255)
         else
             if p.inMenu then
                 audio_stream_pause(SOUND_CHAR_SELECT_THEME)
@@ -780,8 +810,33 @@ local function mario_update(m)
                 if m.area.camera.cutscene == CUTSCENE_CS_MENU then
                     m.area.camera.cutscene = CUTSCENE_STOP
                 end
+                set_lighting_color(0, worldColor.lighting.r)
+                set_lighting_color(1, worldColor.lighting.g)
+                set_lighting_color(2, worldColor.lighting.b)
+                set_skybox_color(0, worldColor.skybox.r)
+                set_skybox_color(1, worldColor.skybox.g)
+                set_skybox_color(2, worldColor.skybox.b)
+                set_fog_color(0, worldColor.fog.r)
+                set_fog_color(1, worldColor.fog.g)
+                set_fog_color(2, worldColor.fog.b)
+                set_vertex_color(0, worldColor.vertex.r)
+                set_vertex_color(1, worldColor.vertex.g)
+                set_vertex_color(2, worldColor.vertex.b)
                 p.inMenu = false
             end
+
+            worldColor.lighting.r = get_lighting_color(0)
+            worldColor.lighting.g = get_lighting_color(1)
+            worldColor.lighting.b = get_lighting_color(2)
+            worldColor.skybox.r = get_skybox_color(0)
+            worldColor.skybox.g = get_skybox_color(1)
+            worldColor.skybox.b = get_skybox_color(2)
+            worldColor.fog.r = get_fog_color(0)
+            worldColor.fog.g = get_fog_color(1)
+            worldColor.fog.b = get_fog_color(2)
+            worldColor.vertex.r = get_vertex_color(0)
+            worldColor.vertex.g = get_vertex_color(1)
+            worldColor.vertex.b = get_vertex_color(2)
         end
 
         -- Check for Locked Chars
@@ -1660,7 +1715,7 @@ local function on_hud_render()
         -- Render Background Top
         djui_hud_set_rotation(angle_from_2d_points(-10, 35, width*0.7 - 5, 50), 0, 1)
         djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_render_rect(-10, -30, width*0.7, 70)
+        djui_hud_render_rect(-10, -30, width*0.7 + 5, 70)
         djui_hud_set_rotation(0, 0, 0)
 
         -- Render Background Bottom

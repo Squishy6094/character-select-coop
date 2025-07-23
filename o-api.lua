@@ -959,7 +959,7 @@ end
 
 ---@description A function that adds an instrument track to a specific character
 ---@added 1.16
----@note Original Song is `82` BPM, `93.659` Seconds Long, and is set to a sample rate of `22050`, if these requirements are not met then the song will not properly play.
+---@note Original Song is `G# Major Key`, `82` BPM, `93.659` Seconds Long, and is set to a sample rate of `22050`. If these requirements are not met then the song will not properly play, or incorrectly fit with the base theme.
 local function character_add_menu_instrumental(charNum, loadedAudio)
     audio_stream_set_looping(loadedAudio, true)
     audio_stream_set_loop_points(loadedAudio, 0, 93.659*22050)

@@ -6,7 +6,7 @@ local network_player_set_override_palette_color,network_player_reset_override_pa
 
 characterColorPresets = {
     [E_MODEL_MARIO] = {
-        currPalette = 0,
+        currPalette = 1,
         [1] = {
             [PANTS]  = { r = 0x00, g = 0x00, b = 0xff },
             [SHIRT]  = { r = 0xff, g = 0x00, b = 0x00 },
@@ -19,7 +19,7 @@ characterColorPresets = {
         },
     },
     [E_MODEL_LUIGI] = {
-        currPalette = 0,
+        currPalette = 1,
         [1] = {
             [PANTS]  = { r = 0x00, g = 0x00, b = 0xff },
             [SHIRT]  = { r = 0x00, g = 0xff, b = 0x00 },
@@ -32,7 +32,7 @@ characterColorPresets = {
         },
     },
     [E_MODEL_TOAD_PLAYER] = {
-        currPalette = 0,
+        currPalette = 1,
         [1] = {
             [PANTS]  = { r = 0xff, g = 0xff, b = 0xff },
             [SHIRT]  = { r = 0x4c, g = 0x2c, b = 0xd3 },
@@ -45,7 +45,7 @@ characterColorPresets = {
         },
     },
     [E_MODEL_WALUIGI] = {
-        currPalette = 0,
+        currPalette = 1,
         [1] = {
             [PANTS]  = { r = 0x16, g = 0x16, b = 0x27 },
             [SHIRT]  = { r = 0x61, g = 0x26, b = 0xb0 },
@@ -59,7 +59,7 @@ characterColorPresets = {
         },
     },
     [E_MODEL_WARIO] = {
-        currPalette = 0,
+        currPalette = 1,
         [1] = {
             [PANTS]  = { r = 0x7f, g = 0x20, b = 0x7a },
             [SHIRT]  = { r = 0xff, g = 0xbd, b = 0x00 },
