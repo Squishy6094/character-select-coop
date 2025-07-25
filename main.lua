@@ -27,6 +27,7 @@ local mod_storage_load,tonumber,mod_storage_save,djui_popup_create,tostring,djui
 
 menu = false
 menuAndTransition = false
+gridMenu = false
 options = false
 local credits = false
 local creditsAndTransition = false
@@ -56,6 +57,8 @@ local TYPE_TABLE = "table"
 local TEX_HEADER = get_texture_info("char-select-text")
 local TEX_WALL_LEFT = get_texture_info("char-select-wall-left")
 local TEX_WALL_RIGHT = get_texture_info("char-select-wall-right")
+local TEX_GRAFFITI_DEFAULT = get_texture_info("char-select-graffiti-default")
+local TEX_BUTTON_SMALL = get_texture_info("char-select-button-small")
 local TEX_OVERRIDE_HEADER = nil
 
 local SOUND_CHAR_SELECT_THEME = audio_stream_load("char-select-menu-theme.ogg")
@@ -1154,6 +1157,8 @@ end
 
 local buttonAltAnim = 0
 local menuOpacity = 245
+local gridButtonsPerRow = 5
+local gridYOffset = 0
 local menuText = {}
 local function on_hud_render()
     local FONT_USER = djui_menu_get_font()
@@ -1520,6 +1525,110 @@ local function on_hud_render()
         end
         djui_hud_set_resolution(RESOLUTION_N64)
 
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_render_rect(width * 0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
+
+        -- Make Random Elements based on Character Name
+        math.randomseed(hash(characterTable[currChar][characterTable[currChar].currAlt].name))
+    
+        -- Render Background Wall
+        local playerShirt = network_player_get_override_palette_color(gNetworkPlayers[0], SHIRT)
+        local playerPants = network_player_get_override_palette_color(gNetworkPlayers[0], PANTS)
+        --djui_hud_set_rotation(angle_from_2d_points(width*0.7, -10, width*0.7 - 25, height - 35) + 0x4000, 1, 0)
+        local wallWidth = TEX_WALL_LEFT.width
+        local wallHeight = TEX_WALL_LEFT.height
+        local wallScale = 0.65 * widthScale
+        djui_hud_set_color(playerShirt.r, playerShirt.g, playerShirt.b, 255)
+        djui_hud_render_texture(TEX_WALL_LEFT, width*0.7 - 10 - wallWidth*wallScale, 40, wallScale, wallScale)
+        djui_hud_set_color(playerPants.r, playerPants.g, playerPants.b, 255)
+        djui_hud_render_texture(TEX_WALL_RIGHT, width*0.7 - 10 - wallWidth*wallScale, 40, wallScale, wallScale)
+        djui_hud_set_rotation(math.random(0, 0x2000) - 0x1000, 0.5, 0.5)
+        djui_hud_set_color(255, 255, 255, 150)
+        djui_hud_render_texture(TEX_GRAFFITI_DEFAULT, width*0.35 - TEX_GRAFFITI_DEFAULT.width*0.5*0.4, height*0.5 - TEX_GRAFFITI_DEFAULT.height*0.5*0.4, 0.4, 0.4)
+        djui_hud_set_rotation(0, 0, 0)
+
+        if not gridMenu then
+
+        else
+            -- Render Character Grid
+            local currRow = math.floor((currCharRender - 1)/gridButtonsPerRow)
+            gridYOffset = lerp(gridYOffset, currRow*35, 0.1)
+            for i = 1, #characterTableRender do
+                local row = math.floor((i - 1)/gridButtonsPerRow)
+                local column = (i - 1)%gridButtonsPerRow
+                local charIcon = characterTableRender[i][characterTableRender[i].currAlt].lifeIcon
+                local charColor = characterTableRender[i][characterTableRender[i].currAlt].color
+                if i == currCharRender then
+                    local blinkAnim = math.abs(math.sin(get_global_timer()*0.1))
+                    djui_hud_set_color(255 + (charColor.r - 255)*blinkAnim, 255 + (charColor.g - 255)*blinkAnim, 255 + (charColor.b - 255)*blinkAnim, 255)
+                else
+                    djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
+                end
+                local x = width*0.3 - gridButtonsPerRow*35*0.5 + 35*column - math.abs(row - gridYOffset/35)^2*3
+                local y = height*0.5 - 35*0.5 + row*35 - gridYOffset
+                djui_hud_render_texture(TEX_BUTTON_SMALL, x, y, 1, 1)
+                x = x + 8
+                y = y + 8
+                djui_hud_set_color(255, 255, 255, 255)
+                if type(charIcon) == TYPE_STRING then
+                    djui_hud_set_font(FONT_RECOLOR_HUD)
+                    djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
+                    djui_hud_print_text(charIcon, x, y, 1)
+                else
+                    djui_hud_render_texture(charIcon, x, y, 1 / (charIcon.width * MATH_DIVIDE_16), 1 / (charIcon.height * MATH_DIVIDE_16))
+                end
+            end
+        end
+
+        -- Render Background Top
+        djui_hud_set_rotation(angle_from_2d_points(-10, 35, width*0.7 - 5, 50), 0, 1)
+        djui_hud_set_color(0, 0, 0, 255)
+        djui_hud_render_rect(-10, -30, width*0.7 + 5, 70)
+        djui_hud_set_rotation(0, 0, 0)
+
+        -- Render Background Bottom
+        djui_hud_set_rotation(angle_from_2d_points(-10, height - 50, width + 10, height - 35), 0, 0)
+        djui_hud_set_color(0, 0, 0, 255)
+        djui_hud_render_rect(-10, height - 50, width*1.5, 100)
+        djui_hud_set_rotation(0, 0, 0)
+
+        -- Render Character Description
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        local credit = characterTable[currChar][characterTable[currChar].currAlt].credit
+        local desc = characterTable[currChar][characterTable[currChar].currAlt].description
+        local descRender = desc .. " - " .. desc
+        while djui_hud_measure_text(descRender)*0.8 < width do
+            descRender = descRender .. " - " .. desc
+        end
+        descRender = descRender .. " - " .. desc
+        djui_hud_print_text("Creator: " .. credit, 5, height - 30, 0.8)
+        djui_hud_print_text(descRender, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8, height - 17, 0.8)
+
+        -- Render Character Name
+        djui_hud_set_font(FONT_MENU)
+        local charName = characterTable[currChar][characterTable[currChar].currAlt].name
+        local nameScale = math.min(80/djui_hud_measure_text(charName), 0.8)
+        local nameScaleCapped = math.max(nameScale, 0.3)
+        djui_hud_set_color(menuColor.r*0.5, menuColor.g*0.5, menuColor.b*0.5, 255)
+        djui_hud_render_rect(width*0.7 - 5, 30 - 35*nameScaleCapped, width*0.5, 70*nameScaleCapped)
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_render_caution_tape(width*0.7 - 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Top Tape
+        djui_hud_render_caution_tape(width*0.7 - 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Bottom Tape
+        djui_hud_print_text(charName, width*0.85 - djui_hud_measure_text(charName)*0.5*nameScale - 2, 30 - 32*nameScale, nameScale)
+
+        -- Render Header
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_set_rotation(angle_from_2d_points(-10, 35, width*0.7 - 5, 50), 0, 0)
+        djui_hud_render_texture(TEX_HEADER, 5, -5, 0.4, 0.4)
+        djui_hud_set_rotation(0, 0, 0)
+
+        -- Render Tape
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_render_caution_tape(-10, 35, width*0.7 - 5, 50, 1) -- Top Tape
+        djui_hud_render_caution_tape(width*0.7 - 2, -10, width*0.7 - 15, height - 35, 1, 0.6) -- Side Tape
+        djui_hud_render_caution_tape(-10, height - 50, width + 10, height - 35, 1) -- Bottom Tape
+
+
         --Options display
         local optionTableCount = #optionTable
         if options or optionAnimTimer > optionAnimTimerCap then
@@ -1685,81 +1794,7 @@ local function on_hud_render()
             djui_hud_render_rect(width * 0.5 - 50 * widthScale + 2, minf(55 - optionAnimTimer + 2, height - 25 * widthScale + 2), 100 * widthScale - 4, 196)
         else
             -- How to open options display
-            local widthScaleLimited = minf(widthScale, 1.42)
-            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_render_rect(widthHalf - 50 * widthScale, height - 25 * widthScaleLimited, 100 * widthScale, 26 * widthScaleLimited)
-            djui_hud_set_color(menuColorHalf.r * 0.1, menuColorHalf.g * 0.1, menuColorHalf.b * 0.1, menuOpacity)
-            djui_hud_render_rect(widthHalf - 50 * widthScale + 2, height - 25 * widthScaleLimited + 2, 100 * widthScale - 4, 22 * widthScaleLimited)
-            djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-            djui_hud_render_rect(widthHalf - 50 * widthScale, height - 2, 100 * widthScale, 2)
-            djui_hud_set_font(FONT_ALIASED)
-            djui_hud_print_text(TEXT_OPTIONS_OPEN, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_OPEN) * 0.175 * widthScaleLimited, height - 23 * widthScaleLimited + optionAnimTimer + 202, 0.35 * widthScaleLimited)
-            djui_hud_set_font(FONT_TINY)
-            djui_hud_print_text(TEXT_MENU_CLOSE, widthHalf - djui_hud_measure_text(TEXT_MENU_CLOSE) * 0.25 * widthScaleLimited, height - 13 * widthScaleLimited + optionAnimTimer + 202, 0.5 * widthScaleLimited)
         end
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(width * 0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
-
-        -- Render Background Wall
-        local playerShirt = network_player_get_override_palette_color(gNetworkPlayers[0], SHIRT)
-        local playerPants = network_player_get_override_palette_color(gNetworkPlayers[0], PANTS)
-        --djui_hud_set_rotation(angle_from_2d_points(width*0.7, -10, width*0.7 - 25, height - 35) + 0x4000, 1, 0)
-        local wallWidth = TEX_WALL_LEFT.width
-        local wallHeight = TEX_WALL_LEFT.height
-        local wallScale = 0.65 * widthScale
-        djui_hud_set_color(playerShirt.r, playerShirt.g, playerShirt.b, 255)
-        djui_hud_render_texture(TEX_WALL_LEFT, width*0.7 - 10 - wallWidth*wallScale, 40, wallScale, wallScale)
-        djui_hud_set_color(playerPants.r, playerPants.g, playerPants.b, 255)
-        djui_hud_render_texture(TEX_WALL_RIGHT, width*0.7 - 10 - wallWidth*wallScale, 40, wallScale, wallScale)
-
-        -- Render Background Top
-        djui_hud_set_rotation(angle_from_2d_points(-10, 35, width*0.7 - 5, 50), 0, 1)
-        djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_render_rect(-10, -30, width*0.7 + 5, 70)
-        djui_hud_set_rotation(0, 0, 0)
-
-        -- Render Background Bottom
-        djui_hud_set_rotation(angle_from_2d_points(-10, height - 50, width + 10, height - 35), 0, 0)
-        djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_render_rect(-10, height - 50, width*1.5, 100)
-        djui_hud_set_rotation(0, 0, 0)
-
-        -- Render Character Description
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        local credit = characterTable[currChar][characterTable[currChar].currAlt].credit
-        local desc = characterTable[currChar][characterTable[currChar].currAlt].description
-        local descRender = desc .. " - " .. desc
-        while djui_hud_measure_text(descRender)*0.8 < width do
-            descRender = descRender .. " - " .. desc
-        end
-        descRender = descRender .. " - " .. desc
-        djui_hud_print_text("Creator: " .. credit, 5, height - 30, 0.8)
-        djui_hud_print_text(descRender, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8, height - 17, 0.8)
-
-        -- Render Character Name
-        djui_hud_set_font(FONT_MENU)
-        local charName = characterTable[currChar][characterTable[currChar].currAlt].name
-        local nameScale = math.min(80/djui_hud_measure_text(charName), 0.8)
-        local nameScaleCapped = math.max(nameScale, 0.3)
-        djui_hud_set_color(menuColor.r*0.5, menuColor.g*0.5, menuColor.b*0.5, 255)
-        djui_hud_render_rect(width*0.7 - 5, 30 - 35*nameScaleCapped, width*0.5, 70*nameScaleCapped)
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        math.randomseed(hash(charName))
-        djui_hud_render_caution_tape(width*0.7 - 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Top Tape
-        djui_hud_render_caution_tape(width*0.7 - 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Bottom Tape
-        djui_hud_print_text(charName, width*0.85 - djui_hud_measure_text(charName)*0.5*nameScale - 2, 30 - 32*nameScale, nameScale)
-
-        -- Render Header
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_set_rotation(angle_from_2d_points(-10, 35, width*0.7 - 5, 50), 0, 0)
-        djui_hud_render_texture(TEX_HEADER, 5, -5, 0.4, 0.4)
-        djui_hud_set_rotation(0, 0, 0)
-
-        -- Render Tape
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_caution_tape(-10, 35, width*0.7 - 5, 50, 1) -- Top Tape
-        djui_hud_render_caution_tape(width*0.7 - 2, -10, width*0.7 - 15, height - 35, 1, 0.6) -- Side Tape
-        djui_hud_render_caution_tape(-10, height - 50, width + 10, height - 35, 1) -- Bottom Tape
 
         -- Anim logic
         if options then
@@ -1895,7 +1930,12 @@ local function before_mario_update(m)
 
     local cameraToObject = m.marioObj.header.gfx.cameraToObject
     if menuAndTransition and not options then
-        if menu then
+        if (controller.buttonPressed & X_BUTTON) ~= 0 and inputStallTimerDirectional == 0 then
+            inputStallTimerDirectional = inputStallToDirectional
+            gridMenu = not gridMenu
+            play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
+        end
+        if menu and not gridMenu then
             if inputStallTimerDirectional == 0 and not charBeingSet then
                 -- Alt switcher
                 if #characterTable[currChar] > 1 then
@@ -2034,6 +2074,79 @@ local function before_mario_update(m)
                 end
                 if characterColorPresets[gCSPlayers[0].modelId] ~= nil then
                     if paletteCount < currPaletteTable.currPalette then currPaletteTable.currPalette = 0 end
+                end
+            end
+        end
+
+        if gridMenu then
+            if inputStallTimerDirectional == 0 and not charBeingSet then
+                if optionTable[optionTableRef.localModels].toggle ~= 0 then    
+                    if (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60 then
+                        currCharRender = currCharRender - 1
+                        inputStallTimerDirectional = inputStallToDirectional
+                        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                        if currCharRender < 1 then currCharRender = #characterTableRender end
+                        currChar = characterTableRender[currCharRender].ogNum
+                        if characterColorPresets[characterTable[currChar]] ~= nil then
+                            characterColorPresets[characterTable[currChar]].currPalette = 0
+                        end
+                        prevMouseScroll = mouseScroll
+                    end
+                    if (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60 then
+                        currCharRender = currCharRender + 1
+                        inputStallTimerDirectional = inputStallToDirectional
+                        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                        if currCharRender > #characterTableRender then currCharRender = 1 end
+                        currChar = characterTableRender[currCharRender].ogNum
+                        if characterColorPresets[characterTable[currChar]] ~= nil then
+                            characterColorPresets[characterTable[currChar]].currPalette = 0
+                        end
+                        prevMouseScroll = mouseScroll
+                    end
+                    if (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 60 or prevMouseScroll > mouseScroll then
+                        currCharRender = currCharRender - gridButtonsPerRow
+                        inputStallTimerDirectional = inputStallToDirectional
+                        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                        if currCharRender < 1 then currCharRender = #characterTableRender end
+                        currChar = characterTableRender[currCharRender].ogNum
+                        if characterColorPresets[characterTable[currChar]] ~= nil then
+                            characterColorPresets[characterTable[currChar]].currPalette = 0
+                        end
+                        prevMouseScroll = mouseScroll
+                    end
+                    if (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -60 or prevMouseScroll < mouseScroll then
+                        currCharRender = currCharRender + gridButtonsPerRow
+                        inputStallTimerDirectional = inputStallToDirectional
+                        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                        if currCharRender > #characterTableRender then currCharRender = 1 end
+                        currChar = characterTableRender[currCharRender].ogNum
+                        if characterColorPresets[characterTable[currChar]] ~= nil then
+                            characterColorPresets[characterTable[currChar]].currPalette = 0
+                        end
+                        prevMouseScroll = mouseScroll
+                    end
+
+                    -- Tab Switcher
+                    if (controller.buttonPressed & L_TRIG) ~= 0 then
+                        local renderEmpty = true
+                        while renderEmpty do
+                            currCategory = currCategory - 1
+                            if currCategory < 1 then currCategory = #characterCategories end
+                            renderEmpty = not update_character_render_table()
+                        end
+                        inputStallTimerDirectional = inputStallToDirectional
+                        play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
+                    end
+                    if (controller.buttonPressed & R_TRIG) ~= 0 then
+                        local renderEmpty = true
+                        while renderEmpty do
+                            currCategory = currCategory + 1
+                            if currCategory > #characterCategories then currCategory = 1 end
+                            renderEmpty = not update_character_render_table()
+                        end
+                        inputStallTimerDirectional = inputStallToDirectional
+                        play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
+                    end
                 end
             end
         end
