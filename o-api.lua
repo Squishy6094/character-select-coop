@@ -966,6 +966,14 @@ local function character_add_menu_instrumental(charNum, loadedAudio)
     characterInstrumentals[charNum] = loadedAudio
 end
 
+---@description A function that adds graffiti art to the background of the menu
+---@added 1.16
+---@param charNum integer
+---@param texture TextureInfo
+local function character_add_grafitti(charNum, texture)
+    characterGraffiti[charNum] = texture
+end
+
 _G.charSelectExists = true
 _G.charSelect = {
     -- Character Functions --
@@ -1007,6 +1015,7 @@ _G.charSelect = {
     character_get_moveset = character_get_moveset,
     character_is_vanilla = character_is_vanilla, -- Function located in main.lua
     character_add_menu_instrumental = character_add_menu_instrumental,
+    character_add_grafitti = character_add_grafitti,
 
     -- Hud Element Functions --
     hud_hide_element = hud_hide_element, -- Function located in n-hud.lua
