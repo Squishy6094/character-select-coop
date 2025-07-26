@@ -275,43 +275,6 @@ end
 local function character_add_costume_health_meter(charNum, charAlt, healthTexture)
     if type(charNum) ~= TYPE_INTEGER or charNum == nil then return end
     if type(charAlt) ~= TYPE_INTEGER or charAlt == nil then return end
-    
-    -- Check texture width and height before adding
-    if healthTexture ~= nil then
-        if healthTexture.label.left ~= nil then
-            if not num_power_of_two(healthTexture.label.left.width) then
-                dev_mode_log_to_console("Texture '" .. healthTexture.label.left.name .. "' has an inproper width of " .. tostring(healthTexture.label.left.width) .. " (Must be a power of 2)", CONSOLE_MESSAGE_WARNING)
-                return
-            end
-            if not num_power_of_two(healthTexture.label.left.height) then
-                dev_mode_log_to_console("Texture '" .. healthTexture.label.left.name .. "' has an inproper height of " .. tostring(healthTexture.label.left.height) .. " (Must be a power of 2)", CONSOLE_MESSAGE_WARNING)
-                return
-            end
-        end
-        if healthTexture.label.right ~= nil then
-            if not num_power_of_two(healthTexture.label.right.width) then
-                dev_mode_log_to_console("Texture '" .. healthTexture.label.right.name .. "' has an inproper width of " .. tostring(healthTexture.label.right.width) .. " (Must be a power of 2)", CONSOLE_MESSAGE_WARNING)
-                return
-            end
-            if not num_power_of_two(healthTexture.label.right.height) then
-                dev_mode_log_to_console("Texture '" .. healthTexture.label.right.name .. "' has an inproper height of " .. tostring(healthTexture.label.right.height) .. " (Must be a power of 2)", CONSOLE_MESSAGE_WARNING)
-                return
-            end
-        end
-        for i = 1, 8 do
-            if healthTexture.pie[i] ~= nil then
-                if not num_power_of_two(healthTexture.pie[i].width) then
-                    dev_mode_log_to_console("Texture '" .. healthTexture.pie[i].name .. "' has an inproper width of " .. tostring(healthTexture.pie[i].width) .. " (Must be a power of 2)", CONSOLE_MESSAGE_WARNING)
-                    return
-                end
-                if not num_power_of_two(healthTexture.pie[i].height) then
-                    dev_mode_log_to_console("Texture '" .. healthTexture.pie[i].name .. "' has an inproper height of " .. tostring(healthTexture.pie[i].height) .. " (Must be a power of 2)", CONSOLE_MESSAGE_WARNING)
-                    return
-                end
-            end
-        end
-    end
-
     characterTable[charNum][charAlt].healthTexture = type(healthTexture) == TYPE_TABLE and healthTexture or nil
 end
 
@@ -959,7 +922,7 @@ end
 
 ---@description A function that adds an instrument track to a specific character
 ---@added 1.16
----@note Original Song is `G# Major Key`, `82` BPM, `93.659` Seconds Long, and is set to a sample rate of `22050`. If these requirements are not met then the song will not properly play, or incorrectly fit with the base theme.
+---@note Original Song is `.ogg` File Format, `Mono` Channel, `G# Major Key`, `82` BPM, `93.659` Seconds Long, and is set to a sample rate of `22050`. If these requirements are not met then the song will not properly play, or incorrectly fit with the base theme.
 local function character_add_menu_instrumental(charNum, loadedAudio)
     audio_stream_set_looping(loadedAudio, true)
     audio_stream_set_loop_points(loadedAudio, 0, 93.659*22050)
@@ -970,7 +933,7 @@ end
 ---@added 1.16
 ---@param charNum integer
 ---@param texture TextureInfo
-local function character_add_grafitti(charNum, texture)
+local function character_add_graffiti(charNum, texture)
     characterGraffiti[charNum] = texture
 end
 
@@ -1015,7 +978,7 @@ _G.charSelect = {
     character_get_moveset = character_get_moveset,
     character_is_vanilla = character_is_vanilla, -- Function located in main.lua
     character_add_menu_instrumental = character_add_menu_instrumental,
-    character_add_grafitti = character_add_grafitti,
+    character_add_graffiti = character_add_graffiti,
 
     -- Hud Element Functions --
     hud_hide_element = hud_hide_element, -- Function located in n-hud.lua
