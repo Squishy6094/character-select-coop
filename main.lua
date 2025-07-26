@@ -218,7 +218,6 @@ end
 characterCategories = {
     "All",
     "CoopDX",
-    "Locked",
 }
 
 local characterTableRender = {}
