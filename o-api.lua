@@ -603,6 +603,7 @@ end
 ---@param charNum integer? The number of the Character you want to set the category for
 ---@param category string The Category Name (Will create a new category if category does not exist)
 local function character_set_category(charNum, category)
+    if category == nil then return end
     category = string_underscore_to_space(category)
     local foundCategory = false
     for i = 1, #characterCategories do

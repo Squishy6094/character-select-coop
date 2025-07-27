@@ -1407,112 +1407,6 @@ local function on_hud_render()
         end
         ]]
 
-        --Character Buttons
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(0, 50, 2, height - 50)
-        djui_hud_render_rect(x - 2, 50, 2, height - 50)
-        djui_hud_render_rect(0, height - 2, x, 2)
-        
-        local leftRightAnim = 0
-        if optionTable[optionTableRef.anims].toggle > 0 then
-            buttonAnimTimer = buttonAnimTimer + 1
-            leftRightAnim = buttonAltAnim/inputStallToDirectional
-            if buttonAltAnim ~= 0 then
-                if buttonAltAnim > 0 then
-                    buttonAltAnim = buttonAltAnim - 3
-                else
-                    buttonAltAnim = buttonAltAnim + 3
-                end
-            end
-        end
-        if optionTable[optionTableRef.anims].toggle == 0 then
-            buttonScroll = 0
-        elseif math_abs(buttonScroll) > 0.1 then
-            buttonScroll = buttonScroll * 0.05 * inputStallToDirectional
-        end
-
-        local buttonColor = {}
-        local buttonX = 20 * widthScale
-        local buttonAnimX = buttonX + math_sin(buttonAnimTimer * 0.05) * 2.5 + 5
-        local charNum = -1
-        for i = -1, 4 do
-            -- Hide Locked Characters based on Toggle
-            charNum = currCharRender + i
-            local char = characterTableRender[charNum]
-            if char ~= nil then
-                if not char.locked then
-                    buttonColor = char[char.currAlt].color
-                else
-                    buttonColor = {r = char[char.currAlt].color.r*0.5, g = char[char.currAlt].color.g*0.5, b = char[char.currAlt].color.b*0.5}
-                end
-                djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
-                local x = buttonX
-                local y = 104 + buttonScroll
-                if i == 0 then
-                    if optionTable[optionTableRef.anims].toggle > 0 then
-                        x = buttonAnimX
-                    else
-                        x = buttonX + 5
-                    end
-                    if #char > 1 then
-                        djui_hud_set_rotation(0x4000, 0, 0)
-                        djui_hud_render_triangle(x - 6 + math_min(leftRightAnim, 0), y, 8, 4)
-                        djui_hud_set_rotation(-0x4000, 0, 0)
-                        djui_hud_render_triangle(x + 76 + math_max(leftRightAnim, 0), y - 8 - 1*MATH_DIVIDE_16, 8, 4)
-                        djui_hud_set_rotation(0, 0, 0)
-                    end
-                end
-                local y = (i + 3) * 30 + buttonScroll
-                djui_hud_render_rect(x, y, 1, 20)
-                djui_hud_render_rect(x, y, 70, 1)
-                djui_hud_render_rect(x + 69, y, 1, 20)
-                djui_hud_render_rect(x, y + 19, 70, 1)
-                djui_hud_set_color(buttonColor.r * 0.1, buttonColor.g * 0.1, buttonColor.b * 0.1, menuOpacity)
-                djui_hud_render_rect(x + 1, y + 1, 68, 18)
-                djui_hud_set_font(FONT_TINY)
-                djui_hud_set_color(buttonColor.r, buttonColor.g, buttonColor.b, 255)
-                local charName = char[char.currAlt].name
-                if char.locked then
-                    charName = TEXT_CHAR_LOCKED
-                end
-                djui_hud_set_color(buttonColor.r * 0.5 + 127, buttonColor.g * 0.5 + 127, buttonColor.b * 0.5 + 127, 255)
-                djui_hud_print_text(charName, x + 5, y + 5, 0.6)
-            end
-        end
-
-        -- Scroll Bar
-        local MATH_DIVIDE_CHARACTERS = 1/#characterTableRender
-        local MATH_7_WIDTHSCALE = 7 * widthScale
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(MATH_7_WIDTHSCALE, 55, 1, 170)
-        djui_hud_render_rect(MATH_7_WIDTHSCALE, 55, 7, 1)
-        djui_hud_render_rect(MATH_7_WIDTHSCALE + 6, 55, 1, 170)
-        djui_hud_render_rect(MATH_7_WIDTHSCALE, 224, 7, 1)
-        djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-        djui_hud_render_rect(MATH_7_WIDTHSCALE + 2, 57 + 166 * ((currCharRender - 1) * MATH_DIVIDE_CHARACTERS) - (buttonScroll * MATH_DIVIDE_30) * (166 * MATH_DIVIDE_CHARACTERS), 3, 166 * MATH_DIVIDE_CHARACTERS)
-        djui_hud_set_font(FONT_TINY)
-        local TEXT_CHAR_COUNT = currCharRender .. "/" .. #characterTableRender
-        djui_hud_print_text(TEXT_CHAR_COUNT, (11 - djui_hud_measure_text(TEXT_CHAR_COUNT) * 0.2) * widthScale, height - 12, 0.4)
-        djui_hud_print_text("- "..characterCategories[currCategory] .. " (L/R)", (11 + djui_hud_measure_text(TEXT_CHAR_COUNT) * 0.2) * widthScale, height - 12, 0.4)
-
-        --[[
-        --Character Select Header
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(0, 0, width, 2)
-        djui_hud_render_rect(0, 0, 2, 50)
-        djui_hud_render_rect(0, 48, width, 2)
-        djui_hud_render_rect(width - 2, 0, 2, 50)
-        djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-        if TEX_OVERRIDE_HEADER ~= nil then -- Render Override Header
-            djui_hud_render_texture(TEX_OVERRIDE_HEADER, widthHalf - 128, 10, 1 / (TEX_OVERRIDE_HEADER.height*MATH_DIVIDE_32), 1 / (TEX_OVERRIDE_HEADER.height*MATH_DIVIDE_32))
-        else
-            djui_hud_render_texture(TEX_HEADER, widthHalf - 128, 10, 1, 1)
-        end
-        djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-        djui_hud_set_font(FONT_TINY)
-        djui_hud_print_text(optionTable[optionTableRef.debugInfo].toggle == 0 and TEXT_VERSION or MOD_VERSION_DEBUG, 5, 3, 0.5)
-        ]]
-
         --Unsupported Res Warning
         if width < 319 or width > 575 then
             djui_hud_print_text(TEXT_RATIO_UNSUPPORTED, 5, 39, 0.5)
@@ -1990,12 +1884,13 @@ local function before_mario_update(m)
 
     local cameraToObject = m.marioObj.header.gfx.cameraToObject
     if menuAndTransition and not options then
-        -- Grid View Toggle
-        if (controller.buttonPressed & X_BUTTON) ~= 0 and inputStallTimerDirectional == 0 then
-            inputStallTimerDirectional = inputStallToDirectional
-            gridMenu = not gridMenu
-            play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
-        end
+        run_func_with_condition_and_cooldown(FUNC_INDEX_GRID,
+            (controller.buttonPressed & X_BUTTON) ~= 0,
+            function ()
+                gridMenu = not gridMenu
+                play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
+            end
+        )
         if menu then
             -- Category Switching
             run_func_with_condition_and_cooldown(FUNC_INDEX_CATEGORY,
@@ -2054,18 +1949,6 @@ local function before_mario_update(m)
                     )
                 end
 
-                run_func_with_condition_and_cooldown(FUNC_INDEX_PREFERENCE,
-                    (controller.buttonPressed & A_BUTTON) ~= 0,
-                    function ()
-                        if characterTable[currChar] ~= nil then
-                            mod_storage_save_pref_char(characterTable[currChar])
-                            play_sound(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject)
-                        else
-                            play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
-                        end
-                    end
-                )
-
                 run_func_with_condition_and_cooldown(FUNC_INDEX_PALETTE,
                     (controller.buttonPressed & Y_BUTTON) ~= 0,
                     function ()
@@ -2079,92 +1962,66 @@ local function before_mario_update(m)
                         if #currPaletteTable < currPaletteTable.currPalette then currPaletteTable.currPalette = 0 end
                     end
                 )
-
-                run_func_with_condition_and_cooldown(FUNC_INDEX_MISC,
-                    (controller.buttonPressed & B_BUTTON) ~= 0,
-                    function ()
-                        menu = false
-                    end
-                )
-
-                run_func_with_condition_and_cooldown(FUNC_INDEX_MISC,
-                    (controller.buttonPressed & START_BUTTON) ~= 0,
-                    function ()
-                        options = true
-                    end
-                )
             else
-                if inputStallTimerDirectional == 0 and not charBeingSet then
-                    if optionTable[optionTableRef.localModels].toggle ~= 0 then    
-                        if (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -45 then
-                            currCharRender = currCharRender - 1
-                            inputStallTimerDirectional = inputStallToDirectional
-                            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                            if currCharRender < 1 then currCharRender = #characterTableRender end
-                            currChar = characterTableRender[currCharRender].ogNum
-                            if characterColorPresets[characterTable[currChar]] ~= nil then
-                                characterColorPresets[characterTable[currChar]].currPalette = 0
-                            end
-                            prevMouseScroll = mouseScroll
-                        end
-                        if (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 45 then
-                            currCharRender = currCharRender + 1
-                            inputStallTimerDirectional = inputStallToDirectional
-                            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                            if currCharRender > #characterTableRender then currCharRender = 1 end
-                            currChar = characterTableRender[currCharRender].ogNum
-                            if characterColorPresets[characterTable[currChar]] ~= nil then
-                                characterColorPresets[characterTable[currChar]].currPalette = 0
-                            end
-                            prevMouseScroll = mouseScroll
-                        end
-                        if (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 45 or prevMouseScroll > mouseScroll then
-                            currCharRender = currCharRender - gridButtonsPerRow
-                            inputStallTimerDirectional = inputStallToDirectional
-                            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                            if currCharRender < 1 then currCharRender = #characterTableRender end
-                            currChar = characterTableRender[currCharRender].ogNum
-                            if characterColorPresets[characterTable[currChar]] ~= nil then
-                                characterColorPresets[characterTable[currChar]].currPalette = 0
-                            end
-                            prevMouseScroll = mouseScroll
-                        end
-                        if (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -45 or prevMouseScroll < mouseScroll then
-                            currCharRender = currCharRender + gridButtonsPerRow
-                            inputStallTimerDirectional = inputStallToDirectional
-                            play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                            if currCharRender > #characterTableRender then currCharRender = 1 end
-                            currChar = characterTableRender[currCharRender].ogNum
-                            if characterColorPresets[characterTable[currChar]] ~= nil then
-                                characterColorPresets[characterTable[currChar]].currPalette = 0
-                            end
-                            prevMouseScroll = mouseScroll
-                        end
+                -- Grid Controls
+                run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
+                    (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -45 or prevMouseScroll < mouseScroll,
+                    function ()
+                        currCharRender = currCharRender + 5
+                        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                    end
+                )
 
-                        -- Tab Switcher
-                        if (controller.buttonPressed & L_TRIG) ~= 0 then
-                            local renderEmpty = true
-                            while renderEmpty do
-                                currCategory = currCategory - 1
-                                if currCategory < 1 then currCategory = #characterCategories end
-                                renderEmpty = not update_character_render_table()
-                            end
-                            inputStallTimerDirectional = inputStallToDirectional
-                            play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
-                        end
-                        if (controller.buttonPressed & R_TRIG) ~= 0 then
-                            local renderEmpty = true
-                            while renderEmpty do
-                                currCategory = currCategory + 1
-                                if currCategory > #characterCategories then currCategory = 1 end
-                                renderEmpty = not update_character_render_table()
-                            end
-                            inputStallTimerDirectional = inputStallToDirectional
-                            play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
-                        end
+                run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
+                    (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 45 or prevMouseScroll > mouseScroll,
+                    function ()
+                        currCharRender = currCharRender - 5
+                        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                    end
+                )
+
+                run_func_with_condition_and_cooldown(FUNC_INDEX_HOROZONTAL,
+                    (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60,
+                    function ()
+                        currCharRender = currCharRender + 1
+                        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                    end
+                )
+
+                run_func_with_condition_and_cooldown(FUNC_INDEX_HOROZONTAL,
+                    (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60,
+                    function ()
+                        currCharRender = currCharRender - 1
+                        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                    end
+                )
+            end
+
+            run_func_with_condition_and_cooldown(FUNC_INDEX_PREFERENCE,
+                (controller.buttonPressed & A_BUTTON) ~= 0,
+                function ()
+                    if characterTable[currChar] ~= nil then
+                        mod_storage_save_pref_char(characterTable[currChar])
+                        play_sound(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject)
+                    else
+                        play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
                     end
                 end
-            end
+            )
+
+            run_func_with_condition_and_cooldown(FUNC_INDEX_MISC,
+                (controller.buttonPressed & B_BUTTON) ~= 0,
+                function ()
+                    menu = false
+                end
+            )
+
+            run_func_with_condition_and_cooldown(FUNC_INDEX_MISC,
+                (controller.buttonPressed & START_BUTTON) ~= 0,
+                function ()
+                    options = true
+                end
+            )
         end
 
         -- Handles Camera Posistioning
