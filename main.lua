@@ -2096,11 +2096,12 @@ local function before_mario_update(m)
     end
 
     -- Checks
-    if currCharRender > #characterTableRender then currCharRender = currCharRender - #characterTableRender end
-    if currCharRender < 1 then currCharRender = currCharRender + #characterTableRender end
-    if character.currAlt > #character then character.currAlt = character.currAlt - #character end
-    if character.currAlt < 1 then character.currAlt = character.currAlt + #character end
+    currCharRender = num_wrap(currCharRender, 1, #characterTableRender)
     currChar = characterTableRender[currCharRender].ogNum
+    
+    character.currAlt = num_wrap(character.currAlt, 1, #character)
+    currCategory = num_wrap(currCategory, 1, #characterCategories)
+    update_character_render_table()
 end
 
 hook_event(HOOK_BEFORE_MARIO_UPDATE, before_mario_update)

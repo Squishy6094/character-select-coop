@@ -214,6 +214,12 @@ function lerp(a, b, t)
     return a * (1 - t) + b * t
 end
 
+function num_wrap(num, min, max)
+    if num > max then num = num - max end
+    if num < min then num = num + max end
+    return num
+end
+
 allowMenu = {}
 
 hookTableRenderInMenu = {
