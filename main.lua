@@ -284,7 +284,13 @@ characterAnims = {
 characterMovesets = {[1] = {}}
 characterUnlock = {}
 characterInstrumentals = {}
-characterGraffiti = {}
+characterGraffiti = {
+    [CT_MARIO] = get_texture_info("char-select-graffiti-mario"),
+    [CT_LUIGI] = get_texture_info("char-select-graffiti-luigi"),
+    [CT_TOAD] = get_texture_info("char-select-graffiti-toad"),
+    [CT_WALUIGI] = get_texture_info("char-select-graffiti-waluigi"),
+    [CT_WARIO] = get_texture_info("char-select-graffiti-wario"),
+}
 
 tableRefNum = 0
 local function make_table_ref_num()
