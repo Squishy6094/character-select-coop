@@ -222,7 +222,12 @@ characterCategories = {
 
 local characterTableRender = {}
 
+local prevCategory = 0
+local gridYOffset = 0
 local function update_character_render_table()
+    if prevCategory == currCategory then return end
+    prevCategory = currCategory
+    gridYOffset = -100
     local ogNum = currChar
     --currChar = 1
     currCharRender = 1
@@ -235,6 +240,7 @@ local function update_character_render_table()
             for c = 1, #charCategories do
                 if category == charCategories[c] then
                     table_insert(characterTableRender, characterTable[i])
+                    characterTableRender[#characterTableRender].UIOffset = 0
                     if ogNum == i then
                         currChar = ogNum
                         currCharRender = #characterTableRender
@@ -1166,7 +1172,6 @@ end
 local buttonAltAnim = 0
 local menuOpacity = 245
 local gridButtonsPerRow = 5
-local gridYOffset = 0
 local menuText = {}
 local function on_hud_render()
     local FONT_USER = djui_menu_get_font()
@@ -1455,7 +1460,7 @@ local function on_hud_render()
         if not gridMenu then
             -- Render Character List
             local currRow = (currCharRender - 1)
-            gridYOffset = lerp(gridYOffset, currRow*35, 0.1)
+            gridYOffset = lerp(gridYOffset, currRow*31, 0.1)
             for i = 1, #characterTableRender do
                 local row = (i - 1)
                 local charName = characterTableRender[i][characterTableRender[i].currAlt].name
@@ -1466,19 +1471,22 @@ local function on_hud_render()
                 else
                     djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
                 end
-                local x = 10 - math.abs(row - gridYOffset/35)^2*3
-                local y = height*0.5 - 35*0.5 + row*35 - gridYOffset
+                local x = 10 - math.abs(row - gridYOffset/35)^2.5*2 + math.sin((get_global_timer() + i*10)*0.1) + characterTableRender[i].UIOffset
+                local y = height*0.5 - 31*0.5 + row*31 - gridYOffset + math.cos((get_global_timer() + i*10)*0.1)
                 djui_hud_render_texture(TEX_BUTTON_BIG, x, y, 1, 1)
                 x = x + 8
-                y = y + 8
-                djui_hud_set_font(FONT_NORMAL)
+                y = y + 10
+                djui_hud_set_font(FONT_RECOLOR_HUD)
                 djui_hud_set_color(0, 0, 0, 255)
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*0.25 - 1, y, 0.5)
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*0.25, y - 1, 0.5)
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*0.25 + 1, y, 0.5)
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*0.25, y + 1, 0.5)
+                local textScale = 0.7
+                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 - 1, y, textScale)
+                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y - 1, textScale)
+                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 + 1, y, textScale)
+                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y + 1, textScale)
                 djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*0.25, y, 0.5)
+                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y, textScale)
+
+                characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and 15 or 0, 0.1)
             end
         else
             -- Render Character Grid
@@ -1495,8 +1503,8 @@ local function on_hud_render()
                 else
                     djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
                 end
-                local x = width*0.3 - gridButtonsPerRow*35*0.5 + 35*column - math.abs(row - gridYOffset/35)^2*3
-                local y = height*0.5 - 35*0.5 + row*35 - gridYOffset
+                local x = width*0.3 - gridButtonsPerRow*35*0.5 + 35*column - math.abs(row - gridYOffset/35)^2*3 + math.sin((get_global_timer() + i*10)*0.1)
+                local y = height*0.5 - 35*0.5 + row*35 - gridYOffset + math.cos((get_global_timer() + i*10)*0.1) + characterTableRender[i].UIOffset
                 djui_hud_render_texture(TEX_BUTTON_SMALL, x, y, 1, 1)
                 x = x + 8
                 y = y + 8
@@ -1508,6 +1516,8 @@ local function on_hud_render()
                 else
                     djui_hud_render_texture(charIcon, x, y, 1 / (charIcon.width * MATH_DIVIDE_16), 1 / (charIcon.height * MATH_DIVIDE_16))
                 end
+
+                characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and -5 or 0, 0.1)
             end
         end
 
@@ -1954,20 +1964,6 @@ local function before_mario_update(m)
                         end
                     )
                 end
-
-                run_func_with_condition_and_cooldown(FUNC_INDEX_PALETTE,
-                    (controller.buttonPressed & Y_BUTTON) ~= 0,
-                    function ()
-                        local currPaletteTable = characterColorPresets[gCSPlayers[0].modelId] and characterColorPresets[gCSPlayers[0].modelId] or {currPalette = 0}
-                        if currPaletteTable and optionTable[optionTableRef.localModels].toggle > 0 and gGlobalSyncTable.charSelectRestrictPalettes == 0 then
-                            play_sound(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject)
-                            currPaletteTable.currPalette = currPaletteTable.currPalette + 1
-                        else
-                            play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
-                        end
-                        if #currPaletteTable < currPaletteTable.currPalette then currPaletteTable.currPalette = 0 end
-                    end
-                )
             else
                 -- Grid Controls
                 run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
@@ -2012,6 +2008,20 @@ local function before_mario_update(m)
                     else
                         play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
                     end
+                end
+            )
+
+            run_func_with_condition_and_cooldown(FUNC_INDEX_PALETTE,
+                (controller.buttonPressed & Y_BUTTON) ~= 0,
+                function ()
+                    local currPaletteTable = characterColorPresets[gCSPlayers[0].modelId] and characterColorPresets[gCSPlayers[0].modelId] or {currPalette = 0}
+                    if currPaletteTable and optionTable[optionTableRef.localModels].toggle > 0 and gGlobalSyncTable.charSelectRestrictPalettes == 0 then
+                        play_sound(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject)
+                        currPaletteTable.currPalette = currPaletteTable.currPalette + 1
+                    else
+                        play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
+                    end
+                    currPaletteTable.currPalette = num_wrap(currPaletteTable.currPalette, 0, #currPaletteTable)
                 end
             )
 
