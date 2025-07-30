@@ -1474,15 +1474,15 @@ local function on_hud_render()
                 local x = 10 - math.abs(row - gridYOffset/35)^2.5*2 + math.sin((get_global_timer() + i*10)*0.1) + characterTableRender[i].UIOffset
                 local y = height*0.5 - 31*0.5 + row*31 - gridYOffset + math.cos((get_global_timer() + i*10)*0.1)
                 djui_hud_render_texture(TEX_BUTTON_BIG, x, y, 1, 1)
+                local textScale = math.min(75/djui_hud_measure_text(charName), 0.7)
                 x = x + 8
-                y = y + 10
+                y = y + 8 + 2/textScale
                 djui_hud_set_font(FONT_RECOLOR_HUD)
                 djui_hud_set_color(0, 0, 0, 255)
-                local textScale = 0.7
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 - 1, y, textScale)
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y - 1, textScale)
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 + 1, y, textScale)
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y + 1, textScale)
+                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 - textScale*2, y, textScale)
+                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y - textScale*2, textScale)
+                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 + textScale*2, y, textScale)
+                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y + textScale*2, textScale)
                 djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
                 djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y, textScale)
 
