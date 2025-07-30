@@ -745,7 +745,9 @@ local function mario_update(m)
 
     if m.playerIndex == 0 and stallFrame > 1 then
         if djui_hud_is_pause_menu_created() and prevBaseCharFrame ~= np.modelIndex then
+            currCategory = 1
             currChar = np.modelIndex
+            currCharRender = np.modelIndex + 1
             p.presetPalette = 0
         end
         prevBaseCharFrame = np.modelIndex
@@ -782,6 +784,7 @@ local function mario_update(m)
             play_secondary_music(0, 0, 0, 50)
             camera_freeze()
             hud_hide()
+            set_override_fov(45)
             if m.area.camera.cutscene == 0 then
                 m.area.camera.cutscene = CUTSCENE_CS_MENU
             end
@@ -824,6 +827,7 @@ local function mario_update(m)
                 stop_secondary_music(50)
                 camera_unfreeze()
                 hud_show()
+                set_override_fov(0)
                 if m.area.camera.cutscene == CUTSCENE_CS_MENU then
                     m.area.camera.cutscene = CUTSCENE_STOP
                 end
@@ -1479,10 +1483,10 @@ local function on_hud_render()
                 y = y + 8 + 2/textScale
                 djui_hud_set_font(FONT_RECOLOR_HUD)
                 djui_hud_set_color(0, 0, 0, 255)
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 - textScale*2, y, textScale)
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y - textScale*2, textScale)
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 + textScale*2, y, textScale)
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y + textScale*2, textScale)
+                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 - textScale*1.5, y, textScale)
+                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y - textScale*1.5, textScale)
+                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 + textScale*1.5, y, textScale)
+                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y + textScale*1.5, textScale)
                 djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
                 djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y, textScale)
 
