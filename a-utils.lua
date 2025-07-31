@@ -215,8 +215,8 @@ function lerp(a, b, t)
 end
 
 function num_wrap(num, min, max)
-    if num > max then num = num - max end
-    if num < min then num = num + max end
+    if num > max then num = min end
+    if num < min then num = max end
     return num
 end
 
