@@ -423,7 +423,7 @@ function health_meter_from_local_index(localIndex)
     local p = gCSPlayers[localIndex]
     for i = 0, #characterTable do
         local char = characterTable[i]
-        local healthTexture = char[(p.currAlt and p.currAlt or 1)].healthTexture
+        local healthTexture = char[p.currAlt].healthTexture or char[1].healthTexture
         if char.saveName == p.saveName and healthTexture ~= nil then
             if not healthTexture.label then
                 healthTexture.label = defaultMeterInfo.label
