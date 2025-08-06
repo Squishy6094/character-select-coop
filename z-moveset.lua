@@ -136,12 +136,12 @@ local function on_set_mario_action(m)
 end
 hook_event(HOOK_ON_SET_MARIO_ACTION, on_set_mario_action)
 
-local function before_set_mario_action(m, nextAct)
+local function before_set_mario_action(m, nextAct, actionArg)
     if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
     local hook = HOOK_BEFORE_SET_MARIO_ACTION
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    local returnVar = currMoveset[hook](m, nextAct)
+    local returnVar = currMoveset[hook](m, nextAct, actionArg)
     if returnVar ~= nil then
         return returnVar
     end
