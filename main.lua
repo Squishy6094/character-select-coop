@@ -222,6 +222,198 @@ characterCategories = {
 
 local characterTableRender = {}
 
+characterCaps = {}
+characterCelebrationStar = {}
+characterColorPresets = {}
+characterAnims = {
+    [E_MODEL_MARIO] = {
+        [CS_ANIM_MENU] = MARIO_ANIM_CS_MENU
+    },
+    [E_MODEL_LUIGI] = {
+        [CS_ANIM_MENU] = LUIGI_ANIM_CS_MENU
+    },
+    [E_MODEL_TOAD_PLAYER] = {
+        [CS_ANIM_MENU] = TOAD_PLAYER_ANIM_CS_MENU
+    },
+    [E_MODEL_WALUIGI] = {
+        [CS_ANIM_MENU] = WALUIGI_ANIM_CS_MENU
+    },
+    [E_MODEL_WARIO] = {
+        [CS_ANIM_MENU] = WARIO_ANIM_CS_MENU
+    },
+}
+characterMovesets = {[1] = {}}
+characterUnlock = {}
+characterInstrumentals = {}
+characterGraffiti = {
+    [CT_MARIO] = get_texture_info("char-select-graffiti-mario"),
+    [CT_LUIGI] = get_texture_info("char-select-graffiti-luigi"),
+    [CT_TOAD] = get_texture_info("char-select-graffiti-toad"),
+    [CT_WALUIGI] = get_texture_info("char-select-graffiti-waluigi"),
+    [CT_WARIO] = get_texture_info("char-select-graffiti-wario"),
+}
+
+tableRefNum = 0
+local function make_table_ref_num()
+    tableRefNum = tableRefNum + 1
+    return tableRefNum
+end
+
+OPTION_MENU = "Menu"
+OPTION_CHAR = "Character"
+OPTION_MISC = "Misc"
+OPTION_MOD = "Moderation"
+OPTION_API = "Packs / Mods"
+
+optionTableRef = {
+    -- Menu
+    openInputs = make_table_ref_num(),
+    notification = make_table_ref_num(),
+    menuColor = make_table_ref_num(),
+    anims = make_table_ref_num(),
+    inputLatency = make_table_ref_num(),
+    -- Characters
+    localMoveset = make_table_ref_num(),
+    localModels = make_table_ref_num(),
+    localVoices = make_table_ref_num(),
+    -- CS
+    credits = make_table_ref_num(),
+    debugInfo = make_table_ref_num(),
+    resetSaveData = make_table_ref_num(),
+    -- Moderation
+    --restrictPalettes = make_table_ref_num(),
+    restrictMovesets = make_table_ref_num(),
+}
+
+optionTable = {
+    [optionTableRef.openInputs] = {
+        name = "Menu Bind",
+        category = OPTION_MENU,
+        toggle = tonumber(mod_storage_load("MenuInput")),
+        toggleSaveName = "MenuInput",
+        toggleDefault = 1,
+        toggleMax = 2,
+        toggleNames = {"None", "Z (Pause Menu)", ommActive and "D-pad Down + R" or "D-pad Down"},
+        description = {"Sets a Bind to Open the Menu", "rather than using the command."}
+    },
+    [optionTableRef.notification] = {
+        name = "Notifications",
+        category = OPTION_MENU,
+        toggle = tonumber(mod_storage_load("notifs")),
+        toggleSaveName = "notifs",
+        toggleDefault = 1,
+        toggleMax = 2,
+        toggleNames = {"Off", "On", "Pop-ups Only"},
+        description = {"Toggles whether Pop-ups and", "Chat Messages display"}
+    },
+    [optionTableRef.menuColor] = {
+        name = "Menu Color",
+        category = OPTION_MENU,
+        toggle = tonumber(mod_storage_load("MenuColor")),
+        toggleSaveName = "MenuColor",
+        toggleDefault = 0,
+        toggleMax = 10,
+        toggleNames = {"Auto", "Saved", "Red", "Orange", "Yellow", "Green", "Blue", "Pink", "Purple", "White", "Black"},
+        description = {"Toggles the Menu Color"}
+    },
+    [optionTableRef.anims] = {
+        name = "Menu Anims",
+        category = OPTION_MENU,
+        toggle = tonumber(mod_storage_load("Anims")),
+        toggleSaveName = "Anims",
+        toggleDefault = 1,
+        toggleMax = 1,
+        toggleNames = {"Off", "On"},
+        description = {"Toggles Animations In-Menu,", "Turning these off may", "Save Performance"}
+    },
+    [optionTableRef.inputLatency] = {
+        name = "Scroll Speed",
+        category = OPTION_MENU,
+        toggle = tonumber(mod_storage_load("Latency")),
+        toggleSaveName = "Latency",
+        toggleDefault = 1,
+        toggleMax = 2,
+        toggleNames = {"Slow", "Normal", "Fast"},
+        description = {"Sets how fast you scroll", "throughout the Menu"}
+    },
+    [optionTableRef.localMoveset] = {
+        name = "Character Moveset",
+        category = OPTION_CHAR,
+        toggle = tonumber(mod_storage_load("localMoveset")),
+        toggleSaveName = "localMoveset",
+        toggleDefault = 1,
+        toggleMax = 1,
+        description = {"Toggles if Custom Movesets", "are active on compatible", "characters"},
+        lock = function ()
+            if gGlobalSyncTable.charSelectRestrictMovesets ~= 0 then
+                return "Forced Off"
+            end
+        end,
+    },
+    [optionTableRef.localModels] = {
+        name = "Character Models",
+        category = OPTION_CHAR,
+        toggle = tonumber(mod_storage_load("localModels")),
+        toggleSaveName = "localModels",
+        toggleDefault = 1,
+        toggleMax = 1,
+        description = {"Toggles if Custom Models display", "on your client, practically", "disables Character Select if", "Toggled Off"}
+    },
+    [optionTableRef.localVoices] = {
+        name = "Character Voices",
+        category = OPTION_CHAR,
+        toggle = tonumber(mod_storage_load("localVoices")),
+        toggleSaveName = "localVoices",
+        toggleDefault = 1,
+        toggleMax = 1,
+        description = {"Toggle if Custom Voicelines play", "for Characters who support it"}
+    },
+    [optionTableRef.credits] = {
+        name = "Credits",
+        category = OPTION_MISC,
+        toggle = 0,
+        toggleDefault = 0,
+        toggleMax = 1,
+        toggleNames = {"", ""},
+        description = {"Thank you for choosing", "Character Select!"}
+    },
+    [optionTableRef.debugInfo] = {
+        name = "Developer Mode",
+        category = OPTION_MISC,
+        toggle = tonumber(mod_storage_load("debuginfo")),
+        toggleSaveName = "debuginfo",
+        toggleDefault = 0,
+        toggleMax = 1,
+        description = {"Replaces the Character", "Description with Character", "Debugging Information,", "And shows hidden console logs."}
+    },
+    [optionTableRef.resetSaveData] = {
+        name = "Reset Save Data",
+        category = OPTION_MISC,
+        toggle = 0,
+        toggleDefault = 0,
+        toggleMax = 1,
+        toggleNames = {"", ""},
+        description = {"Resets Character Select's", "Save Data"}
+    },
+    [optionTableRef.restrictMovesets] = {
+        name = "Restrict Movesets",
+        category = OPTION_MOD,
+        toggle = 0,
+        toggleDefault = 1,
+        toggleMax = 1,
+        description = {"Restricts turning on", "movesets", "(Host Only)"},
+        lock = function ()
+            if gGlobalSyncTable.charSelectRestrictMovesets < 2 then
+                if not network_is_server() then
+                    return "Host Only"
+                end
+            else
+                return "API Only"
+            end
+        end,
+    },
+}
+
 local prevCategory = 0
 local gridYOffset = 0
 local function update_character_render_table()
@@ -266,180 +458,6 @@ function force_set_character(charNum, charAlt)
     charBeingSet = true
     update_character_render_table()
 end
-
-characterCaps = {}
-characterCelebrationStar = {}
-characterColorPresets = {}
-characterAnims = {
-    [E_MODEL_MARIO] = {
-        [CS_ANIM_MENU] = MARIO_ANIM_CS_MENU
-    },
-    [E_MODEL_LUIGI] = {
-        [CS_ANIM_MENU] = LUIGI_ANIM_CS_MENU
-    },
-    [E_MODEL_TOAD_PLAYER] = {
-        [CS_ANIM_MENU] = TOAD_PLAYER_ANIM_CS_MENU
-    },
-    [E_MODEL_WALUIGI] = {
-        [CS_ANIM_MENU] = WALUIGI_ANIM_CS_MENU
-    },
-    [E_MODEL_WARIO] = {
-        [CS_ANIM_MENU] = WARIO_ANIM_CS_MENU
-    },
-}
-characterMovesets = {[1] = {}}
-characterUnlock = {}
-characterInstrumentals = {}
-characterGraffiti = {
-    [CT_MARIO] = get_texture_info("char-select-graffiti-mario"),
-    [CT_LUIGI] = get_texture_info("char-select-graffiti-luigi"),
-    [CT_TOAD] = get_texture_info("char-select-graffiti-toad"),
-    [CT_WALUIGI] = get_texture_info("char-select-graffiti-waluigi"),
-    [CT_WARIO] = get_texture_info("char-select-graffiti-wario"),
-}
-
-tableRefNum = 0
-local function make_table_ref_num()
-    tableRefNum = tableRefNum + 1
-    return tableRefNum
-end
-
-optionTableRef = {
-    -- Menu
-    openInputs = make_table_ref_num(),
-    notification = make_table_ref_num(),
-    menuColor = make_table_ref_num(),
-    anims = make_table_ref_num(),
-    inputLatency = make_table_ref_num(),
-    -- Characters
-    localMoveset = make_table_ref_num(),
-    localModels = make_table_ref_num(),
-    localVoices = make_table_ref_num(),
-    -- CS
-    credits = make_table_ref_num(),
-    debugInfo = make_table_ref_num(),
-    resetSaveData = make_table_ref_num(),
-    -- Moderation
-    --restrictPalettes = make_table_ref_num(),
-    restrictMovesets = make_table_ref_num(),
-}
-
-optionTable = {
-    [optionTableRef.openInputs] = {
-        name = "Menu Bind",
-        toggle = tonumber(mod_storage_load("MenuInput")),
-        toggleSaveName = "MenuInput",
-        toggleDefault = 1,
-        toggleMax = 2,
-        toggleNames = {"None", "Z (Pause Menu)", ommActive and "D-pad Down + R" or "D-pad Down"},
-        description = {"Sets a Bind to Open the Menu", "rather than using the command."}
-    },
-    [optionTableRef.notification] = {
-        name = "Notifications",
-        toggle = tonumber(mod_storage_load("notifs")),
-        toggleSaveName = "notifs",
-        toggleDefault = 1,
-        toggleMax = 2,
-        toggleNames = {"Off", "On", "Pop-ups Only"},
-        description = {"Toggles whether Pop-ups and", "Chat Messages display"}
-    },
-    [optionTableRef.menuColor] = {
-        name = "Menu Color",
-        toggle = tonumber(mod_storage_load("MenuColor")),
-        toggleSaveName = "MenuColor",
-        toggleDefault = 0,
-        toggleMax = 10,
-        toggleNames = {"Auto", "Saved", "Red", "Orange", "Yellow", "Green", "Blue", "Pink", "Purple", "White", "Black"},
-        description = {"Toggles the Menu Color"}
-    },
-    [optionTableRef.anims] = {
-        name = "Menu Anims",
-        toggle = tonumber(mod_storage_load("Anims")),
-        toggleSaveName = "Anims",
-        toggleDefault = 1,
-        toggleMax = 1,
-        toggleNames = {"Off", "On"},
-        description = {"Toggles Animations In-Menu,", "Turning these off may", "Save Performance"}
-    },
-    [optionTableRef.inputLatency] = {
-        name = "Scroll Speed",
-        toggle = tonumber(mod_storage_load("Latency")),
-        toggleSaveName = "Latency",
-        toggleDefault = 1,
-        toggleMax = 2,
-        toggleNames = {"Slow", "Normal", "Fast"},
-        description = {"Sets how fast you scroll", "throughout the Menu"}
-    },
-    [optionTableRef.localMoveset] = {
-        name = "Character Moveset",
-        toggle = tonumber(mod_storage_load("localMoveset")),
-        toggleSaveName = "localMoveset",
-        toggleDefault = 1,
-        toggleMax = 1,
-        description = {"Toggles if Custom Movesets", "are active on compatible", "characters"},
-        lock = function ()
-            if gGlobalSyncTable.charSelectRestrictMovesets ~= 0 then
-                return "Forced Off"
-            end
-        end,
-    },
-    [optionTableRef.localModels] = {
-        name = "Character Models",
-        toggle = tonumber(mod_storage_load("localModels")),
-        toggleSaveName = "localModels",
-        toggleDefault = 1,
-        toggleMax = 1,
-        description = {"Toggles if Custom Models display", "on your client, practically", "disables Character Select if", "Toggled Off"}
-    },
-    [optionTableRef.localVoices] = {
-        name = "Character Voices",
-        toggle = tonumber(mod_storage_load("localVoices")),
-        toggleSaveName = "localVoices",
-        toggleDefault = 1,
-        toggleMax = 1,
-        description = {"Toggle if Custom Voicelines play", "for Characters who support it"}
-    },
-    [optionTableRef.credits] = {
-        name = "Credits",
-        toggle = 0,
-        toggleDefault = 0,
-        toggleMax = 1,
-        toggleNames = {"", ""},
-        description = {"Thank you for choosing", "Character Select!"}
-    },
-    [optionTableRef.debugInfo] = {
-        name = "Developer Mode",
-        toggle = tonumber(mod_storage_load("debuginfo")),
-        toggleSaveName = "debuginfo",
-        toggleDefault = 0,
-        toggleMax = 1,
-        description = {"Replaces the Character", "Description with Character", "Debugging Information,", "And shows hidden console logs."}
-    },
-    [optionTableRef.resetSaveData] = {
-        name = "Reset Save Data",
-        toggle = 0,
-        toggleDefault = 0,
-        toggleMax = 1,
-        toggleNames = {"", ""},
-        description = {"Resets Character Select's", "Save Data"}
-    },
-    [optionTableRef.restrictMovesets] = {
-        name = "Restrict Movesets",
-        toggle = 0,
-        toggleDefault = 1,
-        toggleMax = 1,
-        description = {"Restricts turning on", "movesets", "(Host Only)"},
-        lock = function ()
-            if gGlobalSyncTable.charSelectRestrictMovesets < 2 then
-                if not network_is_server() then
-                    return "Host Only"
-                end
-            else
-                return "API Only"
-            end
-        end,
-    },
-}
 
 ---@description A function that gets an option's status from the Character Select Options Menu
 ---@param tableNum integer The table position of the option
@@ -1461,67 +1479,104 @@ local function on_hud_render()
         djui_hud_render_texture(graffiti, width*0.35 - graffiti.width*0.5*graffitiWidthScale, height*0.5 - graffiti.height*0.5*graffitiHeightScale, graffitiWidthScale, graffitiHeightScale)
         djui_hud_set_rotation(0, 0, 0)
 
-        if not gridMenu then
-            -- Render Character List
-            local currRow = (currCharRender - 1)
-            gridYOffset = lerp(gridYOffset, currRow*31, 0.1)
-            for i = 1, #characterTableRender do
-                local row = (i - 1)
-                local charName = characterTableRender[i][characterTableRender[i].currAlt].name
-                local charColor = characterTableRender[i][characterTableRender[i].currAlt].color
-                if i == currCharRender then
-                    local blinkAnim = math.abs(math.sin(get_global_timer()*0.1))*0.5
-                    djui_hud_set_color(255 + (charColor.r - 255)*blinkAnim, 255 + (charColor.g - 255)*blinkAnim, 255 + (charColor.b - 255)*blinkAnim, 255)
-                else
-                    djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
-                end
-                local x = 10 - math.abs(row - gridYOffset/35)^2.5*2 + math.sin((get_global_timer() + i*10)*0.1) + characterTableRender[i].UIOffset
-                local y = height*0.5 - 31*0.5 + row*31 - gridYOffset + math.cos((get_global_timer() + i*10)*0.1)
-                djui_hud_render_texture(TEX_BUTTON_BIG, x, y, 1, 1)
-                local textScale = math.min(75/djui_hud_measure_text(charName), 0.7)
-                x = x + 8
-                y = y + 8 + 2/textScale
-                djui_hud_set_font(FONT_RECOLOR_HUD)
-                djui_hud_set_color(0, 0, 0, 255)
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 - textScale*1.5, y, textScale)
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y - textScale*1.5, textScale)
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 + textScale*1.5, y, textScale)
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y + textScale*1.5, textScale)
-                djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
-                djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y, textScale)
+        if not options then
+            if not gridMenu then
+                -- Render Character List
+                local currRow = (currCharRender - 1)
+                gridYOffset = lerp(gridYOffset, currRow*31, 0.1)
+                for i = 1, #characterTableRender do
+                    local row = (i - 1)
+                    local charName = characterTableRender[i][characterTableRender[i].currAlt].name
+                    local charColor = characterTableRender[i][characterTableRender[i].currAlt].color
+                    if i == currCharRender then
+                        local blinkAnim = math.abs(math.sin(get_global_timer()*0.1))*0.5
+                        djui_hud_set_color(255 + (charColor.r - 255)*blinkAnim, 255 + (charColor.g - 255)*blinkAnim, 255 + (charColor.b - 255)*blinkAnim, 255)
+                    else
+                        djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
+                    end
+                    local x = 10 - math.abs(row - gridYOffset/35)^2.5*2 + math.sin((get_global_timer() + i*15)*0.05) + characterTableRender[i].UIOffset
+                    local y = height*0.5 - 31*0.5 + row*31 - gridYOffset + math.cos((get_global_timer() + i*15)*0.05)
+                    djui_hud_render_texture(TEX_BUTTON_BIG, x, y, 1, 1)
+                    local textScale = math.min(75/djui_hud_measure_text(charName), 0.7)
+                    x = x + 8
+                    y = y + 8 + 2/textScale
+                    djui_hud_set_font(FONT_RECOLOR_HUD)
+                    djui_hud_set_color(0, 0, 0, 255)
+                    djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 - textScale*1.5, y, textScale)
+                    djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y - textScale*1.5, textScale)
+                    djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 + textScale*1.5, y, textScale)
+                    djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y + textScale*1.5, textScale)
+                    djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
+                    djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y, textScale)
 
-                characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and 15 or 0, 0.1)
+                    characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and 15 or 0, 0.1)
+                end
+            else
+                -- Render Character Grid
+                local currRow = math.floor((currCharRender - 1)/gridButtonsPerRow)
+                gridYOffset = lerp(gridYOffset, currRow*35, 0.1)
+                for i = 1, #characterTableRender do
+                    local row = math.floor((i - 1)/gridButtonsPerRow)
+                    local column = (i - 1)%gridButtonsPerRow
+                    local charIcon = characterTableRender[i][characterTableRender[i].currAlt].lifeIcon
+                    local charColor = characterTableRender[i][characterTableRender[i].currAlt].color
+                    if i == currCharRender then
+                        local blinkAnim = math.abs(math.sin(get_global_timer()*0.1))*0.5
+                        djui_hud_set_color(255 + (charColor.r - 255)*blinkAnim, 255 + (charColor.g - 255)*blinkAnim, 255 + (charColor.b - 255)*blinkAnim, 255)
+                    else
+                        djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
+                    end
+                    local x = width*0.3 - gridButtonsPerRow*35*0.5 + 35*column - math.abs(row - gridYOffset/35)^2*3 + math.sin((get_global_timer() + i*10)*0.1)
+                    local y = height*0.5 - 35*0.5 + row*35 - gridYOffset + math.cos((get_global_timer() + i*10)*0.1) + characterTableRender[i].UIOffset
+                    djui_hud_render_texture(TEX_BUTTON_SMALL, x, y, 1, 1)
+                    x = x + 8
+                    y = y + 8
+                    djui_hud_set_color(255, 255, 255, 255)
+                    if type(charIcon) == TYPE_STRING then
+                        djui_hud_set_font(FONT_RECOLOR_HUD)
+                        djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
+                        djui_hud_print_text(charIcon, x, y, 1)
+                    else
+                        djui_hud_render_texture(charIcon, x, y, 1 / (charIcon.width * MATH_DIVIDE_16), 1 / (charIcon.height * MATH_DIVIDE_16))
+                    end
+
+                    characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and -5 or 0, 0.1)
+                end
             end
         else
-            -- Render Character Grid
-            local currRow = math.floor((currCharRender - 1)/gridButtonsPerRow)
-            gridYOffset = lerp(gridYOffset, currRow*35, 0.1)
-            for i = 1, #characterTableRender do
-                local row = math.floor((i - 1)/gridButtonsPerRow)
-                local column = (i - 1)%gridButtonsPerRow
-                local charIcon = characterTableRender[i][characterTableRender[i].currAlt].lifeIcon
-                local charColor = characterTableRender[i][characterTableRender[i].currAlt].color
-                if i == currCharRender then
-                    local blinkAnim = math.abs(math.sin(get_global_timer()*0.1))*0.5
-                    djui_hud_set_color(255 + (charColor.r - 255)*blinkAnim, 255 + (charColor.g - 255)*blinkAnim, 255 + (charColor.b - 255)*blinkAnim, 255)
-                else
-                    djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
-                end
-                local x = width*0.3 - gridButtonsPerRow*35*0.5 + 35*column - math.abs(row - gridYOffset/35)^2*3 + math.sin((get_global_timer() + i*10)*0.1)
-                local y = height*0.5 - 35*0.5 + row*35 - gridYOffset + math.cos((get_global_timer() + i*10)*0.1) + characterTableRender[i].UIOffset
-                djui_hud_render_texture(TEX_BUTTON_SMALL, x, y, 1, 1)
-                x = x + 8
-                y = y + 8
-                djui_hud_set_color(255, 255, 255, 255)
-                if type(charIcon) == TYPE_STRING then
-                    djui_hud_set_font(FONT_RECOLOR_HUD)
-                    djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
-                    djui_hud_print_text(charIcon, x, y, 1)
-                else
-                    djui_hud_render_texture(charIcon, x, y, 1 / (charIcon.width * MATH_DIVIDE_16), 1 / (charIcon.height * MATH_DIVIDE_16))
-                end
+            -- Render Options Menu
+            local optionConsoleText = {
+                "______  ___  _  __  ____   ______",
+                "\\   \\ \\/ / \\| |/  \\/ __/  /) () (\\",
+                " | D \\  /| \\\\ | () \\__ \\  \\______/",
+                "/___//_/ |_|\\_|\\__/____/    (__)",
+                "Dynamic Operating System",
+                "(C) Toadstool Technologies 1996",
+                "",
+            }
 
-                characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and -5 or 0, 0.1)
+            local prevCategory = ""
+            for i = 1, #optionTable do
+                if prevCategory ~= optionTable[i].category then
+                    prevCategory = optionTable[i].category
+                    --table_insert(optionConsoleText, "===| " .. optionTable[i].category .. " |===")
+                end
+                local dotString = " "
+                while 32 - #optionTable[i].name > #dotString do
+                    dotString = dotString .. "."
+                end
+                dotString = dotString .. " "
+                table_insert(optionConsoleText, (i == currOption and "-> " or "   ") .. optionTable[i].name .. dotString .. optionTable[i].toggleNames[optionTable[i].toggle + 1])
+            end
+
+            local option = optionTable[currOption]
+            table_insert(optionConsoleText, "")
+            table_insert(optionConsoleText, "> charselect option " .. string_lower(string_space_to_underscore(option.name)) .. " " .. string_lower(string_space_to_underscore(option.toggleNames[(option.toggle + 1)%(option.toggleMax + 1) + 1])))
+
+            djui_hud_set_color(255, 255, 255, 255)
+            djui_hud_set_font(FONT_SPECIAL)
+            for i = 1, #optionConsoleText do
+                djui_hud_print_monospace_text(optionConsoleText[i], 10, 40 + i*6, 0.2, i <= 4 and 11 or 16)
             end
         end
 
@@ -1574,7 +1629,7 @@ local function on_hud_render()
         djui_hud_render_caution_tape(width*0.7 - 2, -10, width*0.7 - 15, height - 35, 1, 0.6) -- Side Tape
         djui_hud_render_caution_tape(-10, height - 50, width + 10, height - 35, 1) -- Bottom Tape
 
-
+--[[
         --Options display
         local optionTableCount = #optionTable
         if options or optionAnimTimer > optionAnimTimerCap then
@@ -1741,6 +1796,7 @@ local function on_hud_render()
         else
             -- How to open options display
         end
+        ]]
 
         -- Anim logic
         if options then
@@ -2055,34 +2111,40 @@ local function before_mario_update(m)
     end
 
     if options and not creditsAndTransition then
-        if inputStallTimerDirectional == 0 then
-            if (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -60 then
+        run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
+            (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -60,
+            function ()
                 currOption = currOption + 1
-                inputStallTimerDirectional = inputStallToDirectional
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
-            if (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 60 then
-                currOption = currOption - 1
-                inputStallTimerDirectional = inputStallToDirectional
-                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-            end
-        end
+        )
 
-        if inputStallTimerButton == 0 then
-            if (controller.buttonPressed & A_BUTTON) ~= 0 and not optionTable[currOption].optionBeingSet and (optionTable[currOption].lock == nil or optionTable[currOption].lock() == nil) then
+        run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
+            (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 60,
+            function ()
+                currOption = currOption - 1
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+            end
+        )
+
+        run_func_with_condition_and_cooldown(FUNC_INDEX_MISC,
+            (controller.buttonPressed & A_BUTTON) ~= 0 and not optionTable[currOption].optionBeingSet and (optionTable[currOption].lock == nil or optionTable[currOption].lock() == nil),
+            function ()
                 optionTable[currOption].toggle = optionTable[currOption].toggle + 1
                 if optionTable[currOption].toggle > optionTable[currOption].toggleMax then optionTable[currOption].toggle = 0 end
                 if optionTable[currOption].toggleSaveName ~= nil then
                     mod_storage_save(optionTable[currOption].toggleSaveName, tostring(optionTable[currOption].toggle))
                 end
-                inputStallTimerButton = inputStallToButton
                 play_sound(SOUND_MENU_CHANGE_SELECT, cameraToObject)
             end
-            if (controller.buttonPressed & B_BUTTON) ~= 0 then
+        )
+
+        run_func_with_condition_and_cooldown(FUNC_INDEX_MISC,
+            (controller.buttonPressed & B_BUTTON) ~= 0,
+            function ()
                 options = false
-                inputStallTimerButton = inputStallToButton
             end
-        end
+        )
         if currOption > #optionTable then currOption = 1 end
         if currOption < 1 then currOption = #optionTable end
         nullify_inputs(m)

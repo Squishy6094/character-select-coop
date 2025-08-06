@@ -76,6 +76,14 @@ function djui_hud_print_text(string, x, y, scale)
     djui_hud_print_text_original(tostring(string), x, y, scale)
 end
 
+local string_sub = string.sub
+function djui_hud_print_monospace_text(string, x, y, scale, space)
+    space = space or 16
+    for i = 1, #string do
+        djui_hud_print_text(string_sub(string, i, i), x + space*(i - 1)*scale, y, scale)
+    end
+end
+
 ommActive = false
 for i in pairs(gActiveMods) do
     if gActiveMods[i].relativePath == "omm-coop" then
