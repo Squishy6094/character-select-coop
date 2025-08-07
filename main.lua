@@ -1191,6 +1191,13 @@ local function djui_hud_render_triangle(x, y, width, height)
     djui_hud_render_texture(TEX_TRIANGLE, x, y, width*MATH_DIVIDE_64, height*MATH_DIVIDE_32)
 end
 
+local function ease_in_out_back(x)
+    local c1 = 1.70158;
+    local c2 = c1 * 1.525;
+
+    return x < 0.5 and ((2 * x)^2 * ((c2 + 1) * 2 * x - c2)) / 2 or ((2 * x - 2)^2 * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2;
+end
+
 local buttonAltAnim = 0
 local menuOpacity = 245
 local gridButtonsPerRow = 5
@@ -1494,7 +1501,7 @@ local function on_hud_render()
                     else
                         djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
                     end
-                    local x = 10 - math.abs(row - gridYOffset/35)^2.5*2 + math.sin((get_global_timer() + i*15)*0.05) + characterTableRender[i].UIOffset
+                    local x = -5 + math.abs(row - gridYOffset/31)^2.5*2 + math.sin((get_global_timer() + i*15)*0.05) + characterTableRender[i].UIOffset
                     local y = height*0.5 - 31*0.5 + row*31 - gridYOffset + math.cos((get_global_timer() + i*15)*0.05)
                     djui_hud_render_texture(TEX_BUTTON_BIG, x, y, 1, 1)
                     local textScale = math.min(75/djui_hud_measure_text(charName), 0.7)
@@ -1509,7 +1516,7 @@ local function on_hud_render()
                     djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
                     djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y, textScale)
 
-                    characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and 15 or 0, 0.1)
+                    characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and 30 or 0, 0.1)
                 end
             else
                 -- Render Character Grid
@@ -1545,6 +1552,12 @@ local function on_hud_render()
             end
         else
             -- Render Options Menu
+            djui_hud_set_color(0, 0, 0, 200)
+            djui_hud_render_rect(0, 0, width*0.7 - 10, height)
+            djui_hud_set_color(255, 0, 0, 255)
+            djui_hud_set_rotation(math.floor(get_global_timer()/40)*0x1000 + ease_in_out_back(math.min((get_global_timer()%40)/30, 1))*0x1000, 0.5, 0.5)
+            djui_hud_render_rect(0 + 20, height*0.5 - 20, 60, 60)
+
             local optionConsoleText = {
                 "______  ___  _  __  ____   ______",
                 "\\   \\ \\/ / \\| |/  \\/ __/  /) () (\\",
@@ -1555,28 +1568,36 @@ local function on_hud_render()
                 "",
             }
 
-            local prevCategory = ""
-            for i = 1, #optionTable do
-                if prevCategory ~= optionTable[i].category then
-                    prevCategory = optionTable[i].category
-                    --table_insert(optionConsoleText, "===| " .. optionTable[i].category .. " |===")
+            table_insert(optionConsoleText, "===| " .. optionTable[currOption].category .. " Options |===")
+            table_insert(optionConsoleText, "================================")
+            for i = currOption - 3, currOption + 3 do
+                if optionTable[i] == nil then
+                    if i == 0 then
+                        table_insert(optionConsoleText, "^^^")
+                    elseif i == #optionTable + 1 then
+                        table_insert(optionConsoleText, "vvv")
+                    else
+                        table_insert(optionConsoleText, "")
+                    end
+                else
+                    local dotString = " "
+                    while 32 - #optionTable[i].name > #dotString do
+                        dotString = dotString .. "."
+                    end
+                    dotString = dotString .. " "
+                    table_insert(optionConsoleText, (i == currOption and ">" or " ") .. optionTable[i].name .. dotString .. optionTable[i].toggleNames[optionTable[i].toggle + 1])
                 end
-                local dotString = " "
-                while 32 - #optionTable[i].name > #dotString do
-                    dotString = dotString .. "."
-                end
-                dotString = dotString .. " "
-                table_insert(optionConsoleText, (i == currOption and "-> " or "   ") .. optionTable[i].name .. dotString .. optionTable[i].toggleNames[optionTable[i].toggle + 1])
             end
+            table_insert(optionConsoleText, "================================")
 
             local option = optionTable[currOption]
             table_insert(optionConsoleText, "")
-            table_insert(optionConsoleText, "> charselect option " .. string_lower(string_space_to_underscore(option.name)) .. " " .. string_lower(string_space_to_underscore(option.toggleNames[(option.toggle + 1)%(option.toggleMax + 1) + 1])))
+            table_insert(optionConsoleText, "> charselect option " .. string_lower(string_space_to_underscore(option.name)) .. " " .. string_lower(string_space_to_underscore(option.toggleNames[(option.toggle + 1)%(option.toggleMax + 1) + 1])) .. (math.floor(get_global_timer()/15)%2 == 0 and "|" or ""))
 
             djui_hud_set_color(255, 255, 255, 255)
             djui_hud_set_font(FONT_SPECIAL)
             for i = 1, #optionConsoleText do
-                djui_hud_print_monospace_text(optionConsoleText[i], 10, 40 + i*6, 0.2, i <= 4 and 11 or 16)
+                djui_hud_print_monospace_text(optionConsoleText[i], 2, 40 + i*7, 0.22, i <= 4 and 11 or 16)
             end
         end
 
@@ -1989,7 +2010,7 @@ local function before_mario_update(m)
             if not gridMenu then
                 -- Character Switcher
                 run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
-                    (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -45 or prevMouseScroll < mouseScroll,
+                    (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -45 --[[or prevMouseScroll < mouseScroll]],
                     function ()
                         currCharRender = currCharRender + 1
                         play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
@@ -1998,7 +2019,7 @@ local function before_mario_update(m)
                 )
 
                 run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
-                    (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 45 or prevMouseScroll > mouseScroll,
+                    (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 45 --[[or prevMouseScroll > mouseScroll]],
                     function ()
                         currCharRender = currCharRender - 1
                         play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
@@ -2027,7 +2048,7 @@ local function before_mario_update(m)
             else
                 -- Grid Controls
                 run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
-                    (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -45 or prevMouseScroll < mouseScroll,
+                    (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -45 --[[or prevMouseScroll < mouseScroll]],
                     function ()
                         currCharRender = currCharRender + 5
                         play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
@@ -2035,7 +2056,7 @@ local function before_mario_update(m)
                 )
 
                 run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
-                    (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 45 or prevMouseScroll > mouseScroll,
+                    (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 45 --[[or prevMouseScroll > mouseScroll]],
                     function ()
                         currCharRender = currCharRender - 5
                         play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
