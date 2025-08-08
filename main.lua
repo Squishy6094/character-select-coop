@@ -1204,6 +1204,8 @@ local function ease_in_out_back(x)
     return x < 0.5 and ((2 * x)^2 * ((c2 + 1) * 2 * x - c2)) / 2 or ((2 * x - 2)^2 * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2;
 end
 
+local TEX_GEAR_BIG = get_texture_info("char-select-gear-big")
+
 local buttonAltAnim = 0
 local menuOpacity = 245
 local gridButtonsPerRow = 5
@@ -1558,11 +1560,11 @@ local function on_hud_render()
             end
         else
             -- Render Options Menu
-            djui_hud_set_color(0, 0, 0, 200)
+            djui_hud_set_color(0, 30, 0, 200)
             djui_hud_render_rect(0, 0, width*0.7 - 10, height)
             djui_hud_set_color(255, 0, 0, 255)
             djui_hud_set_rotation(math.floor(get_global_timer()/40)*0x1000 + ease_in_out_back(math.min((get_global_timer()%40)/30, 1))*0x1000, 0.5, 0.5)
-            djui_hud_render_rect(0 + 20, height*0.5 - 20, 60, 60)
+            djui_hud_render_texture(TEX_GEAR_BIG, 0 + 20, height*0.5 - 20, 1, 1)
 
             local optionConsoleText = {
                 "______  ___  _  __  ____   ______",
