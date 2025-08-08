@@ -245,7 +245,7 @@ characterAnims = {
 characterMovesets = {
     [CT_MARIO] = {},
     [CT_LUIGI] = {},
-    [CT_TOAD_PLAYER] = {},
+    [CT_TOAD] = {},
     [CT_WALUIGI] = {},
     [CT_WARIO] = {},
 }
