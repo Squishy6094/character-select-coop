@@ -412,8 +412,8 @@ optionTable = {
 
 local prevCategory = 0
 local gridYOffset = 0
-local function update_character_render_table()
-    if prevCategory == currCategory then return end
+local function update_character_render_table(forceUpdate)
+    if not forceUpdate and prevCategory == currCategory then return end
     prevCategory = currCategory
     gridYOffset = -100
     local ogNum = currChar
@@ -910,7 +910,7 @@ local function mario_update(m)
                     char.locked = unlock
                 end
                 if not char.locked then -- Character was unlocked
-                    update_character_render_table()
+                    update_character_render_table(true)
                     if stallFrame == stallComplete and notif then
                         if optionTable[optionTableRef.notification].toggle > 0 then
                             djui_popup_create('Character Select:\nUnlocked '..tostring(char[1].name)..'\nas a Playable Character!', 3)
