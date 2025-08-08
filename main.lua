@@ -242,7 +242,13 @@ characterAnims = {
         [CS_ANIM_MENU] = WARIO_ANIM_CS_MENU
     },
 }
-characterMovesets = {[1] = {}}
+characterMovesets = {
+    [CT_MARIO] = {},
+    [CT_LUIGI] = {},
+    [CT_TOAD_PLAYER] = {},
+    [CT_WALUIGI] = {},
+    [CT_WARIO] = {},
+}
 characterUnlock = {}
 characterInstrumentals = {}
 characterGraffiti = {
