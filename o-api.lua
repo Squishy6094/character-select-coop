@@ -396,10 +396,12 @@ end
 ---@param modelInfo ModelExtendedId|integer
 ---@param animTable table
 ---@param eyeTable table
-local function character_add_animations(modelInfo, animTable, eyeTable)
+---@param handTable table
+local function character_add_animations(modelInfo, animTable, eyeTable, handTable)
     characterAnims[modelInfo] = {
         anims = type(animTable) == TYPE_TABLE and animTable or nil,
         eyes = type(eyeTable) == TYPE_TABLE and eyeTable or nil,
+        hands = type(handTable) == TYPE_TABLE and handTable or nil,
     }
 end
 

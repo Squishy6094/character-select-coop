@@ -233,9 +233,11 @@ characterAnims = {
     [E_MODEL_LUIGI] = {
         anims = {[CS_ANIM_MENU] = LUIGI_ANIM_CS_MENU},
         eyes = {[CS_ANIM_MENU] = MARIO_EYES_LOOK_RIGHT},
+        hands = {[CS_ANIM_MENU] = MARIO_HAND_OPEN}
     },
     [E_MODEL_TOAD_PLAYER] = {
         anims = {[CS_ANIM_MENU] = TOAD_PLAYER_ANIM_CS_MENU},
+        hands = {[CS_ANIM_MENU] = MARIO_HAND_OPEN}
     },
     [E_MODEL_WALUIGI] = {
         anims = {[CS_ANIM_MENU] = WALUIGI_ANIM_CS_MENU},
@@ -976,6 +978,10 @@ local function mario_update(m)
         local eyeState = characterAnims[p.modelId].eyes and characterAnims[p.modelId].eyes[m.marioObj.header.gfx.animInfo.animID]
         if eyeState then
             m.marioBodyState.eyeState = eyeState
+        end
+        local handState = characterAnims[p.modelId].hands and characterAnims[p.modelId].hands[m.marioObj.header.gfx.animInfo.animID]
+        if handState then
+            m.marioBodyState.handState = handState
         end
     end
 end
@@ -1926,6 +1932,9 @@ local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_color(0, 0, 0, (math_abs(menuCrossFade)) * -menuCrossFadeMath)
     djui_hud_render_rect(0, 0, width, height)
+
+    -- Fix RNG
+    math.randomseed(get_global_timer())
 end
 
 local FUNC_INDEX_MISC = 0
