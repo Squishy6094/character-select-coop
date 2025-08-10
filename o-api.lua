@@ -395,8 +395,12 @@ end
 ---@added 1.10
 ---@param modelInfo ModelExtendedId|integer
 ---@param animTable table
-local function character_add_animations(modelInfo, animTable)
-    characterAnims[modelInfo] = type(animTable) == TYPE_TABLE and animTable or nil
+---@param eyeTable table
+local function character_add_animations(modelInfo, animTable, eyeTable)
+    characterAnims[modelInfo] = {
+        anims = type(animTable) == TYPE_TABLE and animTable or nil,
+        eyes = type(eyeTable) == TYPE_TABLE and eyeTable or nil,
+    }
 end
 
 ---@description A function that gets any animation table from a model

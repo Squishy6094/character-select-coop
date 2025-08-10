@@ -227,19 +227,23 @@ characterCelebrationStar = {}
 characterColorPresets = {}
 characterAnims = {
     [E_MODEL_MARIO] = {
-        [CS_ANIM_MENU] = MARIO_ANIM_CS_MENU
+        anims = {[CS_ANIM_MENU] = MARIO_ANIM_CS_MENU},
+        eyes = {[CS_ANIM_MENU] = MARIO_EYES_LOOK_RIGHT},
     },
     [E_MODEL_LUIGI] = {
-        [CS_ANIM_MENU] = LUIGI_ANIM_CS_MENU
+        anims = {[CS_ANIM_MENU] = LUIGI_ANIM_CS_MENU},
+        eyes = {[CS_ANIM_MENU] = MARIO_EYES_LOOK_RIGHT},
     },
     [E_MODEL_TOAD_PLAYER] = {
-        [CS_ANIM_MENU] = TOAD_PLAYER_ANIM_CS_MENU
+        anims = {[CS_ANIM_MENU] = TOAD_PLAYER_ANIM_CS_MENU},
     },
     [E_MODEL_WALUIGI] = {
-        [CS_ANIM_MENU] = WALUIGI_ANIM_CS_MENU
+        anims = {[CS_ANIM_MENU] = WALUIGI_ANIM_CS_MENU},
+        eyes = {[CS_ANIM_MENU] = MARIO_EYES_LOOK_RIGHT},
     },
     [E_MODEL_WARIO] = {
-        [CS_ANIM_MENU] = WARIO_ANIM_CS_MENU
+        anims = {[CS_ANIM_MENU] = WARIO_ANIM_CS_MENU},
+        eyes = {[CS_ANIM_MENU] = MARIO_EYES_LOOK_LEFT},
     },
 }
 characterMovesets = {
@@ -953,7 +957,7 @@ local function mario_update(m)
             p.prevModelId = p.modelId
             m.marioObj.header.gfx.animInfo.animID = -1
         end
-        set_character_animation(m, (characterAnims[p.modelId] and characterAnims[p.modelId][CS_ANIM_MENU]) and CS_ANIM_MENU or CHAR_ANIM_FIRST_PERSON)
+        set_character_animation(m, (characterAnims[p.modelId] and characterAnims[p.modelId].anims and characterAnims[p.modelId].anims[CS_ANIM_MENU]) and CS_ANIM_MENU or CHAR_ANIM_FIRST_PERSON)
 
         m.marioObj.header.gfx.angle.y = m.faceAngle.y
     elseif m.actionState == 0xFFFF and m.action == ACT_IDLE then
@@ -965,9 +969,13 @@ local function mario_update(m)
 
     -- Character Animations
     if characterAnims[p.modelId] then
-        local animID = characterAnims[p.modelId][m.marioObj.header.gfx.animInfo.animID]
+        local animID = characterAnims[p.modelId].anims and characterAnims[p.modelId].anims[m.marioObj.header.gfx.animInfo.animID]
         if animID then
             smlua_anim_util_set_animation(m.marioObj, animID)
+        end
+        local eyeState = characterAnims[p.modelId].eyes and characterAnims[p.modelId].eyes[m.marioObj.header.gfx.animInfo.animID]
+        if eyeState then
+            m.marioBodyState.eyeState = eyeState
         end
     end
 end
