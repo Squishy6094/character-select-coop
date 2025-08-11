@@ -394,9 +394,9 @@ end
 ---@description A function that adds animations to a model
 ---@added 1.10
 ---@param modelInfo ModelExtendedId|integer
----@param animTable table
----@param eyeTable table
----@param handTable table
+---@param animTable? table
+---@param eyeTable? table
+---@param handTable? table
 local function character_add_animations(modelInfo, animTable, eyeTable, handTable)
     characterAnims[modelInfo] = {
         anims = type(animTable) == TYPE_TABLE and animTable or nil,
