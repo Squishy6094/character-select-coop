@@ -945,6 +945,13 @@ local function character_add_graffiti(charNum, texture)
     characterGraffiti[charNum] = texture
 end
 
+---@description A function that adds graffiti art to the background of the menu
+---@added 1.16
+---@param charNum integer
+local function character_get_graffiti(charNum)
+    return characterGraffiti[charNum] and characterGraffiti[charNum] or TEX_GRAFFITI_DEFAULT
+end
+
 _G.charSelectExists = true
 _G.charSelect = {
     -- Character Functions --
@@ -987,6 +994,7 @@ _G.charSelect = {
     character_is_vanilla = character_is_vanilla, -- Function located in main.lua
     character_add_menu_instrumental = character_add_menu_instrumental,
     character_add_graffiti = character_add_graffiti,
+    character_get_graffiti = character_get_graffiti,
 
     -- Hud Element Functions --
     hud_hide_element = hud_hide_element, -- Function located in n-hud.lua

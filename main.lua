@@ -1582,7 +1582,7 @@ local function on_hud_render()
                 "\\   \\ \\/ / \\| |/  \\/ __/  /) () (\\",
                 " | D \\  /| \\\\ | () \\__ \\  \\______/",
                 "/___//_/ |_|\\_|\\__/____/    (__)",
-                "Dynamic Operating System",
+                "Dynamic Operating System - Version " .. MOD_VERSION_STRING,
                 "(C) Toadstool Technologies 1996",
                 "",
             }
