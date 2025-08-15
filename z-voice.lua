@@ -65,7 +65,8 @@ end
 
 ---@param m MarioState
 ---@param sound CharacterSound
-local function custom_character_sound(m, sound)
+---@param pos Vec3f?
+local function custom_character_sound(m, sound,pos)
     if m.playerIndex == 0 then
         if stallTimer < stallSayLine then
             return NO_SOUND
@@ -115,6 +116,8 @@ local function custom_character_sound(m, sound)
     if check_sound_exists(playerSample[index]) then
         if sound == CHAR_SOUND_SNORING1 or sound == CHAR_SOUND_SNORING2 or sound == CHAR_SOUND_SNORING3 then
             audio_sample_play(playerSample[index], m.pos, 0.5)
+        elseif pos ~= nil then --used by sounds called by on_play_sound function
+            audio_sample_play(playerSample[index], pos, 1.0)
         else
             audio_sample_play(playerSample[index], m.pos, 1.0)
         end
@@ -205,3 +208,23 @@ local function mario_update(m)
 end
 --hook_event(HOOK_MARIO_UPDATE, mario_update)
 cs_hook_mario_update(mario_update)
+
+---@param soundbits integer
+---@param pos Vec3f 
+---	Called when a sound is going to play, return a SOUND_* constant or NO_SOUND to override the sound
+local function on_play_sound(soundbits,pos)
+    local endpeachsoundtable = {[SOUND_PEACH_MARIO] = true,[SOUND_PEACH_POWER_OF_THE_STARS] = true,[SOUND_PEACH_THANKS_TO_YOU] = true, [SOUND_PEACH_THANK_YOU_MARIO] = true,[SOUND_PEACH_SOMETHING_SPECIAL] = true,[SOUND_PEACH_BAKE_A_CAKE] = true,[SOUND_PEACH_FOR_MARIO] = true,[SOUND_PEACH_MARIO2] = true}
+    local m = gMarioStates[0]
+    if endpeachsoundtable[soundbits] and (character_get_voice(m) ~= nil) and (character_get_voice(m)[soundbits] ~= nil) then --ending peach cutscene sounds
+        custom_character_sound(m,soundbits,pos)
+        return NO_SOUND
+    elseif (soundbits == SOUND_PEACH_DEAR_MARIO) and (character_get_voice(m) ~= nil) and (character_get_voice(m)[soundbits] ~= nil)  then --introduction peach sounds
+        custom_character_sound(m,soundbits,pos)
+        return NO_SOUND
+    elseif (soundbits == SOUND_MENU_THANK_YOU_PLAYING_MY_GAME) and (character_get_voice(m) ~= nil) and (character_get_voice(m)[soundbits] ~= nil)  then --cake screen thank you for playing my game voice
+        custom_character_sound(m,soundbits,pos)
+        return NO_SOUND
+    end
+end
+
+hook_event(HOOK_ON_PLAY_SOUND,on_play_sound) --	Called when a sound is going to play, return a SOUND_* constant or NO_SOUND to override the sound
