@@ -423,6 +423,7 @@ local function update_character_render_table(forceUpdate)
     prevCategory = currCategory
     gridYOffset = -100
     local ogNum = currChar
+    local insertNum = 0
     --currChar = 1
     currCharRender = 1
     local category = characterCategories[currCategory]
@@ -433,12 +434,13 @@ local function update_character_render_table(forceUpdate)
         if not characterTable[i].locked then
             for c = 1, #charCategories do
                 if category == charCategories[c] then
-                    table_insert(characterTableRender, characterTable[i])
-                    characterTableRender[#characterTableRender].UIOffset = 0
+                    characterTableRender[insertNum] = characterTable[i]
+                    characterTableRender[insertNum].UIOffset = 0
                     if ogNum == i then
                         currChar = ogNum
-                        currCharRender = #characterTableRender
+                        currCharRender = insertNum
                     end
+                    insertNum = insertNum + 1
                 end
             end
         end
@@ -1510,7 +1512,7 @@ local function on_hud_render()
                 -- Render Character List
                 local currRow = (currCharRender - 1)
                 gridYOffset = lerp(gridYOffset, currRow*31, 0.1)
-                for i = 1, #characterTableRender do
+                for i = 0, #characterTableRender do
                     local row = (i - 1)
                     local charName = characterTableRender[i][characterTableRender[i].currAlt].name
                     local charColor = characterTableRender[i][characterTableRender[i].currAlt].color
@@ -1539,11 +1541,11 @@ local function on_hud_render()
                 end
             else
                 -- Render Character Grid
-                local currRow = math.floor((currCharRender - 1)/gridButtonsPerRow)
+                local currRow = math.floor((currCharRender)/gridButtonsPerRow)
                 gridYOffset = lerp(gridYOffset, currRow*35, 0.1)
-                for i = 1, #characterTableRender do
-                    local row = math.floor((i - 1)/gridButtonsPerRow)
-                    local column = (i - 1)%gridButtonsPerRow
+                for i = 0, #characterTableRender do
+                    local row = math.floor(i/gridButtonsPerRow)
+                    local column = i%gridButtonsPerRow
                     local charIcon = characterTableRender[i][characterTableRender[i].currAlt].lifeIcon
                     local charColor = characterTableRender[i][characterTableRender[i].currAlt].color
                     if i == currCharRender then
@@ -2209,7 +2211,7 @@ local function before_mario_update(m)
     end
 
     -- Checks
-    currCharRender = num_wrap(currCharRender, 1, #characterTableRender)
+    currCharRender = num_wrap(currCharRender, 0, #characterTableRender)
     currChar = characterTableRender[currCharRender].ogNum
     
     character.currAlt = num_wrap(character.currAlt, 1, #character)
@@ -2268,10 +2270,7 @@ local function chat_command(msg)
             local saveName = string_underscore_to_space(string_lower(characterTable[i].saveName))
             for a = 1, #characterTable[i] do
                 if msg == string_lower(characterTable[i][a].name) or msg == saveName then
-                    force_set_character(i)
-                    if msg ~= saveName then
-                        characterTable[i].currAlt = a
-                    end
+                    force_set_character(i, msg ~= saveName and a or 1)
                     djui_chat_message_create('Character set to "' .. characterTable[i][characterTable[i].currAlt].name .. '" Successfully!')
                     return true
                 end
@@ -2286,8 +2285,7 @@ local function chat_command(msg)
         local altNum = tonumber(msgSplit[2])
         altNum = altNum and altNum or 1
         if charNum > 0 and charNum <= #characterTable and not characterTable[charNum].locked then
-            currChar = charNum
-            characterTable[charNum].currAlt = altNum
+            force_set_character(currChar, altNum)
             djui_chat_message_create('Character set to "' .. characterTable[charNum][altNum].name .. '" Successfully!')
             return true
         end
