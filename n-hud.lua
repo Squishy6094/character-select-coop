@@ -458,14 +458,14 @@ end
 
 ---@param localIndex integer
 ---@param health integer
----@param x integer
----@param y integer
----@param scaleX integer
----@param scaleY integer
 ---@param prevX integer
 ---@param prevY integer
 ---@param prevScaleX integer
 ---@param prevScaleY integer
+---@param x integer
+---@param y integer
+---@param scaleX integer
+---@param scaleY integer
 function render_health_meter_from_local_index_interpolated(localIndex, health, prevX, prevY, prevScaleX, prevScaleY, x, y, scaleX, scaleY)
     localIndex = localIndex or 0
     health = health >> 8

@@ -579,11 +579,26 @@ end
 ---@description A function that renders a persons health meter texture table
 ---@added 1.12
 ---@param localIndex integer
+---@param health integer
 ---@param x integer
 ---@param y integer
 ---@param scaleX integer
 ---@param scaleY integer
 ---@forcedoc character_render_health_meter
+
+---@description A function that renders a persons health meter texture table, with interpolation
+---@added 1.16
+---@param localIndex integer
+---@param health integer
+---@param prevX integer
+---@param prevY integer
+---@param prevScaleX integer
+---@param prevScaleY integer
+---@param x integer
+---@param y integer
+---@param scaleX integer
+---@param scaleY integer
+---@forcedoc character_render_health_meter_interpolated
 
 ---@description A function that locks a character under an unlock condition
 ---@added 1.10
@@ -988,6 +1003,7 @@ _G.charSelect = {
     character_render_star_icon_interpolated = render_star_icon_from_local_index_interpolated, -- Function located in n-hud.lua
     character_get_health_meter = health_meter_from_local_index, -- Function located in n-hud.lua
     character_render_health_meter = render_health_meter_from_local_index, -- Function located in n-hud.lua
+    character_render_health_meter_interpolated = render_health_meter_from_local_index_interpolated, -- Function located in n-hud.lua
     character_set_locked = character_set_locked,
     character_set_category = character_set_category,
     character_get_moveset = character_get_moveset,

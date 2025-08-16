@@ -779,9 +779,7 @@ local function mario_update(m)
     if m.playerIndex == 0 and stallFrame > 1 then
         if djui_hud_is_pause_menu_created() then     
             if prevBaseCharFrame ~= np.modelIndex then
-                currCategory = 1
-                currChar = np.modelIndex
-                currCharRender = np.modelIndex + 1
+                force_set_character(np.modelIndex)
                 p.presetPalette = 0
             end
 
