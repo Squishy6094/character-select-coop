@@ -418,6 +418,7 @@ optionTable = {
 
 local prevCategory = 0
 local gridYOffset = 0
+local paletteYOffset = 0
 local function update_character_render_table(forceUpdate)
     if not forceUpdate and prevCategory == currCategory then return end
     prevCategory = currCategory
@@ -1536,6 +1537,20 @@ local function on_hud_render()
                     djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y, textScale)
 
                     characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and 30 or 0, 0.1)
+                end
+
+                local palettes = characterColorPresets[characterTableRender[currChar][characterTableRender[currChar].currAlt].model]
+                paletteYOffset = lerp(paletteYOffset, palettes.currPalette*31, 0.1)
+                for i = 0, #palettes do
+                    local x = width*0.7 - 50 - (i - paletteYOffset/31)*3
+                    local y = height*0.5 - 31*0.5 + i*31 - paletteYOffset + math.cos((get_global_timer() + i*15)*0.05)
+                    if i == 0 then
+                        local playerColor = network_player_get_palette_color(gNetworkPlayers[0], SHIRT)
+                        djui_hud_set_color(playerColor.r, playerColor.g, playerColor.b, 255)
+                    else
+                        djui_hud_set_color(palettes[i][SHIRT].r, palettes[i][SHIRT].g, palettes[i][SHIRT].b, 255)
+                    end
+                    djui_hud_render_rect(x, y, 32, 32)
                 end
             else
                 -- Render Character Grid
