@@ -418,7 +418,6 @@ optionTable = {
 
 local prevCategory = 0
 local gridYOffset = 0
-local paletteYOffset = 0
 local function update_character_render_table(forceUpdate)
     if not forceUpdate and prevCategory == currCategory then return end
     prevCategory = currCategory
@@ -753,7 +752,10 @@ local worldColor = {
     skybox = {r = 255, g = 255, b = 255},
     fog = {r = 255, g = 255, b = 255},
     vertex = {r = 255, g = 255, b = 255},
+    ambient = {r = 255, g = 255, b = 255}
 }
+local menuOffsetX = 0
+local menuOffsetY = 0 
 ---@param m MarioState
 local function mario_update(m)
     local np = gNetworkPlayers[m.playerIndex]
@@ -836,9 +838,9 @@ local function mario_update(m)
             djui_hud_set_resolution(RESOLUTION_N64)
             local widthScale = djui_hud_get_screen_width()/320
             local focusPos = {
-                x = m.pos.x + sins(camAngle - 0x4000)*175*camScale*widthScale,
-                y = m.pos.y + 120 * camScale,
-                z = m.pos.z + coss(camAngle - 0x4000)*175*camScale*widthScale,
+                x = m.pos.x + sins(camAngle - 0x4000)*(175 - menuOffsetX)*camScale*widthScale,
+                y = m.pos.y + 120 * camScale - menuOffsetY,
+                z = m.pos.z + coss(camAngle - 0x4000)*(175 - menuOffsetX)*camScale*widthScale,
             }
             vec3f_copy(gLakituState.focus, focusPos)
             m.marioBodyState.eyeState = MARIO_EYES_OPEN
@@ -850,6 +852,9 @@ local function mario_update(m)
             set_lighting_color(0, (menuColor.r*0.33 + 255*0.66) * worldColor.lighting.r/255)
             set_lighting_color(1, (menuColor.g*0.33 + 255*0.66) * worldColor.lighting.g/255)
             set_lighting_color(2, (menuColor.b*0.33 + 255*0.66) * worldColor.lighting.b/255)
+            set_lighting_color_ambient(0, (menuColor.r*0.33 + 255*0.66) * worldColor.ambient.r/127)
+            set_lighting_color_ambient(1, (menuColor.g*0.33 + 255*0.66) * worldColor.ambient.g/127)
+            set_lighting_color_ambient(2, (menuColor.b*0.33 + 255*0.66) * worldColor.ambient.b/127)
             set_skybox_color(0, menuColor.r * worldColor.lighting.r/255)
             set_skybox_color(1, menuColor.g * worldColor.lighting.g/255)
             set_skybox_color(2, menuColor.b * worldColor.lighting.b/255)
@@ -877,6 +882,9 @@ local function mario_update(m)
                 set_lighting_color(0, worldColor.lighting.r)
                 set_lighting_color(1, worldColor.lighting.g)
                 set_lighting_color(2, worldColor.lighting.b)
+                set_lighting_color_ambient(0, worldColor.ambient.r)
+                set_lighting_color_ambient(1, worldColor.ambient.g)
+                set_lighting_color_ambient(2, worldColor.ambient.b)
                 set_skybox_color(0, worldColor.skybox.r)
                 set_skybox_color(1, worldColor.skybox.g)
                 set_skybox_color(2, worldColor.skybox.b)
@@ -892,6 +900,9 @@ local function mario_update(m)
             worldColor.lighting.r = get_lighting_color(0)
             worldColor.lighting.g = get_lighting_color(1)
             worldColor.lighting.b = get_lighting_color(2)
+            worldColor.ambient.r = get_lighting_color_ambient(0)
+            worldColor.ambient.g = get_lighting_color_ambient(1)
+            worldColor.ambient.b = get_lighting_color_ambient(2)
             worldColor.skybox.r = get_skybox_color(0)
             worldColor.skybox.g = get_skybox_color(1)
             worldColor.skybox.b = get_skybox_color(2)
@@ -1082,6 +1093,13 @@ hook_event(HOOK_OBJECT_SET_MODEL, set_model)
 -- Menu Handler --
 ------------------
 
+local function button_to_analog(controller, negInput, posInput)
+    local num = 0
+    num = num - (controller.buttonDown & negInput ~= 0 and 127 or 0)
+    num = num + (controller.buttonDown & posInput ~= 0 and 127 or 0)
+    return num
+end
+
 local TEX_CAUTION_TAPE = get_texture_info("char-select-caution-tape")
 -- Renders caution tape from xy1 to xy2, tape extends based on dist (0 - 1)
 local function djui_hud_render_caution_tape(x1, y1, x2, y2, dist, scale)
@@ -1230,6 +1248,8 @@ local TEX_GEAR_BIG = get_texture_info("char-select-gear-big")
 local buttonAltAnim = 0
 local menuOpacity = 245
 local gridButtonsPerRow = 5
+local paletteXOffset = 0
+local paletteTrans = 0
 local menuText = {}
 local function on_hud_render()
     local FONT_USER = djui_menu_get_font()
@@ -1489,16 +1509,17 @@ local function on_hud_render()
 
         -- Palette Selection
         local palettes = characterColorPresets[characterTableRender[currChar][characterTableRender[currChar].currAlt].model]
-        paletteYOffset = lerp(paletteYOffset, palettes.currPalette*17, 0.1)
+        paletteXOffset = lerp(paletteXOffset, palettes.currPalette*17, 0.1)
+        paletteTrans = math.max(paletteTrans - 6, 0)
         local bottomTapeAngle = angle_from_2d_points(-10, height - 50, width + 10, height - 35)
         for i = 0, #palettes do
-            local x = width*0.85 - 8 - paletteYOffset + coss(bottomTapeAngle)*17*i
-            local y = height*0.8 - 10 + math.abs(math.cos((get_global_timer() + i*15)*0.05)) - sins(bottomTapeAngle)*17*(i - paletteYOffset/17)
+            local x = width*0.85 - 8 - paletteXOffset + coss(bottomTapeAngle)*17*i
+            local y = height*0.8 - 10 + math.abs(math.cos((get_global_timer() + i*15)*0.05)) - sins(bottomTapeAngle)*17*(i - paletteXOffset/17)
             if i == 0 then
                 local playerColor = network_player_get_palette_color(gNetworkPlayers[0], SHIRT)
-                djui_hud_set_color(playerColor.r, playerColor.g, playerColor.b, 255)
+                djui_hud_set_color(playerColor.r, playerColor.g, playerColor.b, math.min(paletteTrans, 255))
             else
-                djui_hud_set_color(palettes[i][SHIRT].r, palettes[i][SHIRT].g, palettes[i][SHIRT].b, 255)
+                djui_hud_set_color(palettes[i][SHIRT].r, palettes[i][SHIRT].g, palettes[i][SHIRT].b, math.min(paletteTrans, 255))
             end
             djui_hud_render_rect(x, y, 16, 16)
         end
@@ -1509,17 +1530,20 @@ local function on_hud_render()
         --djui_hud_set_rotation(angle_from_2d_points(width*0.7, -10, width*0.7 - 25, height - 35) + 0x4000, 1, 0)
         local wallWidth = TEX_WALL_LEFT.width
         local wallHeight = TEX_WALL_LEFT.height
-        local wallScale = 0.65 * widthScale
+        local wallScale = 0.8 * widthScale
+        local wallCutoff = ((width * 0.7 - 8) - (width * 0.35 - wallWidth * wallScale * 0.5 - menuOffsetX)) / wallScale
+        local x = width*0.35 - wallWidth*wallScale*0.5 - menuOffsetX
+        local y = height*0.5 - wallHeight*wallScale*0.5 - menuOffsetY
         djui_hud_set_color(playerShirt.r, playerShirt.g, playerShirt.b, 255)
-        djui_hud_render_texture(TEX_WALL_LEFT, width*0.7 - 10 - wallWidth*wallScale, 40, wallScale, wallScale)
+        djui_hud_render_texture_tile(TEX_WALL_LEFT, x, y, wallHeight/wallCutoff*wallScale, wallScale, 0, 0, wallCutoff, wallHeight)
         djui_hud_set_color(playerPants.r, playerPants.g, playerPants.b, 255)
-        djui_hud_render_texture(TEX_WALL_RIGHT, width*0.7 - 10 - wallWidth*wallScale, 40, wallScale, wallScale)
+        djui_hud_render_texture_tile(TEX_WALL_RIGHT, x, y, wallHeight/wallCutoff*wallScale, wallScale, 0, 0, wallCutoff, wallHeight)
         djui_hud_set_rotation(math.random(0, 0x2000) - 0x1000, 0.5, 0.5)
         djui_hud_set_color(255, 255, 255, 150)
         local graffiti = characterGraffiti[currChar] or TEX_GRAFFITI_DEFAULT
         local graffitiWidthScale = 120/graffiti.width 
         local graffitiHeightScale = 120/graffiti.width 
-        djui_hud_render_texture(graffiti, width*0.35 - graffiti.width*0.5*graffitiWidthScale, height*0.5 - graffiti.height*0.5*graffitiHeightScale, graffitiWidthScale, graffitiHeightScale)
+        djui_hud_render_texture(graffiti, width*0.35 - graffiti.width*0.5*graffitiWidthScale - menuOffsetX, height*0.5 - graffiti.height*0.5*graffitiHeightScale - menuOffsetY, graffitiWidthScale, graffitiHeightScale)
         djui_hud_set_rotation(0, 0, 0)
 
         if not options then
@@ -1537,8 +1561,8 @@ local function on_hud_render()
                     else
                         djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
                     end
-                    local x = -5 + math.abs(row - gridYOffset/31)^2.5*2 + math.sin((get_global_timer() + i*15)*0.05) + characterTableRender[i].UIOffset
-                    local y = height*0.5 - 31*0.5 + row*31 - gridYOffset + math.cos((get_global_timer() + i*15)*0.05)
+                    local x = -5 + math.abs(row - gridYOffset/31)^2.5*2 + math.sin((get_global_timer() + i*15)*0.05) + characterTableRender[i].UIOffset - menuOffsetX*0.5
+                    local y = height*0.5 - 31*0.5 + row*31 - gridYOffset + math.cos((get_global_timer() + i*15)*0.05) - menuOffsetY*0.5
                     djui_hud_render_texture(TEX_BUTTON_BIG, x, y, 1, 1)
                     local textScale = math.min(75/djui_hud_measure_text(charName), 0.7)
                     x = x + 8
@@ -1569,8 +1593,8 @@ local function on_hud_render()
                     else
                         djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
                     end
-                    local x = width*0.3 - gridButtonsPerRow*35*0.5 + 35*column - math.abs(row - gridYOffset/35)^2*3 + math.sin((get_global_timer() + i*10)*0.1)
-                    local y = height*0.5 - 35*0.5 + row*35 - gridYOffset + math.cos((get_global_timer() + i*10)*0.1) + characterTableRender[i].UIOffset
+                    local x = width*0.3 - gridButtonsPerRow*35*0.5 + 35*column - math.abs(row - gridYOffset/35)^2*3 + math.sin((get_global_timer() + i*10)*0.1) - menuOffsetX*0.5
+                    local y = height*0.5 - 35*0.5 + row*35 - gridYOffset + math.cos((get_global_timer() + i*10)*0.1) + characterTableRender[i].UIOffset - menuOffsetY*0.5
                     djui_hud_render_texture(TEX_BUTTON_SMALL, x, y, 1, 1)
                     x = x + 8
                     y = y + 8
@@ -1659,8 +1683,8 @@ local function on_hud_render()
             descRender = descRender .. " - " .. desc
         end
         descRender = descRender .. " - " .. desc
-        djui_hud_print_text("Creator: " .. credit, 5, height - 30, 0.8)
-        djui_hud_print_text(descRender, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8, height - 17, 0.8)
+        djui_hud_print_text("Creator: " .. credit, 5 + menuOffsetX*0.2, height - 30 + menuOffsetY*0.2, 0.8)
+        djui_hud_print_text(descRender, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8 + menuOffsetX*0.15, height - 17 + menuOffsetY*0.15, 0.8)
 
         -- Render Character Name
         djui_hud_set_font(FONT_MENU)
@@ -1672,188 +1696,19 @@ local function on_hud_render()
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_caution_tape(width*0.7 - 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Top Tape
         djui_hud_render_caution_tape(width*0.7 - 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Bottom Tape
-        djui_hud_print_text(charName, width*0.85 - djui_hud_measure_text(charName)*0.5*nameScale - 2, 30 - 32*nameScale, nameScale)
+        djui_hud_print_text(charName, width*0.85 - djui_hud_measure_text(charName)*0.5*nameScale - 2 + menuOffsetX*0.3, 30 - 32*nameScale + menuOffsetY*0.3, nameScale)
 
         -- Render Header
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_set_rotation(angle_from_2d_points(-10, 35, width*0.7 - 5, 50), 0, 0)
-        djui_hud_render_texture(TEX_HEADER, 5, -5, 0.4, 0.4)
+        djui_hud_render_texture(TEX_HEADER, 5 + menuOffsetX*0.2, -5 + menuOffsetY*0.2, 0.4, 0.4)
         djui_hud_set_rotation(0, 0, 0)
 
         -- Render Tape
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_caution_tape(-10, 35, width*0.7 - 5, 50, 1) -- Top Tape
-        djui_hud_render_caution_tape(width*0.7 - 2, -10, width*0.7 - 15, height - 35, 1, 0.6) -- Side Tape
+        djui_hud_render_caution_tape(width*0.7 - 2, -10, width*0.7 - 13, height - 35, 1, 0.6) -- Side Tape
         djui_hud_render_caution_tape(-10, height - 50, width + 10, height - 35, 1) -- Bottom Tape
-
---[[
-        --Options display
-        local optionTableCount = #optionTable
-        if options or optionAnimTimer > optionAnimTimerCap then
-            djui_hud_set_color(menuColor.r * 0.25, menuColor.g * 0.25, menuColor.b * 0.25, 205 + maxf(-200, optionAnimTimer))
-            djui_hud_render_rect(0, 0, width, height)
-            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-            djui_hud_render_rect(width * 0.5 - 50 * widthScale, minf(55 - optionAnimTimer, height - 25 * widthScale), 100 * widthScale, 200)
-            djui_hud_set_color(menuColor.r * 0.1, menuColor.g * 0.1, menuColor.b * 0.1, menuOpacity)
-            djui_hud_render_rect(width * 0.5 - 50 * widthScale + 2, minf(55 - optionAnimTimer + 2, height - 25 * widthScale + 2), 100 * widthScale - 4, 196)
-            djui_hud_set_font(FONT_ALIASED)
-
-            if not creditsAndTransition then
-                local widthScaleLimited = minf(widthScale, 1.5)
-                -- Up Arrow
-                if currOption > 3 then
-                    djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-                    djui_hud_render_triangle(widthHalf - 3.5*widthScaleLimited, 94 - optionAnimTimer, 6*widthScaleLimited, 3*widthScaleLimited)
-                end
-
-                -- Down Arrow
-                if currOption < optionTableCount - 2 then
-                    local yOffset = 90 - optionAnimTimer + 45 * widthScaleLimited
-                    djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-                    djui_hud_set_rotation(0x8000, 0.5, 0.5)
-                    djui_hud_render_triangle(widthHalf - 3.5*widthScaleLimited, yOffset + 10 + 3*widthScaleLimited, 6*widthScaleLimited, 3*widthScaleLimited)
-                    djui_hud_set_rotation(0, 0, 0)
-                end
-
-                -- Options 
-                for i = currOption - 2, currOption + 2 do
-                    if not (i < 1 or i > optionTableCount) then
-                        local toggleName = optionTable[i].name
-                        local scale = 0.5
-                        local yOffset = 100 - optionAnimTimer + (i - currOption + 2) * 9 * widthScaleLimited
-
-                        local lockName = nil
-                        if optionTable[i].lock ~= nil then
-                            lockName = optionTable[i].lock()
-                        end
-
-                        if i == currOption then
-                            djui_hud_set_font(FONT_ALIASED)
-                            scale = 0.3
-                            yOffset = yOffset - 1
-                            local currToggleName = optionTable[i].toggleNames[optionTable[i].toggle + 1]
-                            currToggleName = currToggleName and currToggleName or "???"
-                            if lockName ~= nil then
-                                currToggleName = lockName
-                            end
-                            if currToggleName ~= "" then
-                                toggleName = toggleName .. " - " .. currToggleName
-                            end
-                        else
-                            djui_hud_set_font(FONT_TINY)
-                        end
-                        djui_hud_set_color(menuColorHalf.r * (lockName ~= nil and 0.5 or 1), menuColorHalf.g * (lockName ~= nil and 0.5 or 1), menuColorHalf.b * (lockName ~= nil and 0.5 or 1), 255)
-                        scale = scale * widthScaleLimited
-                        djui_hud_print_text(toggleName, widthHalf - djui_hud_measure_text(toggleName) * scale * 0.5, yOffset, scale)
-                    end
-                end
-
-                -- Description
-                if optionTable[currOption].description ~= nil then
-                    djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-                    for i = 1, #optionTable[currOption].description do
-                        djui_hud_set_font(FONT_ALIASED)
-                        local line = optionTable[currOption].description[i]
-                        djui_hud_print_text(line, widthHalf - djui_hud_measure_text(line) * 0.15, 180 - optionAnimTimer + 15 * widthScaleLimited + 8 * i - 8 * #optionTable[currOption].description, 0.3)
-                    end
-                end
-                -- Footer
-                djui_hud_set_font(FONT_TINY)
-                djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-                djui_hud_print_text(TEXT_OPTIONS_SELECT, widthHalf - djui_hud_measure_text(TEXT_OPTIONS_SELECT) * 0.3, height - 20 - optionAnimTimer, 0.6)
-            else
-                local renderList = {}
-                for i = 1, #creditTable do
-                    local credit = creditTable[i]
-                    table_insert(renderList, {textLeft = credit.packName, font = FONT_ALIASED})
-                    for i = 1, #credit do
-                        local credit = credit[i]
-                        table_insert(renderList, {textLeft = credit.creditTo, textRight = credit.creditFor, font = FONT_NORMAL})
-                    end
-                end
-
-                local xLeft = widthHalf - 50 * widthScale + 8
-                local xRight = widthHalf + 50 * widthScale - 8
-                local y = 80 + 10*widthScale - optionAnimTimer - creditScroll
-                local prevY = 80 + 10*widthScale - optionAnimTimer - prevCreditScroll
-                for i = 1, #renderList do
-                    local credit = renderList[i]
-                    local header = (credit.font == FONT_ALIASED)
-                    if y > 62 and y < height then 
-                        djui_hud_set_font(credit.font)
-                        if not header then
-                            djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-                        else
-                            djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-                        end
-                        local x = xLeft - (header and 3 or 0)
-                        local scale = (header and 0.3 or 0.2)*widthScale
-                        djui_hud_print_text_interpolated(credit.textLeft, x, prevY, scale, x, y, scale)
-                        if credit.textRight then
-                            local x = xRight - djui_hud_measure_text(credit.textRight)*scale
-                            local scale = 0.2*widthScale
-                            djui_hud_print_text_interpolated(credit.textRight, x, prevY, scale, x, y, scale)
-                        end
-                    end
-                    y = y + (header and 9 or 6)*widthScale
-                    prevY = prevY + (header and 9 or 6)*widthScale
-                    if renderList[i + 1] ~= nil and renderList[i + 1].font == FONT_ALIASED then
-                        y = y + 2
-                        prevY = prevY + 2
-                    end
-                end
-                creditScrollRange = math_max(((y + creditScroll)) - (height - 36), 0)
-                prevCreditScroll = creditScroll
-
-                for i = 1, 8 do
-                    djui_hud_set_color(menuColor.r * 0.1, menuColor.g * 0.1, menuColor.b * 0.1, 100)
-                    djui_hud_render_rect(widthHalf - 50 * widthScale + 2, 60 - optionAnimTimer, 100 * widthScale - 4, i*4)
-                    djui_hud_render_rect(widthHalf - 50 * widthScale + 2, height - 2 - i*4, 96 * widthScale, i*4)
-                end
-            end
-
-            -- Render Header
-            djui_hud_set_font(FONT_ALIASED)
-            djui_hud_set_color(menuColor.r * 0.5 + 127, menuColor.g * 0.5 + 127, menuColor.b * 0.5 + 127, 255)
-            local text = TEXT_OPTIONS_HEADER
-            if creditsAndTransition then
-                text = TEXT_CREDITS_HEADER
-            elseif currOption > defaultOptionCount then
-                text = TEXT_OPTIONS_HEADER_API
-            end
-            djui_hud_print_text(text, widthHalf - djui_hud_measure_text(text) * 0.3 * minf(widthScale, 1.5), 65 + optionAnimTimer * -1, 0.6 * minf(widthScale, 1.5))
-
-            -- Fade in/out of credits
-            if optionTable[optionTableRef.anims].toggle == 1 then
-                if credits and creditsCrossFade > -creditsCrossFadeCap then
-                    creditsCrossFade = creditsCrossFade - 1
-                    if creditsCrossFade == 0 then creditsCrossFade = creditsCrossFade - 1 end
-                end
-                if not credits and creditsCrossFade < creditsCrossFadeCap then
-                    creditsCrossFade = creditsCrossFade + 1
-                    if creditsCrossFade == 0 then creditsCrossFade = creditsCrossFade + 1 end
-                end
-                if creditsCrossFade < 0 then
-                    creditsAndTransition = true
-                else
-                    creditsAndTransition = false
-                end
-            else
-                if credits then
-                    creditsCrossFade = -creditsCrossFadeCap
-                else
-                    creditsCrossFade = creditsCrossFadeCap
-                end
-                creditsAndTransition = credits
-            end
-            
-            djui_hud_set_resolution(RESOLUTION_N64)
-            djui_hud_set_color(0, 0, 0, (math_abs(creditsCrossFade)) * -creditsCrossFadeMath)
-            djui_hud_render_rect(width * 0.5 - 50 * widthScale + 2, minf(55 - optionAnimTimer + 2, height - 25 * widthScale + 2), 100 * widthScale - 4, 196)
-        else
-            -- How to open options display
-        end
-        ]]
 
         -- Anim logic
         if options then
@@ -1977,6 +1832,7 @@ end
 
 local prevMouseScroll = 0
 local mouseScroll = 0
+---@param m MarioState
 local function before_mario_update(m)
     if m.playerIndex ~= 0 then return end
     if stallFrame < stallComplete then return end
@@ -2135,6 +1991,7 @@ local function before_mario_update(m)
                     else
                         play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
                     end
+                    paletteTrans = 1000
                     currPaletteTable.currPalette = num_wrap(currPaletteTable.currPalette, 0, #currPaletteTable)
                 end
             )
@@ -2232,6 +2089,12 @@ local function before_mario_update(m)
     character.currAlt = num_wrap(character.currAlt, 1, #character)
     currCategory = num_wrap(currCategory, 1, #characterCategories)
     update_character_render_table()
+
+    -- Yo Melee called
+    local menuOffsetXRaw = (m.controller.extStickX ~= 0 and m.controller.extStickX or button_to_analog(charSelect.controller, L_CBUTTONS, R_CBUTTONS))*0.2
+    local menuOffsetYRaw = (m.controller.extStickY ~= 0 and -m.controller.extStickY or button_to_analog(charSelect.controller, U_CBUTTONS, D_CBUTTONS))*0.2
+    menuOffsetX = lerp(menuOffsetX, menuOffsetXRaw, 0.2)
+    menuOffsetY = lerp(menuOffsetY, menuOffsetYRaw, 0.2)
 end
 
 hook_event(HOOK_BEFORE_MARIO_UPDATE, before_mario_update)
