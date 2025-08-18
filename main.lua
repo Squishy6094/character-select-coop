@@ -1485,7 +1485,23 @@ local function on_hud_render()
         djui_hud_render_rect(width * 0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
 
         -- Make Random Elements based on Character Name
-        math.randomseed(hash(characterTable[currChar][characterTable[currChar].currAlt].name))
+        math.randomseed(hash(characterTable[currChar].saveName))
+
+        -- Palette Selection
+        local palettes = characterColorPresets[characterTableRender[currChar][characterTableRender[currChar].currAlt].model]
+        paletteYOffset = lerp(paletteYOffset, palettes.currPalette*17, 0.1)
+        local bottomTapeAngle = angle_from_2d_points(-10, height - 50, width + 10, height - 35)
+        for i = 0, #palettes do
+            local x = width*0.85 - 8 - paletteYOffset + coss(bottomTapeAngle)*17*i
+            local y = height*0.8 - 10 + math.abs(math.cos((get_global_timer() + i*15)*0.05)) - sins(bottomTapeAngle)*17*(i - paletteYOffset/17)
+            if i == 0 then
+                local playerColor = network_player_get_palette_color(gNetworkPlayers[0], SHIRT)
+                djui_hud_set_color(playerColor.r, playerColor.g, playerColor.b, 255)
+            else
+                djui_hud_set_color(palettes[i][SHIRT].r, palettes[i][SHIRT].g, palettes[i][SHIRT].b, 255)
+            end
+            djui_hud_render_rect(x, y, 16, 16)
+        end
     
         -- Render Background Wall
         local playerShirt = network_player_get_override_palette_color(gNetworkPlayers[0], SHIRT)
@@ -1537,20 +1553,6 @@ local function on_hud_render()
                     djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y, textScale)
 
                     characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and 30 or 0, 0.1)
-                end
-
-                local palettes = characterColorPresets[characterTableRender[currChar][characterTableRender[currChar].currAlt].model]
-                paletteYOffset = lerp(paletteYOffset, palettes.currPalette*31, 0.1)
-                for i = 0, #palettes do
-                    local x = width*0.7 - 50 - (i - paletteYOffset/31)*3
-                    local y = height*0.5 - 31*0.5 + i*31 - paletteYOffset + math.cos((get_global_timer() + i*15)*0.05)
-                    if i == 0 then
-                        local playerColor = network_player_get_palette_color(gNetworkPlayers[0], SHIRT)
-                        djui_hud_set_color(playerColor.r, playerColor.g, playerColor.b, 255)
-                    else
-                        djui_hud_set_color(palettes[i][SHIRT].r, palettes[i][SHIRT].g, palettes[i][SHIRT].b, 255)
-                    end
-                    djui_hud_render_rect(x, y, 32, 32)
                 end
             else
                 -- Render Character Grid
