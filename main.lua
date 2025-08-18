@@ -1533,7 +1533,7 @@ local function on_hud_render()
         local wallScale = 0.8 * widthScale
         local wallCutoff = ((width * 0.7 - 8) - (width * 0.35 - wallWidth * wallScale * 0.5 - menuOffsetX)) / wallScale
         local x = width*0.35 - wallWidth*wallScale*0.5 - menuOffsetX
-        local y = height*0.5 - wallHeight*wallScale*0.5 - menuOffsetY
+        local y = height*0.51 - wallHeight*wallScale*0.5 - menuOffsetY
         djui_hud_set_color(playerShirt.r, playerShirt.g, playerShirt.b, 255)
         djui_hud_render_texture_tile(TEX_WALL_LEFT, x, y, wallHeight/wallCutoff*wallScale, wallScale, 0, 0, wallCutoff, wallHeight)
         djui_hud_set_color(playerPants.r, playerPants.g, playerPants.b, 255)
