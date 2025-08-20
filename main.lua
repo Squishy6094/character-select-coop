@@ -54,7 +54,7 @@ local TYPE_STRING = "string"
 local TYPE_INTEGER = "number"
 local TYPE_TABLE = "table"
 
-local TEX_HEADER = get_texture_info("char-select-text")
+local TEX_LOGO = get_texture_info("char-select-logo")
 local TEX_WALL_LEFT = get_texture_info("char-select-wall-left")
 local TEX_WALL_RIGHT = get_texture_info("char-select-wall-right")
 TEX_GRAFFITI_DEFAULT = get_texture_info("char-select-graffiti-default")
@@ -829,18 +829,18 @@ local function mario_update(m)
             play_secondary_music(0, 0, 0, 50)
             camera_freeze()
             hud_hide()
-            set_override_fov(45)
+            djui_hud_set_resolution(RESOLUTION_N64)
+            local widthScale = djui_hud_get_screen_width()/320
+            set_override_fov(45/widthScale)
             if m.area.camera.cutscene == 0 then
                 m.area.camera.cutscene = CUTSCENE_CS_MENU
             end
-            local camScale = charTable[charTable.currAlt].camScale
+            local camScale = charTable[charTable.currAlt].camScale*widthScale
             local camAngle = m.faceAngle.y + 0x800
-            djui_hud_set_resolution(RESOLUTION_N64)
-            local widthScale = djui_hud_get_screen_width()/320
             local focusPos = {
-                x = m.pos.x + sins(camAngle - 0x4000)*(175 - menuOffsetX)*camScale*widthScale,
-                y = m.pos.y + 120 * camScale - menuOffsetY,
-                z = m.pos.z + coss(camAngle - 0x4000)*(175 - menuOffsetX)*camScale*widthScale,
+                x = m.pos.x + sins(camAngle - 0x4000)*(175/widthScale - menuOffsetX)*camScale*widthScale,
+                y = m.pos.y + 120/widthScale * camScale - menuOffsetY,
+                z = m.pos.z + coss(camAngle - 0x4000)*(175/widthScale - menuOffsetX)*camScale*widthScale,
             }
             vec3f_copy(gLakituState.focus, focusPos)
             m.marioBodyState.eyeState = MARIO_EYES_OPEN
@@ -1258,11 +1258,11 @@ local function on_hud_render()
     local djuiWidth = djui_hud_get_screen_width()
     local djuiHeight = djui_hud_get_screen_height()
     djui_hud_set_resolution(RESOLUTION_N64)
-    local width = djuiWidth * (240/djuiHeight) -- Get accurate, unrounded width
+    local width = math.max(djuiWidth * (240/djuiHeight), 320) -- Get accurate, unrounded width
     local height = 240
     local widthHalf = width * 0.5
     local heightHalf = height * 0.5
-    local widthScale = maxf(width, 320) * MATH_DIVIDE_320
+    local widthScale = math.max(width, 320) * MATH_DIVIDE_320
 
     if stallFrame == stallComplete then
         update_menu_color()
@@ -1515,13 +1515,21 @@ local function on_hud_render()
         for i = 0, #palettes do
             local x = width*0.85 - 8 - paletteXOffset + coss(bottomTapeAngle)*17*i
             local y = height*0.8 - 10 + math.abs(math.cos((get_global_timer() + i*15)*0.05)) - sins(bottomTapeAngle)*17*(i - paletteXOffset/17)
+            local paletteShirt = nil
+            local palettePants = nil
             if i == 0 then
-                local playerColor = network_player_get_palette_color(gNetworkPlayers[0], SHIRT)
-                djui_hud_set_color(playerColor.r, playerColor.g, playerColor.b, math.min(paletteTrans, 255))
+                paletteShirt = network_player_get_palette_color(gNetworkPlayers[0], SHIRT)
+                palettePants = network_player_get_palette_color(gNetworkPlayers[0], PANTS)
             else
-                djui_hud_set_color(palettes[i][SHIRT].r, palettes[i][SHIRT].g, palettes[i][SHIRT].b, math.min(paletteTrans, 255))
+                paletteShirt = palettes[i][SHIRT]
+                palettePants = palettes[i][PANTS]
             end
-            djui_hud_render_rect(x, y, 16, 16)
+            if paletteShirt and palettePants then
+                djui_hud_set_color(paletteShirt.r, paletteShirt.g, paletteShirt.b, math.min(paletteTrans, 255))
+                djui_hud_render_rect(x, y, 8, 16)
+                djui_hud_set_color(palettePants.r, palettePants.g, palettePants.b, math.min(paletteTrans, 255))
+                djui_hud_render_rect(x + 8, y, 8, 16)
+            end
         end
     
         -- Render Background Wall
@@ -1530,10 +1538,10 @@ local function on_hud_render()
         --djui_hud_set_rotation(angle_from_2d_points(width*0.7, -10, width*0.7 - 25, height - 35) + 0x4000, 1, 0)
         local wallWidth = TEX_WALL_LEFT.width
         local wallHeight = TEX_WALL_LEFT.height
-        local wallScale = 0.8 * widthScale
-        local wallCutoff = ((width * 0.7 - 8) - (width * 0.35 - wallWidth * wallScale * 0.5 - menuOffsetX)) / wallScale
+        local wallScale = 0.6 * widthScale
+        local wallCutoff = ((width * 0.7 - 5) - (width * 0.35 - wallWidth * wallScale * 0.5 - menuOffsetX)) / wallScale
         local x = width*0.35 - wallWidth*wallScale*0.5 - menuOffsetX
-        local y = height*0.51 - wallHeight*wallScale*0.5 - menuOffsetY
+        local y = height*0.42 - wallHeight*wallScale*0.5 - menuOffsetY
         djui_hud_set_color(playerShirt.r, playerShirt.g, playerShirt.b, 255)
         djui_hud_render_texture_tile(TEX_WALL_LEFT, x, y, wallHeight/wallCutoff*wallScale, wallScale, 0, 0, wallCutoff, wallHeight)
         djui_hud_set_color(playerPants.r, playerPants.g, playerPants.b, 255)
@@ -1561,7 +1569,7 @@ local function on_hud_render()
                     else
                         djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
                     end
-                    local x = -5 + math.abs(row - gridYOffset/31)^2.5*2 + math.sin((get_global_timer() + i*15)*0.05) + characterTableRender[i].UIOffset - menuOffsetX*0.5
+                    local x = width*0.5 - 64 + math.abs(row - gridYOffset/31)^2.5 + math.sin((get_global_timer() + i*15)*0.05) - characterTableRender[i].UIOffset - menuOffsetX*0.5
                     local y = height*0.5 - 31*0.5 + row*31 - gridYOffset + math.cos((get_global_timer() + i*15)*0.05) - menuOffsetY*0.5
                     djui_hud_render_texture(TEX_BUTTON_BIG, x, y, 1, 1)
                     local textScale = math.min(75/djui_hud_measure_text(charName), 0.7)
@@ -1576,7 +1584,7 @@ local function on_hud_render()
                     djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
                     djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y, textScale)
 
-                    characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and 30 or 0, 0.1)
+                    characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and 15 or 0, 0.1)
                 end
             else
                 -- Render Character Grid
@@ -1594,7 +1602,7 @@ local function on_hud_render()
                         djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
                     end
                     local x = width*0.3 - gridButtonsPerRow*35*0.5 + 35*column - math.abs(row - gridYOffset/35)^2*3 + math.sin((get_global_timer() + i*10)*0.1) - menuOffsetX*0.5
-                    local y = height*0.5 - 35*0.5 + row*35 - gridYOffset + math.cos((get_global_timer() + i*10)*0.1) + characterTableRender[i].UIOffset - menuOffsetY*0.5
+                    local y = height*0.5 - 35*0.5 + row*35 - gridYOffset + math.cos((get_global_timer() + i*10)*0.1) - characterTableRender[i].UIOffset*0.5 - menuOffsetY*0.5
                     djui_hud_render_texture(TEX_BUTTON_SMALL, x, y, 1, 1)
                     x = x + 8
                     y = y + 8
@@ -1607,7 +1615,7 @@ local function on_hud_render()
                         djui_hud_render_texture(charIcon, x, y, 1 / (charIcon.width * MATH_DIVIDE_16), 1 / (charIcon.height * MATH_DIVIDE_16))
                     end
 
-                    characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and -5 or 0, 0.1)
+                    characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and 15 or 0, 0.1)
                 end
             end
         else
@@ -1661,11 +1669,6 @@ local function on_hud_render()
             end
         end
 
-        -- Render Background Top
-        djui_hud_set_rotation(angle_from_2d_points(-10, 35, width*0.7 - 5, 50), 0, 1)
-        djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_render_rect(-10, -30, width*0.7 + 5, 70)
-        djui_hud_set_rotation(0, 0, 0)
 
         -- Render Background Bottom
         djui_hud_set_rotation(angle_from_2d_points(-10, height - 50, width + 10, height - 35), 0, 0)
@@ -1698,17 +1701,22 @@ local function on_hud_render()
         djui_hud_render_caution_tape(width*0.7 - 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Bottom Tape
         djui_hud_print_text(charName, width*0.85 - djui_hud_measure_text(charName)*0.5*nameScale - 2 + menuOffsetX*0.3, 30 - 32*nameScale + menuOffsetY*0.3, nameScale)
 
-        -- Render Header
+        -- Render Header BG
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_set_rotation(angle_from_2d_points(-10, 35, width*0.7 - 5, 50), 0, 0)
-        djui_hud_render_texture(TEX_HEADER, 5 + menuOffsetX*0.2, -5 + menuOffsetY*0.2, 0.4, 0.4)
-        djui_hud_set_rotation(0, 0, 0)
+        djui_hud_set_rotation(0x1000, 0.5, 0.5)
+        djui_hud_set_color(0, 0, 0, 255)
+        djui_hud_render_rect(-150, -50, 300, 100)
 
         -- Render Tape
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_caution_tape(-10, 35, width*0.7 - 5, 50, 1) -- Top Tape
-        djui_hud_render_caution_tape(width*0.7 - 2, -10, width*0.7 - 13, height - 35, 1, 0.6) -- Side Tape
+        djui_hud_render_caution_tape(-10, 50, 160, -10, 1) -- Top Tape
+        djui_hud_render_caution_tape(width*0.7 - 2, -10, width*0.7 - 10, height - 35, 1, 0.6) -- Side Tape
         djui_hud_render_caution_tape(-10, height - 50, width + 10, height - 35, 1) -- Bottom Tape
+
+        -- Render Header
+        djui_hud_set_rotation(0, 0, 0)
+        djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
+        djui_hud_render_texture(TEX_LOGO, menuOffsetX*0.1, menuOffsetY*0.1, 0.25, 0.25)
 
         -- Anim logic
         if options then

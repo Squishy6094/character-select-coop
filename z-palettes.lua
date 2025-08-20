@@ -7,7 +7,8 @@ local network_player_set_override_palette_color,network_player_reset_override_pa
 characterColorPresets = {
     [E_MODEL_MARIO] = {
         currPalette = 1,
-        [1] = {
+        {
+            name = "Default",
             [PANTS]  = { r = 0x00, g = 0x00, b = 0xff },
             [SHIRT]  = { r = 0xff, g = 0x00, b = 0x00 },
             [GLOVES] = { r = 0xff, g = 0xff, b = 0xff },
@@ -17,10 +18,22 @@ characterColorPresets = {
             [CAP]    = { r = 0xff, g = 0x00, b = 0x00 },
             [EMBLEM] = { r = 0xff, g = 0x00, b = 0x00 },
         },
+        {
+            name = "Fire Flower",
+            [PANTS]  = { r = 0xb2, g = 0x28, b = 0x18 },
+            [SHIRT]  = { r = 0xff, g = 0xe0, b = 0xe0 },
+            [GLOVES] = { r = 0xff, g = 0xff, b = 0xff },
+            [SHOES]  = { r = 0x72, g = 0x1c, b = 0x0e },
+            [HAIR]   = { r = 0x73, g = 0x06, b = 0x00 },
+            [SKIN]   = { r = 0xfe, g = 0xc1, b = 0x79 },
+            [CAP]    = { r = 0xff, g = 0xe0, b = 0xe0 },
+            [EMBLEM] = { r = 0xff, g = 0x00, b = 0x00 },
+        },
     },
     [E_MODEL_LUIGI] = {
         currPalette = 1,
-        [1] = {
+        {
+            name = "Default",
             [PANTS]  = { r = 0x00, g = 0x00, b = 0xff },
             [SHIRT]  = { r = 0x00, g = 0xff, b = 0x00 },
             [GLOVES] = { r = 0xff, g = 0xff, b = 0xff },
@@ -30,10 +43,33 @@ characterColorPresets = {
             [CAP]    = { r = 0x00, g = 0xff, b = 0x00 },
             [EMBLEM] = { r = 0x00, g = 0xff, b = 0x00 },
         },
+        {
+            name = "Smash",
+            [PANTS]  = { r = 0x17, g = 0x1f, b = 0x27 },
+            [SHIRT]  = { r = 0x00, g = 0xd0, b = 0xff },
+            [GLOVES] = { r = 0xff, g = 0xff, b = 0xff },
+            [SHOES]  = { r = 0x70, g = 0x20, b = 0x20 },
+            [HAIR]   = { r = 0x73, g = 0x06, b = 0x00 },
+            [SKIN]   = { r = 0xfe, g = 0xc1, b = 0x79 },
+            [CAP]    = { r = 0x00, g = 0xd0, b = 0xff },
+            [EMBLEM] = { r = 0x00, g = 0x00, b = 0xff },
+        },
+        {
+            name = "Kindness",
+            [PANTS]  = { r = 0xff, g = 0x44, b = 0xff },
+            [SHIRT]  = { r = 0x93, g = 0x00, b = 0x90 },
+            [GLOVES] = { r = 0xff, g = 0x99, b = 0xff },
+            [SHOES]  = { r = 0xaa, g = 0x2c, b = 0x66 },
+            [HAIR]   = { r = 0xf3, g = 0x65, b = 0xda },
+            [SKIN]   = { r = 0xc8, g = 0x6b, b = 0x9d },
+            [CAP]    = { r = 0xef, g = 0x2b, b = 0xea },
+            [EMBLEM] = { r = 0xef, g = 0x2b, b = 0xea },
+        },
     },
     [E_MODEL_TOAD_PLAYER] = {
         currPalette = 1,
-        [1] = {
+        {
+            name = "Default",
             [PANTS]  = { r = 0xff, g = 0xff, b = 0xff },
             [SHIRT]  = { r = 0x4c, g = 0x2c, b = 0xd3 },
             [GLOVES] = { r = 0xff, g = 0xff, b = 0xff },
@@ -43,10 +79,33 @@ characterColorPresets = {
             [CAP]    = { r = 0xff, g = 0x00, b = 0x00 },
             [EMBLEM] = { r = 0xff, g = 0x00, b = 0x00 },
         },
+        {
+            name = "Bucken Berry",
+            [PANTS]  = { r = 0xff, g = 0xff, b = 0xff },
+            [SHIRT]  = { r = 0x00, g = 0x00, b = 0xff },
+            [GLOVES] = { r = 0xff, g = 0xff, b = 0xff },
+            [SHOES]  = { r = 0x68, g = 0x40, b = 0x1b },
+            [HAIR]   = { r = 0x73, g = 0x06, b = 0x00 },
+            [SKIN]   = { r = 0xfe, g = 0xd5, b = 0xa1 },
+            [CAP]    = { r = 0x00, g = 0x00, b = 0xff },
+            [EMBLEM] = { r = 0xff, g = 0x00, b = 0x00 },
+        },
+        {
+            name = "Ala Gold",
+            [PANTS]  = { r = 0xff, g = 0xff, b = 0xff },
+            [SHIRT]  = { r = 0xff, g = 0xff, b = 0x00 },
+            [GLOVES] = { r = 0xff, g = 0xff, b = 0xff },
+            [SHOES]  = { r = 0x68, g = 0x40, b = 0x1b },
+            [HAIR]   = { r = 0x73, g = 0x06, b = 0x00 },
+            [SKIN]   = { r = 0xfe, g = 0xd5, b = 0xa1 },
+            [CAP]    = { r = 0xff, g = 0xff, b = 0x00 },
+            [EMBLEM] = { r = 0xff, g = 0x00, b = 0x00 },
+        },
     },
     [E_MODEL_WALUIGI] = {
         currPalette = 1,
-        [1] = {
+        {
+            name = "Default",
             [PANTS]  = { r = 0x16, g = 0x16, b = 0x27 },
             [SHIRT]  = { r = 0x61, g = 0x26, b = 0xb0 },
             [GLOVES] = { r = 0xff, g = 0xff, b = 0xff },
@@ -60,7 +119,8 @@ characterColorPresets = {
     },
     [E_MODEL_WARIO] = {
         currPalette = 1,
-        [1] = {
+        {
+            name = "Default",
             [PANTS]  = { r = 0x7f, g = 0x20, b = 0x7a },
             [SHIRT]  = { r = 0xff, g = 0xbd, b = 0x00 },
             [GLOVES] = { r = 0xff, g = 0xff, b = 0xff },
