@@ -1509,26 +1509,28 @@ local function on_hud_render()
 
         -- Palette Selection
         local palettes = characterColorPresets[characterTableRender[currChar][characterTableRender[currChar].currAlt].model]
-        paletteXOffset = lerp(paletteXOffset, palettes.currPalette*17, 0.1)
-        paletteTrans = math.max(paletteTrans - 6, 0)
-        local bottomTapeAngle = angle_from_2d_points(-10, height - 50, width + 10, height - 35)
-        for i = 0, #palettes do
-            local x = width*0.85 - 8 - paletteXOffset + coss(bottomTapeAngle)*17*i
-            local y = height*0.8 - 10 + math.abs(math.cos((get_global_timer() + i*15)*0.05)) - sins(bottomTapeAngle)*17*(i - paletteXOffset/17)
-            local paletteShirt = nil
-            local palettePants = nil
-            if i == 0 then
-                paletteShirt = network_player_get_palette_color(gNetworkPlayers[0], SHIRT)
-                palettePants = network_player_get_palette_color(gNetworkPlayers[0], PANTS)
-            else
-                paletteShirt = palettes[i][SHIRT]
-                palettePants = palettes[i][PANTS]
-            end
-            if paletteShirt and palettePants then
-                djui_hud_set_color(paletteShirt.r, paletteShirt.g, paletteShirt.b, math.min(paletteTrans, 255))
-                djui_hud_render_rect(x, y, 8, 16)
-                djui_hud_set_color(palettePants.r, palettePants.g, palettePants.b, math.min(paletteTrans, 255))
-                djui_hud_render_rect(x + 8, y, 8, 16)
+        if palettes then
+            paletteXOffset = lerp(paletteXOffset, palettes.currPalette*17, 0.1)
+            paletteTrans = math.max(paletteTrans - 6, 0)
+            local bottomTapeAngle = angle_from_2d_points(-10, height - 50, width + 10, height - 35)
+            for i = 0, #palettes do
+                local x = width*0.85 - 8 - paletteXOffset + coss(bottomTapeAngle)*17*i
+                local y = height*0.8 - 10 + math.abs(math.cos((get_global_timer() + i*15)*0.05)) - sins(bottomTapeAngle)*17*(i - paletteXOffset/17)
+                local paletteShirt = nil
+                local palettePants = nil
+                if i == 0 then
+                    paletteShirt = network_player_get_palette_color(gNetworkPlayers[0], SHIRT)
+                    palettePants = network_player_get_palette_color(gNetworkPlayers[0], PANTS)
+                else
+                    paletteShirt = palettes[i][SHIRT]
+                    palettePants = palettes[i][PANTS]
+                end
+                if paletteShirt and palettePants then
+                    djui_hud_set_color(paletteShirt.r, paletteShirt.g, paletteShirt.b, math.min(paletteTrans, 255))
+                    djui_hud_render_rect(x, y, 8, 16)
+                    djui_hud_set_color(palettePants.r, palettePants.g, palettePants.b, math.min(paletteTrans, 255))
+                    djui_hud_render_rect(x + 8, y, 8, 16)
+                end
             end
         end
     
