@@ -58,9 +58,6 @@ local TEX_LOGO = get_texture_info("char-select-logo")
 local TEX_WALL_LEFT = get_texture_info("char-select-wall-left")
 local TEX_WALL_RIGHT = get_texture_info("char-select-wall-right")
 TEX_GRAFFITI_DEFAULT = get_texture_info("char-select-graffiti-default")
-local TEX_SIGNPOST_SIGN = get_texture_info("char-select-signpost-sign")
-local TEX_SIGNPOST_BASE = get_texture_info("char-select-signpost-base")
-local TEX_SIGNPOST_BOLTS = get_texture_info("char-select-signpost-bolts")
 local TEX_BUTTON_SMALL = get_texture_info("char-select-button-small")
 local TEX_BUTTON_BIG = get_texture_info("char-select-button-big")
 local TEX_OVERRIDE_HEADER = nil
@@ -1248,16 +1245,6 @@ end
 
 local TEX_GEAR_BIG = get_texture_info("char-select-gear-big")
 
-local streetTypes = {
-    "AVE",
-    "BLVD",
-    "BRG",
-    "MDW",
-    "MT",
-    "PKWY",
-    "ST",
-}
-
 local buttonAltAnim = 0
 local menuOpacity = 245
 local gridButtonsPerRow = 5
@@ -1574,46 +1561,30 @@ local function on_hud_render()
                 -- Render Character List
                 local currRow = (currCharRender - 1)
                 gridYOffset = lerp(gridYOffset, currRow*31, 0.1)
-
-                djui_hud_set_color(255, 255, 255, 255)
-                djui_hud_render_texture(TEX_SIGNPOST_BASE, width*0.3 - 8 - menuOffsetX*0.5, 0, 0.5, height*MATH_DIVIDE_16)
-
                 for i = 0, #characterTableRender do
-                    local rowSpacing = 28
                     local row = (i - 1)
-                    math.randomseed(hash(characterTable[i].saveName))
                     local charName = characterTableRender[i][characterTableRender[i].currAlt].name
                     local charColor = characterTableRender[i][characterTableRender[i].currAlt].color
-                    local signPlacement = i%2
-                    local charStreetType = streetTypes[math.random(1, #streetTypes)]
-                    local x = width*0.3 + 8
-                    local y = height*0.5 - rowSpacing*0.5 + row*rowSpacing - gridYOffset
-                    local xSign = x - menuOffsetX*0.55 - 90 + 60*signPlacement
-                    local ySign = y - menuOffsetY*0.55
                     if i == currCharRender then
                         local blinkAnim = math.abs(math.sin(get_global_timer()*0.1))*0.5
-                        --djui_hud_set_color(255 + (charColor.r - 255)*blinkAnim, 255 + (charColor.g - 255)*blinkAnim, 255 + (charColor.b - 255)*blinkAnim, 255)
+                        djui_hud_set_color(255 + (charColor.r - 255)*blinkAnim, 255 + (charColor.g - 255)*blinkAnim, 255 + (charColor.b - 255)*blinkAnim, 255)
+                    else
                         djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
-                    else
-                        djui_hud_set_color(charColor.r*0.5, charColor.g*0.5, charColor.b*0.5, 255)
                     end
-                    djui_hud_render_texture_tile(TEX_SIGNPOST_SIGN, xSign , ySign, 1*0.25, 1, 128*signPlacement, 0, 128, 32)
-                    djui_hud_set_color(255, 255, 255, 255)
-                    djui_hud_render_texture_tile(TEX_SIGNPOST_SIGN, xSign , ySign, 1*0.25, 1, 128*signPlacement, 32, 128, 32)
-                    
-                    --djui_hud_render_texture(TEX_BUTTON_BIG, x, y, 1, 1)
+                    local x = width*0.5 - 64 + math.abs(row - gridYOffset/31)^2.5 + math.sin((get_global_timer() + i*15)*0.05) - characterTableRender[i].UIOffset - menuOffsetX*0.5
+                    local y = height*0.5 - 31*0.5 + row*31 - gridYOffset + math.cos((get_global_timer() + i*15)*0.05) - menuOffsetY*0.5
+                    djui_hud_render_texture(TEX_BUTTON_BIG, x, y, 1, 1)
                     local textScale = math.min(75/djui_hud_measure_text(charName), 0.7)
-                    djui_hud_set_font(FONT_ALIASED)
+                    x = x + 8
+                    y = y + 8 + 2/textScale
+                    djui_hud_set_font(FONT_RECOLOR_HUD)
                     djui_hud_set_color(0, 0, 0, 255)
-                    if (charColor.r + charColor.g + charColor.b) < 200*3 then
-                        djui_hud_set_color(255, 255, 255, 255)
-                    else
-                        djui_hud_set_color(0, 0, 0, 255)
-                    end
-                    
-                    djui_hud_print_text(charName, xSign + 96*0.5 - djui_hud_measure_text(charName)*textScale*0.5, ySign + 16 - 16*textScale, textScale)
-                    djui_hud_set_font(FONT_NORMAL)
-                    djui_hud_print_text(charStreetType, xSign + (signPlacement == 0 and 88 or 90) - djui_hud_measure_text(charStreetType)*0.3, ySign + (signPlacement == 0 and 6 or 3), 0.3)
+                    djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 - textScale*1.5, y, textScale)
+                    djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y - textScale*1.5, textScale)
+                    djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 + textScale*1.5, y, textScale)
+                    djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y + textScale*1.5, textScale)
+                    djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
+                    djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y, textScale)
 
                     characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and 15 or 0, 0.1)
                 end
