@@ -347,6 +347,37 @@ local function character_add_celebration_star(modelInfo, starModel, starIcon)
     return false
 end
 
+---@description A function that adds a peach model to a character for the opening letter and ending cutscene.Can also change peach's letter for the character
+---@added 1.16
+---@param modelInfo ModelExtendedId|integer Model Information Received from smlua_model_util_get_id()	
+---@param peachmodelstart ModelExtendedId? Model Information Received from smlua_model_util_get_id()	the model used for peach in the opening if left blank will use default peach model
+---@param peachmodelend ModelExtendedId? Model Information Received from smlua_model_util_get_id()	the model used for peach in the ending if left blank will use default peach model
+---@param peachletterleft TextureInfo? left side of the texture to replace peach's letter texture in the intro
+---@param peachletterright TextureInfo? right side of the texture to replace peach's letter texture in the intro
+---@param peachlettersig TextureInfo?  texture to replace peach's letter texture in the intro
+local function character_add_peach_custom(modelInfo, peachmodelstart,peachmodelend,peachletterleft,peachletterright,peachlettersig)
+        characterpeachstart[modelInfo] = peachmodelstart
+        characterpeachend[modelInfo] = peachmodelend
+        if (peachletterleft ~= nil) and (peachletterright ~= nil) and (peachlettersig ~= nil) then
+            characterpeachletter[modelInfo] = {left = peachletterleft,right = peachletterright,sig = peachlettersig}
+        end
+end
+
+---@description A function that adds a peach model to a character for the opening letter and ending cutscene
+---@added 1.16
+---@param modelInfo ModelExtendedId|integer Model Information Received from smlua_model_util_get_id()	
+---@param toad_one ModelExtendedId Model Information Received from smlua_model_util_get_id()	the model used for one of the toads in the ending if left blank said toad will use the default npc toad model
+---@param toad_two ModelExtendedId? Model Information Received from smlua_model_util_get_id()	the model used for one of the toads in the ending if left blank said toad will use the default npc toad model
+local function character_add_ending_toad_model(modelInfo, toad_one,toad_two)
+    characterendtoad1[modelInfo] = toad_one
+    if toad_two == nil then
+        characterendtoad2[modelInfo] = toad_one
+    else
+        characterendtoad2[modelInfo] = toad_two
+    end
+    
+end
+
 ---@description A function that adds a palette preset to a character
 ---@added 1.8
 ---@param modelInfo ModelExtendedId|integer
@@ -978,6 +1009,8 @@ _G.charSelect = {
     character_add_caps = character_add_caps,
     character_get_caps = character_get_caps,
     character_add_celebration_star = character_add_celebration_star,
+    character_add_peach_custom = character_add_peach_custom,
+    character_add_ending_toad_model = character_add_ending_toad_model,
     character_add_health_meter = character_add_health_meter,
     character_add_costume_health_meter = character_add_costume_health_meter,
     character_add_course_texture = character_add_course_texture,
