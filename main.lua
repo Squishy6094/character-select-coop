@@ -60,6 +60,7 @@ local TEX_WALL_RIGHT = get_texture_info("char-select-wall-right")
 TEX_GRAFFITI_DEFAULT = get_texture_info("char-select-graffiti-default")
 local TEX_BUTTON_SMALL = get_texture_info("char-select-button-small")
 local TEX_BUTTON_BIG = get_texture_info("char-select-button-big")
+local TEX_PALETTE_BUCKET = get_texture_info("char-select-palette-bucket")
 local TEX_OVERRIDE_HEADER = nil
 
 local SOUND_CHAR_SELECT_THEME = audio_stream_load("char-select-menu-theme.ogg")
@@ -1508,28 +1509,51 @@ local function on_hud_render()
         math.randomseed(hash(characterTable[currChar].saveName))
 
         -- Palette Selection
+        local charColor = characterTableRender[currChar][characterTableRender[currChar].currAlt].color
         local palettes = characterColorPresets[characterTableRender[currChar][characterTableRender[currChar].currAlt].model]
         if palettes then
-            paletteXOffset = lerp(paletteXOffset, palettes.currPalette*17, 0.1)
+            local bucketSpacing = 24
+            paletteXOffset = lerp(paletteXOffset, palettes.currPalette*bucketSpacing, 0.1)
             paletteTrans = math.max(paletteTrans - 6, 0)
             local bottomTapeAngle = angle_from_2d_points(-10, height - 50, width + 10, height - 35)
+
+            local paletteName = palettes.currPalette == 0 and "Custom" or (palettes[palettes.currPalette].name or ("Palette "..palettes.currPalette))
+            djui_hud_set_font(FONT_RECOLOR_HUD)
+            local x = width*0.85 - djui_hud_measure_text(paletteName)*0.25
+            local y = height*0.68 + math.max((-paletteTrans + 300), 0)^2*0.0005
+            djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, math.min(paletteTrans, 255))
+            djui_hud_print_text(paletteName, x, y, 0.5)
+
             for i = 0, #palettes do
-                local x = width*0.85 - 8 - paletteXOffset + coss(bottomTapeAngle)*17*i
-                local y = height*0.8 - 10 + math.abs(math.cos((get_global_timer() + i*15)*0.05)) - sins(bottomTapeAngle)*17*(i - paletteXOffset/17)
+                local x = width*0.85 - 16 - paletteXOffset + coss(bottomTapeAngle)*bucketSpacing*i
+                local y = height*0.72 + math.abs(math.cos((get_global_timer() + i*bucketSpacing)*0.05)) - sins(bottomTapeAngle)*bucketSpacing*(i - paletteXOffset/bucketSpacing)
                 local paletteShirt = nil
                 local palettePants = nil
                 if i == 0 then
                     paletteShirt = network_player_get_palette_color(gNetworkPlayers[0], SHIRT)
                     palettePants = network_player_get_palette_color(gNetworkPlayers[0], PANTS)
+                    paletteName = "User"
                 else
                     paletteShirt = palettes[i][SHIRT]
                     palettePants = palettes[i][PANTS]
+                    paletteName = palettes[i].name
                 end
                 if paletteShirt and palettePants then
+                    local bucketFrame = (math.floor((get_global_timer() + i*10)*0.2)%10) * 32
+                    local bucketPaintFrame = (math.floor(get_global_timer()*0.3)%10) * 32
+                    djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, math.min(paletteTrans, 255))
+                    djui_hud_render_texture_tile(TEX_PALETTE_BUCKET, x, y, 1, 1, 0, bucketFrame, 32, 32)
                     djui_hud_set_color(paletteShirt.r, paletteShirt.g, paletteShirt.b, math.min(paletteTrans, 255))
-                    djui_hud_render_rect(x, y, 8, 16)
+                    djui_hud_render_texture_tile(TEX_PALETTE_BUCKET, x, y, 1, 1, 32, bucketFrame, 32, 32)
                     djui_hud_set_color(palettePants.r, palettePants.g, palettePants.b, math.min(paletteTrans, 255))
-                    djui_hud_render_rect(x + 8, y, 8, 16)
+                    djui_hud_render_texture_tile(TEX_PALETTE_BUCKET, x, y, 1, 1, 64, bucketFrame, 32, 32)
+
+                    if i == palettes.currPalette then
+                        djui_hud_set_color(paletteShirt.r, paletteShirt.g, paletteShirt.b, math.min(paletteTrans, 255))
+                        djui_hud_render_texture_tile(TEX_PALETTE_BUCKET, x, y, 1, 1, 96, bucketPaintFrame, 32, 32)
+                        djui_hud_set_color(palettePants.r, palettePants.g, palettePants.b, math.min(paletteTrans, 255))
+                        djui_hud_render_texture_tile(TEX_PALETTE_BUCKET, x, y, 1, 1, 128, bucketPaintFrame, 32, 32)
+                    end
                 end
             end
         end
