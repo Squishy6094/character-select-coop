@@ -1563,7 +1563,6 @@ local function on_hud_render()
         local x = width*0.35 - wallWidth*wallScale*0.5 - menuOffsetX
         local y = height*0.42 - wallHeight*wallScale*0.5 - menuOffsetY
         -- Reminder to put new hud viewport function here
-        djui_hud_set_viewport(0, 0, width*0.2, height)
         djui_hud_set_color(playerShirt.r, playerShirt.g, playerShirt.b, 255)
         djui_hud_render_texture_tile(TEX_WALL_LEFT, x, y, wallHeight/wallCutoff*wallScale, wallScale, 0, 0, wallCutoff, wallHeight)
         djui_hud_set_color(playerPants.r, playerPants.g, playerPants.b, 255)
@@ -1575,7 +1574,6 @@ local function on_hud_render()
         local graffitiHeightScale = 120/graffiti.width 
         djui_hud_render_texture(graffiti, width*0.35 - graffiti.width*0.5*graffitiWidthScale - menuOffsetX, height*0.5 - graffiti.height*0.5*graffitiHeightScale - menuOffsetY, graffitiWidthScale, graffitiHeightScale)
         djui_hud_set_rotation(0, 0, 0)
-        djui_hud_reset_viewport()
 
         -- API Rendering (Below Text)
         if #hookTableRenderInMenu.back > 0 then
