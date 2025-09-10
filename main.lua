@@ -425,8 +425,8 @@ local function update_character_render_table()
     gridYOffset = -100
     local ogNum = currChar
     local insertNum = 0
-    --currChar = 1
-    currCharRender = 1
+    currChar = 0
+    currCharRender = 0
     local category = characterCategories[currCategory]
     if category == nil then return false end
     characterTableRender = {}
@@ -439,7 +439,7 @@ local function update_character_render_table()
                     characterTableRender[insertNum].UIOffset = 0
                     if ogNum == i then
                         currChar = ogNum
-                        currCharRender = insertNum
+                        currCharRender = num_wrap(insertNum, 0, #characterTableRender)
                     end
                     insertNum = insertNum + 1
                 end
@@ -447,7 +447,7 @@ local function update_character_render_table()
         end
     end
     if #characterTableRender > 1 then
-        currChar = (characterTableRender[currCharRender] and characterTableRender[currCharRender].ogNum or characterTableRender[1].ogNum)
+        currChar = (characterTableRender[currCharRender] and characterTableRender[currCharRender].ogNum or characterTableRender[0].ogNum)
         return true
     else
         return false
@@ -1290,24 +1290,6 @@ local function on_hud_render()
         local x = 135 * widthScale * 0.8
 
         --[[
-        -- Render All Black Squares Behind Below API
-        djui_hud_set_color(menuColorHalf.r * 0.1, menuColorHalf.g * 0.1, menuColorHalf.b * 0.1, menuOpacity)
-        -- Description
-        djui_hud_render_rect(width - x + 2, 2 + 46, x - 4, height - 4 - 46)
-        -- Buttons
-        djui_hud_render_rect(2, 2 + 46, x - 4, height - 4 - 46)
-        -- Header
-        djui_hud_render_rect(2, 2, width - 4, 46)
-        ]]
-
-        -- API Rendering (Below Text)
-        if #hookTableRenderInMenu.back > 0 then
-            for i = 1, #hookTableRenderInMenu.back do
-                hookTableRenderInMenu.back[i]()
-            end
-        end
-
-        --[[
         --Character Description
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_rect(width - x, 50, 2, height - 50)
@@ -1499,13 +1481,6 @@ local function on_hud_render()
             djui_hud_print_text(TEXT_RATIO_UNSUPPORTED, 5, 39, 0.5)
         end
 
-        -- API Rendering (Above Text)
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        if #hookTableRenderInMenu.front > 0 then
-            for i = 1, #hookTableRenderInMenu.front do
-                hookTableRenderInMenu.front[i]()
-            end
-        end
         djui_hud_set_resolution(RESOLUTION_N64)
 
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
@@ -1581,13 +1556,14 @@ local function on_hud_render()
         -- Render Background Wall
         local playerShirt = network_player_get_override_palette_color(gNetworkPlayers[0], SHIRT)
         local playerPants = network_player_get_override_palette_color(gNetworkPlayers[0], PANTS)
-        --djui_hud_set_rotation(angle_from_2d_points(width*0.7, -10, width*0.7 - 25, height - 35) + 0x4000, 1, 0)
         local wallWidth = TEX_WALL_LEFT.width
         local wallHeight = TEX_WALL_LEFT.height
         local wallScale = 0.6 * widthScale
         local wallCutoff = ((width * 0.7 - 5) - (width * 0.35 - wallWidth * wallScale * 0.5 - menuOffsetX)) / wallScale
         local x = width*0.35 - wallWidth*wallScale*0.5 - menuOffsetX
         local y = height*0.42 - wallHeight*wallScale*0.5 - menuOffsetY
+        -- Reminder to put new hud viewport function here
+        djui_hud_set_viewport(0, 0, width*0.2, height)
         djui_hud_set_color(playerShirt.r, playerShirt.g, playerShirt.b, 255)
         djui_hud_render_texture_tile(TEX_WALL_LEFT, x, y, wallHeight/wallCutoff*wallScale, wallScale, 0, 0, wallCutoff, wallHeight)
         djui_hud_set_color(playerPants.r, playerPants.g, playerPants.b, 255)
@@ -1599,6 +1575,14 @@ local function on_hud_render()
         local graffitiHeightScale = 120/graffiti.width 
         djui_hud_render_texture(graffiti, width*0.35 - graffiti.width*0.5*graffitiWidthScale - menuOffsetX, height*0.5 - graffiti.height*0.5*graffitiHeightScale - menuOffsetY, graffitiWidthScale, graffitiHeightScale)
         djui_hud_set_rotation(0, 0, 0)
+        djui_hud_reset_viewport()
+
+        -- API Rendering (Below Text)
+        if #hookTableRenderInMenu.back > 0 then
+            for i = 1, #hookTableRenderInMenu.back do
+                hookTableRenderInMenu.back[i]()
+            end
+        end
 
         if not options then
             -- Render Character Grid
@@ -1715,6 +1699,14 @@ local function on_hud_render()
         descRender = descRender .. " - " .. desc
         djui_hud_print_text("Creator: " .. credit, 5 + menuOffsetX*0.2, height - 30 + menuOffsetY*0.2, 0.8)
         djui_hud_print_text(descRender, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8 + menuOffsetX*0.15, height - 17 + menuOffsetY*0.15, 0.8)
+
+        -- API Rendering (Above Text)
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        if #hookTableRenderInMenu.front > 0 then
+            for i = 1, #hookTableRenderInMenu.front do
+                hookTableRenderInMenu.front[i]()
+            end
+        end
 
         -- Render Header BG
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
@@ -2073,7 +2065,6 @@ local function before_mario_update(m)
     -- Checks
     currChar = characterTableRender[currCharRender].ogNum
     
-
     -- Yo Melee called
     local menuOffsetXRaw = (m.controller.extStickX ~= 0 and m.controller.extStickX or button_to_analog(charSelect.controller, L_CBUTTONS, R_CBUTTONS))*0.2
     local menuOffsetYRaw = (m.controller.extStickY ~= 0 and -m.controller.extStickY or button_to_analog(charSelect.controller, U_CBUTTONS, D_CBUTTONS))*0.2
