@@ -2210,7 +2210,7 @@ local function chat_command(msg)
 
     -- Name Check
     for i = 0, #characterTable do
-        if not characterTable[i].locked then
+        if characterTable[i].locked ~= LOCKED_TRUE then
             local saveName = string_underscore_to_space(string_lower(characterTable[i].saveName))
             for a = 1, #characterTable[i] do
                 if msg == string_lower(characterTable[i][a].name) or msg == saveName then
@@ -2228,12 +2228,13 @@ local function chat_command(msg)
         local charNum = tonumber(msgSplit[1])
         local altNum = tonumber(msgSplit[2])
         altNum = altNum and altNum or 1
-        if charNum > 0 and charNum <= #characterTable and not characterTable[charNum].locked then
-            force_set_character(currChar, altNum)
+        if charNum > 0 and charNum <= #characterTable and characterTable[charNum].locked ~= LOCKED_TRUE then
+            force_set_character(charNum, altNum)
             djui_chat_message_create('Character set to "' .. characterTable[charNum][altNum].name .. '" Successfully!')
             return true
         end
     end
+
     djui_chat_message_create("Character Not Found")
     return true
 end
