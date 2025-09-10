@@ -72,7 +72,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         saveName = type(name) == TYPE_STRING and string_space_to_underscore(name) or "Untitled",
         currAlt = 1,
         hasMoveset = false,
-        locked = false,
+        locked = LOCKED_NEVER,
         category = "All",
         ogNum = charNum,
         [1] = {
@@ -606,12 +606,12 @@ end
 ---@param unlockCondition function|boolean? The condition for if the character stays locked
 ---@param notify boolean? Toggles whether Character Select should notify the user when the character is unlocked
 local function character_set_locked(charNum, unlockCondition, notify)
-    if charNum == nil or charNum > #characterTable or charNum < 2 then return end
+    if charNum == nil or charNum > #characterTable or charNum < CT_MAX then return end
     if unlockCondition == nil then unlockCondition = false end
     if notify == nil then notify = true end
-    characterTable[charNum].locked = true
+    characterTable[charNum].locked = LOCKED_TRUE
     if currChar == charNum then
-        currChar = 1
+        force_set_character()
     end
     characterUnlock[charNum] = {
         check = unlockCondition,
@@ -967,6 +967,15 @@ local function character_get_graffiti(charNum)
     return characterGraffiti[charNum] and characterGraffiti[charNum] or TEX_GRAFFITI_DEFAULT
 end
 
+---@description A function that runs when Character Select Resets it's save data
+---@added 1.16
+---@param func function
+---@note Function gives `currChar` and `prevChar` as function inputs
+local function hook_on_save_data_reset(func)
+    if type(func) ~= TYPE_FUNCTION then return end
+    table_insert(hookTableOnReset, func)
+end
+
 _G.charSelectExists = true
 _G.charSelect = {
     -- Character Functions --
@@ -1050,6 +1059,7 @@ _G.charSelect = {
     hook_allow_menu_open = hook_allow_menu_open,
     hook_render_in_menu = hook_render_in_menu,
     hook_on_character_change = hook_on_character_change,
+    hook_on_save_data_reset = hook_on_save_data_reset,
     config_character_sounds = placeholder, -- Function located in z-voice.lua
     character_hook_moveset = character_hook_moveset,
 }

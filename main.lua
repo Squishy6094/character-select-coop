@@ -58,10 +58,15 @@ local TEX_LOGO = get_texture_info("char-select-logo")
 local TEX_WALL_LEFT = get_texture_info("char-select-wall-left")
 local TEX_WALL_RIGHT = get_texture_info("char-select-wall-right")
 TEX_GRAFFITI_DEFAULT = get_texture_info("char-select-graffiti-default")
+local TEX_ICON_SIGNS = get_texture_info("char-select-icon-signs")
 local TEX_BUTTON_SMALL = get_texture_info("char-select-button-small")
 local TEX_BUTTON_BIG = get_texture_info("char-select-button-big")
 local TEX_PALETTE_BUCKET = get_texture_info("char-select-palette-bucket")
 local TEX_OVERRIDE_HEADER = nil
+
+LOCKED_NEVER = 0
+LOCKED_TRUE = 1
+LOCKED_FALSE = 2
 
 local SOUND_CHAR_SELECT_THEME = audio_stream_load("char-select-menu-theme.ogg")
 audio_stream_set_looping(SOUND_CHAR_SELECT_THEME, true)
@@ -91,7 +96,7 @@ characterTable = {
         ogNum = CT_MARIO,
         currAlt = 1,
         hasMoveset = false,
-        locked = false,
+        locked = LOCKED_NEVER,
         [1] = {
             name = "Mario",
             description = "The iconic Italian plumber himself! He's quite confident and brave, always prepared to jump into action to save the Mushroom Kingdom!",
@@ -111,7 +116,7 @@ characterTable = {
         ogNum = CT_LUIGI,
         currAlt = 1,
         hasMoveset = false,
-        locked = false,
+        locked = LOCKED_NEVER,
         [1] = {
             name = "Luigi",
             description = "The other iconic Italian plumber! He's a bit shy and scares easily, but he's willing to follow his brother Mario through any battle that may come their way!",
@@ -137,7 +142,7 @@ characterTable = {
         ogNum = CT_TOAD,
         currAlt = 1,
         hasMoveset = false,
-        locked = false,
+        locked = LOCKED_NEVER,
         [1] = {
             name = "Toad",
             description = "Princess Peach's little attendant! He's an energetic little mushroom that's never afraid to follow Mario and Luigi on their adventures!",
@@ -163,7 +168,7 @@ characterTable = {
         ogNum = CT_WALUIGI,
         currAlt = 1,
         hasMoveset = false,
-        locked = false,
+        locked = LOCKED_NEVER,
         [1] = {
             name = "Waluigi",
             description = "The mischievous rival of Luigi! He's a narcissistic competitor that takes great taste in others getting pummeled from his success!",
@@ -189,7 +194,7 @@ characterTable = {
         ogNum = CT_WARIO,
         currAlt = 1,
         hasMoveset = false,
-        locked = false,
+        locked = LOCKED_NEVER,
         [1] = {
             name = "Wario",
             description = "The mischievous rival of Mario! He's a greed-filled treasure hunter obsessed with money and gold coins. He's always ready for a brawl if his money is on the line!",
@@ -417,11 +422,8 @@ optionTable = {
     },
 }
 
-local prevCategory = 0
 local gridYOffset = 0
-local function update_character_render_table(forceUpdate)
-    if not forceUpdate and prevCategory == currCategory then return end
-    prevCategory = currCategory
+local function update_character_render_table()
     gridYOffset = -100
     local ogNum = currChar
     local insertNum = 0
@@ -432,7 +434,7 @@ local function update_character_render_table(forceUpdate)
     characterTableRender = {}
     for i = 0, #characterTable do
         local charCategories = string_split(characterTable[i].category, "_")
-        if not characterTable[i].locked then
+        if characterTable[i].locked ~= LOCKED_TRUE then
             for c = 1, #charCategories do
                 if category == charCategories[c] then
                     characterTableRender[insertNum] = characterTable[i]
@@ -455,6 +457,7 @@ local function update_character_render_table(forceUpdate)
 end
 
 function force_set_character(charNum, charAlt)
+    if not charNum then charNum = gNetworkPlayers[0].modelIndex end
     if not charAlt then charAlt = 1 end
     currCategory = 1
     currChar = charNum
@@ -481,14 +484,10 @@ creditTable = {
     {
         packName = "Character Select Coop",
         {creditTo = "Squishy6094",     creditFor = "Creator"},
-        {creditTo = "Sprsn64",         creditFor = "Logo Design"},
-        {creditTo = "JerThePear",      creditFor = "Menu Poses"},
+        {creditTo = "JerThePear",      creditFor = "Menu Assets/Anims"},
         {creditTo = "Trashcam",        creditFor = "Menu Music"},
-        {creditTo = "AngelicMiracles", creditFor = "Concepts / CoopDX"},
-        {creditTo = "AgentX",          creditFor = "Contributer / CoopDX"},
-        {creditTo = "xLuigiGamerx",    creditFor = "Contributer"},
-        {creditTo = "Wibblus",         creditFor = "Contributer"},
-        {creditTo = "SuperKirbyLover", creditFor = "Contributer"},
+        {creditTo = "xLuigiGamerx",    creditFor = "HUD Accuracy"},
+        {creditTo = "Wibblus",         creditFor = "Menu Anims Implementation"},
     }
 }
 
@@ -555,7 +554,7 @@ local function load_preferred_char()
     if savedChar ~= "Default" then
         for i = CT_MAX, #characterTable do
             local char = characterTable[i]
-            if char.saveName == savedChar and not char.locked then
+            if char.saveName == savedChar and char.locked ~= LOCKED_TRUE then
                 currChar = i
                 currCharRender = i
                 if savedAlt > 0 and savedAlt <= #char then
@@ -605,6 +604,7 @@ local function load_preferred_char()
 end
 
 local function mod_storage_save_pref_char(charTable)
+    charTable = charTable or characterTable[gNetworkPlayers[0].modelIndex]
     if character_is_vanilla(charTable.ogNum) then
         mod_storage_save("PrefChar", "Default")
     else
@@ -636,15 +636,13 @@ function failsafe_options()
     end
 end
 
+hookTableOnReset = {}
 local promptedAreYouSure = false
-
 local function reset_options(wasChatTriggered)
     if not promptedAreYouSure then
         djui_chat_message_create("\\#ffdcdc\\Are you sure you want to reset your Save Data for Character Select, including your Preferred Character\nand Settings?\n" .. (wasChatTriggered and "Type \\#ff3333\\/char-select reset\\#ffdcdc\\ to confirm." or "Press the \\#ff3333\\" .. optionTable[optionTableRef.resetSaveData].name .. "\\#ffdcdc\\ Option again to confirm." ))
         promptedAreYouSure = true
     else
-        djui_chat_message_create("\\#ff3333\\Character Select Save Data Reset!")
-        djui_chat_message_create("Note: If your issue has not been resolved, you may need to manually delete your save data via the directory below:\n\\#dcdcFF\\%appdata%/sm64coopdx/sav/character-select-coop.sav")
         for i = 1, #optionTable do
             optionTable[i].toggle = optionTable[i].toggleDefault
             if optionTable[i].toggleSaveName ~= nil then
@@ -654,11 +652,22 @@ local function reset_options(wasChatTriggered)
                 optionTable[i].toggleNames = { "Off", "On" }
             end
         end
-        currChar = 1
         for i = 0, #characterTable do
             characterTable[i].currAlt = 1
+            characterTable[i].locked = characterTable[i].locked == LOCKED_NEVER and LOCKED_NEVER or LOCKED_TRUE
         end
-        mod_storage_save_pref_char(characterTable[1])
+        mod_storage_save_pref_char()
+
+        if #hookTableOnReset > 0 then
+            for i = 1, #hookTableOnReset do
+                hookTableOnReset[i]()
+            end
+        end
+
+        force_set_character()
+
+        djui_chat_message_create("\\#ff3333\\Character Select Save Data Reset!")
+        djui_chat_message_create("Note: If your issue has not been resolved, you may need to manually delete your save data via the directory below:\n\\#dcdcFF\\%appdata%/sm64coopdx/sav/character-select-coop.sav")
         promptedAreYouSure = false
     end
 end
@@ -667,7 +676,7 @@ local function boot_note()
     if #characterTable >= CT_MAX then
         djui_chat_message_create("Character Select has " .. (#characterTable - 1) .. " character" .. (#characterTable > 2 and "s" or "") .." available!\nYou can use \\#ffff33\\/char-select \\#ffffff\\to open the menu!")
         if #characterTable > 32 and network_is_server() then
-            djui_chat_message_create("\\#FFAAAA\\Warning: Having more than 32 Characters\nmay be unstable, For a better experience please\ndisable a few packs!")
+            djui_chat_message_create("\\#FFAAAA\\Warning: Having a lot of characters\nmay be unstable, For a better experience please\ndisable a few packs!")
         end
     else
         djui_chat_message_create("Character Select is active!\nYou can use \\#ffff33\\/char-select \\#ffffff\\to open the menu!")
@@ -746,8 +755,6 @@ local prevBasePalette = {
     [CAP]    = network_player_get_palette_color(gNetworkPlayers[0], CAP),
     [EMBLEM] = network_player_get_palette_color(gNetworkPlayers[0], EMBLEM),
 }
-local camAngle = 0
-local eyeState = MARIO_EYES_OPEN
 local worldColor = {
     lighting = {r = 255, g = 255, b = 255},
     skybox = {r = 255, g = 255, b = 255},
@@ -781,6 +788,31 @@ local function mario_update(m)
     end
 
     if m.playerIndex == 0 and stallFrame > 1 then
+        -- Check for Locked Chars
+        for i = CT_MAX, #characterTable do
+            local char = characterTable[i]
+            if char.locked ~= LOCKED_NEVER then
+                local unlock = characterUnlock[i].check
+                local notif = characterUnlock[i].notif
+                local prevLockState = char.locked
+                if type(unlock) == TYPE_FUNCTION then
+                    char.locked = (unlock() ~= false) and LOCKED_FALSE or LOCKED_TRUE
+                elseif type(unlock) == TYPE_BOOLEAN then
+                    char.locked = (unlock ~= false) and LOCKED_FALSE or LOCKED_TRUE
+                end
+                if char.locked ~= prevLockState then
+                    update_character_render_table()
+                    if prevLockState == LOCKED_TRUE then -- Character was unlocked
+                        if stallFrame == stallComplete and notif then
+                            if optionTable[optionTableRef.notification].toggle > 0 then
+                                djui_popup_create('Character Select:\nUnlocked '..tostring(char[1].name)..'\nas a Playable Character!', 3)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
         if djui_hud_is_pause_menu_created() then     
             if prevBaseCharFrame ~= np.modelIndex then
                 force_set_character(np.modelIndex)
@@ -913,30 +945,6 @@ local function mario_update(m)
             worldColor.vertex.r = get_vertex_color(0)
             worldColor.vertex.g = get_vertex_color(1)
             worldColor.vertex.b = get_vertex_color(2)
-        end
-
-        -- Check for Locked Chars
-        for i = CT_MAX, #characterTable do
-            local char = characterTable[i]
-            if char.locked then
-                local unlock = characterUnlock[i].check
-                local notif = characterUnlock[i].notif
-                if type(unlock) == TYPE_FUNCTION then
-                    if unlock() then
-                        char.locked = false
-                    end
-                elseif type(unlock) == TYPE_BOOLEAN then
-                    char.locked = unlock
-                end
-                if not char.locked then -- Character was unlocked
-                    update_character_render_table(true)
-                    if stallFrame == stallComplete and notif then
-                        if optionTable[optionTableRef.notification].toggle > 0 then
-                            djui_popup_create('Character Select:\nUnlocked '..tostring(char[1].name)..'\nas a Playable Character!', 3)
-                        end
-                    end
-                end
-            end
         end
 
         --Open Credits
@@ -1509,15 +1517,15 @@ local function on_hud_render()
         math.randomseed(hash(characterTable[currChar].saveName))
 
         -- Palette Selection
-        local charColor = characterTableRender[currChar][characterTableRender[currChar].currAlt].color
-        local palettes = characterColorPresets[characterTableRender[currChar][characterTableRender[currChar].currAlt].model]
+        local charColor = characterTableRender[currCharRender][characterTableRender[currCharRender].currAlt].color
+        local palettes = characterColorPresets[characterTableRender[currCharRender][characterTableRender[currCharRender].currAlt].model]
         if palettes then
             local bucketSpacing = 24
             paletteXOffset = lerp(paletteXOffset, palettes.currPalette*bucketSpacing, 0.1)
             paletteTrans = math.max(paletteTrans - 6, 0)
             local bottomTapeAngle = angle_from_2d_points(-10, height - 50, width + 10, height - 35)
 
-            local paletteName = palettes.currPalette == 0 and "Custom" or (palettes[palettes.currPalette].name or ("Palette "..palettes.currPalette))
+            local paletteName = (palettes ~= nil and palettes.currPalette == 0) and "Custom" or (palettes[palettes.currPalette].name or ("Palette "..palettes.currPalette))
             djui_hud_set_font(FONT_RECOLOR_HUD)
             local x = width*0.85 - djui_hud_measure_text(paletteName)*0.25
             local y = height*0.68 + math.max((-paletteTrans + 300), 0)^2*0.0005
@@ -1585,7 +1593,31 @@ local function on_hud_render()
                 -- Render Character List
                 local currRow = (currCharRender - 1)
                 gridYOffset = lerp(gridYOffset, currRow*31, 0.1)
-                for i = 0, #characterTableRender do
+                for i = currCharRender - 5, currCharRender + 5 do
+                    local charNum = i%(#characterTableRender + 1)
+                    local charIcon = characterTableRender[charNum][characterTableRender[charNum].currAlt].lifeIcon
+                    local charColor = characterTableRender[charNum][characterTableRender[charNum].currAlt].color
+                    local charName = characterTableRender[charNum][characterTableRender[charNum].currAlt].name
+                    local charSign = hash(charName)%6
+                    
+                    local circlePos = i - currCharRender + 4
+                    local x = -32 + math.sin(circlePos/3.5)*135 - menuOffsetX*(0.2 + math.abs(i - currCharRender)*0.1)
+                    local y = height*0.7 - math.cos(circlePos/3.5)*125 - menuOffsetY*(0.2 + math.abs(i - currCharRender)*0.1)
+                    local colorMult = (1 - math.abs(i - currCharRender)*0.25)
+                    djui_hud_set_color(255*colorMult, 255*colorMult, 255*colorMult, 255)
+                    djui_hud_render_texture_tile(TEX_ICON_SIGNS, x, y, 1, 1, 32*charSign, 0, 32, 32)
+                    djui_hud_set_color(charColor.r*colorMult, charColor.g*colorMult, charColor.b*colorMult, 255)
+                    djui_hud_render_texture_tile(TEX_ICON_SIGNS, x, y, 1, 1, 32*charSign, 32, 32, 32)
+                    djui_hud_print_text(charName, x + 34, y + 8, 1)
+                    djui_hud_set_color(255, 255, 255, 255)
+                    if type(charIcon) == TYPE_STRING then
+                        djui_hud_set_font(FONT_RECOLOR_HUD)
+                        djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
+                        djui_hud_print_text(charIcon, x + 8, y + 8, 1)
+                    else
+                        djui_hud_render_texture(charIcon, x + 8, y + 8, 1 / (charIcon.width * MATH_DIVIDE_16), 1 / (charIcon.height * MATH_DIVIDE_16))
+                    end
+                    --[[
                     local row = (i - 1)
                     local charName = characterTableRender[i][characterTableRender[i].currAlt].name
                     local charColor = characterTableRender[i][characterTableRender[i].currAlt].color
@@ -1611,6 +1643,7 @@ local function on_hud_render()
                     djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y, textScale)
 
                     characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and 15 or 0, 0.1)
+                    ]]
                 end
             else
                 -- Render Character Grid
@@ -1718,7 +1751,7 @@ local function on_hud_render()
         -- Render Character Name
         djui_hud_set_font(FONT_BRICK)
         local charName = characterTable[currChar][characterTable[currChar].currAlt].name
-        local nameScale = math.min(80/djui_hud_measure_text(charName), 0.8)
+        local nameScale = math.min(80/djui_hud_measure_text(charName), 0.5)
         local nameScaleCapped = math.max(nameScale, 0.3)
         djui_hud_set_color(menuColor.r*0.5, menuColor.g*0.5, menuColor.b*0.5, 255)
         djui_hud_render_rect(width*0.7 - 5, 30 - 35*nameScaleCapped, width*0.5, 70*nameScaleCapped)
@@ -1917,7 +1950,7 @@ local function before_mario_update(m)
             run_func_with_condition_and_cooldown(FUNC_INDEX_CATEGORY,
                 (controller.buttonPressed & L_TRIG) ~= 0,
                 function ()
-                    currCategory = currCategory - 1
+                    currCategory = num_wrap(currCategory - 1, 1, #characterCategories)
                     update_character_render_table()
                     play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
                 end
@@ -1926,7 +1959,7 @@ local function before_mario_update(m)
             run_func_with_condition_and_cooldown(FUNC_INDEX_CATEGORY,
                 (controller.buttonPressed & R_TRIG) ~= 0,
                 function ()
-                    currCategory = currCategory + 1
+                    currCategory = num_wrap(currCategory + 1, 1, #characterCategories)
                     update_character_render_table()
                     play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
                 end
@@ -2122,8 +2155,6 @@ local function before_mario_update(m)
     currChar = characterTableRender[currCharRender].ogNum
     
     character.currAlt = num_wrap(character.currAlt, 1, #character)
-    currCategory = num_wrap(currCategory, 1, #characterCategories)
-    update_character_render_table()
 
     -- Yo Melee called
     local menuOffsetXRaw = (m.controller.extStickX ~= 0 and m.controller.extStickX or button_to_analog(charSelect.controller, L_CBUTTONS, R_CBUTTONS))*0.2
