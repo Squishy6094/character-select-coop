@@ -58,9 +58,7 @@ local TEX_LOGO = get_texture_info("char-select-logo")
 local TEX_WALL_LEFT = get_texture_info("char-select-wall-left")
 local TEX_WALL_RIGHT = get_texture_info("char-select-wall-right")
 TEX_GRAFFITI_DEFAULT = get_texture_info("char-select-graffiti-default")
-local TEX_ICON_SIGNS = get_texture_info("char-select-icon-signs")
-local TEX_BUTTON_SMALL = get_texture_info("char-select-button-small")
-local TEX_BUTTON_BIG = get_texture_info("char-select-button-big")
+local TEX_NAMEPLATE = get_texture_info("char-select-nameplate")
 local TEX_PALETTE_BUCKET = get_texture_info("char-select-palette-bucket")
 local TEX_OVERRIDE_HEADER = nil
 
@@ -1256,7 +1254,7 @@ local TEX_GEAR_BIG = get_texture_info("char-select-gear-big")
 
 local buttonAltAnim = 0
 local menuOpacity = 245
-local gridButtonsPerRow = 5
+local gridButtonsPerRow = 3
 local paletteXOffset = 0
 local paletteTrans = 0
 local menuText = {}
@@ -1516,6 +1514,20 @@ local function on_hud_render()
         -- Make Random Elements based on Character Name
         math.randomseed(hash(characterTable[currChar].saveName))
 
+
+        -- Render Character Name
+        djui_hud_set_font(FONT_BRICK)
+        local charName = characterTable[currChar][characterTable[currChar].currAlt].name
+        local nameScale = math.min(80/djui_hud_measure_text(charName), 0.5)
+        local nameScaleCapped = math.max(nameScale, 0.3)
+        djui_hud_set_color(menuColor.r*0.5, menuColor.g*0.5, menuColor.b*0.5, 255)
+        djui_hud_render_rect(width*0.7 - 5, 30 - 35*nameScaleCapped, width*0.5, 70*nameScaleCapped)
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_render_caution_tape(width*0.7 - 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Top Tape
+        djui_hud_render_caution_tape(width*0.7 - 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Bottom Tape
+        djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
+        djui_hud_print_text(charName, width*0.85 - djui_hud_measure_text(charName)*0.5*nameScale - 2 + menuOffsetX*0.3, 30 - 32*nameScale + menuOffsetY*0.3, nameScale)
+
         -- Palette Selection
         local charColor = characterTableRender[currCharRender][characterTableRender[currCharRender].currAlt].color
         local palettes = characterColorPresets[characterTableRender[currCharRender][characterTableRender[currCharRender].currAlt].model]
@@ -1589,93 +1601,49 @@ local function on_hud_render()
         djui_hud_set_rotation(0, 0, 0)
 
         if not options then
-            if not gridMenu then
-                -- Render Character List
-                local currRow = (currCharRender - 1)
-                gridYOffset = lerp(gridYOffset, currRow*31, 0.1)
-                for i = currCharRender - 5, currCharRender + 5 do
-                    local charNum = i%(#characterTableRender + 1)
-                    local charIcon = characterTableRender[charNum][characterTableRender[charNum].currAlt].lifeIcon
-                    local charColor = characterTableRender[charNum][characterTableRender[charNum].currAlt].color
-                    local charName = characterTableRender[charNum][characterTableRender[charNum].currAlt].name
-                    local charSign = hash(charName)%6
-                    
-                    local circlePos = i - currCharRender + 4
-                    local x = -32 + math.sin(circlePos/3.5)*135 - menuOffsetX*(0.2 + math.abs(i - currCharRender)*0.1)
-                    local y = height*0.7 - math.cos(circlePos/3.5)*125 - menuOffsetY*(0.2 + math.abs(i - currCharRender)*0.1)
-                    local colorMult = (1 - math.abs(i - currCharRender)*0.25)
-                    djui_hud_set_color(255*colorMult, 255*colorMult, 255*colorMult, 255)
-                    djui_hud_render_texture_tile(TEX_ICON_SIGNS, x, y, 1, 1, 32*charSign, 0, 32, 32)
-                    djui_hud_set_color(charColor.r*colorMult, charColor.g*colorMult, charColor.b*colorMult, 255)
-                    djui_hud_render_texture_tile(TEX_ICON_SIGNS, x, y, 1, 1, 32*charSign, 32, 32, 32)
-                    djui_hud_print_text(charName, x + 34, y + 8, 1)
-                    djui_hud_set_color(255, 255, 255, 255)
-                    if type(charIcon) == TYPE_STRING then
-                        djui_hud_set_font(FONT_RECOLOR_HUD)
-                        djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
-                        djui_hud_print_text(charIcon, x + 8, y + 8, 1)
-                    else
-                        djui_hud_render_texture(charIcon, x + 8, y + 8, 1 / (charIcon.width * MATH_DIVIDE_16), 1 / (charIcon.height * MATH_DIVIDE_16))
-                    end
-                    --[[
-                    local row = (i - 1)
-                    local charName = characterTableRender[i][characterTableRender[i].currAlt].name
-                    local charColor = characterTableRender[i][characterTableRender[i].currAlt].color
-                    if i == currCharRender then
-                        local blinkAnim = math.abs(math.sin(get_global_timer()*0.1))*0.5
-                        djui_hud_set_color(255 + (charColor.r - 255)*blinkAnim, 255 + (charColor.g - 255)*blinkAnim, 255 + (charColor.b - 255)*blinkAnim, 255)
-                    else
-                        djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
-                    end
-                    local x = width*0.5 - 64 + math.abs(row - gridYOffset/31)^2.5 + math.sin((get_global_timer() + i*15)*0.05) - characterTableRender[i].UIOffset - menuOffsetX*0.5
-                    local y = height*0.5 - 31*0.5 + row*31 - gridYOffset + math.cos((get_global_timer() + i*15)*0.05) - menuOffsetY*0.5
-                    djui_hud_render_texture(TEX_BUTTON_BIG, x, y, 1, 1)
-                    local textScale = math.min(75/djui_hud_measure_text(charName), 0.7)
-                    x = x + 8
-                    y = y + 8 + 2/textScale
+            -- Render Character Grid
+            gridButtonsPerRow = math.floor(width*0.7/100)
+            local currRow = math.floor((currCharRender)/gridButtonsPerRow)
+            gridYOffset = lerp(gridYOffset, currRow*35, 0.1)
+            djui_hud_set_font(FONT_BRICK)
+            for i = 0, #characterTableRender do
+                local row = math.floor(i/gridButtonsPerRow)
+                local column = i%gridButtonsPerRow
+                local charName = characterTableRender[i][characterTableRender[i].currAlt].name
+                local charIcon = characterTableRender[i][characterTableRender[i].currAlt].lifeIcon
+                local charColor = characterTableRender[i][characterTableRender[i].currAlt].color
+                -- 272 128
+                local charNameplate = ((hash(characterTableRender[i].saveName)^2)%6 + 1)*128
+                local x = width*0.33 - gridButtonsPerRow*90*0.5 + (column*90) - (row - gridYOffset/35)*3
+                local y = height*0.5 - 35*0.5 + row*35 - gridYOffset
+                djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
+                djui_hud_render_texture_tile(TEX_NAMEPLATE, x, y, 0.35*(128/272), 0.35, 0, 0, 272, 128)
+                local textLength = djui_hud_measure_text(charName)
+                local nameScale = math.min(50/textLength, 0.25)
+                djui_hud_print_text(charName, x + 50 - textLength*0.5*nameScale, y + 16 - 16*nameScale, nameScale)
+                djui_hud_render_texture_tile(TEX_NAMEPLATE, x, y, 0.35*(128/272), 0.35, 0, charNameplate, 272, 128)
+
+                --[[
+                if i == currCharRender then
+                    local blinkAnim = math.abs(math.sin(get_global_timer()*0.1))*0.5
+                    djui_hud_set_color(255 + (charColor.r - 255)*blinkAnim, 255 + (charColor.g - 255)*blinkAnim, 255 + (charColor.b - 255)*blinkAnim, 255)
+                else
+                    djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
+                end
+                local x = width*0.3 - gridButtonsPerRow*35*0.5 + 35*column - math.abs(row - gridYOffset/35)^2*3 + math.sin((get_global_timer() + i*10)*0.1) - menuOffsetX*0.5
+                local y = height*0.5 - 35*0.5 + row*35 - gridYOffset + math.cos((get_global_timer() + i*10)*0.1) - characterTableRender[i].UIOffset*0.5 - menuOffsetY*0.5
+                djui_hud_render_texture(TEX_BUTTON_SMALL, x, y, 1, 1)
+                x = x + 8
+                y = y + 8
+                djui_hud_set_color(255, 255, 255, 255)
+                if type(charIcon) == TYPE_STRING then
                     djui_hud_set_font(FONT_RECOLOR_HUD)
-                    djui_hud_set_color(0, 0, 0, 255)
-                    djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 - textScale*1.5, y, textScale)
-                    djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y - textScale*1.5, textScale)
-                    djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5 + textScale*1.5, y, textScale)
-                    djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y + textScale*1.5, textScale)
-                    djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
-                    djui_hud_print_text(charName, x + 40 - djui_hud_measure_text(charName)*textScale*0.5, y, textScale)
-
-                    characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and 15 or 0, 0.1)
-                    ]]
+                    djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
+                    djui_hud_print_text(charIcon, x, y, 1)
+                else
+                    djui_hud_render_texture(charIcon, x, y, 1 / (charIcon.width * MATH_DIVIDE_16), 1 / (charIcon.height * MATH_DIVIDE_16))
                 end
-            else
-                -- Render Character Grid
-                local currRow = math.floor((currCharRender)/gridButtonsPerRow)
-                gridYOffset = lerp(gridYOffset, currRow*35, 0.1)
-                for i = 0, #characterTableRender do
-                    local row = math.floor(i/gridButtonsPerRow)
-                    local column = i%gridButtonsPerRow
-                    local charIcon = characterTableRender[i][characterTableRender[i].currAlt].lifeIcon
-                    local charColor = characterTableRender[i][characterTableRender[i].currAlt].color
-                    if i == currCharRender then
-                        local blinkAnim = math.abs(math.sin(get_global_timer()*0.1))*0.5
-                        djui_hud_set_color(255 + (charColor.r - 255)*blinkAnim, 255 + (charColor.g - 255)*blinkAnim, 255 + (charColor.b - 255)*blinkAnim, 255)
-                    else
-                        djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
-                    end
-                    local x = width*0.3 - gridButtonsPerRow*35*0.5 + 35*column - math.abs(row - gridYOffset/35)^2*3 + math.sin((get_global_timer() + i*10)*0.1) - menuOffsetX*0.5
-                    local y = height*0.5 - 35*0.5 + row*35 - gridYOffset + math.cos((get_global_timer() + i*10)*0.1) - characterTableRender[i].UIOffset*0.5 - menuOffsetY*0.5
-                    djui_hud_render_texture(TEX_BUTTON_SMALL, x, y, 1, 1)
-                    x = x + 8
-                    y = y + 8
-                    djui_hud_set_color(255, 255, 255, 255)
-                    if type(charIcon) == TYPE_STRING then
-                        djui_hud_set_font(FONT_RECOLOR_HUD)
-                        djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
-                        djui_hud_print_text(charIcon, x, y, 1)
-                    else
-                        djui_hud_render_texture(charIcon, x, y, 1 / (charIcon.width * MATH_DIVIDE_16), 1 / (charIcon.height * MATH_DIVIDE_16))
-                    end
-
-                    characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and 15 or 0, 0.1)
-                end
+                ]]
             end
         else
             -- Render Options Menu
@@ -1747,19 +1715,6 @@ local function on_hud_render()
         descRender = descRender .. " - " .. desc
         djui_hud_print_text("Creator: " .. credit, 5 + menuOffsetX*0.2, height - 30 + menuOffsetY*0.2, 0.8)
         djui_hud_print_text(descRender, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8 + menuOffsetX*0.15, height - 17 + menuOffsetY*0.15, 0.8)
-
-        -- Render Character Name
-        djui_hud_set_font(FONT_BRICK)
-        local charName = characterTable[currChar][characterTable[currChar].currAlt].name
-        local nameScale = math.min(80/djui_hud_measure_text(charName), 0.5)
-        local nameScaleCapped = math.max(nameScale, 0.3)
-        djui_hud_set_color(menuColor.r*0.5, menuColor.g*0.5, menuColor.b*0.5, 255)
-        djui_hud_render_rect(width*0.7 - 5, 30 - 35*nameScaleCapped, width*0.5, 70*nameScaleCapped)
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_caution_tape(width*0.7 - 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Top Tape
-        djui_hud_render_caution_tape(width*0.7 - 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Bottom Tape
-        djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-        djui_hud_print_text(charName, width*0.85 - djui_hud_measure_text(charName)*0.5*nameScale - 2 + menuOffsetX*0.3, 30 - 32*nameScale + menuOffsetY*0.3, nameScale)
 
         -- Render Header BG
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
@@ -1883,7 +1838,7 @@ local FUNC_INDEX_VERTICAL = 2
 local FUNC_INDEX_CATEGORY = 3
 local FUNC_INDEX_PREFERENCE = 4
 local FUNC_INDEX_PALETTE = 5
-local FUNC_INDEX_GRID = 6
+local FUNC_INDEX_ALT = 6
 
 local menuInputCooldowns = {}
 function run_func_with_condition_and_cooldown(funcIndex, condition, func, cooldown)
@@ -1938,13 +1893,6 @@ local function before_mario_update(m)
 
     local cameraToObject = m.marioObj.header.gfx.cameraToObject
     if menuAndTransition and not options then
-        run_func_with_condition_and_cooldown(FUNC_INDEX_GRID,
-            (controller.buttonPressed & X_BUTTON) ~= 0,
-            function ()
-                gridMenu = not gridMenu
-                play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
-            end
-        )
         if menu then
             -- Category Switching
             run_func_with_condition_and_cooldown(FUNC_INDEX_CATEGORY,
@@ -1964,78 +1912,39 @@ local function before_mario_update(m)
                     play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
                 end
             )
-            if not gridMenu then
-                -- Character Switcher
-                run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
-                    (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -45 --[[or prevMouseScroll < mouseScroll]],
-                    function ()
-                        currCharRender = currCharRender + 1
-                        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                        prevMouseScroll = mouseScroll
-                    end
-                )
-
-                run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
-                    (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 45 --[[or prevMouseScroll > mouseScroll]],
-                    function ()
-                        currCharRender = currCharRender - 1
-                        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                        prevMouseScroll = mouseScroll
-                    end
-                )
-
-                -- Alt switcher
-                if #characterTable[currChar] > 1 then
-                    run_func_with_condition_and_cooldown(FUNC_INDEX_HOROZONTAL,
-                        (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60,
-                        function ()
-                            character.currAlt = character.currAlt + 1
-                            play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
-                        end
-                    )
-
-                    run_func_with_condition_and_cooldown(FUNC_INDEX_HOROZONTAL,
-                        (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60,
-                        function ()
-                            character.currAlt = character.currAlt - 1
-                            play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
-                        end
-                    )
+            
+            -- Grid Controls
+            run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
+                (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -45 --[[or prevMouseScroll < mouseScroll]],
+                function ()
+                    currCharRender = num_wrap(currCharRender + gridButtonsPerRow, 0, #characterTableRender)
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                 end
-            else
-                -- Grid Controls
-                run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
-                    (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -45 --[[or prevMouseScroll < mouseScroll]],
-                    function ()
-                        currCharRender = currCharRender + 5
-                        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                    end
-                )
+            )
 
-                run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
-                    (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 45 --[[or prevMouseScroll > mouseScroll]],
-                    function ()
-                        currCharRender = currCharRender - 5
-                        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                    end
-                )
+            run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
+                (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 45 --[[or prevMouseScroll > mouseScroll]],
+                function ()
+                    currCharRender = num_wrap(currCharRender - gridButtonsPerRow, 0, #characterTableRender)
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                end
+            )
 
-                run_func_with_condition_and_cooldown(FUNC_INDEX_HOROZONTAL,
-                    (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60,
-                    function ()
-                        currCharRender = currCharRender + 1
-                        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                    end
-                )
+            run_func_with_condition_and_cooldown(FUNC_INDEX_HOROZONTAL,
+                (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60,
+                function ()
+                    currCharRender = num_wrap(currCharRender + 1, 0, #characterTableRender)
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                end
+            )
 
-                run_func_with_condition_and_cooldown(FUNC_INDEX_HOROZONTAL,
-                    (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60,
-                    function ()
-                        currCharRender = currCharRender - 1
-                        play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                    end
-                )
-            end
+            run_func_with_condition_and_cooldown(FUNC_INDEX_HOROZONTAL,
+                (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60,
+                function ()
+                    currCharRender = num_wrap(currCharRender - 1, 0, #characterTableRender)
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                end
+            )
 
             run_func_with_condition_and_cooldown(FUNC_INDEX_PREFERENCE,
                 (controller.buttonPressed & A_BUTTON) ~= 0,
@@ -2063,6 +1972,17 @@ local function before_mario_update(m)
                     currPaletteTable.currPalette = num_wrap(currPaletteTable.currPalette, 0, #currPaletteTable)
                 end
             )
+
+            -- Alt switcher
+            if #characterTable[currChar] > 1 then
+                run_func_with_condition_and_cooldown(FUNC_INDEX_ALT,
+                    (controller.buttonPressed & X_BUTTON) ~= 0,
+                    function ()
+                        character.currAlt = num_wrap(character.currAlt + 1, 1, #character)
+                        play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
+                    end
+                )
+            end
 
             run_func_with_condition_and_cooldown(FUNC_INDEX_MISC,
                 (controller.buttonPressed & B_BUTTON) ~= 0,
@@ -2151,10 +2071,8 @@ local function before_mario_update(m)
     end
 
     -- Checks
-    currCharRender = num_wrap(currCharRender, 0, #characterTableRender)
     currChar = characterTableRender[currCharRender].ogNum
     
-    character.currAlt = num_wrap(character.currAlt, 1, #character)
 
     -- Yo Melee called
     local menuOffsetXRaw = (m.controller.extStickX ~= 0 and m.controller.extStickX or button_to_analog(charSelect.controller, L_CBUTTONS, R_CBUTTONS))*0.2
