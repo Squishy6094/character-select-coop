@@ -28,25 +28,17 @@ local mod_storage_load,tonumber,mod_storage_save,djui_popup_create,tostring,djui
 menu = false
 menuAndTransition = false
 gridMenu = false
-options = false
-local credits = false
-local creditsAndTransition = false
+options = nil; OPTIONS_MAIN = 0; OPTIONS_CREDITS = 1
+prevOptions = nil; optionsTimer = 0
 currChar = CT_MARIO
 local prevChar = CT_MARIO
 currCharRender = CT_MARIO
 currCategory = 1
 local currOption = 1
-local creditScroll = 0
-local prevCreditScroll = creditScroll
-local creditScrollRange = 0
 
 local menuCrossFade = 7
 local menuCrossFadeCap = menuCrossFade
 local menuCrossFadeMath = 255 / menuCrossFade
-
-local creditsCrossFade = 7
-local creditsCrossFadeCap = creditsCrossFade
-local creditsCrossFadeMath = 255 / creditsCrossFade
 
 local TYPE_FUNCTION = "function"
 local TYPE_BOOLEAN = "boolean"
@@ -478,16 +470,25 @@ function dev_mode_log_to_console(message, level)
     log_to_console(message, level and level or CONSOLE_MESSAGE_WARNING)
 end
 
+---@class Credits
+---@field packName string
+
+---@class Credit
+---@field creditee string
+---@field credit string
+
+---@type Credits[]
 creditTable = {
     {
         packName = "Character Select Coop",
-        {creditTo = "Squishy6094",     creditFor = "Creator"},
-        {creditTo = "JerThePear",      creditFor = "Menu Assets/Anims"},
-        {creditTo = "Trashcam",        creditFor = "Menu Music"},
-        {creditTo = "xLuigiGamerx",    creditFor = "HUD Accuracy"},
-        {creditTo = "Wibblus",         creditFor = "Menu Anims Implementation"},
+        { creditee = "Squishy6094",     credit = "Creator" },
+        { creditee = "JerThePear",      credit = "Menu Assets/Anims" },
+        { creditee = "Trashcam",        credit = "Menu Music" },
+        { creditee = "xLuigiGamerx",    credit = "HUD Accuracy" },
+        { creditee = "Wibblus",         credit = "Menu Anims Implementation" },
     }
 }
+local creditsLength
 
 local defaultOptionCount = #optionTable
 
@@ -947,7 +948,8 @@ local function mario_update(m)
 
         --Open Credits
         if optionTable[optionTableRef.credits].toggle > 0 then
-            credits = true
+            options = OPTIONS_CREDITS
+            currOption = 1
             optionTable[optionTableRef.credits].toggle = 0
         end
 
@@ -1582,6 +1584,11 @@ local function on_hud_render()
             end
         end
 
+        if prevOptions ~= options then
+            optionsTimer = 0
+            prevOptions = options
+        end
+
         if not options then
             -- Render Character Grid
             gridButtonsPerRow = math.floor(width*0.7/100)
@@ -1644,38 +1651,63 @@ local function on_hud_render()
                 "(C) Toadstool Technologies 1996",
                 "",
             }
-
-            table_insert(optionConsoleText, "===| " .. optionTable[currOption].category .. " Options |===")
-            table_insert(optionConsoleText, "================================")
-            for i = currOption - 3, currOption + 3 do
-                if optionTable[i] == nil then
-                    if i == 0 then
-                        table_insert(optionConsoleText, "^^^")
-                    elseif i == #optionTable + 1 then
-                        table_insert(optionConsoleText, "vvv")
+            if options == OPTIONS_MAIN then
+                table_insert(optionConsoleText, "===| " .. optionTable[currOption].category .. " Options |===")
+                table_insert(optionConsoleText, "================================")
+                for i = currOption - 3, currOption + 3 do
+                    if optionTable[i] == nil then
+                        if i == 0 then
+                            table_insert(optionConsoleText, "^^^")
+                        elseif i == #optionTable + 1 then
+                            table_insert(optionConsoleText, "vvv")
+                        else
+                            table_insert(optionConsoleText, "")
+                        end
                     else
-                        table_insert(optionConsoleText, "")
+                        local dotString = " "
+                        while 32 - #optionTable[i].name > #dotString do
+                            dotString = dotString .. "."
+                        end
+                        dotString = dotString .. " "
+                        table_insert(optionConsoleText, (i == currOption and ">" or " ") .. optionTable[i].name .. dotString .. optionTable[i].toggleNames[optionTable[i].toggle + 1])
                     end
-                else
-                    local dotString = " "
-                    while 32 - #optionTable[i].name > #dotString do
-                        dotString = dotString .. "."
-                    end
-                    dotString = dotString .. " "
-                    table_insert(optionConsoleText, (i == currOption and ">" or " ") .. optionTable[i].name .. dotString .. optionTable[i].toggleNames[optionTable[i].toggle + 1])
                 end
-            end
-            table_insert(optionConsoleText, "================================")
+                table_insert(optionConsoleText, "================================")
 
-            local option = optionTable[currOption]
-            table_insert(optionConsoleText, "")
-            table_insert(optionConsoleText, "> charselect option " .. string_lower(string_space_to_underscore(option.name)) .. " " .. string_lower(string_space_to_underscore(option.toggleNames[(option.toggle + 1)%(option.toggleMax + 1) + 1])) .. (math.floor(get_global_timer()/15)%2 == 0 and "|" or ""))
+                local option = optionTable[currOption]
+                table_insert(optionConsoleText, "")
+                table_insert(optionConsoleText, "> charselect option " .. string_lower(string_space_to_underscore(option.name)) .. " " .. string_lower(string_space_to_underscore(option.toggleNames[(option.toggle + 1)%(option.toggleMax + 1) + 1])) .. (math.floor(get_global_timer()/15)%2 == 0 and "|" or ""))
+
+            elseif options == OPTIONS_CREDITS then
+                local creditsEntries = {}
+                for _, mod in ipairs(creditTable) do
+                    table_insert(creditsEntries, mod.packName .. ":")
+                    for _, credit in ipairs(mod) do
+                        local dotString = " "
+                        while 32 - #credit.creditee > #dotString do
+                            dotString = dotString .. "."
+                        end
+                        dotString = dotString .. " "
+                        table_insert(creditsEntries, credit.creditee .. dotString .. credit.credit)
+                    end
+                end
+                creditsLength = #creditsEntries
+
+                table_insert(optionConsoleText, "===========| Credits |==========")
+                table_insert(optionConsoleText, "================================")
+                for i = currOption, currOption + math.min(6, optionsTimer) do
+                    table_insert(optionConsoleText, creditsEntries[i] or "")
+                end
+                table_insert(optionConsoleText, "================================")
+            end
 
             djui_hud_set_color(255, 255, 255, 255)
             djui_hud_set_font(FONT_SPECIAL)
             for i = 1, #optionConsoleText do
                 djui_hud_print_monospace_text(optionConsoleText[i], 2, 40 + i*7, 0.22, i <= 4 and 11 or 16)
             end
+
+            optionsTimer = optionsTimer + 1
         end
 
 
@@ -1743,10 +1775,8 @@ local function on_hud_render()
         end
         optionAnimTimer = maxf(optionAnimTimer, -200)
     else
-        options = false
+        options = nil
         optionAnimTimer = optionAnimTimerCap
-        credits = false
-        creditsCrossFade = 0
         bindTextTimer = 0
     end
 
@@ -1760,11 +1790,7 @@ local function on_hud_render()
             menuCrossFade = menuCrossFade + 1
             if menuCrossFade == 0 then menuCrossFade = menuCrossFade + 1 end
         end
-        if menuCrossFade < 0 then
-            menuAndTransition = true
-        else
-            menuAndTransition = false
-        end
+        menuAndTransition = menuCrossFade < 0
     else
         if menu then
             menuCrossFade = -menuCrossFadeCap
@@ -1823,7 +1849,7 @@ local function on_hud_render()
 end
 
 local FUNC_INDEX_MISC = 0
-local FUNC_INDEX_HOROZONTAL = 1
+local FUNC_INDEX_HORIZONTAL = 1
 local FUNC_INDEX_VERTICAL = 2
 local FUNC_INDEX_CATEGORY = 3
 local FUNC_INDEX_PREFERENCE = 4
@@ -1920,7 +1946,7 @@ local function before_mario_update(m)
                 end
             )
 
-            run_func_with_condition_and_cooldown(FUNC_INDEX_HOROZONTAL,
+            run_func_with_condition_and_cooldown(FUNC_INDEX_HORIZONTAL,
                 (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60,
                 function ()
                     currCharRender = num_wrap(currCharRender + 1, 0, #characterTableRender)
@@ -1928,7 +1954,7 @@ local function before_mario_update(m)
                 end
             )
 
-            run_func_with_condition_and_cooldown(FUNC_INDEX_HOROZONTAL,
+            run_func_with_condition_and_cooldown(FUNC_INDEX_HORIZONTAL,
                 (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60,
                 function ()
                     currCharRender = num_wrap(currCharRender - 1, 0, #characterTableRender)
@@ -1984,7 +2010,7 @@ local function before_mario_update(m)
             run_func_with_condition_and_cooldown(FUNC_INDEX_MISC,
                 (controller.buttonPressed & START_BUTTON) ~= 0,
                 function ()
-                    options = true
+                    options = OPTIONS_MAIN
                 end
             )
         end
@@ -1999,7 +2025,7 @@ local function before_mario_update(m)
         end
     end
 
-    if options and not creditsAndTransition then
+    if options == OPTIONS_MAIN then
         run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
             (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -60,
             function ()
@@ -2031,33 +2057,41 @@ local function before_mario_update(m)
         run_func_with_condition_and_cooldown(FUNC_INDEX_MISC,
             (controller.buttonPressed & B_BUTTON) ~= 0,
             function ()
-                options = false
+                options = nil
             end
         )
         if currOption > #optionTable then currOption = 1 end
         if currOption < 1 then currOption = #optionTable end
         nullify_inputs(m)
-    end
 
-    if creditsAndTransition then
-        if (controller.buttonDown & U_JPAD) ~= 0 then
-            creditScroll = creditScroll - 1.5
-        elseif (controller.buttonDown & D_JPAD) ~= 0 then
-            creditScroll = creditScroll + 1.5
-        elseif math.abs(controller.stickY) > 30 then
-            creditScroll = creditScroll + controller.stickY*-0.03
-        end
-
-        if inputStallTimerButton == 0 then
-            if (controller.buttonPressed & A_BUTTON) ~= 0 or (controller.buttonPressed & B_BUTTON) ~= 0 or (controller.buttonPressed & START_BUTTON) ~= 0 then
-                credits = false
+    elseif options == OPTIONS_CREDITS then
+        run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
+            (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -60,
+            function ()
+                currOption = currOption + 1
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
-        end
+        )
+
+        run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
+            (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 60,
+            function ()
+                currOption = currOption - 1
+                play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+            end
+        )
+
+        run_func_with_condition_and_cooldown(FUNC_INDEX_MISC,
+            (controller.buttonPressed & (B_BUTTON | Z_TRIG)) ~= 0,
+            function ()
+                options = OPTIONS_MAIN
+                currOption = optionTableRef.credits
+            end
+        )
+
+        if currOption > creditsLength then currOption = 1 end
+        if currOption < 1 then currOption = creditsLength end
         nullify_inputs(m)
-        if creditScroll < 0 then creditScroll = 0 end
-        if creditScroll > creditScrollRange then creditScroll = creditScrollRange end
-    else
-        creditScroll = 0
     end
 
     -- Checks
