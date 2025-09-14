@@ -9,14 +9,16 @@ MOD_VERSION_INDEV = true
 MOD_VERSION_STRING = tostring(MOD_VERSION_API) .. "." .. tostring(MOD_VERSION_MAJOR) .. (MOD_VERSION_MINOR > 0 and ("." .. tostring(MOD_VERSION_MINOR)) or "") .. (MOD_VERSION_INDEV and " (In-Dev)" or "")
 MOD_VERSION_DEBUG = tostring(GITHUB_REPO) .. " | " .. tostring(GITHUB_COMMIT_ID) .. " | " .. tostring(GITHUB_COMMIT_TIME)
 
-if VERSION_NUMBER < 38 then
+-- Check CoopDX Version
+VERSION_REQUIRED = 41
+if VERSION_NUMBER < VERSION_REQUIRED then
     djui_popup_create("\n\\#FFAAAA\\Character Select requires\n the latest version of CoopDX to use!\n\nYou can find CoopDX here:\n\\#6666FF\\https://sm64coopdx.com", 5)
     incompatibleClient = true
     return 0
 end
 
 local dependacyFiles = {
-    -- Required Lua File
+    -- Required Lua Files
     --"a-github.lua",
     "dialog.lua",
     "main.lua",

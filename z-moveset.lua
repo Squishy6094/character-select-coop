@@ -231,3 +231,15 @@ local function allow_water_action(m, water)
     end
 end
 hook_event(HOOK_ALLOW_FORCE_WATER_ACTION, allow_water_action)
+
+local function mario_override_floor_class(m, floorClass)
+    if is_moveset_restricted() or not gCSPlayers[0].movesetToggle then return end
+    local hook = HOOK_ALLOW_FORCE_WATER_ACTION
+    local currMoveset = characterMovesets[find_character_number(0)]
+    if currMoveset == nil or currMoveset[hook] == nil then return end
+    local returnVar = currMoveset[hook](m, floorClass)
+    if returnVar ~= nil then
+        return returnVar
+    end
+end
+hook_event(HOOK_MARIO_OVERRIDE_FLOOR_CLASS, mario_override_floor_class)

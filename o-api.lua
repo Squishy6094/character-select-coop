@@ -918,10 +918,10 @@ end
 ---@added 1.12
 ---@forcedoc config_character_sounds
 
----@description A function that allows you to hook a function, much like hook_event, to a specific character number
+---@description A function that allows you to hook a function, much like `hook_event`, to a specific character number
 ---@added 1.10
----@param charNum integer?
----@param hookEventType LuaHookedEventType|integer The hook event tied to a specific character. Supports the following hooks: `HOOK_MARIO_UPDATE`, `HOOK_BEFORE_MARIO_UPDATE`, `HOOK_BEFORE_PHYS_STEP`, `HOOK_ALLOW_PVP_ATTACK`, `HOOK_ON_PVP_ATTACK`, `HOOK_ON_INTERACT`, `HOOK_ALLOW_INTERACT`, `HOOK_ON_SET_MARIO_ACTION`, `HOOK_BEFORE_SET_MARIO_ACTION`, `HOOK_ON_DEATH`, `HOOK_ON_HUD_RENDER`, `HOOK_ON_HUD_RENDER_BEHIND`, `HOOK_ON_LEVEL_INIT`, `HOOK_ON_SYNC_VALID`, `HOOK_ON_OBJECT_RENDER`, `HOOK_ALLOW_FORCE_WATER_ACTION` `
+---@param charNum integer
+---@param hookEventType LuaHookedEventType|integer The hook event tied to a specific character. Supports the following hooks: `HOOK_MARIO_UPDATE`, `HOOK_BEFORE_MARIO_UPDATE`, `HOOK_BEFORE_PHYS_STEP`, `HOOK_ALLOW_PVP_ATTACK`, `HOOK_ON_PVP_ATTACK`, `HOOK_ON_INTERACT`, `HOOK_ALLOW_INTERACT`, `HOOK_ON_SET_MARIO_ACTION`, `HOOK_BEFORE_SET_MARIO_ACTION`, `HOOK_ON_DEATH`, `HOOK_ON_HUD_RENDER`, `HOOK_ON_HUD_RENDER_BEHIND`, `HOOK_ON_LEVEL_INIT`, `HOOK_ON_SYNC_VALID`, `HOOK_ON_OBJECT_RENDER`, `HOOK_ALLOW_FORCE_WATER_ACTION`, `HOOK_MARIO_OVERRIDE_FLOOR_CLASS` `
 ---@param func function
 local function character_hook_moveset(charNum, hookEventType, func)
     if charNum > #characterTable then return end
