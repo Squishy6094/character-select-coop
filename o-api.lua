@@ -723,28 +723,32 @@ end
 ---@added 1
 ---@return boolean
 local function is_options_open()
-    return options
+    return options ~= nil
 end
 
----@description A function that adds a line of credit to the CS Options' Credit section
+---@description A function that adds credits to the CS Options' Credits section
 ---@added 1.10
 ---@param modName string The Name of your Character Select Mod
----@param creditTo string The person you want to Credit
----@param creditFor string What the Person helped with
-local function credit_add(modName, creditTo, creditFor)
-    if #creditTable > 1 then
-        for i = 2, #creditTable do
-            if modName == creditTable[i].packName then
-                table_insert(creditTable[i], {creditTo = creditTo, creditFor = creditFor})
-                return
-            end
+---@param creditee string The person you want to Credit
+---@param credit string What the Person helped with
+---@overload fun(modName: string, credits: string[][])
+local function credit_add(modName, creditee, credit)
+    local credits
+    for i = 2, #creditTable do
+        if modName == creditTable[i].packName then
+            credits = creditTable[i]
         end
     end
-    local i = #creditTable + 1
-    creditTable[i] = {
-        packName = modName
-    }
-    table_insert(creditTable[i], {creditTo = creditTo, creditFor = creditFor})
+    if not credits then
+        credits = { packName = modName }
+        table_insert(creditTable, credits)
+    end
+
+    if type(creditee) == "table" then
+        for _, credit in ipairs(creditee) do
+            table_insert(credits, { creditee = credit[1], credit = credit[2] })
+        end
+    else table_insert(credits, { creditee = creditee, credit = credit }) end
 end
 
 ---@description A function that sets if palettes are restricted (Default `false` unless a mod with the incompatible `gamemode` is on)
