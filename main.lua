@@ -221,6 +221,12 @@ local characterTableRender = {}
 characterCaps = {}
 characterCelebrationStar = {}
 characterColorPresets = {}
+characterpeachstart = {} --the custom model a character uses for peach in the opening
+characterpeachletter = {} --the custom texture a character uses for peach's letter in the opening
+characterpeachend = {}--the custom model a character uses for peach in the ending
+characterendtoad1 = {}--the custom model a character uses for one of the toads in the ending
+characterendtoad2 = {}--the custom model a character uses for one of the toads in the ending
+local setting1stendtoad = true --variable used for making the two toads in the ending able to have different models
 characterAnims = {
     [E_MODEL_MARIO] = {
         anims = {[CS_ANIM_MENU] = MARIO_ANIM_CS_MENU},
@@ -1061,6 +1067,39 @@ function set_model(o, model)
             obj_set_model_extended(o, starModel)
         end
         return
+    end
+    -- peach models
+    if (obj_has_behavior_id(o, id_bhvEndPeach) ~= 0) then
+        local peachModel = characterpeachend[gCSPlayers[0].modelId]
+        if gCSPlayers[0].modelId ~= nil and peachModel ~= nil and obj_has_model_extended(o, peachModel) == 0 then
+            obj_set_model_extended(o, peachModel)
+        end
+    elseif (obj_has_behavior_id(o, id_bhvBeginningPeach) ~= 0) then
+        
+        local peachModel = characterpeachstart[gCSPlayers[0].modelId]
+
+        if characterpeachletter[gCSPlayers[0].modelId] ~= nil then
+            texture_override_set("castle_grounds_seg7_texture_0700C9E8",characterpeachletter[gCSPlayers[0].modelId].left)
+            texture_override_set("castle_grounds_seg7_texture_0700D9E8",characterpeachletter[gCSPlayers[0].modelId].right)
+            texture_override_set("castle_grounds_seg7_us_texture_0700EAE8",characterpeachletter[gCSPlayers[0].modelId].sig)
+        end
+        
+        if gCSPlayers[0].modelId ~= nil and peachModel ~= nil and obj_has_model_extended(o, peachModel) == 0 then
+            obj_set_model_extended(o, peachModel)
+        end
+    elseif (obj_has_behavior_id(o, id_bhvEndToad) ~= 0) then
+        local i = network_local_index_from_global(o.parentObj.globalPlayerIndex)
+        local toadModel
+        if setting1stendtoad then
+            toadModel = characterendtoad1[gCSPlayers[i].modelId]
+        else
+            toadModel = characterendtoad2[gCSPlayers[i].modelId]
+        end
+        
+        if gCSPlayers[i].modelId ~= nil and toadModel ~= nil and (obj_has_model_extended(o, characterendtoad1[gCSPlayers[i].modelId]) == 0) and (obj_has_model_extended(o, characterendtoad2[gCSPlayers[i].modelId]) == 0) then
+            obj_set_model_extended(o, toadModel)
+            setting1stendtoad = not setting1stendtoad
+        end
     end
 
     if sCapBhvs[get_id_from_behavior(o.behavior)] then
