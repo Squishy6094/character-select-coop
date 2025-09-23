@@ -50,7 +50,7 @@ local TEX_LOGO = get_texture_info("char-select-logo")
 local TEX_WALL_LEFT = get_texture_info("char-select-wall-left")
 local TEX_WALL_RIGHT = get_texture_info("char-select-wall-right")
 TEX_GRAFFITI_DEFAULT = get_texture_info("char-select-graffiti-default")
-local TEX_NAMEPLATE = get_texture_info("char-select-nameplate")
+local TEX_NAMEPLATE = get_texture_info("char-select-list-button")
 local TEX_PALETTE_BUCKET = get_texture_info("char-select-palette-bucket")
 local TEX_OVERRIDE_HEADER = nil
 
@@ -1291,6 +1291,22 @@ local function ease_in_out_back(x)
     return x < 0.5 and ((2 * x)^2 * ((c2 + 1) * 2 * x - c2)) / 2 or ((2 * x - 2)^2 * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2;
 end
 
+local function djui_hud_render_life_icon(char, x, y, scale)
+    local icon = char.lifeIcon
+    local color = char.color
+    local djuiColor = djui_hud_get_color()
+    if type(icon) == TYPE_STRING then
+        local font = djui_hud_get_font()
+        djui_hud_set_font(FONT_RECOLOR_HUD)
+        djui_hud_set_color(color.r * djuiColor.r/255, color.g * djuiColor.g/255, color.b * djuiColor.b/255, djuiColor.a)
+        djui_hud_print_text(icon, x, y, scale)
+        djui_hud_set_font(font)
+    else
+        djui_hud_set_color(djuiColor.r, djuiColor.g, djuiColor.b, djuiColor.a)
+        djui_hud_render_texture(icon, x, y, scale / (icon.width * MATH_DIVIDE_16), scale / (icon.height * MATH_DIVIDE_16))
+    end
+end
+
 local TEX_GEAR_BIG = get_texture_info("char-select-gear-big")
 
 local buttonAltAnim = 0
@@ -1629,6 +1645,50 @@ local function on_hud_render()
         end
 
         if not options then
+            local scale = 0.6
+            gridYOffset = lerp(gridYOffset, currCharRender*35, 0.1)
+            djui_hud_set_font(FONT_SPECIAL)
+            for i = 0, #characterTableRender do
+                local char = characterTableRender[i][characterTableRender[i].currAlt]
+                local charName = char.name
+                local charColor = char.color
+                local x = 10 - (math.abs(i - gridYOffset/35)^2)*5
+                local y = height*0.5 - 35*0.5 + i*35 - gridYOffset
+                local segments = math.ceil(((djui_hud_measure_text(charName) + 16)*scale)/(16*scale))
+                local charAltCount = #characterTableRender[i]
+                local channel = characterInstrumentals[i] and tostring(math.floor(879 + hash(characterTableRender[i].saveName)%(1029 - 879))*0.1) .. " FM" or nil
+                -- Backlight
+                djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
+                djui_hud_render_rect(x, y + 6*scale, (64*scale + segments*16*scale + 64*scale), 52*scale)
+                -- Name
+                djui_hud_set_color(charColor.r*0.5, charColor.g*0.5, charColor.b*0.5, 255)
+                if channel then
+                    djui_hud_print_text(channel, x + 64*scale, y + 8*scale, 0.3*scale)
+                end
+                djui_hud_print_text(charName, x + 64*scale + segments*8*scale - djui_hud_measure_text(charName)*scale*0.5, y + 16*scale, scale)
+                -- Icon
+                djui_hud_set_color(charColor.r, charColor.g, charColor.b, 150)
+                djui_hud_render_life_icon(char, x + 64*scale + segments*16*scale + 24*scale, y + 16*scale, scale*2)
+                -- Nameplate Rendering
+                djui_hud_set_color(255, 255, 255, 255)
+                djui_hud_render_texture_tile(TEX_NAMEPLATE, x, y, scale, scale, 0, 0, 64, 64)
+                for s = 1, segments do
+                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 64*scale + (s-1)*16*scale, y, scale*4, scale, 64, 0, 16, 64)
+                end
+                djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 64*scale + segments*16*scale, y, scale*0.5, scale, 64 + 16, 0, 128, 64)
+                local angle = -0x10000*((characterTableRender[i].currAlt - 1)/charAltCount)
+                djui_hud_set_rotation(angle, 0.5, 0.5)
+                djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 64*scale + segments*16*scale + 80*scale, y + 16*scale, scale, scale, 208, 16, 32, 32)
+                djui_hud_set_rotation(0, 0, 0)
+                for a = 1, charAltCount do
+                    local angle = -0x10000*((a - 1)/charAltCount) + 0x8000
+                    local altColor = characterTableRender[i][a].color
+                    djui_hud_set_color(altColor.r, altColor.g, altColor.b, 255)
+                    djui_hud_render_rect(x + 64*scale + segments*16*scale + (96 - 0.5)*scale + sins(angle)*13*scale, y + (32 - 0.5)*scale + coss(angle)*13*scale, 1, 1)
+                end
+            end
+
+            --[[
             -- Render Character Grid
             gridButtonsPerRow = math.floor(width*0.7/100)
             local currRow = math.floor((currCharRender)/gridButtonsPerRow)
@@ -1651,7 +1711,6 @@ local function on_hud_render()
                 djui_hud_print_text(charName, x + 50 - textLength*0.5*nameScale, y + 16 - 16*nameScale, nameScale)
                 djui_hud_render_texture_tile(TEX_NAMEPLATE, x, y, 0.35*(128/272), 0.35, 0, charNameplate, 272, 128)
 
-                --[[
                 if i == currCharRender then
                     local blinkAnim = math.abs(math.sin(get_global_timer()*0.1))*0.5
                     djui_hud_set_color(255 + (charColor.r - 255)*blinkAnim, 255 + (charColor.g - 255)*blinkAnim, 255 + (charColor.b - 255)*blinkAnim, 255)
@@ -1671,8 +1730,8 @@ local function on_hud_render()
                 else
                     djui_hud_render_texture(charIcon, x, y, 1 / (charIcon.width * MATH_DIVIDE_16), 1 / (charIcon.height * MATH_DIVIDE_16))
                 end
-                ]]
             end
+            ]]
         else
             -- Render Options Menu
             djui_hud_set_color(0, 30, 0, 200)
@@ -1968,11 +2027,11 @@ local function before_mario_update(m)
                 end
             )
             
-            -- Grid Controls
+            -- List Controls
             run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
                 (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -45 --[[or prevMouseScroll < mouseScroll]],
                 function ()
-                    currCharRender = num_wrap(currCharRender + gridButtonsPerRow, 0, #characterTableRender)
+                    currCharRender = num_wrap(currCharRender + 1, 0, #characterTableRender)
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                 end
             )
@@ -1980,26 +2039,30 @@ local function before_mario_update(m)
             run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
                 (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 45 --[[or prevMouseScroll > mouseScroll]],
                 function ()
-                    currCharRender = num_wrap(currCharRender - gridButtonsPerRow, 0, #characterTableRender)
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                end
-            )
-
-            run_func_with_condition_and_cooldown(FUNC_INDEX_HORIZONTAL,
-                (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60,
-                function ()
-                    currCharRender = num_wrap(currCharRender + 1, 0, #characterTableRender)
-                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
-                end
-            )
-
-            run_func_with_condition_and_cooldown(FUNC_INDEX_HORIZONTAL,
-                (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60,
-                function ()
                     currCharRender = num_wrap(currCharRender - 1, 0, #characterTableRender)
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                 end
             )
+
+            -- Alt switcher
+            if #characterTable[currChar] > 1 then
+                run_func_with_condition_and_cooldown(FUNC_INDEX_HORIZONTAL,
+                    (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60,
+                    function ()
+                        character.currAlt = num_wrap(character.currAlt + 1, 1, #character)
+                        play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
+                    end
+                )
+
+                run_func_with_condition_and_cooldown(FUNC_INDEX_HORIZONTAL,
+                    (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60,
+                    function ()
+                        character.currAlt = num_wrap(character.currAlt - 1, 1, #character)
+                        play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
+                    end
+                )
+            end
+
 
             run_func_with_condition_and_cooldown(FUNC_INDEX_PREFERENCE,
                 (controller.buttonPressed & A_BUTTON) ~= 0,
@@ -2027,17 +2090,6 @@ local function before_mario_update(m)
                     currPaletteTable.currPalette = num_wrap(currPaletteTable.currPalette, 0, #currPaletteTable)
                 end
             )
-
-            -- Alt switcher
-            if #characterTable[currChar] > 1 then
-                run_func_with_condition_and_cooldown(FUNC_INDEX_ALT,
-                    (controller.buttonPressed & X_BUTTON) ~= 0,
-                    function ()
-                        character.currAlt = num_wrap(character.currAlt + 1, 1, #character)
-                        play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
-                    end
-                )
-            end
 
             run_func_with_condition_and_cooldown(FUNC_INDEX_MISC,
                 (controller.buttonPressed & B_BUTTON) ~= 0,
