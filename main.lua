@@ -1645,46 +1645,57 @@ local function on_hud_render()
         end
 
         if not options then
-            local scale = 0.6
+            local scale = 0.35
+            local textScale = scale*1.5
             gridYOffset = lerp(gridYOffset, currCharRender*35, 0.1)
             djui_hud_set_font(FONT_SPECIAL)
             for i = 0, #characterTableRender do
-                local char = characterTableRender[i][characterTableRender[i].currAlt]
+                local currAlt = characterTableRender[i].currAlt
+                local char = characterTableRender[i][currAlt]
                 local charName = char.name
                 local charColor = char.color
-                local x = 10 - (math.abs(i - gridYOffset/35)^2)*5
-                local y = height*0.5 - 35*0.5 + i*35 - gridYOffset
-                local segments = math.ceil(((djui_hud_measure_text(charName) + 16)*scale)/(16*scale))
+                local x = -(math.abs(i - gridYOffset/35)^2)*5
+                local y = height*0.45 - 35*0.5 + i*35 - gridYOffset
+                local segments = (math.ceil(((djui_hud_measure_text(charName)*textScale + 16*scale))/(16*scale)))
+                local nameMove = math.floor(math.sin(get_global_timer()*0.01)*math.max(0, segments - 15)*4)*4*scale
+                segments = clamp(segments, 5, 15)
                 local charAltCount = #characterTableRender[i]
-                local channel = characterInstrumentals[i] and tostring(math.floor(879 + hash(characterTableRender[i].saveName)%(1029 - 879))*0.1) .. " FM" or nil
+                local channel = characterInstrumentals[i] and tostring(math.floor(879 + hash(characterTableRender[i].saveName)%(1029 - 879))*0.1) .. " FM" or "---.- --"
                 -- Backlight
                 djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
-                djui_hud_render_rect(x, y + 6*scale, (64*scale + segments*16*scale + 64*scale), 52*scale)
+                djui_hud_render_rect(x + 96*scale, y + 24*scale, (128*scale + segments*16*scale), 80*scale)
                 -- Name
                 djui_hud_set_color(charColor.r*0.5, charColor.g*0.5, charColor.b*0.5, 255)
+                djui_hud_print_text(charName, x + 112*scale + segments*16*scale*0.5 - djui_hud_measure_text(charName)*textScale*0.5 + nameMove, y + 32*scale, textScale)
+                
+                djui_hud_render_rect(x + 112*scale, y + 84*scale, segments*16*scale, scale)
                 if channel then
-                    djui_hud_print_text(channel, x + 64*scale, y + 8*scale, 0.3*scale)
+                    djui_hud_print_text(channel, x + 112*scale, y + 85*scale, 0.3*scale)
                 end
-                djui_hud_print_text(charName, x + 64*scale + segments*8*scale - djui_hud_measure_text(charName)*scale*0.5, y + 16*scale, scale)
+
+                -- Backlight x 2
+                djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
+                djui_hud_render_rect(x + 96*scale, y + 24*scale, 16*scale, 80*scale)
+                djui_hud_render_rect(x + 112*scale + segments*16*scale, y + 24*scale, 64*scale, 80*scale)
                 -- Icon
                 djui_hud_set_color(charColor.r, charColor.g, charColor.b, 150)
-                djui_hud_render_life_icon(char, x + 64*scale + segments*16*scale + 24*scale, y + 16*scale, scale*2)
+                djui_hud_render_life_icon(char, x + 112*scale + segments*16*scale + 45*scale, y + 40*scale, scale*3)
                 -- Nameplate Rendering
                 djui_hud_set_color(255, 255, 255, 255)
-                djui_hud_render_texture_tile(TEX_NAMEPLATE, x, y, scale, scale, 0, 0, 64, 64)
+                djui_hud_render_texture_tile(TEX_NAMEPLATE, x, y, scale*128/112, scale, 0, 0, 112, 128)
                 for s = 1, segments do
-                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 64*scale + (s-1)*16*scale, y, scale*4, scale, 64, 0, 16, 64)
+                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + (s-1)*16*scale, y, scale*8, scale, 112, 0, 16, 128)
                 end
-                djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 64*scale + segments*16*scale, y, scale*0.5, scale, 64 + 16, 0, 128, 64)
+                djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale, y, scale*128/192, scale, 128, 0, 192, 128)
                 local angle = -0x10000*((characterTableRender[i].currAlt - 1)/charAltCount)
                 djui_hud_set_rotation(angle, 0.5, 0.5)
-                djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 64*scale + segments*16*scale + 80*scale, y + 16*scale, scale, scale, 208, 16, 32, 32)
+                djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + 134*scale, y + 48*scale, scale, scale, 352, 48, 32, 32)
                 djui_hud_set_rotation(0, 0, 0)
                 for a = 1, charAltCount do
                     local angle = -0x10000*((a - 1)/charAltCount) + 0x8000
                     local altColor = characterTableRender[i][a].color
                     djui_hud_set_color(altColor.r, altColor.g, altColor.b, 255)
-                    djui_hud_render_rect(x + 64*scale + segments*16*scale + (96 - 0.5)*scale + sins(angle)*13*scale, y + (32 - 0.5)*scale + coss(angle)*13*scale, 1, 1)
+                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + (134 + 14)*scale + sins(angle)*16*scale, y + 62*scale + coss(angle)*16*scale, scale, scale, 384, 48 + (currAlt ~= a and 16 or 0), 4, 4)
                 end
             end
 
