@@ -1616,14 +1616,14 @@ local function on_hud_render()
         local wallWidth = TEX_WALL_LEFT.width
         local wallHeight = TEX_WALL_LEFT.height
         local wallScale = 0.6 * widthScale
-        local wallCutoff = ((width * 0.7 - 5) - (width * 0.35 - wallWidth * wallScale * 0.5 - menuOffsetX)) / wallScale
         local x = width*0.35 - wallWidth*wallScale*0.5 - menuOffsetX
         local y = height*0.42 - wallHeight*wallScale*0.5 - menuOffsetY
         -- Reminder to put new hud viewport function here
+        djui_hud_set_scissor(0, 0, 320*0.7, height)
         djui_hud_set_color(playerShirt.r, playerShirt.g, playerShirt.b, 255)
-        djui_hud_render_texture_tile(TEX_WALL_LEFT, x, y, wallHeight/wallCutoff*wallScale, wallScale, 0, 0, wallCutoff, wallHeight)
+        djui_hud_render_texture(TEX_WALL_LEFT, x, y, wallScale, wallScale)
         djui_hud_set_color(playerPants.r, playerPants.g, playerPants.b, 255)
-        djui_hud_render_texture_tile(TEX_WALL_RIGHT, x, y, wallHeight/wallCutoff*wallScale, wallScale, 0, 0, wallCutoff, wallHeight)
+        djui_hud_render_texture(TEX_WALL_RIGHT, x, y, wallScale, wallScale)
         djui_hud_set_rotation(math.random(0, 0x2000) - 0x1000, 0.5, 0.5)
         djui_hud_set_color(255, 255, 255, 150)
         local graffiti = characterGraffiti[currChar] or TEX_GRAFFITI_DEFAULT
@@ -1656,38 +1656,37 @@ local function on_hud_render()
                 local charColor = char.color
                 local x = -(math.abs(i - gridYOffset/35)^2)*5
                 local y = height*0.45 - 35*0.5 + i*35 - gridYOffset
-                local segments = (math.ceil(((djui_hud_measure_text(charName)*textScale + 16*scale))/(16*scale)))
-                local nameMove = math.floor(math.sin(get_global_timer()*0.01)*math.max(0, segments - 15)*4)*4*scale
-                segments = clamp(segments, 5, 15)
+                local segmentsMeasured = (math.ceil(((djui_hud_measure_text(charName)*textScale + 16*scale))/(16*scale)))
+                local segments = segmentsMeasured
                 local charAltCount = #characterTableRender[i]
                 local channel = characterInstrumentals[i] and tostring(math.floor(879 + hash(characterTableRender[i].saveName)%(1029 - 879))*0.1) .. " FM" or "---.- --"
                 -- Backlight
                 djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
                 djui_hud_render_rect(x + 96*scale, y + 24*scale, (128*scale + segments*16*scale), 80*scale)
-                -- Name
+                -- Name Screen
+                djui_hud_print_text(charName, x + 112*scale + segments*16*scale*0.5 - djui_hud_measure_text(charName)*textScale*0.5, y + 32*scale, textScale)
+                djui_hud_set_scissor((x + 96*scale)/width*320, y + 24*scale, (128*scale + segments*16*scale)/width*320, 80*scale)
                 djui_hud_set_color(charColor.r*0.5, charColor.g*0.5, charColor.b*0.5, 255)
-                djui_hud_print_text(charName, x + 112*scale + segments*16*scale*0.5 - djui_hud_measure_text(charName)*textScale*0.5 + nameMove, y + 32*scale, textScale)
-                
                 djui_hud_render_rect(x + 112*scale, y + 84*scale, segments*16*scale, scale)
                 if channel then
                     djui_hud_print_text(channel, x + 112*scale, y + 85*scale, 0.3*scale)
                 end
-
-                -- Backlight x 2
-                djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
-                djui_hud_render_rect(x + 96*scale, y + 24*scale, 16*scale, 80*scale)
-                djui_hud_render_rect(x + 112*scale + segments*16*scale, y + 24*scale, 64*scale, 80*scale)
+                djui_hud_set_scissor(0, 0, 320*0.7, height)
+--[[
                 -- Icon
                 djui_hud_set_color(charColor.r, charColor.g, charColor.b, 150)
                 djui_hud_render_life_icon(char, x + 112*scale + segments*16*scale + 45*scale, y + 40*scale, scale*3)
                 -- Nameplate Rendering
-                djui_hud_set_color(255, 255, 255, 255)
+                djui_hud_set_color(205 + 50*menuColor.r/256, 205 + 50*menuColor.g/256, 205 + 50*menuColor.b/256, 255)
                 djui_hud_render_texture_tile(TEX_NAMEPLATE, x, y, scale*128/112, scale, 0, 0, 112, 128)
                 for s = 1, segments do
                     djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + (s-1)*16*scale, y, scale*8, scale, 112, 0, 16, 128)
                 end
                 djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale, y, scale*128/192, scale, 128, 0, 192, 128)
                 local angle = -0x10000*((characterTableRender[i].currAlt - 1)/charAltCount)
+                if i == currCharRender then
+                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 33*scale, y + 48*scale, scale, scale, 320, 48, 32, 32)
+                end
                 djui_hud_set_rotation(angle, 0.5, 0.5)
                 djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + 134*scale, y + 48*scale, scale, scale, 352, 48, 32, 32)
                 djui_hud_set_rotation(0, 0, 0)
@@ -1697,6 +1696,7 @@ local function on_hud_render()
                     djui_hud_set_color(altColor.r, altColor.g, altColor.b, 255)
                     djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + (134 + 14)*scale + sins(angle)*16*scale, y + 62*scale + coss(angle)*16*scale, scale, scale, 384, 48 + (currAlt ~= a and 16 or 0), 4, 4)
                 end
+                ]]
             end
 
             --[[
@@ -1819,6 +1819,7 @@ local function on_hud_render()
             optionsTimer = optionsTimer + 1
         end
 
+        djui_hud_reset_scissor()
 
         -- Render Background Bottom
         djui_hud_set_rotation(angle_from_2d_points(-10, height - 50, width + 10, height - 35), 0, 0)
@@ -1856,7 +1857,7 @@ local function on_hud_render()
         -- Render Tape
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_caution_tape(-10, 50, 160, -10, 1) -- Top Tape
-        djui_hud_render_caution_tape(width*0.7 - 2, -10, width*0.7 - 10, height - 35, 1, 0.6) -- Side Tape
+        djui_hud_render_caution_tape(width*0.7 + 5, -10, width*0.7 - 5, height - 35, 1, 0.6) -- Side Tape
         djui_hud_render_caution_tape(-10, height - 50, width + 10, height - 35, 1) -- Bottom Tape
 
         -- Render Header
