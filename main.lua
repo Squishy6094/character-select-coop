@@ -82,6 +82,7 @@ local TEXT_PREF_LOAD_ALT = 1
 characterTable = {
     [CT_MARIO] = {
         saveName = "Mario_Default",
+        nickname = "Mario",
         category = "All_CoopDX",
         ogNum = CT_MARIO,
         currAlt = 1,
@@ -102,6 +103,7 @@ characterTable = {
     },
     [CT_LUIGI] = {
         saveName = "Luigi_Default",
+        nickname = "Luigi",
         category = "All_CoopDX",
         ogNum = CT_LUIGI,
         currAlt = 1,
@@ -128,6 +130,7 @@ characterTable = {
     },
     [CT_TOAD] = {
         saveName = "Toad_Default",
+        nickname = "Toad",
         category = "All_CoopDX",
         ogNum = CT_TOAD,
         currAlt = 1,
@@ -154,6 +157,7 @@ characterTable = {
     },
     [CT_WALUIGI] = {
         saveName = "Waluigi_Default",
+        nickname = "Waluigi",
         category = "All_CoopDX",
         ogNum = CT_WALUIGI,
         currAlt = 1,
@@ -180,6 +184,7 @@ characterTable = {
     },
     [CT_WARIO] = {
         saveName = "Wario_Default",
+        nickname = "Wario",
         category = "All_CoopDX",
         ogNum = CT_WARIO,
         currAlt = 1,
@@ -266,6 +271,7 @@ characterGraffiti = {
     [CT_WALUIGI] = get_texture_info("char-select-graffiti-waluigi"),
     [CT_WARIO] = get_texture_info("char-select-graffiti-wario"),
 }
+characterDialog = {}
 
 tableRefNum = 0
 local function make_table_ref_num()

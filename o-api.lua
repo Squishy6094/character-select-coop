@@ -15,7 +15,6 @@ local table_insert,djui_hud_measure_text,smlua_model_util_get_id,type,tonumber =
 ---@field public camScale integer
 
 local characterVoices = {}
-local saveNameTable = {}
 
 -- Here for functions below api
 ---@ignore
@@ -70,6 +69,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
 
     table_insert(characterTable, {
         saveName = type(name) == TYPE_STRING and string_space_to_underscore(name) or "Untitled",
+        nickname = type(name) == TYPE_STRING and string_space_to_underscore(name) or "Untitled",
         currAlt = 1,
         hasMoveset = false,
         locked = LOCKED_NEVER,
@@ -89,8 +89,8 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
             healthTexture = nil,
         },
     })
-    saveNameTable[charNum] = characterTable[charNum].saveName
     characterMovesets[charNum] = {}
+    characterDialog[charNum] = {}
     return charNum
 end
 
@@ -169,7 +169,6 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
     local tableCache = characterTable[charNum][charAlt]
     characterTable[charNum][charAlt] = characterTable[charNum][charAlt] and {
         name = type(name) == TYPE_STRING and name or tableCache.name,
-        saveName = saveNameTable[charNum],
         description = type(description) == TYPE_STRING and description or tableCache.description,
         credit = type(credit) == TYPE_STRING and credit or tableCache.credit,
         color = type(color) == TYPE_TABLE and color or tableCache.color,
@@ -200,6 +199,24 @@ end
 ---@param camScale integer? Zooms the camera based on a multiplier (Default `1`)
 local function character_edit(charNum, name, description, credit, color, modelInfo, baseChar, lifeIcon, camScale)
     character_edit_costume(charNum, characterTable[charNum] and characterTable[charNum].currAlt or 1, name, description, credit, color, modelInfo, baseChar, lifeIcon, camScale)
+end
+
+---@description A function to set a Character's Nickname, used for Dialog Replacement
+---@added 1.16
+---@param charNum integer The number/table position of the Character you want to nickname
+---@param nickname string The Character's new nickname
+local function character_set_nickname(charNum, nickname)
+    if characterTable[charNum] == nil or type(nickname) == TYPE_STRING then
+        characterTable[charNum].nickname = nickname
+    end
+end
+
+
+---@description A function to get a Character's Nickname, used for Dialog Replacement
+---@added 1.16
+---@param charNum integer The number/table position of the Character you want to get the nickname of
+local function character_get_nickname(charNum)
+    return characterTable[charNum] ~= nil and characterTable[charNum].nickname
 end
 
 ---@description A function that adds a voice table to a character
@@ -669,6 +686,26 @@ local function character_set_category(charNum, category)
     characterTable[charNum].category = characterTable[charNum].category .. "_" .. category
 end
 
+---@description A function that sets a character under a specific category
+---@added 1.16
+---@param charNum integer The number of the Character you want to replace dislog for
+---@param dialogId integer|DialogId The number of the Character you want to replace dislog for
+---@param unused integer Unused Dialog Variable
+---@param linesPerBox integer Lines of text that appear in a single dialog
+---@param leftOffset integer Dialog Box Posistion relitive to the left side of the screen
+---@param width integer Verticle Position on screen (Dispite Variable Name)
+---@param text string Dialog to be replaced with
+local function character_replace_dialog(charNum, dialogId, unused, linesPerBox, leftOffset, width, text)
+    if modded == nil then modded = true end
+    characterDialog[charNum][dialogId] = {
+        unused = unused,
+        linesPerBox = linesPerBox,
+        leftOffset = leftOffset,
+        width = width,
+        text = text,
+    }
+end
+
 ---@header
 ---@forcedoc Menu_Functions
 
@@ -1018,6 +1055,8 @@ _G.charSelect = {
     character_add_costume = character_add_costume,
     character_edit = character_edit,
     character_edit_costume = character_edit_costume,
+    character_set_nickname = character_set_nickname,
+    character_get_nickname = character_get_nickname,
     character_add_voice = character_add_voice,
     character_add_caps = character_add_caps,
     character_get_caps = character_get_caps,
@@ -1052,6 +1091,7 @@ _G.charSelect = {
     character_render_health_meter_interpolated = render_health_meter_from_local_index_interpolated, -- Function located in n-hud.lua
     character_set_locked = character_set_locked,
     character_set_category = character_set_category,
+    character_replace_dialog = character_replace_dialog,
     character_get_moveset = character_get_moveset,
     character_is_vanilla = character_is_vanilla, -- Function located in main.lua
     character_add_menu_instrumental = character_add_menu_instrumental,
