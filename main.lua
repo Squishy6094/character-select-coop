@@ -59,6 +59,7 @@ LOCKED_TRUE = 1
 LOCKED_FALSE = 2
 
 local SOUND_CHAR_SELECT_THEME = audio_stream_load("char-select-menu-theme.ogg")
+local SOUND_CHAR_SELECT_DIAL = audio_stream_load("char-select-dial-wind.ogg")
 audio_stream_set_looping(SOUND_CHAR_SELECT_THEME, true)
 audio_stream_set_loop_points(SOUND_CHAR_SELECT_THEME, 0, 93.659*22050)
 
@@ -1635,7 +1636,7 @@ local function on_hud_render()
         local graffiti = characterGraffiti[currChar] or TEX_GRAFFITI_DEFAULT
         local graffitiWidthScale = 120/graffiti.width 
         local graffitiHeightScale = 120/graffiti.width 
-        djui_hud_render_texture(graffiti, width*0.35 - graffiti.width*0.5*graffitiWidthScale - menuOffsetX, height*0.5 - graffiti.height*0.5*graffitiHeightScale - menuOffsetY, graffitiWidthScale, graffitiHeightScale)
+        djui_hud_render_texture(graffiti, width*0.5 - graffiti.width*0.5*graffitiWidthScale - menuOffsetX, height*0.5 - graffiti.height*0.5*graffitiHeightScale - menuOffsetY, graffitiWidthScale, graffitiHeightScale)
         djui_hud_set_rotation(0, 0, 0)
 
         -- API Rendering (Below Text)
@@ -1670,15 +1671,13 @@ local function on_hud_render()
                 djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
                 djui_hud_render_rect(x + 96*scale, y + 24*scale, (128*scale + segments*16*scale), 80*scale)
                 -- Name Screen
-                djui_hud_print_text(charName, x + 112*scale + segments*16*scale*0.5 - djui_hud_measure_text(charName)*textScale*0.5, y + 32*scale, textScale)
-                djui_hud_set_scissor((x + 96*scale)/width*320, y + 24*scale, (128*scale + segments*16*scale)/width*320, 80*scale)
                 djui_hud_set_color(charColor.r*0.5, charColor.g*0.5, charColor.b*0.5, 255)
+                djui_hud_print_text(charName, x + 112*scale + segments*16*scale*0.5 - djui_hud_measure_text(charName)*textScale*0.5, y + 32*scale, textScale)
+                
                 djui_hud_render_rect(x + 112*scale, y + 84*scale, segments*16*scale, scale)
                 if channel then
                     djui_hud_print_text(channel, x + 112*scale, y + 85*scale, 0.3*scale)
                 end
-                djui_hud_set_scissor(0, 0, 320*0.7, height)
---[[
                 -- Icon
                 djui_hud_set_color(charColor.r, charColor.g, charColor.b, 150)
                 djui_hud_render_life_icon(char, x + 112*scale + segments*16*scale + 45*scale, y + 40*scale, scale*3)
@@ -1702,7 +1701,6 @@ local function on_hud_render()
                     djui_hud_set_color(altColor.r, altColor.g, altColor.b, 255)
                     djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + (134 + 14)*scale + sins(angle)*16*scale, y + 62*scale + coss(angle)*16*scale, scale, scale, 384, 48 + (currAlt ~= a and 16 or 0), 4, 4)
                 end
-                ]]
             end
 
             --[[
@@ -2068,7 +2066,8 @@ local function before_mario_update(m)
                     (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60,
                     function ()
                         character.currAlt = num_wrap(character.currAlt + 1, 1, #character)
-                        play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
+                        audio_stream_set_frequency(SOUND_CHAR_SELECT_DIAL, math.random(20, 80)*0.01 + 0.5)
+                        audio_stream_play(SOUND_CHAR_SELECT_DIAL, true, 0.75)
                     end
                 )
 
@@ -2076,7 +2075,8 @@ local function before_mario_update(m)
                     (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60,
                     function ()
                         character.currAlt = num_wrap(character.currAlt - 1, 1, #character)
-                        play_sound(SOUND_MENU_CLICK_CHANGE_VIEW, cameraToObject)
+                        audio_stream_set_frequency(SOUND_CHAR_SELECT_DIAL, math.random(20, 80)*0.01 + 0.5)
+                        audio_stream_play(SOUND_CHAR_SELECT_DIAL, true, 0.75)
                     end
                 )
             end
