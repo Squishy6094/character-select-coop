@@ -15,6 +15,98 @@ local SLEEP_TALK_END = SLEEP_TALK_START + SLEEP_TALK_SNORES
 local stallTimer = 0
 local stallSayLine = 5
 
+local levelReverbs = {
+    [LEVEL_NONE]               = { 0x00, 0x00, 0x00 },
+    [LEVEL_UNKNOWN_1]         = { 0x00, 0x00, 0x00 },
+    [LEVEL_UNKNOWN_2]         = { 0x00, 0x00, 0x00 },
+    [LEVEL_UNKNOWN_3]         = { 0x00, 0x00, 0x00 },
+    [LEVEL_BBH]               = { 0x28, 0x28, 0x28 },
+    [LEVEL_CCM]               = { 0x10, 0x38, 0x38 },
+    [LEVEL_CASTLE]            = { 0x20, 0x20, 0x30 },
+    [LEVEL_HMC]               = { 0x28, 0x28, 0x28 },
+    [LEVEL_SSL]               = { 0x08, 0x30, 0x30 },
+    [LEVEL_BOB]               = { 0x08, 0x08, 0x08 },
+    [LEVEL_SL]                = { 0x10, 0x28, 0x28 },
+    [LEVEL_WDW]               = { 0x10, 0x18, 0x18 },
+    [LEVEL_JRB]               = { 0x10, 0x18, 0x18 },
+    [LEVEL_THI]               = { 0x0c, 0x0c, 0x20 },
+    [LEVEL_TTC]               = { 0x18, 0x18, 0x18 },
+    [LEVEL_RR]                = { 0x20, 0x20, 0x20 },
+    [LEVEL_CASTLE_GROUNDS]    = { 0x08, 0x08, 0x08 },
+    [LEVEL_BITDW]             = { 0x28, 0x28, 0x28 },
+    [LEVEL_VCUTM]             = { 0x28, 0x28, 0x28 },
+    [LEVEL_BITFS]             = { 0x28, 0x28, 0x28 },
+    [LEVEL_SA]                = { 0x10, 0x10, 0x10 },
+    [LEVEL_BITS]              = { 0x28, 0x28, 0x28 },
+    [LEVEL_LLL]               = { 0x08, 0x30, 0x30 },
+    [LEVEL_DDD]               = { 0x10, 0x20, 0x20 },
+    [LEVEL_WF]                = { 0x08, 0x08, 0x08 },
+    [LEVEL_ENDING]            = { 0x00, 0x00, 0x00 },
+    [LEVEL_CASTLE_COURTYARD] = { 0x08, 0x08, 0x08 },
+    [LEVEL_PSS]               = { 0x28, 0x28, 0x28 },
+    [LEVEL_COTMC]             = { 0x28, 0x28, 0x28 },
+    [LEVEL_TOTWC]             = { 0x20, 0x20, 0x20 },
+    [LEVEL_BOWSER_1]          = { 0x40, 0x40, 0x40 },
+    [LEVEL_WMOTR]             = { 0x28, 0x28, 0x28 },
+    [LEVEL_UNKNOWN_32]        = { 0x70, 0x00, 0x00 },
+    [LEVEL_BOWSER_2]          = { 0x40, 0x40, 0x40 },
+    [LEVEL_BOWSER_3]          = { 0x40, 0x40, 0x40 },
+    [LEVEL_UNKNOWN_35]        = { 0x00, 0x00, 0x00 },
+    [LEVEL_TTM]               = { 0x08, 0x08, 0x08 },
+    [LEVEL_UNKNOWN_37]        = { 0x00, 0x00, 0x00 },
+    [LEVEL_UNKNOWN_38]        = { 0x00, 0x00, 0x00 },
+}
+
+local stalledAudio = {}
+
+---@param sample ModAudio
+---@param pos Vec3f
+---@param baseVolume number
+---@param reverbAmount number (0 to 1, where 1 = full echo effect)
+local function play_sound_with_reverb(sample, pos, baseVolume, reverbAmount)
+    if is_game_paused() or optionTable[optionTableRef.localVoices].toggle == 0 then return end
+    -- Play the original sample
+    audio_sample_play(sample, pos, baseVolume)
+
+    -- Define simple fake reverb delays and volume reductions
+    local echoDelays = { 0.1, 0.2, 0.35, 0.5 }
+    local echoVolumes = {
+        baseVolume * reverbAmount * 0.6,
+        baseVolume * reverbAmount * 0.4,
+        baseVolume * reverbAmount * 0.25,
+        baseVolume * reverbAmount * 0.15,
+    }
+
+    -- Loop through and schedule echo playbacks
+    for i = 1, #echoDelays do
+        local delay = echoDelays[i]
+        local volume = echoVolumes[i]
+        local frame = (get_global_timer() + math.floor(delay*30))
+
+        table_insert(stalledAudio, {
+            frame = frame,
+            sample = sample, 
+            pos = pos,
+            volume = volume
+        })
+    end
+end
+
+
+---@param sample ModAudio
+local function stop_sound_with_reverb(sample)
+    -- Remove echo lines that should have played while paused
+    audio_sample_stop(sample)
+    if #stalledAudio > 0 then
+        for i = 1, #stalledAudio do
+            if stalledAudio[i] ~= nil and stalledAudio[i].sample == sample then
+                audio_sample_stop(stalledAudio[i].sample)
+                table.remove(stalledAudio, i)
+            end
+        end
+    end
+end
+
 local TYPE_TABLE = "table"
 local TYPE_USERDATA = "userdata"
 local TYPE_STRING = "string"
@@ -47,10 +139,10 @@ local function stop_all_custom_character_sounds()
                             if type(voiceTable[sound][voice]) == "string" then
                                 break
                             end
-                            audio_sample_stop(voiceTable[sound][voice])
+                            stop_sound_with_reverb(voiceTable[sound][voice])
                         end
                     else
-                        audio_sample_stop(voiceTable[sound])
+                        stop_sound_with_reverb(voiceTable[sound])
                     end
                 end
             end
@@ -66,7 +158,8 @@ end
 ---@param m MarioState
 ---@param sound CharacterSound
 ---@param pos Vec3f?
-local function custom_character_sound(m, sound,pos)
+local function custom_character_sound(m, sound, pos)
+    local np = gNetworkPlayers[m.playerIndex]
     if m.playerIndex == 0 then
         if stallTimer < stallSayLine then
             return NO_SOUND
@@ -74,7 +167,7 @@ local function custom_character_sound(m, sound,pos)
     end
     local index = m.playerIndex
     if check_sound_exists(playerSample[index]) and type(playerSample[index]) ~= TYPE_STRING then
-        audio_sample_stop(playerSample[index])
+        stop_sound_with_reverb(playerSample[index])
     end
     if optionTable[optionTableRef.localVoices].toggle == 0 then return NO_SOUND end
 
@@ -114,20 +207,54 @@ local function custom_character_sound(m, sound,pos)
 
     -- Play the sample
     if check_sound_exists(playerSample[index]) then
+        -- Volume based on sound type
+        local baseVolume = 1.0
         if sound == CHAR_SOUND_SNORING1 or sound == CHAR_SOUND_SNORING2 or sound == CHAR_SOUND_SNORING3 then
-            audio_sample_play(playerSample[index], m.pos, 0.5)
-        elseif pos ~= nil then --used by sounds called by on_play_sound function
-            audio_sample_play(playerSample[index], pos, 1.0)
-        else
-            audio_sample_play(playerSample[index], m.pos, 1.0)
+            baseVolume = 0.5
         end
+
+        -- Use the provided position or Mario's position
+        local position = pos or m.pos
+
+        -- Enable fake reverb based on context, or always for now
+        local enableReverb = true
+
+        if enableReverb then
+            -- Reverb amount between 0 and 1 (adjust as desired)
+            local reverbAmount = levelReverbs[np.currLevelNum][np.currAreaIndex]/127
+            play_sound_with_reverb(playerSample[index], position, baseVolume, reverbAmount)
+        else
+            audio_sample_play(playerSample[index], position, baseVolume)
+        end
+
         return NO_SOUND
     end
 end
 
 ---@param m MarioState
 local function custom_character_snore(m)
-    if is_game_paused() or optionTable[optionTableRef.localVoices].toggle == 0 then return end
+    if is_game_paused() or optionTable[optionTableRef.localVoices].toggle == 0 then
+        -- Remove echo lines that should have played while paused
+        if #stalledAudio > 0 then
+            for i = 1, #stalledAudio do
+                if stalledAudio[i] ~= nil and stalledAudio[i].frame <= get_global_timer() then
+                    table.remove(stalledAudio, i)
+                end
+            end
+        end
+        return
+    end
+
+    -- Putting echo stuffs in snore since it's on update
+    if #stalledAudio > 0 then
+        for i = 1, #stalledAudio do
+            if stalledAudio[i] ~= nil and stalledAudio[i].frame <= get_global_timer() then
+                local voice = stalledAudio[i]
+                audio_sample_play(voice.sample, voice.pos, voice.volume)
+                table.remove(stalledAudio, i)
+            end
+        end
+    end
 
     if m.action ~= ACT_SLEEPING then
         return
