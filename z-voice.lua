@@ -77,17 +77,13 @@ local function play_sound_with_reverb(sample, pos, baseVolume, reverbAmount)
         baseVolume * reverbAmount * 0.15,
     }
 
-    -- Loop through and schedule echo playbacks
     for i = 1, #echoDelays do
-        local delay = echoDelays[i]
-        local volume = echoVolumes[i]
-        local frame = (get_global_timer() + math.floor(delay*30))
-
         table_insert(stalledAudio, {
-            frame = frame,
+            path = sample.file.relativePath,
+            frame = (get_global_timer() + math.floor(echoDelays[i]*30)),
             sample = sample, 
             pos = pos,
-            volume = volume
+            volume = echoVolumes[i]
         })
     end
 end
@@ -95,11 +91,10 @@ end
 
 ---@param sample ModAudio
 local function stop_sound_with_reverb(sample)
-    -- Remove echo lines that should have played while paused
     audio_sample_stop(sample)
     if #stalledAudio > 0 then
-        for i = 1, #stalledAudio do
-            if stalledAudio[i] ~= nil and stalledAudio[i].sample == sample then
+        for i = #stalledAudio, 1, -1 do
+            if stalledAudio[i] ~= nil and stalledAudio[i].path == sample.file.relativePath then
                 audio_sample_stop(stalledAudio[i].sample)
                 table.remove(stalledAudio, i)
             end
@@ -221,7 +216,17 @@ local function custom_character_sound(m, sound, pos)
 
         if enableReverb then
             -- Reverb amount between 0 and 1 (adjust as desired)
-            local reverbAmount = levelReverbs[np.currLevelNum][np.currAreaIndex]/127
+            local reverbAmount = 0x08
+            if levelReverbs[np.currLevelNum] ~= nil then
+                reverbAmount = levelReverbs[np.currLevelNum][np.currAreaIndex]/127
+            elseif smlua_level_util_get_info(np.currLevelNum) ~= nil then
+                local levelInfo = smlua_level_util_get_info(np.currLevelNum)
+                levelReverbs[np.currLevelNum][1] = levelInfo.echoLevel1
+                levelReverbs[np.currLevelNum][2] = levelInfo.echoLevel2
+                levelReverbs[np.currLevelNum][3] = levelInfo.echoLevel3
+                reverbAmount = levelReverbs[np.currLevelNum][np.currAreaIndex]/127
+            end
+            
             play_sound_with_reverb(playerSample[index], position, baseVolume, reverbAmount)
         else
             audio_sample_play(playerSample[index], position, baseVolume)
