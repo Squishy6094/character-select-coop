@@ -208,29 +208,20 @@ local function custom_character_sound(m, sound, pos)
             baseVolume = 0.5
         end
 
-        -- Use the provided position or Mario's position
         local position = pos or m.pos
-
-        -- Enable fake reverb based on context, or always for now
-        local enableReverb = true
-
-        if enableReverb then
-            -- Reverb amount between 0 and 1 (adjust as desired)
-            local reverbAmount = 0x08
-            if levelReverbs[np.currLevelNum] ~= nil then
-                reverbAmount = levelReverbs[np.currLevelNum][np.currAreaIndex]/127
-            elseif smlua_level_util_get_info(np.currLevelNum) ~= nil then
-                local levelInfo = smlua_level_util_get_info(np.currLevelNum)
-                levelReverbs[np.currLevelNum][1] = levelInfo.echoLevel1
-                levelReverbs[np.currLevelNum][2] = levelInfo.echoLevel2
-                levelReverbs[np.currLevelNum][3] = levelInfo.echoLevel3
-                reverbAmount = levelReverbs[np.currLevelNum][np.currAreaIndex]/127
-            end
-            
-            play_sound_with_reverb(playerSample[index], position, baseVolume, reverbAmount)
-        else
-            audio_sample_play(playerSample[index], position, baseVolume)
+        local reverbAmount = 0x08
+        if levelReverbs[np.currLevelNum] ~= nil then
+            reverbAmount = levelReverbs[np.currLevelNum][np.currAreaIndex]/127
+        elseif smlua_level_util_get_info(np.currLevelNum) ~= nil then
+            local levelInfo = smlua_level_util_get_info(np.currLevelNum)
+            levelReverbs[np.currLevelNum] = {}
+            levelReverbs[np.currLevelNum][1] = levelInfo.echoLevel1 or reverbAmount
+            levelReverbs[np.currLevelNum][2] = levelInfo.echoLevel2 or reverbAmount
+            levelReverbs[np.currLevelNum][3] = levelInfo.echoLevel3 or reverbAmount
+            reverbAmount = levelReverbs[np.currLevelNum][np.currAreaIndex]/127
         end
+        
+        play_sound_with_reverb(playerSample[index], position, baseVolume, reverbAmount)
 
         return NO_SOUND
     end
