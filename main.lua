@@ -753,8 +753,11 @@ end
 local ACT_CS_MENU_IDLE = allocate_mario_action(ACT_FLAG_STATIONARY | ACT_FLAG_IDLE | ACT_FLAG_ALLOW_FIRST_PERSON | ACT_FLAG_PAUSE_EXIT)
 ---@param m MarioState
 local function act_cs_menu_idle(m)
-    local p = gCSPlayers[m.playerIndex]
     if not m then return 0 end
+    local p = gCSPlayers[m.playerIndex]
+    if (m.quicksandDepth > 30.0) then
+        return set_mario_action(m, ACT_IN_QUICKSAND, 0);
+    end
 
     if (check_common_idle_cancels(m) ~= 0) then
         return 1;
