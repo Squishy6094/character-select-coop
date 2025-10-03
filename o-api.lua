@@ -740,7 +740,7 @@ end
 ---@description A function that sets a character under a specific category
 ---@added 1.16
 ---@param charNum integer The number of the Character you want to replace dislog for
----@param dialogId integer|DialogId The number of the Character you want to replace dislog for
+---@param dialogId integer|DialogId The ID of the dialog you want to replace
 ---@param unused integer Unused Dialog Variable
 ---@param linesPerBox integer Lines of text that appear in a single dialog
 ---@param leftOffset integer Dialog Box Posistion relitive to the left side of the screen
