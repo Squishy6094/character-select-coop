@@ -836,7 +836,7 @@ local function render_hud_ending_dialog()
 
     local width = djui_hud_get_screen_width()
 
-    local charName = characterTable[currChar][characterTable[currChar].currAlt].name
+    local charName = characterTable[currChar].nickname
     local string = ""
     local startTime = 0
     local endTime = 0

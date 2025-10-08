@@ -16,7 +16,7 @@ local stallTimer = 0
 local stallSayLine = 5
 
 local levelReverbs = {
-    [LEVEL_NONE]               = { 0x00, 0x00, 0x00 },
+    [LEVEL_NONE]              = { 0x00, 0x00, 0x00 },
     [LEVEL_UNKNOWN_1]         = { 0x00, 0x00, 0x00 },
     [LEVEL_UNKNOWN_2]         = { 0x00, 0x00, 0x00 },
     [LEVEL_UNKNOWN_3]         = { 0x00, 0x00, 0x00 },
@@ -42,7 +42,7 @@ local levelReverbs = {
     [LEVEL_DDD]               = { 0x10, 0x20, 0x20 },
     [LEVEL_WF]                = { 0x08, 0x08, 0x08 },
     [LEVEL_ENDING]            = { 0x00, 0x00, 0x00 },
-    [LEVEL_CASTLE_COURTYARD] = { 0x08, 0x08, 0x08 },
+    [LEVEL_CASTLE_COURTYARD]  = { 0x08, 0x08, 0x08 },
     [LEVEL_PSS]               = { 0x28, 0x28, 0x28 },
     [LEVEL_COTMC]             = { 0x28, 0x28, 0x28 },
     [LEVEL_TOTWC]             = { 0x20, 0x20, 0x20 },
@@ -210,7 +210,7 @@ local function custom_character_sound(m, sound, pos)
 
         local position = pos or m.pos
         local reverbAmount = 0x08
-        if levelReverbs[np.currLevelNum] ~= nil then
+        if levelReverbs[np.currLevelNum][np.currAreaIndex] ~= nil then
             reverbAmount = levelReverbs[np.currLevelNum][np.currAreaIndex]/127
         elseif smlua_level_util_get_info(np.currLevelNum) ~= nil then
             local levelInfo = smlua_level_util_get_info(np.currLevelNum)
@@ -219,6 +219,8 @@ local function custom_character_sound(m, sound, pos)
             levelReverbs[np.currLevelNum][2] = levelInfo.echoLevel2 or reverbAmount
             levelReverbs[np.currLevelNum][3] = levelInfo.echoLevel3 or reverbAmount
             reverbAmount = levelReverbs[np.currLevelNum][np.currAreaIndex]/127
+        else
+            reverbAmount = levelReverbs[np.currLevelNum][1]/127
         end
         
         play_sound_with_reverb(playerSample[index], position, baseVolume, reverbAmount)
