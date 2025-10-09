@@ -210,8 +210,10 @@ local function custom_character_sound(m, sound, pos)
 
         local position = pos or m.pos
         local reverbAmount = 0x08
-        if levelReverbs[np.currLevelNum][np.currAreaIndex] ~= nil then
-            reverbAmount = levelReverbs[np.currLevelNum][np.currAreaIndex]/127
+        if levelReverbs[np.currLevelNum] ~= nil then
+            if levelReverbs[np.currLevelNum][np.currAreaIndex] ~= nil then
+                reverbAmount = levelReverbs[np.currLevelNum][np.currAreaIndex]/127
+            end
         elseif smlua_level_util_get_info(np.currLevelNum) ~= nil then
             local levelInfo = smlua_level_util_get_info(np.currLevelNum)
             levelReverbs[np.currLevelNum] = {}
