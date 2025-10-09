@@ -51,6 +51,7 @@ local TEX_WALL_LEFT = get_texture_info("char-select-wall-left")
 local TEX_WALL_RIGHT = get_texture_info("char-select-wall-right")
 TEX_GRAFFITI_DEFAULT = get_texture_info("char-select-graffiti-default")
 local TEX_NAMEPLATE = get_texture_info("char-select-list-button")
+local TEX_RECORD = get_texture_info("char-select-record")
 local TEX_PALETTE_BUCKET = get_texture_info("char-select-palette-bucket")
 local TEX_OVERRIDE_HEADER = nil
 
@@ -1497,7 +1498,7 @@ local function on_hud_render()
                 local char = characterTableRender[i][currAlt]
                 local charName = char.name
                 local charColor = char.color
-                local x = -(math.abs(i - gridYOffset/35)^2)*5
+                local x = -(math.abs(i - gridYOffset/35)^2)*5 + 32
                 local y = height*0.45 - 35*0.5 + i*35 - gridYOffset
                 local segmentsMeasured = (math.ceil(((djui_hud_measure_text(charName)*textScale + 16*scale))/(16*scale)))
                 local segments = segmentsMeasured
@@ -1538,6 +1539,11 @@ local function on_hud_render()
                     djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + (134 + 14)*scale + sins(angle)*16*scale, y + 62*scale + coss(angle)*16*scale, scale, scale, 384, 48 + (currAlt ~= a and 16 or 0), 4, 4)
                 end
             end
+
+            djui_hud_set_color(255, 255, 255, 255)
+            djui_hud_set_rotation(get_global_timer() * 0x10, 0.5, 0.5)
+            djui_hud_render_texture(TEX_RECORD, -152, height*0.5 - 64 - 32, 1.5, 1.5)
+            djui_hud_set_rotation(0, 0, 0)
         else
             -- Render Options Menu
             djui_hud_set_color(0, 30, 0, 200)
