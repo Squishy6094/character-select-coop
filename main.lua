@@ -53,6 +53,7 @@ TEX_GRAFFITI_DEFAULT = get_texture_info("char-select-graffiti-default")
 local TEX_NAMEPLATE = get_texture_info("char-select-list-button")
 local TEX_RECORD = get_texture_info("char-select-record")
 local TEX_PALETTE_BUCKET = get_texture_info("char-select-palette-bucket")
+local TEX_CATEGORY_BANNER = get_texture_info("char-select-category")
 local TEX_OVERRIDE_HEADER = nil
 
 LOCKED_NEVER = 0
@@ -1546,6 +1547,14 @@ local function on_hud_render()
             djui_hud_set_rotation(get_global_timer() * 0x10, 0.5, 0.5)
             djui_hud_render_texture(TEX_RECORD, -152, height*0.5 - 64 - 32, 1.5, 1.5)
             djui_hud_set_rotation(0, 0, 0)
+
+            local spacing = width*0.3/#characterCategories
+            for i = 1, #characterCategories do
+                djui_hud_render_texture_auto_interpolated("categorybanner" .. i, TEX_CATEGORY_BANNER, width*0.3 + i*spacing - 16, currCategory == i and -5 or -10, 0.5, 0.5)
+            end
+            djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
+            djui_hud_set_font(FONT_RECOLOR_HUD)
+            djui_hud_print_text(characterCategories[currCategory], width*0.45 - djui_hud_measure_text(characterCategories[currCategory])*0.3, 30, 0.6)
         else
             -- Render Options Menu
             djui_hud_set_color(0, 30, 0, 200)
@@ -1820,6 +1829,12 @@ local function before_mario_update(m)
 
     mouseScroll = mouseScroll - djui_hud_get_mouse_scroll_y()
 
+    -- Yo Melee called
+    local menuOffsetXRaw = (m.controller.extStickX ~= 0 and m.controller.extStickX or button_to_analog(charSelect.controller, L_CBUTTONS, R_CBUTTONS))*0.2
+    local menuOffsetYRaw = (m.controller.extStickY ~= 0 and -m.controller.extStickY or button_to_analog(charSelect.controller, U_CBUTTONS, D_CBUTTONS))*0.2
+    menuOffsetX = lerp(menuOffsetX, menuOffsetXRaw, 0.2)
+    menuOffsetY = lerp(menuOffsetY, menuOffsetYRaw, 0.2)
+
     local cameraToObject = m.marioObj.header.gfx.cameraToObject
     if menuAndTransition and not options then
         if menu then
@@ -2004,12 +2019,6 @@ local function before_mario_update(m)
 
     -- Checks
     currChar = characterTableRender[currCharRender].ogNum
-    
-    -- Yo Melee called
-    local menuOffsetXRaw = (m.controller.extStickX ~= 0 and m.controller.extStickX or button_to_analog(charSelect.controller, L_CBUTTONS, R_CBUTTONS))*0.2
-    local menuOffsetYRaw = (m.controller.extStickY ~= 0 and -m.controller.extStickY or button_to_analog(charSelect.controller, U_CBUTTONS, D_CBUTTONS))*0.2
-    menuOffsetX = lerp(menuOffsetX, menuOffsetXRaw, 0.2)
-    menuOffsetY = lerp(menuOffsetY, menuOffsetYRaw, 0.2)
 end
 
 hook_event(HOOK_BEFORE_MARIO_UPDATE, before_mario_update)

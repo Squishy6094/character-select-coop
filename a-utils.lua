@@ -537,7 +537,7 @@ function is_mario_in_vanilla_action(m)
     return defaultActions[m.action] ~= nil
 end
 
--- Lazy way of doing interp
+-- Lazy automation of interpolation on HUD elements
 local interpTable = {}
 
 function djui_set_interpolation(index, x, y, width, height)
