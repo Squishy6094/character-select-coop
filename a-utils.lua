@@ -536,3 +536,31 @@ local defaultActions = {
 function is_mario_in_vanilla_action(m)
     return defaultActions[m.action] ~= nil
 end
+
+-- Lazy way of doing interp
+local interpTable = {}
+
+function djui_set_interpolation(index, x, y, width, height)
+    interpTable[index] = {
+        x = x,
+        y = y,
+        width = width,
+        height = height
+    }
+end
+
+function djui_get_interpolation(index, backUpX, backUpY, backUpWidth, backUpHeight)
+    return interpTable[index] or {x = backUpX or 0, y = backUpY or 0, width = backUpWidth or 0, height = backUpHeight or 0}
+end
+
+function djui_hud_print_text_auto_interpolated(index, message, x, y, scale)
+    local interp = djui_get_interpolation(index, x, y, scale, nil)
+    djui_hud_print_text_interpolated(message, interp.x, interp.y, interp.width, x, y, scale)
+    djui_set_interpolation(index, x, y, scale, nil)
+end
+
+function djui_hud_render_texture_auto_interpolated(index, texture, x, y, width, height)
+    local interp = djui_get_interpolation(index, x, y, width, height)
+    djui_hud_render_texture_interpolated(texture, interp.x, interp.y, interp.width, interp.height, x, y, width, height)
+    djui_set_interpolation(index, x, y, width, height)
+end

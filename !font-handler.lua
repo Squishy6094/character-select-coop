@@ -171,7 +171,8 @@ function djui_hud_print_text(message, x, y, scale)
                 djui_hud_render_texture_tile(currFont.spritesheet,
                 x + (currFont.info[letter].xoffset*scale) + math.random(-textShake*100, textShake*100)*0.01 + math.sin((HudAnimTimer+i*2)*textWaveSpeed*0.1)*textWaveX,
                 y + (currFont.info[letter].yoffset*scale) + math.random(-textShake*100, textShake*100)*0.01 + math.cos((HudAnimTimer+i*2)*textWaveSpeed*0.1)*textWaveY,
-                scaleWidth, scale, currFont.info[letter].x,
+                scaleWidth, scale,
+                currFont.info[letter].x,
                 currFont.info[letter].y,
                 currFont.info[letter].width,
                 currFont.info[letter].height)
@@ -196,9 +197,41 @@ end
 -- Custom Fonts do not currently support Interpolation due to lack of RESOLUTION_N64 support
 function djui_hud_print_text_interpolated(message, prevX, prevY, prevScale, x, y, scale)
     if customFont then
-        djui_hud_print_text(message, x, y, scale)
+        if message == nil or message == "" then return end
+        local message = string_to_table(message)
+        local currFont = fontTable[customFontType]
+        prevY = prevY + currFont.offset
+        y = y + currFont.offset
+        scale = scale*currFont.scale
+        for i = 1, #message do
+            local letter = message[i]
+            if letter and letter ~= " " then
+                if currFont.info[letter] == nil then
+                    letter = currFont.backup
+                end
+                local prevScaleWidth = prevScale*(currFont.info[letter].height/currFont.info[letter].width)
+                local scaleWidth = scale*(currFont.info[letter].height/currFont.info[letter].width)
+                local xOffset = (currFont.info[letter].xoffset*scale) + math.random(-textShake*100, textShake*100)*0.01 + math.sin((HudAnimTimer+i*2)*textWaveSpeed*0.1)*textWaveX
+                local yOffset = (currFont.info[letter].yoffset*scale) + math.random(-textShake*100, textShake*100)*0.01 + math.cos((HudAnimTimer+i*2)*textWaveSpeed*0.1)*textWaveY 
+                djui_hud_render_texture_tile_interpolated(currFont.spritesheet,
+                prevX + xOffset,
+                prevY + yOffset,
+                prevScaleWidth, prevScale,
+                x + xOffset,
+                y + yOffset,
+                scaleWidth, scale,
+                currFont.info[letter].x,
+                currFont.info[letter].y,
+                currFont.info[letter].width,
+                currFont.info[letter].height)
+            else
+                letter = currFont.backup
+            end
+            x = x + (currFont.info[letter].width + currFont.spacing)*scale
+            prevX = prevX + (currFont.info[letter].width + currFont.spacing)*prevScale
+        end
     else
-        djui_classic_hud_print_text_interpolated(message, prevX, prevY, prevScale, x, y, scale)
+        djui_classic_hud_print_text(message, x, y, scale)
     end
 end
 

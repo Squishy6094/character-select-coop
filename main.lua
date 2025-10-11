@@ -912,7 +912,7 @@ local function mario_update(m)
             local camAngle = m.faceAngle.y + 0x800
             local focusPos = {
                 x = m.pos.x + sins(camAngle - 0x4000)*(175/widthScale - menuOffsetX)*camScale*widthScale,
-                y = m.pos.y + 120/widthScale * camScale - menuOffsetY,
+                y = m.pos.y + (120/widthScale - menuOffsetY) * camScale ,
                 z = m.pos.z + coss(camAngle - 0x4000)*(175/widthScale - menuOffsetX)*camScale*widthScale,
             }
             vec3f_copy(gLakituState.focus, focusPos)
@@ -1402,7 +1402,7 @@ local function on_hud_render()
         djui_hud_render_caution_tape(width*0.7 - 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Top Tape
         djui_hud_render_caution_tape(width*0.7 - 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Bottom Tape
         djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-        djui_hud_print_text(charName, width*0.85 - djui_hud_measure_text(charName)*0.5*nameScale - 2 + menuOffsetX*0.3, 30 - 32*nameScale + menuOffsetY*0.3, nameScale)
+        djui_hud_print_text_auto_interpolated("charName", charName, width*0.85 - djui_hud_measure_text(charName)*0.5*nameScale - 2 + menuOffsetX*0.3, 30 - 32*nameScale + menuOffsetY*0.3, nameScale)
 
         -- Palette Selection
         local charColor = characterTableRender[currCharRender][characterTableRender[currCharRender].currAlt].color
@@ -1462,18 +1462,20 @@ local function on_hud_render()
         local wallScale = 0.6 * widthScale
         local x = width*0.35 - wallWidth*wallScale*0.5 - menuOffsetX
         local y = height*0.42 - wallHeight*wallScale*0.5 - menuOffsetY
-        -- Reminder to put new hud viewport function here
-        djui_hud_set_scissor(0, 0, 320*0.7, height)
+        local scissorWidth = 320/(math.min(width/320, 1))*0.7
+        djui_hud_set_scissor(0, 0, scissorWidth, height)
         djui_hud_set_color(playerShirt.r, playerShirt.g, playerShirt.b, 255)
-        djui_hud_render_texture(TEX_WALL_LEFT, x, y, wallScale, wallScale)
+        djui_hud_render_texture_auto_interpolated("wall-l", TEX_WALL_LEFT, x, y, wallScale, wallScale)
         djui_hud_set_color(playerPants.r, playerPants.g, playerPants.b, 255)
-        djui_hud_render_texture(TEX_WALL_RIGHT, x, y, wallScale, wallScale)
+        djui_hud_render_texture_auto_interpolated("wall-r", TEX_WALL_RIGHT, x, y, wallScale, wallScale)
         djui_hud_set_rotation(math.random(0, 0x2000) - 0x1000, 0.5, 0.5)
         djui_hud_set_color(255, 255, 255, 150)
+        
+        -- Render Graffiti
         local graffiti = characterGraffiti[currChar] or TEX_GRAFFITI_DEFAULT
         local graffitiWidthScale = 120/graffiti.width 
         local graffitiHeightScale = 120/graffiti.width 
-        djui_hud_render_texture(graffiti, width*0.5 - graffiti.width*0.5*graffitiWidthScale - menuOffsetX, height*0.5 - graffiti.height*0.5*graffitiHeightScale - menuOffsetY, graffitiWidthScale, graffitiHeightScale)
+        djui_hud_render_texture_auto_interpolated("graffiti", graffiti, width*0.5 - graffiti.width*0.5*graffitiWidthScale - menuOffsetX, height*0.5 - graffiti.height*0.5*graffitiHeightScale - menuOffsetY, graffitiWidthScale, graffitiHeightScale)
         djui_hud_set_rotation(0, 0, 0)
 
         -- API Rendering (Below Text)
@@ -1638,8 +1640,8 @@ local function on_hud_render()
             descRender = descRender .. " - " .. desc
         end
         descRender = descRender .. " - " .. desc
-        djui_hud_print_text("Creator: " .. credit, 5 + menuOffsetX*0.2, height - 30 + menuOffsetY*0.2, 0.8)
-        djui_hud_print_text(descRender, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8 + menuOffsetX*0.15, height - 17 + menuOffsetY*0.15, 0.8)
+        djui_hud_print_text_auto_interpolated("creditcreators", "Creator: " .. credit, 5 + menuOffsetX*0.2, height - 30 + menuOffsetY*0.2, 0.8)
+        djui_hud_print_text_auto_interpolated("whoareyou", descRender, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8 + menuOffsetX*0.15, height - 17 + menuOffsetY*0.15, 0.8)
 
         -- API Rendering (Above Text)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
@@ -1664,7 +1666,7 @@ local function on_hud_render()
         -- Render Header
         djui_hud_set_rotation(0, 0, 0)
         djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-        djui_hud_render_texture(TEX_LOGO, menuOffsetX*0.1, menuOffsetY*0.1, 0.25, 0.25)
+        djui_hud_render_texture_auto_interpolated("logo", TEX_LOGO, menuOffsetX*0.1, menuOffsetY*0.1, 0.25, 0.25)
 
         -- Anim logic
         if options then
@@ -2087,16 +2089,3 @@ local function chat_command(msg)
 end
 
 hook_chat_command("char-select", "- Opens the Character Select Menu", chat_command)
-
---[[
-local function mod_menu_open_cs()
-    local m = gMarioStates[0]
-    if menu_is_allowed(m) then
-        gMarioStates[0].controller.buttonPressed = START_BUTTON
-        menu = true
-    else
-        play_sound(SOUND_MENU_CAMERA_BUZZ, m.pos)
-    end
-end
-hook_mod_menu_button("Open Menu", mod_menu_open_cs)
-]]
