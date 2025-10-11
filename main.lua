@@ -1466,9 +1466,10 @@ local function on_hud_render()
         local wallWidth = TEX_WALL_LEFT.width
         local wallHeight = TEX_WALL_LEFT.height
         local wallScale = 0.7 * widthScale
-        local x = width*0.1 - menuOffsetX - optionsMenuOffset*0.75
+        local wallMiddle = width*(0.35 - ((optionsMenuOffset - optionsMenuOffsetMax*0.5)/optionsMenuOffsetMax)*0.3)
+        local x = wallMiddle - wallWidth*wallScale*0.5 - menuOffsetX
         local y = height*0.42 - wallHeight*wallScale*0.5 - menuOffsetY
-        local scissorWidth = 320/(math.min(width/320, 1))*0.7
+        local scissorWidth = math.max(320/djui_hud_get_screen_width(), 1)*320*0.7 -- Ensure Wall Space doesn't break when under 4:3
         djui_hud_set_scissor(0, 0, scissorWidth, height)
         djui_hud_set_color(playerShirt.r, playerShirt.g, playerShirt.b, 255)
         djui_hud_render_texture_auto_interpolated("wall-l", TEX_WALL_LEFT, x, y, wallScale, wallScale)
@@ -1480,7 +1481,7 @@ local function on_hud_render()
         local graffitiWidthScale = 120/graffiti.width 
         local graffitiHeightScale = 120/graffiti.width 
         djui_hud_set_color(255, 255, 255, 150)
-        djui_hud_render_texture_auto_interpolated("graffiti", graffiti, width*0.525 - graffiti.width*0.5*graffitiWidthScale - menuOffsetX - optionsMenuOffset*0.75, height*0.5 - graffiti.height*0.5*graffitiHeightScale - menuOffsetY, graffitiWidthScale, graffitiHeightScale)
+        djui_hud_render_texture_auto_interpolated("graffiti", graffiti, wallMiddle - graffiti.width*0.5*graffitiWidthScale - menuOffsetX, height*0.5 - graffiti.height*0.5*graffitiHeightScale - menuOffsetY, graffitiWidthScale, graffitiHeightScale)
 
         -- API Rendering (Below Text)
         if #hookTableRenderInMenu.back > 0 then
@@ -1563,7 +1564,7 @@ local function on_hud_render()
 
 
         -- Render Options Menu
-        djui_hud_render_texture(TEX_OPTIONS_TV, width*0.5 - TEX_OPTIONS_TV.width*0.75 + (optionsMenuOffsetMax - optionsMenuOffset), 10, 1.5, 1.5)
+        djui_hud_render_texture(TEX_OPTIONS_TV, width*0.7 - 200 + (optionsMenuOffsetMax - optionsMenuOffset), 10, 1.5, 1.5)
         --[[
         djui_hud_set_color(0, 30, 0, 200)
         djui_hud_render_rect(0, 0, width*0.7 - 10, height)
@@ -1840,8 +1841,8 @@ local function before_mario_update(m)
     mouseScroll = mouseScroll - djui_hud_get_mouse_scroll_y()
 
     -- Yo Melee called
-    local menuOffsetXRaw = (m.controller.extStickX ~= 0 and m.controller.extStickX or button_to_analog(charSelect.controller, L_CBUTTONS, R_CBUTTONS))*0.2
-    local menuOffsetYRaw = (m.controller.extStickY ~= 0 and -m.controller.extStickY or button_to_analog(charSelect.controller, U_CBUTTONS, D_CBUTTONS))*0.2
+    local menuOffsetXRaw = (m.controller.extStickX ~= 0 and m.controller.extStickX or button_to_analog(charSelect.controller, L_CBUTTONS, R_CBUTTONS))*0.1
+    local menuOffsetYRaw = (m.controller.extStickY ~= 0 and -m.controller.extStickY or button_to_analog(charSelect.controller, U_CBUTTONS, D_CBUTTONS))*0.1
     menuOffsetX = lerp(menuOffsetX, menuOffsetXRaw, 0.2)
     menuOffsetY = lerp(menuOffsetY, menuOffsetYRaw, 0.2)
 
