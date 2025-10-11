@@ -54,6 +54,7 @@ local TEX_NAMEPLATE = get_texture_info("char-select-list-button")
 local TEX_RECORD = get_texture_info("char-select-record")
 local TEX_PALETTE_BUCKET = get_texture_info("char-select-palette-bucket")
 local TEX_CATEGORY_BANNER = get_texture_info("char-select-category")
+local TEX_OPTIONS_TV = get_texture_info("char-select-options-tv")
 local TEX_OVERRIDE_HEADER = nil
 
 LOCKED_NEVER = 0
@@ -1349,6 +1350,8 @@ local gridButtonsPerRow = 3
 local paletteXOffset = 0
 local paletteTrans = 0
 local menuText = {}
+local optionsMenuOffset = 0
+local optionsMenuOffsetMax = 210
 local function on_hud_render()
     local FONT_USER = djui_menu_get_font()
     djui_hud_set_font(FONT_ALIASED)
@@ -1374,9 +1377,11 @@ local function on_hud_render()
             djui_hud_set_color(0, 0, 0, 200)
             djui_hud_render_rect(0, 0, width, height)
             djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_print_text(TEXT_LOCAL_MODEL_ERROR, widthHalf - djui_hud_measure_text(TEXT_LOCAL_MODEL_ERROR) * 0.15 * widthScale, heightHalf, 0.3 * widthScale)
-            djui_hud_print_text(TEXT_LOCAL_MODEL_ERROR_FIX, widthHalf - djui_hud_measure_text(TEXT_LOCAL_MODEL_ERROR_FIX) * 0.1 * widthScale, heightHalf + 10 * widthScale, 0.2 * widthScale)
+            djui_hud_print_text(TEXT_LOCAL_MODEL_ERROR, width*0.85 - djui_hud_measure_text(TEXT_LOCAL_MODEL_ERROR) * 0.15 * widthScale, heightHalf, 0.3 * widthScale)
+            djui_hud_print_text(TEXT_LOCAL_MODEL_ERROR_FIX, width*0.85 - djui_hud_measure_text(TEXT_LOCAL_MODEL_ERROR_FIX) * 0.1 * widthScale, heightHalf + 10 * widthScale, 0.2 * widthScale)
         end
+
+        optionsMenuOffset = lerp(optionsMenuOffset, options and optionsMenuOffsetMax or 0, 0.1)
 
         --Unsupported Res Warning
         if width < 319 or width > 575 then
@@ -1460,8 +1465,8 @@ local function on_hud_render()
         local playerPants = network_player_get_override_palette_color(gNetworkPlayers[0], PANTS)
         local wallWidth = TEX_WALL_LEFT.width
         local wallHeight = TEX_WALL_LEFT.height
-        local wallScale = 0.6 * widthScale
-        local x = width*0.35 - wallWidth*wallScale*0.5 - menuOffsetX
+        local wallScale = 0.7 * widthScale
+        local x = width*0.1 - menuOffsetX - optionsMenuOffset*0.75
         local y = height*0.42 - wallHeight*wallScale*0.5 - menuOffsetY
         local scissorWidth = 320/(math.min(width/320, 1))*0.7
         djui_hud_set_scissor(0, 0, scissorWidth, height)
@@ -1469,15 +1474,13 @@ local function on_hud_render()
         djui_hud_render_texture_auto_interpolated("wall-l", TEX_WALL_LEFT, x, y, wallScale, wallScale)
         djui_hud_set_color(playerPants.r, playerPants.g, playerPants.b, 255)
         djui_hud_render_texture_auto_interpolated("wall-r", TEX_WALL_RIGHT, x, y, wallScale, wallScale)
-        djui_hud_set_rotation(math.random(0, 0x2000) - 0x1000, 0.5, 0.5)
-        djui_hud_set_color(255, 255, 255, 150)
         
         -- Render Graffiti
         local graffiti = characterGraffiti[currChar] or TEX_GRAFFITI_DEFAULT
         local graffitiWidthScale = 120/graffiti.width 
         local graffitiHeightScale = 120/graffiti.width 
-        djui_hud_render_texture_auto_interpolated("graffiti", graffiti, width*0.5 - graffiti.width*0.5*graffitiWidthScale - menuOffsetX, height*0.5 - graffiti.height*0.5*graffitiHeightScale - menuOffsetY, graffitiWidthScale, graffitiHeightScale)
-        djui_hud_set_rotation(0, 0, 0)
+        djui_hud_set_color(255, 255, 255, 150)
+        djui_hud_render_texture_auto_interpolated("graffiti", graffiti, width*0.525 - graffiti.width*0.5*graffitiWidthScale - menuOffsetX - optionsMenuOffset*0.75, height*0.5 - graffiti.height*0.5*graffitiHeightScale - menuOffsetY, graffitiWidthScale, graffitiHeightScale)
 
         -- API Rendering (Below Text)
         if #hookTableRenderInMenu.back > 0 then
@@ -1491,145 +1494,152 @@ local function on_hud_render()
             prevOptions = options
         end
 
-        if not options then
-            local scale = 0.35
-            local textScale = scale*1.5
-            gridYOffset = lerp(gridYOffset, currCharRender*35, 0.1)
-            djui_hud_set_font(FONT_SPECIAL)
-            for i = 0, #characterTableRender do
-                local currAlt = characterTableRender[i].currAlt
-                local char = characterTableRender[i][currAlt]
-                local charName = char.name
-                local charColor = char.color
-                local x = -(math.abs(i - gridYOffset/35)^2)*5 + 32
-                local y = height*0.45 - 35*0.5 + i*35 - gridYOffset
-                local segmentsMeasured = (math.ceil(((djui_hud_measure_text(charName)*textScale + 16*scale))/(16*scale)))
-                local segments = segmentsMeasured
-                local charAltCount = #characterTableRender[i]
-                local channel = characterInstrumentals[i] and tostring(math.floor(879 + hash(characterTableRender[i].saveName)%(1029 - 879))*0.1) .. " FM" or "---.- --"
-                -- Backlight
-                djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
-                djui_hud_render_rect(x + 96*scale, y + 24*scale, (128*scale + segments*16*scale), 80*scale)
-                -- Name Screen
-                djui_hud_set_color(charColor.r*0.5, charColor.g*0.5, charColor.b*0.5, 255)
-                djui_hud_print_text(charName, x + 112*scale + segments*16*scale*0.5 - djui_hud_measure_text(charName)*textScale*0.5, y + 32*scale, textScale)
-                
-                djui_hud_render_rect(x + 112*scale, y + 84*scale, segments*16*scale, scale)
-                if channel then
-                    djui_hud_print_text(channel, x + 112*scale, y + 85*scale, 0.3*scale)
-                end
-                -- Icon
-                djui_hud_set_color(charColor.r, charColor.g, charColor.b, 150)
-                djui_hud_render_life_icon(char, x + 112*scale + segments*16*scale + 45*scale, y + 40*scale, scale*3)
-                -- Nameplate Rendering
-                djui_hud_set_color(205 + 50*menuColor.r/256, 205 + 50*menuColor.g/256, 205 + 50*menuColor.b/256, 255)
-                djui_hud_render_texture_tile(TEX_NAMEPLATE, x, y, scale*128/112, scale, 0, 0, 112, 128)
-                for s = 1, segments do
-                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + (s-1)*16*scale, y, scale*8, scale, 112, 0, 16, 128)
-                end
-                djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale, y, scale*128/192, scale, 128, 0, 192, 128)
-                local angle = -0x10000*((characterTableRender[i].currAlt - 1)/charAltCount)
-                if i == currCharRender then
-                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 33*scale, y + 48*scale, scale, scale, 320, 48, 32, 32)
-                end
-                djui_hud_set_rotation(angle, 0.5, 0.5)
-                djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + 134*scale, y + 48*scale, scale, scale, 352, 48, 32, 32)
-                djui_hud_set_rotation(0, 0, 0)
-                for a = 1, charAltCount do
-                    local angle = -0x10000*((a - 1)/charAltCount) + 0x8000
-                    local altColor = characterTableRender[i][a].color
-                    djui_hud_set_color(altColor.r, altColor.g, altColor.b, 255)
-                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + (134 + 14)*scale + sins(angle)*16*scale, y + 62*scale + coss(angle)*16*scale, scale, scale, 384, 48 + (currAlt ~= a and 16 or 0), 4, 4)
-                end
+        local scale = 0.35
+        local textScale = scale*1.5
+        local buttonSpacing = 32
+        gridYOffset = lerp(gridYOffset, currCharRender*buttonSpacing, 0.1)
+        djui_hud_set_font(FONT_SPECIAL)
+        for i = 0, #characterTableRender do
+            local currAlt = characterTableRender[i].currAlt
+            local char = characterTableRender[i][currAlt]
+            local charName = char.name
+            local charColor = char.color
+            local x = -(math.abs(i - gridYOffset/buttonSpacing)^2)*5 + 32 - menuOffsetX*0.2 - optionsMenuOffset
+            local y = height*0.45 - buttonSpacing*0.5 + i*buttonSpacing - gridYOffset - menuOffsetY*0.2
+            local segmentsMeasured = (math.ceil(((djui_hud_measure_text(charName)*textScale + 16*scale))/(16*scale)))
+            local segments = segmentsMeasured
+            local charAltCount = #characterTableRender[i]
+            local channel = characterInstrumentals[i] and tostring(math.floor(879 + hash(characterTableRender[i].saveName)%(1029 - 879))*0.1) .. " FM" or "---.- --"
+            -- Backlight
+            djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
+            djui_hud_render_rect(x + 96*scale, y + 24*scale, (128*scale + segments*16*scale), 80*scale)
+            -- Name Screen
+            djui_hud_set_color(charColor.r*0.5, charColor.g*0.5, charColor.b*0.5, 255)
+            djui_hud_print_text(charName, x + 112*scale + segments*16*scale*0.5 - djui_hud_measure_text(charName)*textScale*0.5, y + 32*scale, textScale)
+            
+            djui_hud_render_rect(x + 112*scale, y + 84*scale, segments*16*scale, scale)
+            if channel then
+                djui_hud_print_text(channel, x + 112*scale, y + 85*scale, 0.3*scale)
             end
-
-            djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_set_rotation(get_global_timer() * 0x10, 0.5, 0.5)
-            djui_hud_render_texture(TEX_RECORD, -152, height*0.5 - 64 - 32, 1.5, 1.5)
+            -- Icon
+            djui_hud_set_color(charColor.r, charColor.g, charColor.b, 150)
+            djui_hud_render_life_icon(char, x + 112*scale + segments*16*scale + 45*scale, y + 40*scale, scale*3)
+            -- Nameplate Rendering
+            djui_hud_set_color(205 + 50*menuColor.r/256, 205 + 50*menuColor.g/256, 205 + 50*menuColor.b/256, 255)
+            djui_hud_render_texture_tile(TEX_NAMEPLATE, 0, y, (scale*128/8)*x*0.5, scale, 0, 0, 8, 128) -- stretch to left side of screen
+            djui_hud_render_texture_tile(TEX_NAMEPLATE, x, y, scale*128/112, scale, 0, 0, 112, 128)
+            for s = 1, segments do
+                djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + (s-1)*16*scale, y, scale*8, scale, 112, 0, 16, 128)
+            end
+            djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale, y, scale*128/192, scale, 128, 0, 192, 128)
+            local angle = -0x10000*((characterTableRender[i].currAlt - 1)/charAltCount)
+            if i == currCharRender then
+                djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 33*scale, y + 48*scale, scale, scale, 320, 48, 32, 32)
+            end
+            djui_hud_set_rotation(angle, 0.5, 0.5)
+            djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + 134*scale, y + 48*scale, scale, scale, 352, 48, 32, 32)
             djui_hud_set_rotation(0, 0, 0)
-
-            local spacing = width*0.3/#characterCategories
-            for i = 1, #characterCategories do
-                djui_hud_render_texture_auto_interpolated("categorybanner" .. i, TEX_CATEGORY_BANNER, width*0.3 + i*spacing - 16, currCategory == i and -5 or -10, 0.5, 0.5)
+            for a = 1, charAltCount do
+                local angle = -0x10000*((a - 1)/charAltCount) + 0x8000
+                local altColor = characterTableRender[i][a].color
+                djui_hud_set_color(altColor.r * 0.5 + 127, altColor.g * 0.5 + 127, altColor.b * 0.5 + 127, 255)
+                djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + (134 + 14)*scale + sins(angle)*16*scale, y + 62*scale + coss(angle)*16*scale, scale, scale, 384, 48 + (currAlt ~= a and 16 or 0), 4, 4)
             end
-            djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-            djui_hud_set_font(FONT_RECOLOR_HUD)
-            djui_hud_print_text(characterCategories[currCategory], width*0.45 - djui_hud_measure_text(characterCategories[currCategory])*0.3, 30, 0.6)
-        else
-            -- Render Options Menu
-            djui_hud_set_color(0, 30, 0, 200)
-            djui_hud_render_rect(0, 0, width*0.7 - 10, height)
-            djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-            djui_hud_set_rotation(math.floor(get_global_timer()/40)*0x1000 + ease_in_out_back(math.min((get_global_timer()%40)/30, 1))*0x1000, 0.5, 0.5)
-            djui_hud_render_texture(TEX_GEAR_BIG, -32, height*0.6-16, 1.5, 1.5)
-
-            local optionConsoleText = {
-                "______  ___  _  __  ____   ______",
-                "\\   \\ \\/ / \\| |/  \\/ __/  /) () (\\",
-                " | D \\  /| \\\\ | () \\__ \\  \\______/",
-                "/___//_/ |_|\\_|\\__/____/    (__)",
-                "Dynamic Operating System - Version " .. MOD_VERSION_STRING,
-                "(C) Toadstool Technologies 1996",
-                "",
-            }
-            if options == OPTIONS_MAIN then
-                table_insert(optionConsoleText, "===| " .. optionTable[currOption].category .. " Options |===")
-                table_insert(optionConsoleText, "================================")
-                for i = currOption - 3, currOption + 3 do
-                    if optionTable[i] == nil then
-                        if i == 0 then
-                            table_insert(optionConsoleText, "^^^")
-                        elseif i == #optionTable + 1 then
-                            table_insert(optionConsoleText, "vvv")
-                        else
-                            table_insert(optionConsoleText, "")
-                        end
-                    else
-                        local dotString = " "
-                        while 32 - #optionTable[i].name > #dotString do
-                            dotString = dotString .. "."
-                        end
-                        dotString = dotString .. " "
-                        table_insert(optionConsoleText, (i == currOption and ">" or " ") .. optionTable[i].name .. dotString .. optionTable[i].toggleNames[optionTable[i].toggle + 1])
-                    end
-                end
-                table_insert(optionConsoleText, "================================")
-
-                local option = optionTable[currOption]
-                table_insert(optionConsoleText, "")
-                table_insert(optionConsoleText, "> charselect option " .. string_lower(string_space_to_underscore(option.name)) .. " " .. string_lower(string_space_to_underscore(option.toggleNames[(option.toggle + 1)%(option.toggleMax + 1) + 1])) .. (math.floor(get_global_timer()/15)%2 == 0 and "|" or ""))
-
-            elseif options == OPTIONS_CREDITS then
-                local creditsEntries = {}
-                for _, mod in ipairs(creditTable) do
-                    table_insert(creditsEntries, mod.packName .. ":")
-                    for _, credit in ipairs(mod) do
-                        local dotString = " "
-                        while 32 - #credit.creditee > #dotString do
-                            dotString = dotString .. "."
-                        end
-                        dotString = dotString .. " "
-                        table_insert(creditsEntries, credit.creditee .. dotString .. credit.credit)
-                    end
-                end
-                creditsLength = #creditsEntries
-
-                table_insert(optionConsoleText, "===========| Credits |==========")
-                table_insert(optionConsoleText, "================================")
-                for i = currOption, currOption + math.min(6, optionsTimer) do
-                    table_insert(optionConsoleText, creditsEntries[i] or "")
-                end
-                table_insert(optionConsoleText, "================================")
-            end
-
-            djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_set_font(FONT_SPECIAL)
-            for i = 1, #optionConsoleText do
-                djui_hud_print_monospace_text(optionConsoleText[i], 2, 40 + i*7, 0.22, i <= 4 and 11 or 16)
-            end
-
-            optionsTimer = optionsTimer + 1
         end
+
+        djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_set_rotation(get_global_timer() * 0x10, 0.5, 0.5)
+        djui_hud_render_texture(TEX_RECORD, -152 - menuOffsetX*0.1 - optionsMenuOffset, height*0.5 - 96 - menuOffsetY*0.1, 1.5, 1.5)
+        djui_hud_set_rotation(0, 0, 0)
+
+        -- Render Categories
+        local spacing = width*0.3/#characterCategories
+        for i = 1, #characterCategories do
+            djui_hud_render_texture_auto_interpolated("categorybanner" .. i, TEX_CATEGORY_BANNER, width*0.3 + i*spacing - 16, (currCategory == i and -5 or -10) - optionsMenuOffset*0.2, 0.5, 0.5)
+        end
+        djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
+        djui_hud_set_font(FONT_RECOLOR_HUD)
+        djui_hud_print_text(characterCategories[currCategory], width*0.45 - djui_hud_measure_text(characterCategories[currCategory])*0.3, 30 - optionsMenuOffset*0.2, 0.6)
+
+
+        -- Render Options Menu
+        djui_hud_render_texture(TEX_OPTIONS_TV, width*0.5 - TEX_OPTIONS_TV.width*0.75 + (optionsMenuOffsetMax - optionsMenuOffset), 10, 1.5, 1.5)
+        --[[
+        djui_hud_set_color(0, 30, 0, 200)
+        djui_hud_render_rect(0, 0, width*0.7 - 10, height)
+        djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
+        djui_hud_set_rotation(math.floor(get_global_timer()/40)*0x1000 + ease_in_out_back(math.min((get_global_timer()%40)/30, 1))*0x1000, 0.5, 0.5)
+        djui_hud_render_texture(TEX_GEAR_BIG, -32, height*0.6-16, 1.5, 1.5)
+        ]]
+
+        --[[
+        local optionConsoleText = {
+            "______  ___  _  __  ____   ______",
+            "\\   \\ \\/ / \\| |/  \\/ __/  /) () (\\",
+            " | D \\  /| \\\\ | () \\__ \\  \\______/",
+            "/___//_/ |_|\\_|\\__/____/    (__)",
+            "Dynamic Operating System - Version " .. MOD_VERSION_STRING,
+            "(C) Toadstool Technologies 1996",
+            "",
+        }
+        if options == OPTIONS_MAIN then
+            table_insert(optionConsoleText, "===| " .. optionTable[currOption].category .. " Options |===")
+            table_insert(optionConsoleText, "================================")
+            for i = currOption - 3, currOption + 3 do
+                if optionTable[i] == nil then
+                    if i == 0 then
+                        table_insert(optionConsoleText, "^^^")
+                    elseif i == #optionTable + 1 then
+                        table_insert(optionConsoleText, "vvv")
+                    else
+                        table_insert(optionConsoleText, "")
+                    end
+                else
+                    local dotString = " "
+                    while 32 - #optionTable[i].name > #dotString do
+                        dotString = dotString .. "."
+                    end
+                    dotString = dotString .. " "
+                    table_insert(optionConsoleText, (i == currOption and ">" or " ") .. optionTable[i].name .. dotString .. optionTable[i].toggleNames[optionTable[i].toggle + 1])
+                end
+            end
+            table_insert(optionConsoleText, "================================")
+
+            local option = optionTable[currOption]
+            table_insert(optionConsoleText, "")
+            table_insert(optionConsoleText, "> charselect option " .. string_lower(string_space_to_underscore(option.name)) .. " " .. string_lower(string_space_to_underscore(option.toggleNames[(option.toggle + 1)%(option.toggleMax + 1) + 1])) .. (math.floor(get_global_timer()/15)%2 == 0 and "|" or ""))
+
+        elseif options == OPTIONS_CREDITS then
+            local creditsEntries = {}
+            for _, mod in ipairs(creditTable) do
+                table_insert(creditsEntries, mod.packName .. ":")
+                for _, credit in ipairs(mod) do
+                    local dotString = " "
+                    while 32 - #credit.creditee > #dotString do
+                        dotString = dotString .. "."
+                    end
+                    dotString = dotString .. " "
+                    table_insert(creditsEntries, credit.creditee .. dotString .. credit.credit)
+                end
+            end
+            creditsLength = #creditsEntries
+
+            table_insert(optionConsoleText, "===========| Credits |==========")
+            table_insert(optionConsoleText, "================================")
+            for i = currOption, currOption + math.min(6, optionsTimer) do
+                table_insert(optionConsoleText, creditsEntries[i] or "")
+            end
+            table_insert(optionConsoleText, "================================")
+        end
+
+        djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_set_font(FONT_SPECIAL)
+        for i = 1, #optionConsoleText do
+            djui_hud_print_text(optionConsoleText[i], 2, 40 + i*7, 0.22, i <= 4 and 11 or 16)
+        end
+
+        optionsTimer = optionsTimer + 1
+]]
 
         djui_hud_reset_scissor()
 
