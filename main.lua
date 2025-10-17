@@ -829,7 +829,7 @@ local function mario_update(m)
         stallFrame = stallFrame + 1
     end
 
-    if m.playerIndex == 0 and stallFrame > 1 then
+    if m.playerIndex == 0 then
         -- Check for Locked Chars
         for i = CT_MAX, #characterTable do
             local char = characterTable[i]
@@ -1214,11 +1214,6 @@ local buttonScrollCap = 30
 local optionAnimTimer = -200
 local optionAnimTimerCap = optionAnimTimer
 
-local inputStallTimerButton = 0
-local inputStallTimerDirectional = 0
-local inputStallToDirectional = 12
-local inputStallToButton = 10
-
 --Basic Menu Text
 local TEXT_OPTIONS_HEADER = "Menu Options"
 local TEXT_OPTIONS_HEADER_API = "API Options"
@@ -1314,18 +1309,6 @@ function update_menu_color()
     return menuColor
 end
 
-local TEX_TRIANGLE = get_texture_info("char-select-triangle")
-local function djui_hud_render_triangle(x, y, width, height)
-    djui_hud_render_texture(TEX_TRIANGLE, x, y, width*MATH_DIVIDE_64, height*MATH_DIVIDE_32)
-end
-
-local function ease_in_out_back(x)
-    local c1 = 1.70158;
-    local c2 = c1 * 1.525;
-
-    return x < 0.5 and ((2 * x)^2 * ((c2 + 1) * 2 * x - c2)) / 2 or ((2 * x - 2)^2 * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2;
-end
-
 local function djui_hud_render_life_icon(char, x, y, scale)
     local icon = char.lifeIcon
     local color = char.color
@@ -1342,14 +1325,48 @@ local function djui_hud_render_life_icon(char, x, y, scale)
     end
 end
 
+local GLYPH_A_BUTTON =     (1 << 1)
+local GLYPH_B_BUTTON =     (1 << 2)
+local GLYPH_START_BUTTON = (1 << 3)
+local GLYPH_L_TRIG =       (1 << 4)
+local GLYPH_R_TRIG =       (1 << 5)
+local GLYPH_Z_TRIG =       (1 << 6)
+local GLYPH_STICK =        (1 << 7)
+local GLYPH_C_BUTTONS =    (1 << 8)
+local GLYPH_JPAD =         (1 << 9)
+
+local glyphTextures = {
+    [GLYPH_A_BUTTON] = get_texture_info("char-select-glyph-A"),
+    [GLYPH_B_BUTTON] = get_texture_info("char-select-glyph-B"),
+    [GLYPH_START_BUTTON] = get_texture_info("char-select-glyph-START"),
+    [GLYPH_L_TRIG] = get_texture_info("char-select-glyph-L"),
+    [GLYPH_R_TRIG] = get_texture_info("char-select-glyph-R"),
+    [GLYPH_Z_TRIG] = get_texture_info("char-select-glyph-Z"),
+    [GLYPH_STICK] = get_texture_info("char-select-glyph-stick"),
+    [GLYPH_C_BUTTONS] = get_texture_info("char-select-glyph-C"),
+    [GLYPH_JPAD] = get_texture_info("char-select-glyph-D"),
+}
+
+local function djui_hud_render_button_glyph(glyphs, x, y, scale)
+    djui_hud_set_font(FONT_ALIASED)
+    local glyphCount = 0
+    for i = 1, 10 do
+        local glyphID = (1 << i)
+        if glyphs & glyphID ~= 0 then
+            local texture = glyphTextures[glyphID]
+            if glyphCount > 0 then
+                djui_hud_print_text("/", x + glyphCount*32 - 6, y, scale)
+            end
+            djui_hud_render_texture(texture, x + glyphCount*32, y, scale, scale)
+            glyphCount = glyphCount + 1
+        end
+    end
+end
+
 local TEX_GEAR_BIG = get_texture_info("char-select-gear-big")
 
-local buttonAltAnim = 0
-local menuOpacity = 245
-local gridButtonsPerRow = 3
 local paletteXOffset = 0
 local paletteTrans = 0
-local menuText = {}
 local optionsMenuOffset = 0
 local optionsMenuOffsetMax = 210
 local function on_hud_render()
@@ -1361,8 +1378,6 @@ local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
     local width = math.max(djuiWidth * (240/djuiHeight), 320) -- Get accurate, unrounded width
     local height = 240
-    local widthHalf = width * 0.5
-    local heightHalf = height * 0.5
     local widthScale = math.max(width, 320) * MATH_DIVIDE_320
 
     if stallFrame == stallComplete then
@@ -1377,8 +1392,8 @@ local function on_hud_render()
             djui_hud_set_color(0, 0, 0, 200)
             djui_hud_render_rect(0, 0, width, height)
             djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_print_text(TEXT_LOCAL_MODEL_ERROR, width*0.85 - djui_hud_measure_text(TEXT_LOCAL_MODEL_ERROR) * 0.15 * widthScale, heightHalf, 0.3 * widthScale)
-            djui_hud_print_text(TEXT_LOCAL_MODEL_ERROR_FIX, width*0.85 - djui_hud_measure_text(TEXT_LOCAL_MODEL_ERROR_FIX) * 0.1 * widthScale, heightHalf + 10 * widthScale, 0.2 * widthScale)
+            djui_hud_print_text(TEXT_LOCAL_MODEL_ERROR, width*0.85 - djui_hud_measure_text(TEXT_LOCAL_MODEL_ERROR) * 0.15 * widthScale, height * 0.5, 0.3 * widthScale)
+            djui_hud_print_text(TEXT_LOCAL_MODEL_ERROR_FIX, width*0.85 - djui_hud_measure_text(TEXT_LOCAL_MODEL_ERROR_FIX) * 0.1 * widthScale, height * 0.5 + 10 * widthScale, 0.2 * widthScale)
         end
 
         optionsMenuOffset = lerp(optionsMenuOffset, options and optionsMenuOffsetMax or 0, 0.1)
@@ -1562,6 +1577,7 @@ local function on_hud_render()
         djui_hud_set_font(FONT_RECOLOR_HUD)
         djui_hud_print_text(characterCategories[currCategory], width*0.45 - djui_hud_measure_text(characterCategories[currCategory])*0.3, 30 - optionsMenuOffset*0.2, 0.6)
 
+        --djui_hud_render_button_glyph(GLYPH_A_BUTTON | GLYPH_B_BUTTON | GLYPH_JPAD, width*0.3, height*0.5, 1)
 
         -- Render Options Menu
         djui_hud_render_texture(TEX_OPTIONS_TV, width*0.7 - 200 + (optionsMenuOffsetMax - optionsMenuOffset), 10, 1.5, 1.5)
@@ -1815,12 +1831,6 @@ local function before_mario_update(m)
             menuInputCooldowns[index] = num - 1
         end
     end
-    if inputStallTimerButton > 0 then inputStallTimerButton = inputStallTimerButton - 1 end
-    if inputStallTimerDirectional > 0 then inputStallTimerDirectional = inputStallTimerDirectional - 1 end
-
-    if menu and inputStallToDirectional ~= latencyValueTable[optionTable[optionTableRef.inputLatency].toggle + 1] then
-        inputStallToDirectional = latencyValueTable[optionTable[optionTableRef.inputLatency].toggle + 1]
-    end
 
     -- Menu Inputs
     if is_game_paused() and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and (controller.buttonPressed & Z_TRIG) ~= 0 and optionTable[optionTableRef.openInputs].toggle == 1 then
@@ -1830,7 +1840,6 @@ local function before_mario_update(m)
         if (controller.buttonDown & R_TRIG) ~= 0 or not ommActive then
             menu = true
         end
-        inputStallTimerDirectional = inputStallToDirectional
     end
 
     if not menu_is_allowed(m) then
