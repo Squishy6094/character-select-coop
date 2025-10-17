@@ -330,8 +330,10 @@ local function mario_update(m)
     elseif stallTimer < stallSayLine then
         stallTimer = stallTimer + 1
     end
+
+    custom_character_snore(m)
 end
---hook_event(HOOK_MARIO_UPDATE, mario_update)
+
 cs_hook_mario_update(mario_update)
 
 ---@param soundbits integer
@@ -352,4 +354,5 @@ local function on_play_sound(soundbits,pos)
     end
 end
 
-hook_event(HOOK_ON_PLAY_SOUND,on_play_sound) --	Called when a sound is going to play, return a SOUND_* constant or NO_SOUND to override the sound
+hook_event(HOOK_CHARACTER_SOUND, custom_character_sound)
+hook_event(HOOK_ON_PLAY_SOUND, on_play_sound) --	Called when a sound is going to play, return a SOUND_* constant or NO_SOUND to override the sound
