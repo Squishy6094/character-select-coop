@@ -1,3 +1,0 @@
-GITHUB_COMMIT_TIME = '10/19/2025 12:50:32 AM PST'
-GITHUB_COMMIT_ID = '3d17c3d'
-GITHUB_REPO = 'Squishy6094/character-select-coop'

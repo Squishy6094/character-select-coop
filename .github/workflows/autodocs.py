@@ -145,7 +145,7 @@ def write_readme(documentation, output_file_path):
 
     with open(output_file_path, 'w') as readme_file:
         readme_file.write("# Note Before Reading\n")
-        readme_file.write("We highly recommend messing around with our [Character Select Template](https://github.com/Squishy6094/char-select-template/archive/refs/heads/main.zip) while first reading this doc to get a handle on everything here. DO NOT modify/add any content within the Character Select mod itself, please use the API and an individual mod when adding characters. If you're confused about anything from outside of Character Select's Documentation, Please refer to [SM64CoopDX's Lua Documentation](https://github.com/coop-deluxe/sm64coopdx/blob/main/docs/lua/lua.md).\n\n")
+        readme_file.write("We highly recommend messing around with our [Character Select Template](https://github.com/Squishy6094/char-select-template) while first reading this doc to get a handle on everything here. DO NOT modify/add any content within the Character Select mod itself, please use the API and an individual mod when adding characters. If you're confused about anything from outside of Character Select's Documentation, Please refer to [SM64CoopDX's Lua Documentation](https://github.com/coop-deluxe/sm64coopdx/blob/main/docs/lua/lua.md).\n\n")
         timeAware = datetime.datetime.now(pytz.timezone('US/Pacific'))
         readme_file.write("<sub>[Automatic Documentation](https://github.com/Squishy6094/character-select-coop/actions/workflows/autodocs.yml) for " + GITHUB_REPO + " written at `" + timeAware.strftime("%m/%d/%Y - %I:%M:%S %p") + " PST`</sub>\n\n")
         for entry in documentation:
