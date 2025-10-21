@@ -609,9 +609,10 @@ end
 
 ---@description A function that gets the current character's voice table
 ---@added 1.5
----@param m MarioState
-function character_get_voice(m)
-    return characterVoices[gCSPlayers[m.playerIndex].modelId]
+---@param model integer|MarioState
+function character_get_voice(model)
+    local model = (type(model) == TYPE_INTEGER) and model or gCSPlayers[model.playerIndex].modelId
+    return characterVoices[model]
 end
 
 -- Located in n-hud.lua
