@@ -354,5 +354,4 @@ local function on_play_sound(soundbits,pos)
     end
 end
 
-hook_event(HOOK_CHARACTER_SOUND, custom_character_sound)
 hook_event(HOOK_ON_PLAY_SOUND, on_play_sound) --	Called when a sound is going to play, return a SOUND_* constant or NO_SOUND to override the sound
