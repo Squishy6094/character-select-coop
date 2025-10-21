@@ -88,7 +88,7 @@ characterColorPresets = {
             [HAIR]   = { r = 0x73, g = 0x06, b = 0x00 },
             [SKIN]   = { r = 0xfe, g = 0xd5, b = 0xa1 },
             [CAP]    = { r = 0x00, g = 0x00, b = 0xff },
-            [EMBLEM] = { r = 0xff, g = 0x00, b = 0x00 },
+            [EMBLEM] = { r = 0x00, g = 0x00, b = 0xff },
         },
         {
             name = "Ala Gold",
@@ -99,7 +99,7 @@ characterColorPresets = {
             [HAIR]   = { r = 0x73, g = 0x06, b = 0x00 },
             [SKIN]   = { r = 0xfe, g = 0xd5, b = 0xa1 },
             [CAP]    = { r = 0xff, g = 0xff, b = 0x00 },
-            [EMBLEM] = { r = 0xff, g = 0x00, b = 0x00 },
+            [EMBLEM] = { r = 0xff, g = 0xff, b = 0x00 },
         },
     },
     [E_MODEL_WALUIGI] = {
