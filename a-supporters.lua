@@ -1,0 +1,3 @@
+CREDIT_SUPPORTERS = {
+    "EllieQueer"
+}

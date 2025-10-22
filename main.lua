@@ -35,6 +35,7 @@ local prevChar = CT_MARIO
 currCharRender = CT_MARIO
 currCategory = 1
 local currOption = 1
+local currCredits = 1
 
 local menuCrossFade = 7
 local menuCrossFadeCap = menuCrossFade
@@ -502,7 +503,10 @@ end
 
 ---@type Credits[]
 creditTable = {
-    {
+    [0] = {
+        packName = "CS Supporters",
+    },
+    [1] = {
         packName = "Character Select Coop",
         { creditee = "Squishy6094",     credit = "Creator" },
         { creditee = "JerThePear",      credit = "Menu Assets/Anims" },
@@ -511,9 +515,12 @@ creditTable = {
         { creditee = "Wibblus",         credit = "Menu Anims Implementation" },
     }
 }
-local creditsLength
 
-local defaultOptionCount = #optionTable
+if CREDIT_SUPPORTERS ~= nil then
+    for i = 1, #CREDIT_SUPPORTERS do
+        table.insert(creditTable[0], { creditee = CREDIT_SUPPORTERS[i], credit = "" })
+    end
+end
 
 local latencyValueTable = {12, 6, 3}
 
@@ -1416,10 +1423,6 @@ local function on_hud_render()
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_rect(width * 0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
 
-        -- Make Random Elements based on Character Name
-        math.randomseed(hash(characterTable[currChar].saveName))
-
-
         -- Render Character Name
         djui_hud_set_font(FONT_BRICK)
         local charName = characterTable[currChar][characterTable[currChar].currAlt].name
@@ -1651,6 +1654,34 @@ local function on_hud_render()
         --djui_hud_render_button_glyph(GLYPH_A_BUTTON | GLYPH_B_BUTTON | GLYPH_JPAD, width*0.3, height*0.5, 1)
 
         -- Render Options Menu
+
+        local tvX = width*0.7 - 200 + (optionsMenuOffsetMax - optionsMenuOffset) + 15
+        local tvY = 50
+        local tvWidth = 150
+        local tvHeight = 120
+        local optionData = optionTable[currOption]
+        djui_hud_set_color(255, 0, 0, 255)
+        djui_hud_render_rect(tvX, tvY, tvWidth, tvHeight)
+        djui_hud_set_font(FONT_HUD)
+        djui_hud_set_color(255, 255, 255, 255)
+        local text = "OPTIONS - " .. (options ~= OPTIONS_CREDITS and string.upper(optionData.category) or "CREDITS")
+        djui_hud_print_text(text, tvX + tvWidth*0.5 - djui_hud_measure_text(text)*0.3, tvY + 10, 0.6)
+        if options == OPTIONS_MAIN then
+            djui_hud_set_font(FONT_TINY)
+            djui_hud_set_color(255, 255, 255, 255)
+            djui_hud_print_text(optionData.name .. " - < " .. optionData.toggleNames[optionData.toggle + 1] .. " >", tvX, tvY + 50, 0.5)
+        elseif options == OPTIONS_CREDITS then
+            djui_hud_set_font(FONT_RECOLOR_HUD)
+            djui_hud_print_text(creditTable[currCredits].packName, tvX, tvY + 20, 0.5)
+            for i = 1, #creditTable[currCredits] do
+                djui_hud_set_font(FONT_TINY)
+                local creditData = creditTable[currCredits][i]
+                djui_hud_print_text(creditData.credit, tvX + tvWidth*0.5 - 5 - djui_hud_measure_text(creditData.credit)*0.5, tvY + 25 + 7*i, 0.5)
+                djui_hud_print_text(creditData.creditee, tvX + tvWidth*0.5 + 5, tvY + 25 + 7*i, 0.5)
+            end
+        end
+
+
         djui_hud_render_texture(TEX_OPTIONS_TV, width*0.7 - 200 + (optionsMenuOffsetMax - optionsMenuOffset), 10, 1.5, 1.5)
         --[[
         djui_hud_set_color(0, 30, 0, 200)
@@ -1863,9 +1894,6 @@ local function on_hud_render()
     djui_hud_set_resolution(RESOLUTION_N64)
     djui_hud_set_color(0, 0, 0, (math_abs(menuCrossFade)) * -menuCrossFadeMath)
     djui_hud_render_rect(0, 0, width, height)
-
-    -- Fix RNG
-    math.randomseed(get_global_timer())
 end
 
 local FUNC_INDEX_MISC = 0
@@ -1890,7 +1918,6 @@ function run_func_with_condition_and_cooldown(funcIndex, condition, func, cooldo
     end
 end
 
-local prevMouseScroll = 0
 local mouseScroll = 0
 ---@param m MarioState
 local function before_mario_update(m)
@@ -2111,7 +2138,7 @@ local function before_mario_update(m)
         run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
             (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -60,
             function ()
-                currOption = currOption + 1
+                currOption = num_wrap(currOption + 1, 1, #optionTable)
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
         )
@@ -2119,16 +2146,27 @@ local function before_mario_update(m)
         run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
             (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 60,
             function ()
-                currOption = currOption - 1
+                currOption = num_wrap(currOption - 1, 1, #optionTable)
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
         )
 
-        run_func_with_condition_and_cooldown(FUNC_INDEX_MISC,
-            (controller.buttonPressed & A_BUTTON) ~= 0 and not optionTable[currOption].optionBeingSet and (optionTable[currOption].lock == nil or optionTable[currOption].lock() == nil),
+
+        run_func_with_condition_and_cooldown(FUNC_INDEX_HORIZONTAL,
+            (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60,
             function ()
-                optionTable[currOption].toggle = optionTable[currOption].toggle + 1
-                if optionTable[currOption].toggle > optionTable[currOption].toggleMax then optionTable[currOption].toggle = 0 end
+                optionTable[currOption].toggle = num_wrap(optionTable[currOption].toggle - 1, 0, optionTable[currOption].toggleMax)
+                if optionTable[currOption].toggleSaveName ~= nil then
+                    mod_storage_save(optionTable[currOption].toggleSaveName, tostring(optionTable[currOption].toggle))
+                end
+                play_sound(SOUND_MENU_CHANGE_SELECT, cameraToObject)
+            end
+        )
+
+        run_func_with_condition_and_cooldown(FUNC_INDEX_HORIZONTAL,
+            (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60,
+            function ()
+                optionTable[currOption].toggle = num_wrap(optionTable[currOption].toggle + 1, 0, optionTable[currOption].toggleMax)
                 if optionTable[currOption].toggleSaveName ~= nil then
                     mod_storage_save(optionTable[currOption].toggleSaveName, tostring(optionTable[currOption].toggle))
                 end
@@ -2142,23 +2180,22 @@ local function before_mario_update(m)
                 options = nil
             end
         )
-        if currOption > #optionTable then currOption = 1 end
-        if currOption < 1 then currOption = #optionTable end
+
         nullify_inputs(m)
 
     elseif options == OPTIONS_CREDITS then
-        run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
-            (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -60,
+        run_func_with_condition_and_cooldown(FUNC_INDEX_HORIZONTAL,
+            (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60,
             function ()
-                currOption = currOption + 1
+                currCredits = num_wrap(currCredits - 1, 0, #creditTable)
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
         )
 
-        run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
-            (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 60,
+        run_func_with_condition_and_cooldown(FUNC_INDEX_HORIZONTAL,
+            (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60,
             function ()
-                currOption = currOption - 1
+                currCredits = num_wrap(currCredits + 1, 0, #creditTable)
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
         )
@@ -2171,8 +2208,6 @@ local function before_mario_update(m)
             end
         )
 
-        if currOption > creditsLength then currOption = 1 end
-        if currOption < 1 then currOption = creditsLength end
         nullify_inputs(m)
     end
 
