@@ -354,4 +354,10 @@ local function on_play_sound(soundbits,pos)
     end
 end
 
+local function waluigi_char_sound(m, sound, pos)
+    if charSelect.character_get_current_number(m.playerIndex) == 3 then
+        return custom_character_sound(m, sound, pos)
+    end
+end
+hook_event(HOOK_CHARACTER_SOUND, waluigi_char_sound)
 hook_event(HOOK_ON_PLAY_SOUND, on_play_sound) --	Called when a sound is going to play, return a SOUND_* constant or NO_SOUND to override the sound
