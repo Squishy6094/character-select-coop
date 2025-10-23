@@ -14,63 +14,6 @@ local table_insert,djui_hud_measure_text,smlua_model_util_get_id,type,tonumber =
 ---@field public lifeIcon TextureInfo
 ---@field public camScale integer
 
-local characterVoices = {
-    [E_MODEL_WALUIGI] = {
-        [CHAR_SOUND_OKEY_DOKEY] =        audio_sample_load('0B_waluigi_okey_dokey.aiff'),
-        [CHAR_SOUND_LETS_A_GO] =         audio_sample_load('1A_waluigi_lets_a_go.aiff'), 
-        [CHAR_SOUND_GAME_OVER] =         audio_sample_load('11_waluigi_game_over.aiff'), 
-        [CHAR_SOUND_PUNCH_YAH] =         audio_sample_load('08_waluigi_punch_yah.aiff'), 
-        [CHAR_SOUND_PUNCH_WAH] =         audio_sample_load('01_waluigi_jump_wah.aiff'),
-        [CHAR_SOUND_PUNCH_HOO] =         audio_sample_load('09_waluigi_punch_hoo.aiff'), 
-        [CHAR_SOUND_YAH_WAH_HOO] =       {audio_sample_load('00_waluigi_jump_hoo.aiff'), audio_sample_load('01_waluigi_jump_wah.aiff'), audio_sample_load('02_waluigi_yah.aiff')},
-        [CHAR_SOUND_HOOHOO] =            audio_sample_load('01_waluigi_hoohoo.aiff'),
-        [CHAR_SOUND_YAHOO_WAHA_YIPPEE] = {audio_sample_load('04_waluigi_yahoo.aiff'), audio_sample_load('18_waluigi_waha.aiff'), audio_sample_load('19_waluigi_yippee.aiff')},
-        [CHAR_SOUND_UH] =                audio_sample_load('05_waluigi_uh.aiff'),
-        [CHAR_SOUND_UH2] =               audio_sample_load('05_waluigi_uh2.aiff'),
-        [CHAR_SOUND_UH2_2] =             audio_sample_load('05_waluigi_uh2.aiff'),
-        [CHAR_SOUND_DOH] =               audio_sample_load('10_waluigi_doh.aiff'),
-        [CHAR_SOUND_OOOF] =              audio_sample_load('0B_waluigi_ooof.aiff'),
-        [CHAR_SOUND_OOOF2] =             audio_sample_load('0B_waluigi_ooof.aiff'),
-        [CHAR_SOUND_HAHA] =              audio_sample_load('03_waluigi_haha.aiff'),
-        [CHAR_SOUND_HAHA_2] =            audio_sample_load('03_waluigi_haha.aiff'),
-        [CHAR_SOUND_YAHOO] =             audio_sample_load('04_waluigi_yahoo.aiff'),
-        [CHAR_SOUND_DOH] =               audio_sample_load('10_waluigi_doh.aiff'),
-        [CHAR_SOUND_WHOA] =              audio_sample_load('08_waluigi_whoa.aiff'),
-        [CHAR_SOUND_EEUH] =              audio_sample_load('09_waluigi_eeuh.aiff'),
-        [CHAR_SOUND_WAAAOOOW] =          audio_sample_load('00_waluigi_waaaooow.aiff'),
-        [CHAR_SOUND_TWIRL_BOUNCE] =      audio_sample_load('14_waluigi_twirl_bounce.aiff'),
-        [CHAR_SOUND_GROUND_POUND_WAH] =  audio_sample_load('01_waluigi_jump_wah.aiff'),
-        [CHAR_SOUND_WAH2] =              audio_sample_load('07_waluigi_wah2.aiff'),
-        [CHAR_SOUND_HRMM] =              audio_sample_load('06_waluigi_hrmm.aiff'),
-        [CHAR_SOUND_HERE_WE_GO] =        audio_sample_load('0C_waluigi_here_we_go.aiff'),
-        [CHAR_SOUND_SO_LONGA_BOWSER] =   audio_sample_load('16_waluigi_so_longa_bowser.aiff'),
-        -- DAMAGE
-        [CHAR_SOUND_ATTACKED] =          audio_sample_load('0A_waluigi_attacked.aiff'),
-        [CHAR_SOUND_PANTING] =           audio_sample_load('02_waluigi_panting.aiff'),
-        [CHAR_SOUND_PANTING_COLD] =      audio_sample_load('02_waluigi_panting.aiff'),
-        [CHAR_SOUND_ON_FIRE] =           audio_sample_load('04_waluigi_on_fire.aiff'),
-        -- SLEEP SOUNDS
-        [CHAR_SOUND_IMA_TIRED] =         audio_sample_load('17_waluigi_tired.aiff'),
-        [CHAR_SOUND_YAWNING] =           audio_sample_load('0D_waluigi_yawning.aiff'),
-        [CHAR_SOUND_SNORING1] =          audio_sample_load('0E_waluigi_snoring1.aiff'),
-        [CHAR_SOUND_SNORING2] =          audio_sample_load('0F_waluigi_snoring2.aiff'),
-        [CHAR_SOUND_SNORING3] =          audio_sample_load('15_waluigi_snoring3.aiff'),
-        -- COUGHING
-        [CHAR_SOUND_COUGHING1] =         audio_sample_load('06_waluigi_coughing.aiff'),
-        [CHAR_SOUND_COUGHING2] =         audio_sample_load('06_waluigi_coughing.aiff'),
-        [CHAR_SOUND_COUGHING3] =         audio_sample_load('06_waluigi_coughing.aiff'),
-        -- DEATH
-        [CHAR_SOUND_DYING] =             audio_sample_load('03_waluigi_dying.aiff'),
-        [CHAR_SOUND_DROWNING] =          audio_sample_load('0C_waluigi_drowning.aiff'),
-        [CHAR_SOUND_MAMA_MIA] =          audio_sample_load('0A_waluigi_mama_mia.aiff')
-
-    }
-}
-
--- Here for functions below api
----@ignore
-local function placeholder() end
-
 local TYPE_INTEGER = "number"
 local TYPE_STRING = "string"
 local TYPE_TABLE = "table"
@@ -159,14 +102,14 @@ end
 ---@return integer? --The index of the costume in the character's table
 local function character_add_costume(charNum, name, description, credit, color, modelInfo, baseChar, lifeIcon, camScale)
     if not tonumber(charNum) or charNum > #characterTable or charNum < 0 then return end
-    if type(description) == TYPE_TABLE then
+    if description ~= nil and type(description) == TYPE_TABLE then
         local table = description
         description = ""
         for i = 1, #table do
             description = description .. table[i] .. (i ~= #table and " " or "")
         end
     end
-    if type(color) == TYPE_STRING then
+    if color ~= nil and type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
     if lifeIcon and type(lifeIcon) == TYPE_STRING then
@@ -211,7 +154,7 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
             description = description .. table[i] .. (i ~= #table and " " or "")
         end
     end
-    if type(color) == TYPE_STRING then
+    if color ~= nil and type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
     if lifeIcon and type(lifeIcon) == TYPE_STRING then
@@ -1149,11 +1092,16 @@ _G.charSelect = {
     character_add_menu_instrumental = character_add_menu_instrumental,
     character_add_graffiti = character_add_graffiti,
     character_get_graffiti = character_get_graffiti,
+    -- Located in voice.lua
+    voice = {
+        sound = custom_character_sound,
+        snore = custom_character_snore,
+    },
 
     -- Hud Element Functions --
-    hud_hide_element = hud_hide_element, -- Function located in n-hud.lua
-    hud_show_element = hud_show_element, -- Function located in n-hud.lua
-    hud_get_element = hud_get_element, -- Function located in n-hud.lua
+    hud_hide_element = hud_hide_element, -- Function located in hud.lua
+    hud_show_element = hud_show_element, -- Function located in hud.lua
+    hud_get_element = hud_get_element, -- Function located in hud.lua
 
     -- Menu Functions --
     header_set_texture = header_set_texture, -- Function located in main.lua
@@ -1175,7 +1123,7 @@ _G.charSelect = {
 
     -- Misc --
     dialog_set_replace_name = dialog_set_replace_name, -- Function located in dialog.lua
-    update_preset_palette = placeholder, -- Function located in z-palettes.lua
+    update_preset_palette = update_preset_palette, -- Function located in palettes.lua
 
     -- Tables & Variables --
     optionTableRef = optionTableRef,
@@ -1189,7 +1137,7 @@ _G.charSelect = {
     hook_render_in_menu = hook_render_in_menu,
     hook_on_character_change = hook_on_character_change,
     hook_on_save_data_reset = hook_on_save_data_reset,
-    config_character_sounds = placeholder, -- Function located in z-voice.lua
+    config_character_sounds = config_character_sounds, -- Function located in voice.lua
     character_hook_moveset = character_hook_moveset,
 }
 

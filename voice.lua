@@ -15,6 +15,59 @@ local SLEEP_TALK_END = SLEEP_TALK_START + SLEEP_TALK_SNORES
 local stallTimer = 0
 local stallSayLine = 5
 
+characterVoices = {
+    [E_MODEL_WALUIGI] = {
+        [CHAR_SOUND_OKEY_DOKEY] =        audio_sample_load('0B_waluigi_okey_dokey.aiff'),
+        [CHAR_SOUND_LETS_A_GO] =         audio_sample_load('1A_waluigi_lets_a_go.aiff'), 
+        [CHAR_SOUND_GAME_OVER] =         audio_sample_load('11_waluigi_game_over.aiff'), 
+        [CHAR_SOUND_PUNCH_YAH] =         audio_sample_load('08_waluigi_punch_yah.aiff'), 
+        [CHAR_SOUND_PUNCH_WAH] =         audio_sample_load('01_waluigi_jump_wah.aiff'),
+        [CHAR_SOUND_PUNCH_HOO] =         audio_sample_load('09_waluigi_punch_hoo.aiff'), 
+        [CHAR_SOUND_YAH_WAH_HOO] =       {audio_sample_load('00_waluigi_jump_hoo.aiff'), audio_sample_load('01_waluigi_jump_wah.aiff'), audio_sample_load('02_waluigi_yah.aiff')},
+        [CHAR_SOUND_HOOHOO] =            audio_sample_load('01_waluigi_hoohoo.aiff'),
+        [CHAR_SOUND_YAHOO_WAHA_YIPPEE] = {audio_sample_load('04_waluigi_yahoo.aiff'), audio_sample_load('18_waluigi_waha.aiff'), audio_sample_load('19_waluigi_yippee.aiff')},
+        [CHAR_SOUND_UH] =                audio_sample_load('05_waluigi_uh.aiff'),
+        [CHAR_SOUND_UH2] =               audio_sample_load('05_waluigi_uh2.aiff'),
+        [CHAR_SOUND_UH2_2] =             audio_sample_load('05_waluigi_uh2.aiff'),
+        [CHAR_SOUND_DOH] =               audio_sample_load('10_waluigi_doh.aiff'),
+        [CHAR_SOUND_OOOF] =              audio_sample_load('0B_waluigi_ooof.aiff'),
+        [CHAR_SOUND_OOOF2] =             audio_sample_load('0B_waluigi_ooof.aiff'),
+        [CHAR_SOUND_HAHA] =              audio_sample_load('03_waluigi_haha.aiff'),
+        [CHAR_SOUND_HAHA_2] =            audio_sample_load('03_waluigi_haha.aiff'),
+        [CHAR_SOUND_YAHOO] =             audio_sample_load('04_waluigi_yahoo.aiff'),
+        [CHAR_SOUND_DOH] =               audio_sample_load('10_waluigi_doh.aiff'),
+        [CHAR_SOUND_WHOA] =              audio_sample_load('08_waluigi_whoa.aiff'),
+        [CHAR_SOUND_EEUH] =              audio_sample_load('09_waluigi_eeuh.aiff'),
+        [CHAR_SOUND_WAAAOOOW] =          audio_sample_load('00_waluigi_waaaooow.aiff'),
+        [CHAR_SOUND_TWIRL_BOUNCE] =      audio_sample_load('14_waluigi_twirl_bounce.aiff'),
+        [CHAR_SOUND_GROUND_POUND_WAH] =  audio_sample_load('01_waluigi_jump_wah.aiff'),
+        [CHAR_SOUND_WAH2] =              audio_sample_load('07_waluigi_wah2.aiff'),
+        [CHAR_SOUND_HRMM] =              audio_sample_load('06_waluigi_hrmm.aiff'),
+        [CHAR_SOUND_HERE_WE_GO] =        audio_sample_load('0C_waluigi_here_we_go.aiff'),
+        [CHAR_SOUND_SO_LONGA_BOWSER] =   audio_sample_load('16_waluigi_so_longa_bowser.aiff'),
+        -- DAMAGE
+        [CHAR_SOUND_ATTACKED] =          audio_sample_load('0A_waluigi_attacked.aiff'),
+        [CHAR_SOUND_PANTING] =           audio_sample_load('02_waluigi_panting.aiff'),
+        [CHAR_SOUND_PANTING_COLD] =      audio_sample_load('02_waluigi_panting.aiff'),
+        [CHAR_SOUND_ON_FIRE] =           audio_sample_load('04_waluigi_on_fire.aiff'),
+        -- SLEEP SOUNDS
+        [CHAR_SOUND_IMA_TIRED] =         audio_sample_load('17_waluigi_tired.aiff'),
+        [CHAR_SOUND_YAWNING] =           audio_sample_load('0D_waluigi_yawning.aiff'),
+        [CHAR_SOUND_SNORING1] =          audio_sample_load('0E_waluigi_snoring1.aiff'),
+        [CHAR_SOUND_SNORING2] =          audio_sample_load('0F_waluigi_snoring2.aiff'),
+        [CHAR_SOUND_SNORING3] =          audio_sample_load('15_waluigi_snoring3.aiff'),
+        -- COUGHING
+        [CHAR_SOUND_COUGHING1] =         audio_sample_load('06_waluigi_coughing.aiff'),
+        [CHAR_SOUND_COUGHING2] =         audio_sample_load('06_waluigi_coughing.aiff'),
+        [CHAR_SOUND_COUGHING3] =         audio_sample_load('06_waluigi_coughing.aiff'),
+        -- DEATH
+        [CHAR_SOUND_DYING] =             audio_sample_load('03_waluigi_dying.aiff'),
+        [CHAR_SOUND_DROWNING] =          audio_sample_load('0C_waluigi_drowning.aiff'),
+        [CHAR_SOUND_MAMA_MIA] =          audio_sample_load('0A_waluigi_mama_mia.aiff')
+
+    }
+}
+
 local levelReverbs = {
     [LEVEL_NONE]              = { 0x00, 0x00, 0x00 },
     [LEVEL_UNKNOWN_1]         = { 0x00, 0x00, 0x00 },
@@ -153,7 +206,7 @@ end
 ---@param m MarioState
 ---@param sound CharacterSound
 ---@param pos Vec3f?
-local function custom_character_sound(m, sound, pos)
+function custom_character_sound(m, sound, pos)
     local np = gNetworkPlayers[m.playerIndex]
     if m.playerIndex == 0 then
         if stallTimer < stallSayLine then
@@ -230,7 +283,7 @@ local function custom_character_sound(m, sound, pos)
 end
 
 ---@param m MarioState
-local function custom_character_snore(m)
+function custom_character_snore(m)
     if is_game_paused() or optionTable[optionTableRef.localVoices].toggle == 0 then
         -- Remove echo lines that should have played while paused
         if #stalledAudio > 0 then
@@ -308,18 +361,12 @@ end
 hook_event(HOOK_UPDATE, update)
 hook_event(HOOK_ON_LEVEL_INIT, stop_all_custom_character_sounds)
 
-_G.charSelect.voice = {
-    sound = custom_character_sound,
-    snore = custom_character_snore,
-}
-
 -- Must be ran on startup
-local function config_character_sounds()
+function config_character_sounds()
     hook_event(HOOK_CHARACTER_SOUND, custom_character_sound)
     --hook_event(HOOK_MARIO_UPDATE, custom_character_snore)
     cs_hook_mario_update(custom_character_snore)
 end
-_G.charSelect.config_character_sounds = config_character_sounds
 
 -- Join sound
 local function mario_update(m)

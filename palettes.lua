@@ -144,16 +144,13 @@ local function network_player_set_full_override_palette(networkPlayer, colorTabl
 end
 
 ---@param np NetworkPlayer
-local function update_preset_palette(np)
+function update_preset_palette(np)
     local p = gCSPlayers[np.localIndex]
     local modelId = p.modelId
     if np.connected and gCSPlayers[0].presetPalette > 0 and characterColorPresets[modelId] and gGlobalSyncTable.charSelectRestrictPalettes == 0 then
         network_player_set_full_override_palette(np, characterColorPresets[modelId][p.presetPalette])
     end
 end
-
--- API funcs
-_G.charSelect.update_preset_palette = update_preset_palette
 
 local stallTimer = 5
 
