@@ -7,33 +7,48 @@ MOD_VERSION_MAJOR = 16
 MOD_VERSION_MINOR = 0
 MOD_VERSION_INDEV = true
 MOD_VERSION_STRING = tostring(MOD_VERSION_API) .. "." .. tostring(MOD_VERSION_MAJOR) .. (MOD_VERSION_MINOR > 0 and ("." .. tostring(MOD_VERSION_MINOR)) or "") .. (MOD_VERSION_INDEV and " (In-Dev)" or "")
-MOD_VERSION_DEBUG = tostring(GITHUB_REPO) .. " | " .. tostring(GITHUB_COMMIT_ID) .. " | " .. tostring(GITHUB_COMMIT_TIME)
 
 -- Check CoopDX Version
 VERSION_REQUIRED = 41
 if VERSION_NUMBER < VERSION_REQUIRED then
-    djui_popup_create("\n\\#FFAAAA\\Character Select requires\n the latest version of CoopDX to use!\n\nYou can find CoopDX here:\n\\#6666FF\\https://sm64coopdx.com", 5)
     incompatibleClient = true
+    local frameCount = 0
+    hook_event(HOOK_UPDATE, function ()
+        frameCount = frameCount + 1
+        if frameCount == 5 then
+            djui_popup_create("\n\\#FFAAAA\\Character Select requires\n the latest version of CoopDX to use!\n\nYou can find CoopDX here:\n\\#AAAAFF\\https://sm64coopdx.com", 5)
+            
+            djui_chat_message_create("\\#FFAAAA\\Character Select Version Issue:\nVersion " .. tostring(VERSION_NUMBER) .. " < " .. tostring(VERSION_REQUIRED))
+            local errorString = "\\#FFAAAA\\The best way to resolve this issue is to reinstall SM64CoopDX from the Offical Site or Github Repo!\n\\#AAAAFF\\https://sm64coopdx.com/\nhttps://github.com/coop-deluxe/sm64coopdx/"
+            log_to_console(errorString)
+            djui_chat_message_create(errorString)
+        end
+    end)
     return 0
 end
 
 local dependacyFiles = {
-    -- Required Lua Files
-    --"a-github.lua",
+    --- Required Lua Files
+    "a-font-handler.lua",
+    "anims.lua",
     "dialog.lua",
+    "hud.lua",
     "main.lua",
+    "moveset.lua",
+    "palettes.lua",
+    "voice.lua",
+    "z-api.lua",
+
+    --- Required Actors
+    "actors/armature_geo.bin",
+}
+local legacyFiles = {
+    "z-anims.lua",
     "n-hud.lua",
     "o-api.lua",
     "z-moveset.lua",
     "z-palettes.lua",
     "z-voice.lua",
-    -- Required Actors
-    "actors/armature_geo.bin",
-}
-local legacyFiles = {
-    "voice.lua",
-    "palettes.lua",
-    "z-anims.lua",
 }
 
 local fileErrorList = {}
@@ -63,8 +78,10 @@ if #fileErrorList > 0 then
             for i = 1, #fileErrorList do
                 errorString = errorString .. "\n" .. fileErrorList[i]
             end
-            errorString = errorString .. "\n\nThe best way to resolve these issues is to delete your current version of Character Select and then install the latest version!"
+            log_to_console(errorString)
+            djui_chat_message_create(errorString)
 
+            errorString = "\\#FFAAAA\\The best way to resolve these issues is to delete your current version of Character Select and then install the latest version from the Github Repo!\n\\#AAAAFF\\https://github.com/Squishy6094/character-select-coop/\\#FFAAAA\\"
             log_to_console(errorString)
             djui_chat_message_create(errorString)
         end
