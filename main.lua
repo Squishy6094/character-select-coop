@@ -30,9 +30,9 @@ menuAndTransition = false
 gridMenu = mod_storage_load_bool("PrefGridView")
 options = nil; OPTIONS_MAIN = 0; OPTIONS_CREDITS = 1
 prevOptions = nil; optionsTimer = 0
-currChar = CT_MARIO
-local prevChar = CT_MARIO
-currCharRender = CT_MARIO
+currChar = gMarioStates[0].character.type
+local prevChar = gMarioStates[0].character.type
+currCharRender = gMarioStates[0].character.type
 currCategory = 1
 local currOption = 1
 local currCredits = 1
@@ -566,6 +566,7 @@ local prefCharColor = {r = 255, g = 50, b = 50}
 local function load_preferred_char()
     local m = gMarioStates[0]
     local savedChar = mod_storage_load("PrefChar")
+    local savedNick = mod_storage_load("PrefNick")
     local savedAlt = tonumber(mod_storage_load("PrefAlt"))
     local savedPalette = tonumber(mod_storage_load("PrefPalette"))
     if savedChar == nil or savedChar == "" then
@@ -581,26 +582,31 @@ local function load_preferred_char()
         mod_storage_save("PrefAlt", tostring(paletteSave))
         savedPalette = paletteSave
     end
+
+    -- Find Saved Character
+    local charFound = false
     for i = 0, #characterTable do
         local char = characterTable[i]
         if char.saveName == savedChar and char.locked ~= LOCKED_TRUE then
             currChar = i
             currCharRender = i
-            if savedAlt > 0 and savedAlt <= #char then
-                char.currAlt = savedAlt
-            end
-            savedAlt = math.clamp(savedAlt, 1, #characterTable[currChar])
-            local model = characterTable[currChar][savedAlt].model
-            log_to_console(tostring(characterColorPresets[model] ~= nil))
-            if characterColorPresets[model] ~= nil then
-                gCSPlayers[0].presetPalette = savedPalette
-                characterColorPresets[model].currPalette = savedPalette
-            end
+            charFound = true
             if optionTable[optionTableRef.notification].toggle > 0 then
                 djui_popup_create('Character Select:\nYour Preferred Character\n"' .. string_underscore_to_space(char[char.currAlt].name) .. '"\nwas applied successfully!', 4)
             end
             break
         end
+    end
+
+    -- Set Alt
+    savedAlt = math.clamp(savedAlt, 1, #characterTable[currChar])
+    characterTable[currChar].currAlt = savedAlt
+
+    -- Set Palette
+    local model = characterTable[currChar][savedAlt].model
+    if characterColorPresets[model] ~= nil then
+        gCSPlayers[0].presetPalette = charFound and savedPalette or 0
+        characterColorPresets[model].currPalette = gCSPlayers[0].presetPalette
     end
 
     --[[
@@ -628,6 +634,14 @@ local function load_preferred_char()
         if optionTable[optionTableRef.notification].toggle > 0 then
             djui_popup_create("Character Select:\nNo Characters were Found", 2)
         end
+    else
+        if not charFound then
+            if savedNick ~= nil then
+                djui_popup_create('Character Select:\nYour Preferred Character\n"' .. string_underscore_to_space(savedNick) .. '"\nwas not found.', 4)
+            else
+                djui_popup_create('Character Select:\nYour Preferred Character\nwas not found.', 3)
+            end
+        end
     end
     TEXT_PREF_LOAD_NAME = savedChar
     TEXT_PREF_LOAD_ALT = savedAlt
@@ -637,6 +651,7 @@ end
 local function mod_storage_save_pref_char(charTable)
     charTable = charTable or characterTable[gMarioStates[0].character.type]
     mod_storage_save("PrefChar", charTable.saveName)
+    mod_storage_save("PrefNick", string_space_to_underscore(charTable.nickname))
     mod_storage_save("PrefAlt", tostring(charTable.currAlt))
     mod_storage_save("PrefPalette", tostring(gCSPlayers[0].presetPalette))
     mod_storage_save("PrefCharColor", tostring(charTable[charTable.currAlt].color.r) .. "_" .. tostring(charTable[charTable.currAlt].color.g) .. "_" .. tostring(charTable[charTable.currAlt].color.b))
@@ -1445,7 +1460,7 @@ local function on_hud_render()
             paletteTrans = math.max(paletteTrans - 6, 0)
             local bottomTapeAngle = angle_from_2d_points(-10, height - 50, width + 10, height - 35)
 
-            local paletteName = (palettes ~= nil and palettes.currPalette == 0) and "Custom" or (palettes[palettes.currPalette].name or ("Palette "..palettes.currPalette))
+            local paletteName = (palettes.currPalette == 0) and "Custom" or (palettes[palettes.currPalette].name or ("Palette "..palettes.currPalette))
             djui_hud_set_font(FONT_RECOLOR_HUD)
             local x = width*0.85 - djui_hud_measure_text(paletteName)*0.25
             local y = height*0.68 + math.max((-paletteTrans + 300), 0)^2*0.0005

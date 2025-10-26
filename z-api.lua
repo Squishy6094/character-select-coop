@@ -65,7 +65,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
 
     table_insert(characterTable, {
         saveName = type(name) == TYPE_STRING and string_space_to_underscore(name.."_"..credit) or "Untitled",
-        nickname = type(name) == TYPE_STRING and string_space_to_underscore(name.."_"..credit) or "Untitled",
+        nickname = type(name) == TYPE_STRING and name or "Untitled",
         currAlt = 1,
         hasMoveset = false,
         locked = LOCKED_NEVER,
