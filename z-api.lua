@@ -39,6 +39,8 @@ local TYPE_FUNCTION = "function"
 ---@param camScale integer? Zooms the camera based on a multiplier (Default `1`)
 ---@return integer --The index of the character in the character table
 local function character_add(name, description, credit, color, modelInfo, baseChar, lifeIcon, camScale)
+    name = type(name) == TYPE_STRING and name or "Untitled"
+    credit = type(credit) == TYPE_STRING and credit or "Unknown"
     if type(description) == TYPE_TABLE then
         local table = description
         description = ""
@@ -62,17 +64,17 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
     end
 
     table_insert(characterTable, {
-        saveName = type(name) == TYPE_STRING and string_space_to_underscore(name) or "Untitled",
-        nickname = type(name) == TYPE_STRING and string_space_to_underscore(name) or "Untitled",
+        saveName = type(name) == TYPE_STRING and string_space_to_underscore(name.."_"..credit) or "Untitled",
+        nickname = type(name) == TYPE_STRING and string_space_to_underscore(name.."_"..credit) or "Untitled",
         currAlt = 1,
         hasMoveset = false,
         locked = LOCKED_NEVER,
         category = "All",
         ogNum = charNum,
         [1] = {
-            name = type(name) == TYPE_STRING and name or "Untitled",
+            name = name,
             description = type(description) == TYPE_STRING and description or "No description has been provided",
-            credit = type(credit) == TYPE_STRING and credit or "Unknown",
+            credit = credit,
             color = type(color) == TYPE_TABLE and color or {r = 255, g = 255, b = 255},
             model = addedModel,
             ogModel = addedModel,

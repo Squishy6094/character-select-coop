@@ -93,7 +93,7 @@ local TEXT_PREF_LOAD_ALT = 1
 
 characterTable = {
     [CT_MARIO] = {
-        saveName = "Mario_Default",
+        saveName = "Mario_CoopDX",
         nickname = "Mario",
         category = "All_CoopDX",
         ogNum = CT_MARIO,
@@ -114,7 +114,7 @@ characterTable = {
         },
     },
     [CT_LUIGI] = {
-        saveName = "Luigi_Default",
+        saveName = "Luigi_CoopDX",
         nickname = "Luigi",
         category = "All_CoopDX",
         ogNum = CT_LUIGI,
@@ -141,7 +141,7 @@ characterTable = {
         },
     },
     [CT_TOAD] = {
-        saveName = "Toad_Default",
+        saveName = "Toad_CoopDX",
         nickname = "Toad",
         category = "All_CoopDX",
         ogNum = CT_TOAD,
@@ -168,7 +168,7 @@ characterTable = {
         },
     },
     [CT_WALUIGI] = {
-        saveName = "Waluigi_Default",
+        saveName = "Waluigi_CoopDX",
         nickname = "Waluigi",
         category = "All_CoopDX",
         ogNum = CT_WALUIGI,
@@ -195,7 +195,7 @@ characterTable = {
         },
     },
     [CT_WARIO] = {
-        saveName = "Wario_Default",
+        saveName = "Wario_CoopDX",
         nickname = "Wario",
         category = "All_CoopDX",
         ogNum = CT_WARIO,
@@ -335,7 +335,7 @@ optionTable = {
         toggleDefault = 1,
         toggleMax = 2,
         toggleNames = {"Off", "On", "Pop-ups Only"},
-        description = {"Toggles whether Pop-ups and", "Chat Messages display"}
+        description = {"Toggles whether Pop-ups and", "Chat Messages display."}
     },
     [optionTableRef.menuColor] = {
         name = "Menu Color",
@@ -367,6 +367,15 @@ optionTable = {
         toggleNames = {"Slow", "Normal", "Fast"},
         description = {"Sets how fast you scroll", "throughout the Menu"}
     },
+    [optionTableRef.localVoices] = {
+        name = "Character Voices",
+        category = OPTION_CHAR,
+        toggle = tonumber(mod_storage_load("localVoices")),
+        toggleSaveName = "localVoices",
+        toggleDefault = 1,
+        toggleMax = 1,
+        description = {"Toggle if Custom Voicelines play", "for Characters who support it"}
+    },
     [optionTableRef.localMoveset] = {
         name = "Character Moveset",
         category = OPTION_CHAR,
@@ -381,22 +390,13 @@ optionTable = {
             end
         end,
     },
-    [optionTableRef.localVoices] = {
-        name = "Character Voices",
-        category = OPTION_CHAR,
-        toggle = tonumber(mod_storage_load("localVoices")),
-        toggleSaveName = "localVoices",
-        toggleDefault = 1,
-        toggleMax = 1,
-        description = {"Toggle if Custom Voicelines play", "for Characters who support it"}
-    },
     [optionTableRef.credits] = {
         name = "Credits",
         category = OPTION_MISC,
         toggle = 0,
         toggleDefault = 0,
         toggleMax = 1,
-        toggleNames = {"", ""},
+        toggleNames = {"Open Credits", "Open Credits"},
         description = {"Thank you for choosing", "Character Select!"}
     },
     [optionTableRef.debugInfo] = {
@@ -414,7 +414,7 @@ optionTable = {
         toggle = 0,
         toggleDefault = 0,
         toggleMax = 1,
-        toggleNames = {"", ""},
+        toggleNames = {"Reset Save Data", "Reset Save Data"},
         description = {"Resets Character Select's", "Save Data"}
     },
     [optionTableRef.restrictMovesets] = {
@@ -564,51 +564,53 @@ end
 local prefCharColor = {r = 255, g = 50, b = 50}
 
 local function load_preferred_char()
+    local m = gMarioStates[0]
     local savedChar = mod_storage_load("PrefChar")
     local savedAlt = tonumber(mod_storage_load("PrefAlt"))
     local savedPalette = tonumber(mod_storage_load("PrefPalette"))
     if savedChar == nil or savedChar == "" then
-        mod_storage_save("PrefChar", "Default")
-        savedChar = "Default"
+        mod_storage_save("PrefChar", characterTable[m.character.type].saveName)
+        savedChar = characterTable[m.character.type].saveName
     end
     if savedAlt == nil then
         mod_storage_save("PrefAlt", "1")
         savedAlt = 1
     end
     if savedPalette == nil then
-        local paletteSave = 1
+        local paletteSave = 0
         mod_storage_save("PrefAlt", tostring(paletteSave))
         savedPalette = paletteSave
     end
-    if savedChar ~= "Default" then
-        for i = CT_MAX, #characterTable do
-            local char = characterTable[i]
-            if char.saveName == savedChar and char.locked ~= LOCKED_TRUE then
-                currChar = i
-                currCharRender = i
-                if savedAlt > 0 and savedAlt <= #char then
-                    char.currAlt = savedAlt
-                end
-                savedAlt = math.clamp(savedAlt, 1, #characterTable[currChar])
-                local model = characterTable[currChar][savedAlt].model
-                if characterColorPresets[model] ~= nil then
-                    gCSPlayers[0].presetPalette = savedPalette
-                    characterColorPresets[model].currPalette = savedPalette
-                end
-                if optionTable[optionTableRef.notification].toggle > 0 then
-                    djui_popup_create('Character Select:\nYour Preferred Character\n"' .. string_underscore_to_space(char[char.currAlt].name) .. '"\nwas applied successfully!', 4)
-                end
-                break
+    for i = 0, #characterTable do
+        local char = characterTable[i]
+        if char.saveName == savedChar and char.locked ~= LOCKED_TRUE then
+            currChar = i
+            currCharRender = i
+            if savedAlt > 0 and savedAlt <= #char then
+                char.currAlt = savedAlt
             end
+            savedAlt = math.clamp(savedAlt, 1, #characterTable[currChar])
+            local model = characterTable[currChar][savedAlt].model
+            log_to_console(tostring(characterColorPresets[model] ~= nil))
+            if characterColorPresets[model] ~= nil then
+                gCSPlayers[0].presetPalette = savedPalette
+                characterColorPresets[model].currPalette = savedPalette
+            end
+            if optionTable[optionTableRef.notification].toggle > 0 then
+                djui_popup_create('Character Select:\nYour Preferred Character\n"' .. string_underscore_to_space(char[char.currAlt].name) .. '"\nwas applied successfully!', 4)
+            end
+            break
         end
     end
 
+    --[[
     if savedChar == "Default" or currChar == CT_MARIO then
-        currChar = gMarioStates[0].character.type
+        currChar = m.character.type
         local model = characterTable[currChar][1].model
         gCSPlayers[0].presetPalette = 0
         characterColorPresets[model].currPalette = 0
     end
+    ]]
 
     local savedCharColors = mod_storage_load("PrefCharColor")
     if savedCharColors ~= nil and savedCharColors ~= "" then
@@ -633,12 +635,8 @@ local function load_preferred_char()
 end
 
 local function mod_storage_save_pref_char(charTable)
-    charTable = charTable or characterTable[gNetworkPlayers[0].modelIndex]
-    if character_is_vanilla(charTable.ogNum) then
-        mod_storage_save("PrefChar", "Default")
-    else
-        mod_storage_save("PrefChar", charTable.saveName)
-    end
+    charTable = charTable or characterTable[gMarioStates[0].character.type]
+    mod_storage_save("PrefChar", charTable.saveName)
     mod_storage_save("PrefAlt", tostring(charTable.currAlt))
     mod_storage_save("PrefPalette", tostring(gCSPlayers[0].presetPalette))
     mod_storage_save("PrefCharColor", tostring(charTable[charTable.currAlt].color.r) .. "_" .. tostring(charTable[charTable.currAlt].color.g) .. "_" .. tostring(charTable[charTable.currAlt].color.b))
@@ -820,6 +818,7 @@ local worldColor = {
 }
 local menuOffsetX = 0
 local menuOffsetY = 0 
+local camScale = 1
 ---@param m MarioState
 local function mario_update(m)
     local np = gNetworkPlayers[m.playerIndex]
@@ -924,18 +923,19 @@ local function mario_update(m)
             if m.area.camera.cutscene == 0 then
                 m.area.camera.cutscene = CUTSCENE_CS_MENU
             end
-            local camScale = charTable[charTable.currAlt].camScale*widthScale
+            camScale = math.lerp(camScale, charTable[charTable.currAlt].camScale*widthScale, 0.1)
+            local camDist = 400 * camScale
             local camAngle = m.faceAngle.y + 0x800
             local focusPos = {
-                x = m.pos.x + sins(camAngle - 0x4000)*(175/widthScale - menuOffsetX)*camScale*widthScale,
-                y = m.pos.y + (120/widthScale - menuOffsetY) * camScale ,
-                z = m.pos.z + coss(camAngle - 0x4000)*(175/widthScale - menuOffsetX)*camScale*widthScale,
+                x = m.pos.x + sins(camAngle - 0x4000)*(150/widthScale - menuOffsetX)*camScale*widthScale,
+                y = m.pos.y + (camDist*0.175/widthScale - menuOffsetY) * camScale ,
+                z = m.pos.z + coss(camAngle - 0x4000)*(150/widthScale - menuOffsetX)*camScale*widthScale,
             }
             vec3f_copy(gLakituState.focus, focusPos)
             m.marioBodyState.eyeState = MARIO_EYES_OPEN
-            gLakituState.pos.x = m.pos.x + sins(camAngle) * 450 * camScale
+            gLakituState.pos.x = m.pos.x + sins(camAngle) * camDist + sins(camAngle - 0x4000)*(menuOffsetX*0.5)
             gLakituState.pos.y = m.pos.y + 10
-            gLakituState.pos.z = m.pos.z + coss(camAngle) * 450 * camScale
+            gLakituState.pos.z = m.pos.z + coss(camAngle) * camDist + sins(camAngle - 0x4000)*(menuOffsetX*0.5)
             p.inMenu = true
 
             set_lighting_color(0, (menuColor.r*0.33 + 255*0.66) * worldColor.lighting.r/255)
@@ -1655,21 +1655,53 @@ local function on_hud_render()
 
         -- Render Options Menu
 
-        local tvX = width*0.7 - 200 + (optionsMenuOffsetMax - optionsMenuOffset) + 15
-        local tvY = 50
-        local tvWidth = 150
-        local tvHeight = 120
+        local tvScale = 1.1
+        local tvX = width*0.7 - 170 + (optionsMenuOffsetMax - optionsMenuOffset) + 15
+        local tvY = 70 + (optionsMenuOffsetMax - optionsMenuOffset)*0.2
+        local tvWidth = (161 - 67)*tvScale
+        local tvHeight = (153 - 75)*tvScale
         local optionData = optionTable[currOption]
-        djui_hud_set_color(255, 0, 0, 255)
-        djui_hud_render_rect(tvX, tvY, tvWidth, tvHeight)
-        djui_hud_set_font(FONT_HUD)
         djui_hud_set_color(255, 255, 255, 255)
-        local text = "OPTIONS - " .. (options ~= OPTIONS_CREDITS and string.upper(optionData.category) or "CREDITS")
-        djui_hud_print_text(text, tvX + tvWidth*0.5 - djui_hud_measure_text(text)*0.3, tvY + 10, 0.6)
+        djui_hud_render_rect(tvX, tvY, tvWidth, tvHeight)
         if options == OPTIONS_MAIN then
+
             djui_hud_set_font(FONT_TINY)
+            djui_hud_set_color(0, 0, 0, 255)
+            djui_hud_print_text(optionData.name, tvX + 12 + (tvWidth - 12)*0.5 - djui_hud_measure_text(optionData.name)*0.35, tvY + 20, 0.7)
+            local toggleString = "< " .. optionData.toggleNames[optionData.toggle + 1] .. " >"
+            djui_hud_print_text(toggleString, tvX + 12 + (tvWidth - 12)*0.5 - djui_hud_measure_text(toggleString)*0.25, tvY + 30, 0.5)
+
+            for i = 1, #optionData.description do
+                local textMeasure = djui_hud_measure_text(optionData.description[i])
+                local x = tvX + 12 + (tvWidth - 12)*0.5 - textMeasure*0.225
+                local y = tvY + tvHeight - 7*(#optionData.description + 2) + 7*i
+                djui_hud_set_color(0, 0, 0, 255)
+                djui_hud_render_rect(x - 2, y, textMeasure*0.45 + 4, 8)
+                djui_hud_set_color(255, 255, 255, 255)
+                djui_hud_print_text(optionData.description[i], x, y, 0.45)
+            end
+
+            -- Render Header
+            djui_hud_set_color(0, 0, 0, 255)
+            djui_hud_render_rect(tvX, tvY, tvWidth, 18)
+            djui_hud_set_font(FONT_ALIASED)
             djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_print_text(optionData.name .. " - < " .. optionData.toggleNames[optionData.toggle + 1] .. " >", tvX, tvY + 50, 0.5)
+            djui_hud_print_text("OPTIONS", tvX + 13, tvY + 2, 0.5)
+            djui_hud_set_font(FONT_NORMAL)
+            local optionCategory = " ... " .. (options ~= OPTIONS_CREDITS and string.upper(optionData.category) or "CREDITS")
+            djui_hud_print_text(optionCategory, tvX + 13 + djui_hud_measure_text("OPTIONS")*0.5, tvY + 8, 0.25)
+
+            -- Render Sidebar
+            djui_hud_set_color(0, 0, 0, 255)
+            djui_hud_render_rect(tvX, tvY, 10, tvHeight)
+            for i = 1, #optionTable do
+                if i == currOption then
+                    djui_hud_set_color(255, 255, 255, 255)
+                else
+                    djui_hud_set_color(100, 100, 100, 255)
+                end
+                djui_hud_render_rect(tvX + 4, tvY + (tvHeight - 10)*(i/#optionTable), 2, 2)
+            end
         elseif options == OPTIONS_CREDITS then
             djui_hud_set_font(FONT_RECOLOR_HUD)
             djui_hud_print_text(creditTable[currCredits].packName, tvX, tvY + 20, 0.5)
@@ -1681,8 +1713,9 @@ local function on_hud_render()
             end
         end
 
+        djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_render_texture_tile(TEX_OPTIONS_TV, tvX - 67*tvScale, tvY - 75*tvScale, tvScale*192/256, tvScale, 0, 0, 256, 192)
 
-        djui_hud_render_texture(TEX_OPTIONS_TV, width*0.7 - 200 + (optionsMenuOffsetMax - optionsMenuOffset), 10, 1.5, 1.5)
         --[[
         djui_hud_set_color(0, 30, 0, 200)
         djui_hud_render_rect(0, 0, width*0.7 - 10, height)
