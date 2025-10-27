@@ -581,3 +581,14 @@ function djui_hud_render_texture_auto_interpolated(index, texture, x, y, width, 
     djui_hud_render_texture_interpolated(texture, interp.x, interp.y, interp.width, interp.height, x, y, width, height)
     djui_set_interpolation(index, x, y, width, height)
 end
+
+-- HUD Easing Functions
+---@param x number
+---@return number
+function ease_out_back(x)
+    
+    local c1 = 1.70158;
+    local c3 = c1 + 1;
+
+    return 1 + c3 * (x - 1)^3 + c1 * (x - 1)^2;
+end

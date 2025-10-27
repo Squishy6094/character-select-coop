@@ -1545,6 +1545,7 @@ local function on_hud_render()
             gridYOffset = lerp(gridYOffset, currCharRender*buttonSpacing, 0.1)
             djui_hud_set_font(FONT_SPECIAL)
             for i = 0, #characterTableRender do
+                local charTable = characterTableRender[i]
                 local currAlt = characterTableRender[i].currAlt
                 local char = characterTableRender[i][currAlt]
                 local charName = char.name
@@ -1581,7 +1582,10 @@ local function on_hud_render()
                 if i == currCharRender then
                     djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 33*scale, y + 48*scale, scale, scale, 320, 48, 32, 32)
                 end
-                djui_hud_set_rotation(angle, 0.5, 0.5)
+                if charTable.dialAnim == nil then charTable.dialAnim = 0 end
+                angleAnim = -0x10000*((1/charAltCount))*charTable.dialAnim/10
+                charTable.dialAnim = math.lerp(charTable.dialAnim, 0, 0.2)
+                djui_hud_set_rotation(angle + angleAnim, 0.5, 0.5)
                 djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + 134*scale, y + 48*scale, scale, scale, 352, 48, 32, 32)
                 djui_hud_set_rotation(0, 0, 0)
                 for a = 1, charAltCount do
@@ -1591,11 +1595,6 @@ local function on_hud_render()
                     djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + (134 + 14)*scale + sins(angle)*16*scale, y + 62*scale + coss(angle)*16*scale, scale, scale, 384, 48 + (currAlt ~= a and 16 or 0), 4, 4)
                 end
             end
-
-            djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_set_rotation(get_global_timer() * 0x10, 0.5, 0.5)
-            djui_hud_render_texture(TEX_RECORD, -152 - menuOffsetX*0.1 - optionsMenuOffset, height*0.5 - 96 - menuOffsetY*0.1, 1.5, 1.5)
-            djui_hud_set_rotation(0, 0, 0)
         else
             -- Render Character Grid
             local currRow = math.floor((currCharRender)/gridButtonsPerRow)
@@ -1656,6 +1655,12 @@ local function on_hud_render()
                 characterTableRender[i].UIOffset = lerp(characterTableRender[i].UIOffset, currCharRender == i and 15 or 0, 0.1)
             end
         end
+
+        -- Render OST Record
+        djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_set_rotation(get_global_timer() * 0x10, 0.5, 0.5)
+        djui_hud_render_texture(TEX_RECORD, -152 - menuOffsetX*0.1 - optionsMenuOffset, height*0.5 - 96 - menuOffsetY*0.1, 0.75, 0.75)
+        djui_hud_set_rotation(0, 0, 0)
 
         -- Render Categories
         local spacing = width*0.3/#characterCategories
@@ -2056,6 +2061,7 @@ local function before_mario_update(m)
                         (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60,
                         function ()
                             character.currAlt = num_wrap(character.currAlt + 1, 1, #character)
+                            characterTableRender[currCharRender].dialAnim = characterTableRender[currCharRender].dialAnim - 10
                             audio_stream_set_frequency(SOUND_CHAR_SELECT_DIAL, math.random(20, 80)*0.01 + 0.5)
                             audio_stream_play(SOUND_CHAR_SELECT_DIAL, true, 0.75)
                         end
@@ -2065,6 +2071,7 @@ local function before_mario_update(m)
                         (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60,
                         function ()
                             character.currAlt = num_wrap(character.currAlt - 1, 1, #character)
+                            characterTableRender[currCharRender].dialAnim = characterTableRender[currCharRender].dialAnim + 10
                             audio_stream_set_frequency(SOUND_CHAR_SELECT_DIAL, math.random(20, 80)*0.01 + 0.5)
                             audio_stream_play(SOUND_CHAR_SELECT_DIAL, true, 0.75)
                         end
