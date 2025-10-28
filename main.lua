@@ -1675,11 +1675,11 @@ local function on_hud_render()
 
         -- Render Options Menu
 
-        local tvScale = 1.1
+        local tvScale = 0.5
         local tvX = width*0.7 - 170 + (optionsMenuOffsetMax - optionsMenuOffset) + 15
         local tvY = 70 + (optionsMenuOffsetMax - optionsMenuOffset)*0.2
-        local tvWidth = (161 - 67)*tvScale
-        local tvHeight = (153 - 75)*tvScale
+        local tvWidth = (319 - 133)*tvScale
+        local tvHeight = (323 - 168)*tvScale
         local optionData = optionTable[currOption]
         djui_hud_set_color(255, 255, 255, 255)
         djui_hud_render_rect(tvX, tvY, tvWidth, tvHeight)
@@ -1733,8 +1733,8 @@ local function on_hud_render()
             end
         end
 
-        djui_hud_set_color(255, 255, 255, 255)
-        djui_hud_render_texture_tile(TEX_OPTIONS_TV, tvX - 67*tvScale, tvY - 75*tvScale, tvScale*192/256, tvScale, 0, 0, 256, 192)
+        djui_hud_set_color(205 + 50*menuColor.r/256, 205 + 50*menuColor.g/256, 205 + 50*menuColor.b/256, 255)
+        djui_hud_render_texture(TEX_OPTIONS_TV, tvX - 133*tvScale, tvY - 168*tvScale, tvScale, tvScale)
 
         --[[
         djui_hud_set_color(0, 30, 0, 200)
