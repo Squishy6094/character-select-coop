@@ -71,6 +71,8 @@ LOCKED_FALSE = 2
 
 local SOUND_CHAR_SELECT_THEME = audio_stream_load("char-select-menu-theme.ogg")
 local SOUND_CHAR_SELECT_DIAL = audio_stream_load("char-select-dial-wind.ogg")
+local menuThemeTargetVolume = 0
+local menuThemeVolume = menuThemeTargetVolume
 audio_stream_set_looping(SOUND_CHAR_SELECT_THEME, true)
 audio_stream_set_loop_points(SOUND_CHAR_SELECT_THEME, 0, 93.659*22050)
 
@@ -303,6 +305,7 @@ optionTableRef = {
     notification = make_table_ref_num(),
     menuColor = make_table_ref_num(),
     anims = make_table_ref_num(),
+    music = make_table_ref_num(),
     inputLatency = make_table_ref_num(),
     -- Characters
     localMoveset = make_table_ref_num(),
@@ -358,7 +361,7 @@ optionTable = {
         description = {"Toggles Animations In-Menu,", "Turning these off may", "Save Performance"}
     },
     [optionTableRef.inputLatency] = {
-        name = "Scroll Speed",
+        name = "Menu Scroll Speed",
         category = OPTION_MENU,
         toggle = tonumber(mod_storage_load("Latency")),
         toggleSaveName = "Latency",
@@ -366,6 +369,16 @@ optionTable = {
         toggleMax = 2,
         toggleNames = {"Slow", "Normal", "Fast"},
         description = {"Sets how fast you scroll", "throughout the Menu"}
+    },
+    [optionTableRef.music] = {
+        name = "Menu Music",
+        category = OPTION_MENU,
+        toggle = tonumber(mod_storage_load("Music")),
+        toggleSaveName = "Music",
+        toggleDefault = 1,
+        toggleMax = 3,
+        toggleNames = {"Off", "On", "Breakroom Only", "Character Only"},
+        description = {"Toggles Animations In-Menu,", "Turning these off may", "Save Performance"}
     },
     [optionTableRef.localVoices] = {
         name = "Character Voices",
@@ -834,6 +847,7 @@ local worldColor = {
 local menuOffsetX = 0
 local menuOffsetY = 0 
 local camScale = 1
+local prevMusicToggle = 1
 ---@param m MarioState
 local function mario_update(m)
     local np = gNetworkPlayers[m.playerIndex]
@@ -922,14 +936,52 @@ local function mario_update(m)
         end
 
         if menuAndTransition then
-            audio_stream_play(SOUND_CHAR_SELECT_THEME, false, 1)
+            local musicToggle = optionTable[optionTableRef.music].toggle
+            local charInst = characterInstrumentals[currChar]
+            if not p.inMenu or prevMusicToggle ~= musicToggle or prevChar ~= currChar then
+                if musicToggle == 0 then
+                    stop_secondary_music(50)
+                end
+                audio_stream_play(SOUND_CHAR_SELECT_THEME, false, 0)
+                if musicToggle ~= 0 and musicToggle ~= 3 then
+                    menuThemeTargetVolume = 1
+                    play_secondary_music(0, 0, 0, 50)
+                else
+                    menuThemeTargetVolume = 0
+                end
+
+                -- Set Target Volumes
+                for i = 0, #characterTable do
+                    local charInst = characterInstrumentals[i]
+                    if charInst ~= nil then
+                        audio_stream_play(charInst.audio, false, 1)
+                        charInst.targetVolume = 0
+                    end
+                end
+                if musicToggle ~= 0 and musicToggle ~= 2 then
+                    if charInst ~= nil then
+                        charInst.targetVolume = 1
+                        play_secondary_music(0, 0, 0, 50)
+                    else
+                        stop_secondary_music(50)
+                    end
+                end
+                prevMusicToggle = musicToggle
+                p.inMenu = true
+            end
+
+            -- Update Volumes
+            menuThemeVolume = math.lerp(menuThemeVolume, menuThemeTargetVolume, 0.1)
+            audio_stream_set_volume(SOUND_CHAR_SELECT_THEME, menuThemeVolume)
+
             for i = 0, #characterTable do
-                if characterInstrumentals[i] ~= nil then
-                    audio_stream_play(characterInstrumentals[i], false, 1)
-                    audio_stream_set_volume(characterInstrumentals[i], i == currChar and 1 or 0)
+                local charInst = characterInstrumentals[i]
+                if charInst ~= nil then
+                    charInst.volume = math.lerp(charInst.volume, charInst.targetVolume, 0.1)
+                    audio_stream_set_volume(charInst.audio, charInst.volume)
                 end
             end
-            play_secondary_music(0, 0, 0, 50)
+
             camera_freeze()
             hud_hide()
             djui_hud_set_resolution(RESOLUTION_N64)
@@ -951,7 +1003,6 @@ local function mario_update(m)
             gLakituState.pos.x = m.pos.x + sins(camAngle) * camDist + sins(camAngle - 0x4000)*(menuOffsetX*0.5)
             gLakituState.pos.y = m.pos.y + 10
             gLakituState.pos.z = m.pos.z + coss(camAngle) * camDist + sins(camAngle - 0x4000)*(menuOffsetX*0.5)
-            p.inMenu = true
 
             set_lighting_color(0, (menuColor.r*0.33 + 255*0.66) * worldColor.lighting.r/255)
             set_lighting_color(1, (menuColor.g*0.33 + 255*0.66) * worldColor.lighting.g/255)
@@ -970,10 +1021,11 @@ local function mario_update(m)
             set_vertex_color(2, menuColor.b * worldColor.lighting.b/255)
         else
             if p.inMenu then
-                audio_stream_pause(SOUND_CHAR_SELECT_THEME)
+                audio_stream_stop(SOUND_CHAR_SELECT_THEME)
                 for i = 0, #characterTable do
-                    if characterInstrumentals[i] ~= nil then
-                        audio_stream_pause(characterInstrumentals[i])
+                    local charInst = characterInstrumentals[i]
+                    if charInst ~= nil then
+                        audio_stream_stop(charInst.audio)
                     end
                 end
                 stop_secondary_music(50)
@@ -1735,83 +1787,6 @@ local function on_hud_render()
 
         djui_hud_set_color(205 + 50*menuColor.r/256, 205 + 50*menuColor.g/256, 205 + 50*menuColor.b/256, 255)
         djui_hud_render_texture(TEX_OPTIONS_TV, tvX - 133*tvScale, tvY - 168*tvScale, tvScale, tvScale)
-
-        --[[
-        djui_hud_set_color(0, 30, 0, 200)
-        djui_hud_render_rect(0, 0, width*0.7 - 10, height)
-        djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-        djui_hud_set_rotation(math.floor(get_global_timer()/40)*0x1000 + ease_in_out_back(math.min((get_global_timer()%40)/30, 1))*0x1000, 0.5, 0.5)
-        djui_hud_render_texture(TEX_GEAR_BIG, -32, height*0.6-16, 1.5, 1.5)
-        ]]
-
-        --[[
-        local optionConsoleText = {
-            "______  ___  _  __  ____   ______",
-            "\\   \\ \\/ / \\| |/  \\/ __/  /) () (\\",
-            " | D \\  /| \\\\ | () \\__ \\  \\______/",
-            "/___//_/ |_|\\_|\\__/____/    (__)",
-            "Dynamic Operating System - Version " .. MOD_VERSION_STRING,
-            "(C) Toadstool Technologies 1996",
-            "",
-        }
-        if options == OPTIONS_MAIN then
-            table_insert(optionConsoleText, "===| " .. optionTable[currOption].category .. " Options |===")
-            table_insert(optionConsoleText, "================================")
-            for i = currOption - 3, currOption + 3 do
-                if optionTable[i] == nil then
-                    if i == 0 then
-                        table_insert(optionConsoleText, "^^^")
-                    elseif i == #optionTable + 1 then
-                        table_insert(optionConsoleText, "vvv")
-                    else
-                        table_insert(optionConsoleText, "")
-                    end
-                else
-                    local dotString = " "
-                    while 32 - #optionTable[i].name > #dotString do
-                        dotString = dotString .. "."
-                    end
-                    dotString = dotString .. " "
-                    table_insert(optionConsoleText, (i == currOption and ">" or " ") .. optionTable[i].name .. dotString .. optionTable[i].toggleNames[optionTable[i].toggle + 1])
-                end
-            end
-            table_insert(optionConsoleText, "================================")
-
-            local option = optionTable[currOption]
-            table_insert(optionConsoleText, "")
-            table_insert(optionConsoleText, "> charselect option " .. string_lower(string_space_to_underscore(option.name)) .. " " .. string_lower(string_space_to_underscore(option.toggleNames[(option.toggle + 1)%(option.toggleMax + 1) + 1])) .. (math.floor(get_global_timer()/15)%2 == 0 and "|" or ""))
-
-        elseif options == OPTIONS_CREDITS then
-            local creditsEntries = {}
-            for _, mod in ipairs(creditTable) do
-                table_insert(creditsEntries, mod.packName .. ":")
-                for _, credit in ipairs(mod) do
-                    local dotString = " "
-                    while 32 - #credit.creditee > #dotString do
-                        dotString = dotString .. "."
-                    end
-                    dotString = dotString .. " "
-                    table_insert(creditsEntries, credit.creditee .. dotString .. credit.credit)
-                end
-            end
-            creditsLength = #creditsEntries
-
-            table_insert(optionConsoleText, "===========| Credits |==========")
-            table_insert(optionConsoleText, "================================")
-            for i = currOption, currOption + math.min(6, optionsTimer) do
-                table_insert(optionConsoleText, creditsEntries[i] or "")
-            end
-            table_insert(optionConsoleText, "================================")
-        end
-
-        djui_hud_set_color(255, 255, 255, 255)
-        djui_hud_set_font(FONT_SPECIAL)
-        for i = 1, #optionConsoleText do
-            djui_hud_print_text(optionConsoleText[i], 2, 40 + i*7, 0.22, i <= 4 and 11 or 16)
-        end
-
-        optionsTimer = optionsTimer + 1
-]]
 
         djui_hud_reset_scissor()
 

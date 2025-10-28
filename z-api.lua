@@ -1018,7 +1018,11 @@ end
 local function character_add_menu_instrumental(charNum, loadedAudio)
     audio_stream_set_looping(loadedAudio, true)
     audio_stream_set_loop_points(loadedAudio, 0, 93.659*22050)
-    characterInstrumentals[charNum] = loadedAudio
+    characterInstrumentals[charNum] = {
+        audio = loadedAudio,
+        volume = 0,
+        targetVolume = 0,
+    }
 end
 
 ---@description A function that adds graffiti art to the background of the menu
