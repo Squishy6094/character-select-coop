@@ -360,6 +360,16 @@ optionTable = {
         toggleNames = {"Off", "On"},
         description = {"Toggles Animations In-Menu,", "Turning these off may", "Save Performance"}
     },
+    [optionTableRef.music] = {
+        name = "Menu Music",
+        category = OPTION_MENU,
+        toggle = tonumber(mod_storage_load("Music")),
+        toggleSaveName = "Music",
+        toggleDefault = 1,
+        toggleMax = 3,
+        toggleNames = {"Off", "On", "Breakroom Only", "Character Only"},
+        description = {"Toggles which music plays", "in the menu."}
+    },
     [optionTableRef.inputLatency] = {
         name = "Menu Scroll Speed",
         category = OPTION_MENU,
@@ -369,16 +379,6 @@ optionTable = {
         toggleMax = 2,
         toggleNames = {"Slow", "Normal", "Fast"},
         description = {"Sets how fast you scroll", "throughout the Menu"}
-    },
-    [optionTableRef.music] = {
-        name = "Menu Music",
-        category = OPTION_MENU,
-        toggle = tonumber(mod_storage_load("Music")),
-        toggleSaveName = "Music",
-        toggleDefault = 1,
-        toggleMax = 3,
-        toggleNames = {"Off", "On", "Breakroom Only", "Character Only"},
-        description = {"Toggles Animations In-Menu,", "Turning these off may", "Save Performance"}
     },
     [optionTableRef.localVoices] = {
         name = "Character Voices",
@@ -656,7 +656,7 @@ local function load_preferred_char()
             end
         end
     end
-    TEXT_PREF_LOAD_NAME = savedChar
+    TEXT_PREF_LOAD_NAME = string_space_to_underscore(savedNick or savedChar)
     TEXT_PREF_LOAD_ALT = savedAlt
     update_character_render_table()
 end
@@ -668,7 +668,7 @@ local function mod_storage_save_pref_char(charTable)
     mod_storage_save("PrefAlt", tostring(charTable.currAlt))
     mod_storage_save("PrefPalette", tostring(gCSPlayers[0].presetPalette))
     mod_storage_save("PrefCharColor", tostring(charTable[charTable.currAlt].color.r) .. "_" .. tostring(charTable[charTable.currAlt].color.g) .. "_" .. tostring(charTable[charTable.currAlt].color.b))
-    TEXT_PREF_LOAD_NAME = charTable.saveName
+    TEXT_PREF_LOAD_NAME = string_space_to_underscore(charTable.nickname)
     TEXT_PREF_LOAD_ALT = charTable.currAlt
     prefCharColor = charTable[charTable.currAlt].color
 end
@@ -1367,7 +1367,7 @@ function update_menu_color()
     if optionTable[optionTableRef.menuColor].toggle > 1 then
         targetMenuColor = menuColorTable[optionTable[optionTableRef.menuColor].toggle - 1]
     elseif optionTable[optionTableRef.menuColor].toggle == 1 then
-        optionTable[optionTableRef.menuColor].toggleNames[2] = string_underscore_to_space(TEXT_PREF_LOAD_NAME) .. ((TEXT_PREF_LOAD_ALT ~= 1 and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "") .. " (Pref)"
+        optionTable[optionTableRef.menuColor].toggleNames[2] = TEXT_PREF_LOAD_NAME .. ((TEXT_PREF_LOAD_ALT ~= 1 and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "") .. " (Pref)"
         targetMenuColor = prefCharColor
     elseif characterTable[currChar] ~= nil then
         local char = characterTable[currChar]
@@ -1558,7 +1558,7 @@ local function on_hud_render()
         local playerPants = network_player_get_override_palette_color(gNetworkPlayers[0], PANTS)
         local wallWidth = TEX_WALL_LEFT.width
         local wallHeight = TEX_WALL_LEFT.height
-        local wallScale = 0.7 * widthScale
+        local wallScale = 0.4 * widthScale
         local wallMiddle = width*(0.35 - ((optionsMenuOffset - optionsMenuOffsetMax*0.5)/optionsMenuOffsetMax)*0.3)
         local x = wallMiddle - wallWidth*wallScale*0.5 - menuOffsetX
         local y = height*0.42 - wallHeight*wallScale*0.5 - menuOffsetY
@@ -1728,15 +1728,14 @@ local function on_hud_render()
         -- Render Options Menu
 
         local tvScale = 0.5
-        local tvX = width*0.7 - 170 + (optionsMenuOffsetMax - optionsMenuOffset) + 15
-        local tvY = 70 + (optionsMenuOffsetMax - optionsMenuOffset)*0.2
-        local tvWidth = (319 - 133)*tvScale
+        local tvX = width*0.7 - 170 + (optionsMenuOffsetMax - optionsMenuOffset) + 15 - menuOffsetX*0.2
+        local tvY = 70 + (optionsMenuOffsetMax - optionsMenuOffset)*0.2 - menuOffsetY*0.2
+        local tvWidth = (320 - 133)*tvScale
         local tvHeight = (323 - 168)*tvScale
         local optionData = optionTable[currOption]
         djui_hud_set_color(255, 255, 255, 255)
         djui_hud_render_rect(tvX, tvY, tvWidth, tvHeight)
         if options == OPTIONS_MAIN then
-
             djui_hud_set_font(FONT_TINY)
             djui_hud_set_color(0, 0, 0, 255)
             djui_hud_print_text(optionData.name, tvX + 12 + (tvWidth - 12)*0.5 - djui_hud_measure_text(optionData.name)*0.35, tvY + 20, 0.7)
@@ -1783,10 +1782,15 @@ local function on_hud_render()
                 djui_hud_print_text(creditData.credit, tvX + tvWidth*0.5 - 5 - djui_hud_measure_text(creditData.credit)*0.5, tvY + 25 + 7*i, 0.5)
                 djui_hud_print_text(creditData.creditee, tvX + tvWidth*0.5 + 5, tvY + 25 + 7*i, 0.5)
             end
+        else
+            local tvShutOffHeight = tvHeight*0.5*(optionsMenuOffsetMax^3.5 - optionsMenuOffset^3.5)/optionsMenuOffsetMax^3.5
+            djui_hud_set_color(0, 0, 0, 255)
+            djui_hud_render_rect(tvX, tvY, tvWidth, tvShutOffHeight)
+            djui_hud_render_rect(tvX, tvY + tvHeight - tvShutOffHeight, tvWidth, tvShutOffHeight)
         end
 
         djui_hud_set_color(205 + 50*menuColor.r/256, 205 + 50*menuColor.g/256, 205 + 50*menuColor.b/256, 255)
-        djui_hud_render_texture(TEX_OPTIONS_TV, tvX - 133*tvScale, tvY - 168*tvScale, tvScale, tvScale)
+        djui_hud_render_texture_auto_interpolated("tvBoarder", TEX_OPTIONS_TV, tvX - 133*tvScale, tvY - 168*tvScale, tvScale, tvScale)
 
         djui_hud_reset_scissor()
 
