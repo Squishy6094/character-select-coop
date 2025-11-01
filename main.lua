@@ -939,13 +939,14 @@ local function mario_update(m)
             local musicToggle = optionTable[optionTableRef.music].toggle
             local charInst = characterInstrumentals[currChar]
             if not p.inMenu or prevMusicToggle ~= musicToggle or prevChar ~= currChar then
+                local levelMusic = false
                 if musicToggle == 0 then
-                    stop_secondary_music(50)
+                    levelMusic = true
                 end
                 audio_stream_play(SOUND_CHAR_SELECT_THEME, false, 0)
                 if musicToggle ~= 0 and musicToggle ~= 3 then
                     menuThemeTargetVolume = 1
-                    play_secondary_music(0, 0, 0, 50)
+                    levelMusic = false
                 else
                     menuThemeTargetVolume = 0
                 end
@@ -961,10 +962,16 @@ local function mario_update(m)
                 if musicToggle ~= 0 and musicToggle ~= 2 then
                     if charInst ~= nil then
                         charInst.targetVolume = 1
-                        play_secondary_music(0, 0, 0, 50)
-                    else
-                        stop_secondary_music(50)
+                        levelMusic = false
+                    elseif menuThemeTargetVolume == 0 then
+                        levelMusic = true
                     end
+                end
+
+                if levelMusic then
+                    stop_secondary_music(50)
+                else
+                    play_secondary_music(0, 0, 0, 50)
                 end
                 prevMusicToggle = musicToggle
                 p.inMenu = true
