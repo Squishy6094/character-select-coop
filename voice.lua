@@ -64,7 +64,6 @@ characterVoices = {
         [CHAR_SOUND_DYING] =             audio_sample_load('03_waluigi_dying.aiff'),
         [CHAR_SOUND_DROWNING] =          audio_sample_load('0C_waluigi_drowning.aiff'),
         [CHAR_SOUND_MAMA_MIA] =          audio_sample_load('0A_waluigi_mama_mia.aiff')
-
     }
 }
 
@@ -132,7 +131,7 @@ local function play_sound_with_reverb(sample, pos, baseVolume, reverbAmount)
 
     for i = 1, #echoDelays do
         table_insert(stalledAudio, {
-            path = sample.file.relativePath,
+            path = sample.filepath,
             frame = (get_global_timer() + math.floor(echoDelays[i]*30)),
             sample = sample, 
             pos = pos,
@@ -147,7 +146,7 @@ local function stop_sound_with_reverb(sample)
     audio_sample_stop(sample)
     if #stalledAudio > 0 then
         for i = #stalledAudio, 1, -1 do
-            if stalledAudio[i] ~= nil and stalledAudio[i].path == sample.file.relativePath then
+            if stalledAudio[i] ~= nil and stalledAudio[i].path == sample.filepath then
                 audio_sample_stop(stalledAudio[i].sample)
                 table.remove(stalledAudio, i)
             end
@@ -221,7 +220,11 @@ function custom_character_sound(m, sound, pos)
 
     -- get the voice table
     local voiceTable = character_get_voice(m)
+    -- Check nil table for vanilla voices
     if voiceTable == nil then return end
+    -- Check empty table for no sound
+    if voiceTable == nil then return NO_SOUND end
+
     -- load samples that haven't been loaded
     for voice, name in pairs(voiceTable) do
         if check_sound_exists(voiceTable[voice]) and type(voiceTable[voice]) == "string" then
@@ -313,8 +316,13 @@ function custom_character_snore(m)
         return
     end
 
-    local voice = character_get_voice(m)
-    if voice == nil then return end
+    -- get the voice table
+    local voiceTable = character_get_voice(m)
+    -- Check nil table for vanilla voices
+    if voiceTable == nil then return end
+    -- Check empty table for no sound
+    if voiceTable == nil then return NO_SOUND end
+    
     local snoreTable = voice[CHAR_SOUND_SNORING3]
     if snoreTable == nil or snoreTable._pointer ~= nil then
         snoreTable = {}
