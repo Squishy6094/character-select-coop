@@ -36,6 +36,8 @@ currCharRender = gMarioStates[0].character.type
 currCategory = 1
 local currOption = 1
 local currCredits = 1
+local currCreditScroll = 0
+local creditScrollMin = 6
 
 local menuCrossFade = 7
 local menuCrossFadeCap = menuCrossFade
@@ -296,8 +298,8 @@ end
 OPTION_MENU = "Menu"
 OPTION_CHAR = "Character"
 OPTION_MISC = "Misc"
-OPTION_MOD = "Moderation"
-OPTION_API = "Packs / Mods"
+OPTION_MOD = "Host"
+OPTION_API = "Packs"
 
 optionTableRef = {
     -- Menu
@@ -516,9 +518,6 @@ end
 
 ---@type Credits[]
 creditTable = {
-    [0] = {
-        packName = "CS Supporters",
-    },
     [1] = {
         packName = "Character Select Coop",
         { creditee = "Squishy6094",     credit = "Creator" },
@@ -530,8 +529,11 @@ creditTable = {
 }
 
 if CREDIT_SUPPORTERS ~= nil then
+    creditTable[0] = {
+        packName = "Character Select Supporters",
+    }
     for i = 1, #CREDIT_SUPPORTERS do
-        table.insert(creditTable[0], { creditee = CREDIT_SUPPORTERS[i], credit = "" })
+        table.insert(creditTable[0], { creditee = CREDIT_SUPPORTERS[i]})
     end
 end
 
@@ -1350,9 +1352,10 @@ local TEXT_LOCAL_MODEL_OFF = "Locally Display Models is Off"
 local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Menu"
 local TEXT_LOCAL_MODEL_ERROR = "Failed to find a Character Model"
 local TEXT_LOCAL_MODEL_ERROR_FIX = "Please Verify the Integrity of the Pack!"
+local TEXT_KOFI_LINK = "ko-fi.com/squishy6094"
 
 --Credit Text
-local TEXT_CREDITS_HEADER = "Credits"
+local TEXT_CREDITS_HEADER = "CREDITS"
 
 local MATH_DIVIDE_320 = 1/320
 local MATH_DIVIDE_64 = 1/64
@@ -1604,54 +1607,57 @@ local function on_hud_render()
             gridYOffset = lerp(gridYOffset, currCharRender*buttonSpacing, 0.1)
             djui_hud_set_font(FONT_SPECIAL)
             for i = 0, #characterTableRender do
-                local charTable = characterTableRender[i]
-                local currAlt = characterTableRender[i].currAlt
-                local char = characterTableRender[i][currAlt]
-                local charName = char.name
-                local charColor = char.color
-                local x = -(math.abs(i - gridYOffset/buttonSpacing)^2)*5 + 32 - menuOffsetX*0.2 - optionsMenuOffset
-                local y = height*0.45 - buttonSpacing*0.5 + i*buttonSpacing - gridYOffset - menuOffsetY*0.2
-                local segmentsMeasured = (math.ceil(((djui_hud_measure_text(charName)*textScale + 16*scale))/(16*scale)))
-                local segments = segmentsMeasured
-                local charAltCount = #characterTableRender[i]
-                local channel = characterInstrumentals[i] and tostring(math.floor(879 + hash(characterTableRender[i].saveName)%(1029 - 879))*0.1) .. " FM" or "---.- --"
-                -- Backlight
-                djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
-                djui_hud_render_rect(x + 96*scale, y + 24*scale, (128*scale + segments*16*scale), 80*scale)
-                -- Name Screen
-                djui_hud_set_color(charColor.r*0.5, charColor.g*0.5, charColor.b*0.5, 255)
-                djui_hud_print_text(charName, x + 112*scale + segments*16*scale*0.5 - djui_hud_measure_text(charName)*textScale*0.5, y + 32*scale, textScale)
-                
-                djui_hud_render_rect(x + 112*scale, y + 84*scale, segments*16*scale, scale)
-                if channel then
-                    djui_hud_print_text(channel, x + 112*scale, y + 85*scale, 0.3*scale)
-                end
-                -- Icon
-                djui_hud_set_color(charColor.r, charColor.g, charColor.b, 150)
-                djui_hud_render_life_icon(char, x + 112*scale + segments*16*scale + 45*scale, y + 40*scale, scale*3)
-                -- Nameplate Rendering
-                djui_hud_set_color(205 + 50*menuColor.r/256, 205 + 50*menuColor.g/256, 205 + 50*menuColor.b/256, 255)
-                djui_hud_render_texture_tile(TEX_NAMEPLATE, 0, y, (scale*128/8)*x*0.5, scale, 0, 0, 8, 128) -- stretch to left side of screen
-                djui_hud_render_texture_tile(TEX_NAMEPLATE, x, y, scale*128/112, scale, 0, 0, 112, 128)
-                for s = 1, segments do
-                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + (s-1)*16*scale, y, scale*8, scale, 112, 0, 16, 128)
-                end
-                djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale, y, scale*128/192, scale, 128, 0, 192, 128)
-                local angle = -0x10000*((characterTableRender[i].currAlt - 1)/charAltCount)
-                if i == currCharRender then
-                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 33*scale, y + 48*scale, scale, scale, 320, 48, 32, 32)
-                end
-                if charTable.dialAnim == nil then charTable.dialAnim = 0 end
-                angleAnim = -0x10000*((1/charAltCount))*charTable.dialAnim/10
-                charTable.dialAnim = math.lerp(charTable.dialAnim, 0, 0.2)
-                djui_hud_set_rotation(angle + angleAnim, 0.5, 0.5)
-                djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + 134*scale, y + 48*scale, scale, scale, 352, 48, 32, 32)
-                djui_hud_set_rotation(0, 0, 0)
-                for a = 1, charAltCount do
-                    local angle = -0x10000*((a - 1)/charAltCount) + 0x8000
-                    local altColor = characterTableRender[i][a].color
-                    djui_hud_set_color(altColor.r * 0.5 + 127, altColor.g * 0.5 + 127, altColor.b * 0.5 + 127, 255)
-                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + (134 + 14)*scale + sins(angle)*16*scale, y + 62*scale + coss(angle)*16*scale, scale, scale, 384, 48 + (currAlt ~= a and 16 or 0), 4, 4)
+                local currCharScoll = math.floor(gridYOffset/buttonSpacing)
+                if i >= currCharScoll - 3 and i <= currCharScoll + 3 then -- Only render if visible
+                    local charTable = characterTableRender[i]
+                    local currAlt = characterTableRender[i].currAlt
+                    local char = characterTableRender[i][currAlt]
+                    local charName = char.name
+                    local charColor = char.color
+                    local x = -(math.abs(i - gridYOffset/buttonSpacing)^2)*5 + 32 - menuOffsetX*0.2 - optionsMenuOffset
+                    local y = height*0.45 - buttonSpacing*0.5 + i*buttonSpacing - gridYOffset - menuOffsetY*0.2
+                    local segmentsMeasured = (math.ceil(((djui_hud_measure_text(charName)*textScale + 16*scale))/(16*scale)))
+                    local segments = segmentsMeasured
+                    local charAltCount = #characterTableRender[i]
+                    local channel = characterInstrumentals[i] and tostring(math.floor(879 + hash(characterTableRender[i].saveName)%(1029 - 879))*0.1) .. " FM" or "---.- --"
+                    -- Backlight
+                    djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
+                    djui_hud_render_rect(x + 96*scale, y + 24*scale, (128*scale + segments*16*scale), 80*scale)
+                    -- Name Screen
+                    djui_hud_set_color(charColor.r*0.5, charColor.g*0.5, charColor.b*0.5, 255)
+                    djui_hud_print_text(charName, x + 112*scale + segments*16*scale*0.5 - djui_hud_measure_text(charName)*textScale*0.5, y + 32*scale, textScale)
+                    
+                    djui_hud_render_rect(x + 112*scale, y + 84*scale, segments*16*scale, scale)
+                    if channel then
+                        djui_hud_print_text(channel, x + 112*scale, y + 85*scale, 0.3*scale)
+                    end
+                    -- Icon
+                    djui_hud_set_color(charColor.r, charColor.g, charColor.b, 150)
+                    djui_hud_render_life_icon(char, x + 112*scale + segments*16*scale + 45*scale, y + 40*scale, scale*3)
+                    -- Nameplate Rendering
+                    djui_hud_set_color(205 + 50*menuColor.r/256, 205 + 50*menuColor.g/256, 205 + 50*menuColor.b/256, 255)
+                    djui_hud_render_texture_tile(TEX_NAMEPLATE, 0, y, (scale*128/8)*x*0.5, scale, 0, 0, 8, 128) -- stretch to left side of screen
+                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x, y, scale*128/112, scale, 0, 0, 112, 128)
+                    for s = 1, segments do
+                        djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + (s-1)*16*scale, y, scale*8, scale, 112, 0, 16, 128)
+                    end
+                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale, y, scale*128/192, scale, 128, 0, 192, 128)
+                    local angle = -0x10000*((characterTableRender[i].currAlt - 1)/charAltCount)
+                    if i == currCharRender then
+                        djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 33*scale, y + 48*scale, scale, scale, 320, 48, 32, 32)
+                    end
+                    if charTable.dialAnim == nil then charTable.dialAnim = 0 end
+                    angleAnim = -0x10000*((1/charAltCount))*charTable.dialAnim/10
+                    charTable.dialAnim = math.lerp(charTable.dialAnim, 0, 0.2)
+                    djui_hud_set_rotation(angle + angleAnim, 0.5, 0.5)
+                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + 134*scale, y + 48*scale, scale, scale, 352, 48, 32, 32)
+                    djui_hud_set_rotation(0, 0, 0)
+                    for a = 1, charAltCount do
+                        local angle = -0x10000*((a - 1)/charAltCount) + 0x8000
+                        local altColor = characterTableRender[i][a].color
+                        djui_hud_set_color(altColor.r * 0.5 + 127, altColor.g * 0.5 + 127, altColor.b * 0.5 + 127, 255)
+                        djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + (134 + 14)*scale + sins(angle)*16*scale, y + 62*scale + coss(angle)*16*scale, scale, scale, 384, 48 + (currAlt ~= a and 16 or 0), 4, 4)
+                    end
                 end
             end
         else
@@ -1733,7 +1739,6 @@ local function on_hud_render()
         --djui_hud_render_button_glyph(GLYPH_A_BUTTON | GLYPH_B_BUTTON | GLYPH_JPAD, width*0.3, height*0.5, 1)
 
         -- Render Options Menu
-
         local tvScale = 0.5
         local tvX = width*0.7 - 170 + (optionsMenuOffsetMax - optionsMenuOffset) + 15 - menuOffsetX*0.2
         local tvY = 70 + (optionsMenuOffsetMax - optionsMenuOffset)*0.2 - menuOffsetY*0.2
@@ -1766,7 +1771,7 @@ local function on_hud_render()
             djui_hud_set_color(255, 255, 255, 255)
             djui_hud_print_text("OPTIONS", tvX + 13, tvY + 2, 0.5)
             djui_hud_set_font(FONT_NORMAL)
-            local optionCategory = " ... " .. (options ~= OPTIONS_CREDITS and string.upper(optionData.category) or "CREDITS")
+            local optionCategory = "... " .. string.upper(optionData.category)
             djui_hud_print_text(optionCategory, tvX + 13 + djui_hud_measure_text("OPTIONS")*0.5, tvY + 8, 0.25)
 
             -- Render Sidebar
@@ -1781,14 +1786,41 @@ local function on_hud_render()
                 djui_hud_render_rect(tvX + 4, tvY + (tvHeight - 10)*(i/#optionTable), 2, 2)
             end
         elseif options == OPTIONS_CREDITS then
-            djui_hud_set_font(FONT_RECOLOR_HUD)
-            djui_hud_print_text(creditTable[currCredits].packName, tvX, tvY + 20, 0.5)
-            for i = 1, #creditTable[currCredits] do
+            -- Render Scroll Bar
+            djui_hud_set_color(0, 0, 0, 255)
+            djui_hud_render_rect(tvX + 3, tvY + 24, 1, 40)
+            local creditSize = math.min(1, creditScrollMin/(#creditTable[currCredits] / (currCredits > 0 and 1 or 3)))
+            djui_hud_render_rect(tvX + 2, tvY + 24 + (currCreditScroll/(#creditTable[currCredits] - creditScrollMin))*(40*(1 - creditSize)), 3, 40*creditSize)
+            -- Render Credits
+            djui_hud_set_color(0, 0, 0, 255)
+            djui_hud_set_font(FONT_TINY)
+            if currCredits > 0 then
+                for i = 1, #creditTable[currCredits] do
+                    local creditData = creditTable[currCredits][i]
+                    djui_hud_print_text(creditData.creditee, tvX + tvWidth*0.5 - 1 - djui_hud_measure_text(creditData.creditee)*0.4, tvY + 19 + creditScrollMin*(i - currCreditScroll), 0.4)
+                    djui_hud_print_text(creditData.credit, tvX + tvWidth*0.5 + 1, tvY + 19 + creditScrollMin*(i - currCreditScroll), 0.4)
+                end
+            else
+                for i = 1, #creditTable[currCredits] do
+                    local creditData = creditTable[currCredits][i]
+                    djui_hud_print_text(creditData.creditee, tvX + tvWidth*0.25*(((i - 1)%3) + 1) - djui_hud_measure_text(creditData.creditee)*0.2, tvY + 19 + creditScrollMin*(math.ceil(i/3) - currCreditScroll), 0.4)
+                end
+
+                -- Render Support Link
+                djui_hud_set_color(0, 0, 0, 255)
+                djui_hud_render_rect(tvX, tvY + tvHeight - 10, tvWidth, 11)
+                djui_hud_set_color(255, 255, 255, 255)
                 djui_hud_set_font(FONT_TINY)
-                local creditData = creditTable[currCredits][i]
-                djui_hud_print_text(creditData.credit, tvX + tvWidth*0.5 - 5 - djui_hud_measure_text(creditData.credit)*0.5, tvY + 25 + 7*i, 0.5)
-                djui_hud_print_text(creditData.creditee, tvX + tvWidth*0.5 + 5, tvY + 25 + 7*i, 0.5)
+                djui_hud_print_text(TEXT_KOFI_LINK, tvX + tvWidth*0.5 - djui_hud_measure_text(TEXT_KOFI_LINK)*0.25, tvY + tvHeight - 10, 0.5)
             end
+            -- Render Pack Name
+            djui_hud_set_color(0, 0, 0, 255)
+            djui_hud_render_rect(tvX, tvY, tvWidth, 21)
+            djui_hud_set_color(255, 255, 255, 255)
+            djui_hud_set_font(FONT_ALIASED)
+            djui_hud_print_text(TEXT_CREDITS_HEADER, tvX + tvWidth*0.5 - djui_hud_measure_text(TEXT_CREDITS_HEADER)*0.2, tvY + 2, 0.4)
+            djui_hud_set_font(FONT_SPECIAL)
+            djui_hud_print_text(creditTable[currCredits].packName, tvX + tvWidth*0.5 - djui_hud_measure_text(creditTable[currCredits].packName)*0.1, tvY + 14, 0.2)
         else
             local tvShutOffHeight = tvHeight*0.5*(optionsMenuOffsetMax^3.5 - optionsMenuOffset^3.5)/optionsMenuOffsetMax^3.5
             djui_hud_set_color(0, 0, 0, 255)
@@ -2229,6 +2261,7 @@ local function before_mario_update(m)
             (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60,
             function ()
                 currCredits = num_wrap(currCredits - 1, 0, #creditTable)
+                currCreditScroll = 0
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
         )
@@ -2237,9 +2270,28 @@ local function before_mario_update(m)
             (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60,
             function ()
                 currCredits = num_wrap(currCredits + 1, 0, #creditTable)
+                currCreditScroll = 0
                 play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
             end
         )
+
+        if #creditTable[currCredits] > creditScrollMin then
+            run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
+                (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 60,
+                function ()
+                    currCreditScroll = num_wrap(currCreditScroll - 1, 0, math.max(0, math.ceil(#creditTable[currCredits] / (currCredits > 0 and 1 or 3)) - creditScrollMin))
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                end
+            )
+
+            run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
+                (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -60,
+                function ()
+                    currCreditScroll = num_wrap(currCreditScroll + 1, 0, math.max(0, #creditTable[currCredits] / math.ceil(currCredits > 0 and 1 or 3) - creditScrollMin))
+                    play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
+                end
+            )
+        end
 
         run_func_with_condition_and_cooldown(FUNC_INDEX_MISC,
             (controller.buttonPressed & (B_BUTTON | Z_TRIG)) ~= 0,

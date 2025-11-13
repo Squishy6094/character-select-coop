@@ -1,3 +1,9 @@
 CREDIT_SUPPORTERS = {
-    "EllieQueer"
+    "Saul",
+    "Ellie",
+    "Lyrae",
+    "Sophia",
+    "maemae",
+    "charity",
+    "FunkyLion",
 }
