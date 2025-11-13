@@ -1367,11 +1367,8 @@ local targetMenuColor = {r = 0 , g = 0, b = 0}
 menuColor = targetMenuColor
 local menuColorHalf = menuColor
 local transSpeed = 0.1
-local prevBindText = ""
-local bindText = 1
-local bindTextTimerLoop = 150
-local bindTextTimer = 0
-local bindTextOpacity = -255
+local playerShirt = network_player_get_override_palette_color(gNetworkPlayers[0], SHIRT)
+local playerPants = network_player_get_override_palette_color(gNetworkPlayers[0], PANTS)
 function update_menu_color()
     if optionTable[optionTableRef.menuColor].toggle == nil then return end
     if optionTable[optionTableRef.menuColor].toggle > 1 then
@@ -1397,6 +1394,16 @@ function update_menu_color()
         g = menuColor.g * 0.5 + 127,
         b = menuColor.b * 0.5 + 127
     }
+
+    -- Update BG Wall Color
+    local shirtColor = network_player_get_override_palette_color(gNetworkPlayers[0], SHIRT)
+    local pantsColor = network_player_get_override_palette_color(gNetworkPlayers[0], PANTS)
+    playerShirt.r = math.lerp(playerShirt.r, shirtColor.r, transSpeed)
+    playerShirt.g = math.lerp(playerShirt.g, shirtColor.g, transSpeed)
+    playerShirt.b = math.lerp(playerShirt.b, shirtColor.b, transSpeed)
+    playerPants.r = math.lerp(playerPants.r, pantsColor.r, transSpeed)
+    playerPants.g = math.lerp(playerPants.g, pantsColor.g, transSpeed)
+    playerPants.b = math.lerp(playerPants.b, pantsColor.b, transSpeed)
     return menuColor
 end
 
@@ -1564,8 +1571,6 @@ local function on_hud_render()
         end
     
         -- Render Background Wall
-        local playerShirt = network_player_get_override_palette_color(gNetworkPlayers[0], SHIRT)
-        local playerPants = network_player_get_override_palette_color(gNetworkPlayers[0], PANTS)
         local wallWidth = TEX_WALL_LEFT.width
         local wallHeight = TEX_WALL_LEFT.height
         local wallScale = 0.4 * widthScale
@@ -2171,7 +2176,7 @@ local function before_mario_update(m)
                 (controller.buttonPressed & Y_BUTTON) ~= 0,
                 function ()
                     local currPaletteTable = characterColorPresets[gCSPlayers[0].modelId] and characterColorPresets[gCSPlayers[0].modelId] or {currPalette = 0}
-                    if currPaletteTable and gGlobalSyncTable.charSelectRestrictPalettes == 0 then
+                    if #currPaletteTable > 0 and gGlobalSyncTable.charSelectRestrictPalettes == 0 then
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject)
                         currPaletteTable.currPalette = currPaletteTable.currPalette + 1
                     else

@@ -409,6 +409,13 @@ end
 ---@note ```
 ---@note Strings can also be used rather than RGB tables, ex. `[PANTS] = "0000ff"`
 local function character_add_palette_preset(modelInfo, paletteTable, paletteName)
+    if paletteName == nil then
+        if characterColorPresets[modelInfo] == nil then
+            paletteName = "Default"
+        else
+            paletteName = "Alt " .. tostring(#characterColorPresets[modelInfo])
+        end
+    end
     local paletteTableOut = {
         name = paletteName,
     }
