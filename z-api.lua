@@ -713,7 +713,7 @@ end
 ---@header
 ---@forcedoc Menu_Functions
 
----@description A function that sets the big "Character Select" texture in the Character Select Menu
+---@description (Deprecated) A function that sets the big "Character Select" texture in the Character Select Menu
 ---@added 1.7
 ---@param texture TextureInfo?
 ---@forcedoc header_set_texture
@@ -1117,7 +1117,6 @@ _G.charSelect = {
     hud_get_element = hud_get_element, -- Function located in hud.lua
 
     -- Menu Functions --
-    header_set_texture = header_set_texture, -- Function located in main.lua
     version_get = version_get,
     version_get_full = version_get_full,
     is_menu_open = is_menu_open,

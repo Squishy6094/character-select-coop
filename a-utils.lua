@@ -264,6 +264,7 @@ gGlobalSyncTable.charSelectRestrictMovesets = 0
 seasonalEvent = 0
 SEASON_EVENT_BIRTHDAY = 1
 SEASON_EVENT_CHRISTMAS = 2
+SEASON_EVENT_FOOLS = 2
 -- December
 if get_date_and_time().month == 11 then
     if get_date_and_time().day == 3 then
@@ -273,6 +274,8 @@ if get_date_and_time().month == 11 then
         -- Christmas
         seasonalEvent = SEASON_EVENT_CHRISTMAS
     end
+elseif get_date_and_time().month == 4 and get_date_and_time().month == 1 then
+    seasonalEvent = SEASON_EVENT_FOOLS
 end
 
 -- Dedicated Networking Table for Character Select
@@ -582,13 +585,10 @@ function djui_hud_render_texture_auto_interpolated(index, texture, x, y, width, 
     djui_set_interpolation(index, x, y, width, height)
 end
 
--- HUD Easing Functions
----@param x number
----@return number
-function ease_out_back(x)
-    
-    local c1 = 1.70158;
-    local c3 = c1 + 1;
-
-    return 1 + c3 * (x - 1)^3 + c1 * (x - 1)^2;
+local hasBeenLogged = {}
+function log_to_console_once(message, level)
+    if not hasBeenLogged[message] then
+        hasBeenLogged[message] = true
+        log_to_console(message, level and level or CONSOLE_MESSAGE_WARNING)
+    end
 end

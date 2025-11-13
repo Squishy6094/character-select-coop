@@ -65,7 +65,6 @@ local TEX_RECORD = get_texture_info("char-select-record")
 local TEX_PALETTE_BUCKET = get_texture_info("char-select-palette-bucket")
 local TEX_CATEGORY_BANNER = get_texture_info("char-select-category")
 local TEX_OPTIONS_TV = get_texture_info("char-select-options-tv")
-local TEX_OVERRIDE_HEADER = nil
 
 LOCKED_NEVER = 0
 LOCKED_TRUE = 1
@@ -77,11 +76,6 @@ local menuThemeTargetVolume = 0
 local menuThemeVolume = menuThemeTargetVolume
 audio_stream_set_looping(SOUND_CHAR_SELECT_THEME, true)
 audio_stream_set_loop_points(SOUND_CHAR_SELECT_THEME, 0, 93.659*22050)
-
----@param texture TextureInfo?
-function header_set_texture(texture)
-    TEX_OVERRIDE_HEADER = texture
-end
 
 CS_ANIM_MENU = CHAR_ANIM_MAX + 1
 
@@ -306,7 +300,6 @@ optionTableRef = {
     openInputs = make_table_ref_num(),
     notification = make_table_ref_num(),
     menuColor = make_table_ref_num(),
-    anims = make_table_ref_num(),
     music = make_table_ref_num(),
     inputLatency = make_table_ref_num(),
     -- Characters
@@ -314,7 +307,6 @@ optionTableRef = {
     localVoices = make_table_ref_num(),
     -- CS
     credits = make_table_ref_num(),
-    debugInfo = make_table_ref_num(),
     resetSaveData = make_table_ref_num(),
     -- Moderation
     --restrictPalettes = make_table_ref_num(),
@@ -351,16 +343,6 @@ optionTable = {
         toggleMax = 10,
         toggleNames = {"Auto", "Saved", "Red", "Orange", "Yellow", "Green", "Blue", "Pink", "Purple", "White", "Black"},
         description = {"Toggles the Menu Color"}
-    },
-    [optionTableRef.anims] = {
-        name = "Menu Anims",
-        category = OPTION_MENU,
-        toggle = tonumber(mod_storage_load("Anims")),
-        toggleSaveName = "Anims",
-        toggleDefault = 1,
-        toggleMax = 1,
-        toggleNames = {"Off", "On"},
-        description = {"Toggles Animations In-Menu,", "Turning these off may", "Save Performance"}
     },
     [optionTableRef.music] = {
         name = "Menu Music",
@@ -414,15 +396,6 @@ optionTable = {
         toggleNames = {"Open Credits", "Open Credits"},
         description = {"Thank you for choosing", "Character Select!"}
     },
-    [optionTableRef.debugInfo] = {
-        name = "Developer Mode",
-        category = OPTION_MISC,
-        toggle = tonumber(mod_storage_load("debuginfo")),
-        toggleSaveName = "debuginfo",
-        toggleDefault = 0,
-        toggleMax = 1,
-        description = {"Replaces the Character", "Description with Character", "Debugging Information,", "And shows hidden console logs."}
-    },
     [optionTableRef.resetSaveData] = {
         name = "Reset Save Data",
         category = OPTION_MISC,
@@ -438,7 +411,7 @@ optionTable = {
         toggle = 0,
         toggleDefault = 1,
         toggleMax = 1,
-        description = {"Restricts turning on", "movesets", "(Host Only)"},
+        description = {"Restricts turning on movesets", "(Host Only)"},
         lock = function ()
             if gGlobalSyncTable.charSelectRestrictMovesets < 2 then
                 if not network_is_server() then
@@ -502,11 +475,6 @@ end
 function get_options_status(tableNum)
     if type(tableNum) ~= TYPE_INTEGER then return nil end
     return optionTable[tableNum].toggle
-end
-
-function dev_mode_log_to_console(message, level)
-    if get_options_status(optionTableRef.debugInfo) == 0 then return end
-    log_to_console(message, level and level or CONSOLE_MESSAGE_WARNING)
 end
 
 ---@class Credits
@@ -1297,30 +1265,19 @@ local function djui_hud_render_caution_tape(x1, y1, x2, y2, dist, scale)
     djui_hud_set_rotation(0, 0, 0)
 end
 
-local buttonAnimTimer = 0
-local buttonScroll = 0
-local buttonScrollCap = 30
-
 local optionAnimTimer = -200
 local optionAnimTimerCap = optionAnimTimer
 
 --Basic Menu Text
-local TEXT_OPTIONS_HEADER = "Menu Options"
-local TEXT_OPTIONS_HEADER_API = "API Options"
 local yearsOfCS = get_date_and_time().year - 123 -- Zero years as of 2023
 local TEXT_VERSION = "Version: " .. MOD_VERSION_STRING .. " | sm64coopdx" .. (seasonalEvent == SEASON_EVENT_BIRTHDAY and (" | " .. tostring(yearsOfCS) .. " year" .. (yearsOfCS > 1 and "s" or "") .. " of Character Select!") or "")
 local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
-local TEXT_DESCRIPTION = "Character Description:"
-local TEXT_PREF_SAVE = "Preferred Char (A)"
-local TEXT_PREF_PALETTE = "Toggle Palette (Y)"
-local TEXT_MOVESET_INFO = "Moveset Info (Z)"
 local TEXT_PAUSE_Z_OPEN = "Z Button - Character Select"
 local TEXT_PAUSE_UNAVAILABLE = "Character Select is Unavailable"
 local TEXT_PAUSE_CURR_CHAR = "Current Character: "
 local TEXT_MOVESET_RESTRICTED = "Movesets are Restricted"
 local TEXT_PALETTE_RESTRICTED = "Palettes are Restricted"
 local TEXT_MOVESET_AND_PALETTE_RESTRICTED = "Moveset and Palettes are Restricted"
-local TEXT_CHAR_LOCKED = "Locked"
 -- Easter Egg if you get lucky loading the mod
 -- Referencing the original sm64ex DynOS options by PeachyPeach >v<
 if math_random(100) == 64 then
@@ -1328,39 +1285,13 @@ if math_random(100) == 64 then
     TEXT_PAUSE_CURR_CHAR = "Model: "
 end
 
---Debug Text
-local TEXT_DEBUGGING = "Character Debug"
-local TEXT_DESCRIPTION_SHORT = "Description:"
-local TEXT_LIFE_ICON = "Life Icon:"
-local TEXT_STAR_ICON = "Star Icon:"
-local TEXT_FORCED_CHAR = "Base: "
-local TEXT_TABLE_POS = "Table Position: "
-local TEXT_PALETTE = "Palette: "
-local baseCharStrings = {
-    [CT_MARIO] = "CT_MARIO",
-    [CT_LUIGI] = "CT_LUIGI",
-    [CT_TOAD] = "CT_TOAD",
-    [CT_WALUIGI] = "CT_WALUIGI",
-    [CT_WARIO] = "CT_WARIO"
-}
-
---Options Text
-local TEXT_OPTIONS_OPEN = "Press START to open Options"
-local TEXT_MENU_CLOSE = "Press B to Exit Menu"
-local TEXT_OPTIONS_SELECT = "A - Select | B - Exit  "
-local TEXT_LOCAL_MODEL_OFF = "Locally Display Models is Off"
-local TEXT_LOCAL_MODEL_OFF_OPTIONS = "You can turn it back on in the Options Menu"
+--Options/Credits Text
 local TEXT_LOCAL_MODEL_ERROR = "Failed to find a Character Model"
 local TEXT_LOCAL_MODEL_ERROR_FIX = "Please Verify the Integrity of the Pack!"
 local TEXT_KOFI_LINK = "ko-fi.com/squishy6094"
-
---Credit Text
 local TEXT_CREDITS_HEADER = "CREDITS"
 
 local MATH_DIVIDE_320 = 1/320
-local MATH_DIVIDE_64 = 1/64
-local MATH_DIVIDE_32 = 1/32
-local MATH_DIVIDE_30 = 1/30
 local MATH_DIVIDE_16 = 1/16
 
 local targetMenuColor = {r = 0 , g = 0, b = 0}
@@ -1380,15 +1311,9 @@ function update_menu_color()
         local char = characterTable[currChar]
         targetMenuColor = char[char.currAlt].color
     end
-    if optionTable[optionTableRef.anims].toggle > 0 then
-        menuColor.r = math.lerp(menuColor.r, targetMenuColor.r, transSpeed)
-        menuColor.g = math.lerp(menuColor.g, targetMenuColor.g, transSpeed)
-        menuColor.b = math.lerp(menuColor.b, targetMenuColor.b, transSpeed)
-    else
-        menuColor.r = targetMenuColor.r
-        menuColor.g = targetMenuColor.g
-        menuColor.b = targetMenuColor.b
-    end
+    menuColor.r = math.lerp(menuColor.r, targetMenuColor.r, transSpeed)
+    menuColor.g = math.lerp(menuColor.g, targetMenuColor.g, transSpeed)
+    menuColor.b = math.lerp(menuColor.b, targetMenuColor.b, transSpeed)
     menuColorHalf = {
         r = menuColor.r * 0.5 + 127,
         g = menuColor.g * 0.5 + 127,
@@ -1422,46 +1347,6 @@ local function djui_hud_render_life_icon(char, x, y, scale)
         djui_hud_render_texture(icon, x, y, scale / (icon.width * MATH_DIVIDE_16), scale / (icon.height * MATH_DIVIDE_16))
     end
 end
-
-local GLYPH_A_BUTTON =     (1 << 1)
-local GLYPH_B_BUTTON =     (1 << 2)
-local GLYPH_START_BUTTON = (1 << 3)
-local GLYPH_L_TRIG =       (1 << 4)
-local GLYPH_R_TRIG =       (1 << 5)
-local GLYPH_Z_TRIG =       (1 << 6)
-local GLYPH_STICK =        (1 << 7)
-local GLYPH_C_BUTTONS =    (1 << 8)
-local GLYPH_JPAD =         (1 << 9)
-
-local glyphTextures = {
-    [GLYPH_A_BUTTON] = get_texture_info("char-select-glyph-A"),
-    [GLYPH_B_BUTTON] = get_texture_info("char-select-glyph-B"),
-    [GLYPH_START_BUTTON] = get_texture_info("char-select-glyph-START"),
-    [GLYPH_L_TRIG] = get_texture_info("char-select-glyph-L"),
-    [GLYPH_R_TRIG] = get_texture_info("char-select-glyph-R"),
-    [GLYPH_Z_TRIG] = get_texture_info("char-select-glyph-Z"),
-    [GLYPH_STICK] = get_texture_info("char-select-glyph-stick"),
-    [GLYPH_C_BUTTONS] = get_texture_info("char-select-glyph-C"),
-    [GLYPH_JPAD] = get_texture_info("char-select-glyph-D"),
-}
-
-local function djui_hud_render_button_glyph(glyphs, x, y, scale)
-    djui_hud_set_font(FONT_ALIASED)
-    local glyphCount = 0
-    for i = 1, 10 do
-        local glyphID = (1 << i)
-        if glyphs & glyphID ~= 0 then
-            local texture = glyphTextures[glyphID]
-            if glyphCount > 0 then
-                djui_hud_print_text("/", x + glyphCount*32 - 6, y, scale)
-            end
-            djui_hud_render_texture(texture, x + glyphCount*32, y, scale, scale)
-            glyphCount = glyphCount + 1
-        end
-    end
-end
-
-local TEX_GEAR_BIG = get_texture_info("char-select-gear-big")
 
 local gridButtonsPerRow = 5
 local paletteXOffset = 0
@@ -1741,8 +1626,6 @@ local function on_hud_render()
         djui_hud_set_font(FONT_RECOLOR_HUD)
         djui_hud_print_text(characterCategories[currCategory], width*0.45 - djui_hud_measure_text(characterCategories[currCategory])*0.3, 30 - optionsMenuOffset*0.2, 0.6)
 
-        --djui_hud_render_button_glyph(GLYPH_A_BUTTON | GLYPH_B_BUTTON | GLYPH_JPAD, width*0.3, height*0.5, 1)
-
         -- Render Options Menu
         local tvScale = 0.5
         local tvX = width*0.7 - 170 + (optionsMenuOffsetMax - optionsMenuOffset) + 15 - menuOffsetX*0.2
@@ -1756,7 +1639,8 @@ local function on_hud_render()
             djui_hud_set_font(FONT_TINY)
             djui_hud_set_color(0, 0, 0, 255)
             djui_hud_print_text(optionData.name, tvX + 12 + (tvWidth - 12)*0.5 - djui_hud_measure_text(optionData.name)*0.35, tvY + 20, 0.7)
-            local toggleString = "< " .. optionData.toggleNames[optionData.toggle + 1] .. " >"
+            local locked = optionTable[currOption].lock ~= nil and optionTable[currOption].lock() or nil
+            local toggleString = (locked == nil and "< " .. optionData.toggleNames[optionData.toggle + 1] .. " >" or locked)
             djui_hud_print_text(toggleString, tvX + 12 + (tvWidth - 12)*0.5 - djui_hud_measure_text(toggleString)*0.25, tvY + 30, 0.5)
 
             for i = 1, #optionData.description do
@@ -1884,20 +1768,12 @@ local function on_hud_render()
 
         -- Anim logic
         if options then
-            if optionTable[optionTableRef.anims].toggle > 0 then
-                if optionAnimTimer < -1 then
-                    optionAnimTimer = optionAnimTimer * 0.9
-                end
-            else
-                optionAnimTimer = -1
+            if optionAnimTimer < -1 then
+                optionAnimTimer = optionAnimTimer * 0.9
             end
         else
-            if optionTable[optionTableRef.anims].toggle > 0 then
-                if optionAnimTimer > optionAnimTimerCap then
-                    optionAnimTimer = optionAnimTimer * 1.3
-                end
-            else
-                optionAnimTimer = optionAnimTimerCap
+            if optionAnimTimer > optionAnimTimerCap then
+                optionAnimTimer = optionAnimTimer * 1.3
             end
         end
         optionAnimTimer = maxf(optionAnimTimer, -200)
@@ -1908,24 +1784,15 @@ local function on_hud_render()
     end
 
     -- Fade in/out of menu
-    if optionTable[optionTableRef.anims].toggle == 1 then
-        if menu and menuCrossFade > -menuCrossFadeCap then
-            menuCrossFade = menuCrossFade - 1
-            if menuCrossFade == 0 then menuCrossFade = menuCrossFade - 1 end
-        end
-        if not menu and menuCrossFade < menuCrossFadeCap then
-            menuCrossFade = menuCrossFade + 1
-            if menuCrossFade == 0 then menuCrossFade = menuCrossFade + 1 end
-        end
-        menuAndTransition = menuCrossFade < 0
-    else
-        if menu then
-            menuCrossFade = -menuCrossFadeCap
-        else
-            menuCrossFade = menuCrossFadeCap
-        end
-        menuAndTransition = menu
+    if menu and menuCrossFade > -menuCrossFadeCap then
+        menuCrossFade = menuCrossFade - 1
+        if menuCrossFade == 0 then menuCrossFade = menuCrossFade - 1 end
     end
+    if not menu and menuCrossFade < menuCrossFadeCap then
+        menuCrossFade = menuCrossFade + 1
+        if menuCrossFade == 0 then menuCrossFade = menuCrossFade + 1 end
+    end
+    menuAndTransition = menuCrossFade < 0
 
     -- Info / Z Open Bind on Pause Menu
     if is_game_paused() and not djui_hud_is_pause_menu_created() and gMarioStates[0].action ~= ACT_EXIT_LAND_SAVE_DIALOG then
@@ -2233,22 +2100,32 @@ local function before_mario_update(m)
         run_func_with_condition_and_cooldown(FUNC_INDEX_HORIZONTAL,
             (controller.buttonPressed & L_JPAD) ~= 0 or controller.stickX < -60,
             function ()
-                optionTable[currOption].toggle = num_wrap(optionTable[currOption].toggle - 1, 0, optionTable[currOption].toggleMax)
-                if optionTable[currOption].toggleSaveName ~= nil then
-                    mod_storage_save(optionTable[currOption].toggleSaveName, tostring(optionTable[currOption].toggle))
+                local locked = optionTable[currOption].lock ~= nil and optionTable[currOption].lock() or nil
+                if locked == nil then
+                    optionTable[currOption].toggle = num_wrap(optionTable[currOption].toggle - 1, 0, optionTable[currOption].toggleMax)
+                    if optionTable[currOption].toggleSaveName ~= nil then
+                        mod_storage_save(optionTable[currOption].toggleSaveName, tostring(optionTable[currOption].toggle))
+                    end
+                    play_sound(SOUND_MENU_CHANGE_SELECT, cameraToObject)
+                else
+                    play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
                 end
-                play_sound(SOUND_MENU_CHANGE_SELECT, cameraToObject)
             end
         )
 
         run_func_with_condition_and_cooldown(FUNC_INDEX_HORIZONTAL,
             (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60,
             function ()
-                optionTable[currOption].toggle = num_wrap(optionTable[currOption].toggle + 1, 0, optionTable[currOption].toggleMax)
-                if optionTable[currOption].toggleSaveName ~= nil then
-                    mod_storage_save(optionTable[currOption].toggleSaveName, tostring(optionTable[currOption].toggle))
+                local locked = optionTable[currOption].lock ~= nil and optionTable[currOption].lock() or nil
+                if locked == nil then
+                    optionTable[currOption].toggle = num_wrap(optionTable[currOption].toggle + 1, 0, optionTable[currOption].toggleMax)
+                    if optionTable[currOption].toggleSaveName ~= nil then
+                        mod_storage_save(optionTable[currOption].toggleSaveName, tostring(optionTable[currOption].toggle))
+                    end
+                    play_sound(SOUND_MENU_CHANGE_SELECT, cameraToObject)
+                else
+                    play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
                 end
-                play_sound(SOUND_MENU_CHANGE_SELECT, cameraToObject)
             end
         )
 
