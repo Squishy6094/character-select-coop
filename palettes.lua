@@ -148,6 +148,18 @@ characterColorPresets = {
             [CAP]    = { r = 0x33, g = 0x00, b = 0xff },
             [EMBLEM] = { r = 0xff, g = 0x00, b = 0x00 },
         },
+        {
+            name = (seasonalEvent == SEASON_EVENT_FOOLS and "The Shitilizer" or "Sealed Away"),
+            [PANTS]  = { r = 0x00, g = 0x98, b = 0x00 },
+            [SHIRT]  = { r = 0x47, g = 0xc5, b = 0xff },
+            [GLOVES] = { r = 0xff, g = 0xff, b = 0xff },
+            [SHOES]  = { r = 0x72, g = 0x1c, b = 0x0e },
+            [HAIR]   = { r = 0x73, g = 0x06, b = 0x00 },
+            [SKIN]   = { r = 0xfe, g = 0xc1, b = 0x79 },
+            [CAP]    = { r = 0x47, g = 0xc5, b = 0xff },
+            [EMBLEM] = { r = 0xff, g = 0xde, b = 0x00 },
+        },
+
     },
     [E_MODEL_WARIO] = {
         currPalette = 1,
