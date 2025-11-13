@@ -39,12 +39,12 @@ local function before_mario_update(m)
 end
 hook_event(HOOK_BEFORE_MARIO_UPDATE, before_mario_update)
 
-local function before_phys_step(m, stepType)
+local function before_phys_step(m, stepType, stepArg)
     if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
     local hook = HOOK_BEFORE_PHYS_STEP
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    local returnVar = currMoveset[hook](m, stepType)
+    local returnVar = currMoveset[hook](m, stepType, stepArg)
     if returnVar ~= nil then
         return returnVar
     end
@@ -184,12 +184,12 @@ local function hud_render_behind()
 end
 hook_event(HOOK_ON_HUD_RENDER_BEHIND, hud_render_behind)
 
-local function level_init()
+local function level_init(type, levelNum, areaIdx, nodeId, arg)
     if is_moveset_restricted() or not gCSPlayers[0].movesetToggle then return end
     local hook = HOOK_ON_LEVEL_INIT
     local currMoveset = characterMovesets[find_character_number(0)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    local returnVar = currMoveset[hook]()
+    local returnVar = currMoveset[hook](type, levelNum, areaIdx, nodeId, arg)
     if returnVar ~= nil then
         return returnVar
     end
