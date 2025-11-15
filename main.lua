@@ -1393,17 +1393,17 @@ local function on_hud_render()
         djui_hud_render_rect(width * 0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
 
         -- Render Character Name
-        djui_hud_set_font(FONT_BRICK)
-        local charName = characterTable[currChar][characterTable[currChar].currAlt].name
-        local nameScale = math.min(80/djui_hud_measure_text(charName), 0.5)
+        djui_hud_set_font(FONT_CHARACTERISTIC)
+        local charName = string.upper(characterTable[currChar][characterTable[currChar].currAlt].name)
+        local nameScale = math.min(width*0.2/djui_hud_measure_text(charName), 1)
         local nameScaleCapped = math.max(nameScale, 0.3)
-        djui_hud_set_color(menuColor.r*0.5, menuColor.g*0.5, menuColor.b*0.5, 255)
-        djui_hud_render_rect(width*0.7 - 5, 30 - 35*nameScaleCapped, width*0.5, 70*nameScaleCapped)
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_caution_tape(width*0.7 - 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Top Tape
-        djui_hud_render_caution_tape(width*0.7 - 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Bottom Tape
+        --djui_hud_set_color(menuColor.r*0.5, menuColor.g*0.5, menuColor.b*0.5, 255)
+        --djui_hud_render_rect(width*0.7 - 5, 30 - 35*nameScaleCapped, width*0.5, 70*nameScaleCapped)
+        --djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        --djui_hud_render_caution_tape(width*0.7 - 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Top Tape
+        --djui_hud_render_caution_tape(width*0.7 - 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Bottom Tape
         djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-        djui_hud_print_text_auto_interpolated("charName", charName, width*0.85 - djui_hud_measure_text(charName)*0.5*nameScale - 2 + menuOffsetX*0.3, 30 - 32*nameScale + menuOffsetY*0.3, nameScale)
+        djui_hud_print_text(charName, width*0.85 - djui_hud_measure_text(charName)*0.5*nameScale - 2 + menuOffsetX*0.3, 30 - 16*nameScale + menuOffsetY*0.3, nameScale)
 
         -- Palette Selection
         local charColor = characterTableRender[currCharRender][characterTableRender[currCharRender].currAlt].color

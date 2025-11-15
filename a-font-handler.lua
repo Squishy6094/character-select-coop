@@ -169,8 +169,8 @@ function djui_hud_print_text(message, x, y, scale)
                 end
                 local scaleWidth = scale*(currFont.info[letter].height/currFont.info[letter].width)
                 djui_hud_render_texture_tile(currFont.spritesheet,
-                x + (currFont.info[letter].xoffset*scale) + math.random(-textShake*100, textShake*100)*0.01 + math.sin((HudAnimTimer+i*2)*textWaveSpeed*0.1)*textWaveX,
-                y + (currFont.info[letter].yoffset*scale) + math.random(-textShake*100, textShake*100)*0.01 + math.cos((HudAnimTimer+i*2)*textWaveSpeed*0.1)*textWaveY,
+                x + ((currFont.info[letter].xoffset or 0)*scale) + math.random(-textShake*100, textShake*100)*0.01 + math.sin((HudAnimTimer+i*2)*textWaveSpeed*0.1)*textWaveX,
+                y + ((currFont.info[letter].yoffset or 0)*scale) + math.random(-textShake*100, textShake*100)*0.01 + math.cos((HudAnimTimer+i*2)*textWaveSpeed*0.1)*textWaveY,
                 scaleWidth, scale,
                 currFont.info[letter].x,
                 currFont.info[letter].y,
@@ -211,8 +211,8 @@ function djui_hud_print_text_interpolated(message, prevX, prevY, prevScale, x, y
                 end
                 local prevScaleWidth = prevScale*(currFont.info[letter].height/currFont.info[letter].width)
                 local scaleWidth = scale*(currFont.info[letter].height/currFont.info[letter].width)
-                local xOffset = (currFont.info[letter].xoffset*scale) + math.random(-textShake*100, textShake*100)*0.01 + math.sin((HudAnimTimer+i*2)*textWaveSpeed*0.1)*textWaveX
-                local yOffset = (currFont.info[letter].yoffset*scale) + math.random(-textShake*100, textShake*100)*0.01 + math.cos((HudAnimTimer+i*2)*textWaveSpeed*0.1)*textWaveY 
+                local xOffset = ((currFont.info[letter].xoffset or 0)*scale) + math.random(-textShake*100, textShake*100)*0.01 + math.sin((HudAnimTimer+i*2)*textWaveSpeed*0.1)*textWaveX
+                local yOffset = ((currFont.info[letter].yoffset or 0)*scale) + math.random(-textShake*100, textShake*100)*0.01 + math.cos((HudAnimTimer+i*2)*textWaveSpeed*0.1)*textWaveY 
                 djui_hud_render_texture_tile_interpolated(currFont.spritesheet,
                 prevX + xOffset,
                 prevY + yOffset,
@@ -231,7 +231,7 @@ function djui_hud_print_text_interpolated(message, prevX, prevY, prevScale, x, y
             prevX = prevX + (currFont.info[letter].width + currFont.spacing)*prevScale
         end
     else
-        djui_classic_hud_print_text(message, x, y, scale)
+        djui_classic_hud_print_text_interpolated(message, prevX, prevY, prevScale, x, y, scale)
     end
 end
 
@@ -239,19 +239,6 @@ end
 ---@return number
 function djui_hud_measure_text(message)
     if customFont then
-        --[[
-        if message == nil or message == "" then return 0 end
-        local currFont = fontTable[customFontType]
-        local output = 0
-        for i = 1, #message do
-            local letter = message:sub(i,i)
-            if currFont.info[letter] == nil or letter == " " then
-                letter = currFont.backup
-            end
-            output = output + (currFont.info[letter].width + (i ~= #message and currFont.spacing or 0))*currFont.scale
-        end
-        return output
-        ]]
         if message == nil or message == "" then return end
         local message = string_to_table(message)
         local currFont = fontTable[customFontType]
@@ -287,100 +274,80 @@ end
 
 hook_event(HOOK_ON_HUD_RENDER_BEHIND, hud_update)
 
--- Adding custom fonts here to prevent main.lua clutter
-
-local fontdataBrick = {
-    { id=32,   x=0,   y=0,   width=0, height=0,   xoffset=0,   yoffset=0,  xadvance=23, page=0, chnl=15},
-    { id=33,   x=224, y=161, width=26, height=64, xoffset=-3, yoffset=2, xadvance=21, page=0, chnl=15},
-    { id=34,   x=142, y=465, width=26, height=32, xoffset=-3, yoffset=11, xadvance=20, page=0, chnl=15},
-    { id=35,   x=369, y=411, width=49, height=51, xoffset=-3, yoffset=8, xadvance=43, page=0, chnl=15},
-    { id=36,   x=35,  y=161, width=40, height=65, xoffset=-3, yoffset=1, xadvance=34, page=0, chnl=15},
-    { id=37,   x=173, y=227, width=31, height=63, xoffset=-3, yoffset=3, xadvance=25, page=0, chnl=15},
-    { id=38,   x=358, y=92,  width=44, height=66, xoffset=-3, yoffset=0, xadvance=38, page=0, chnl=15},
-    { id=39,   x=494, y=376, width=17, height=22, xoffset=-4, yoffset=8, xadvance=11, page=0, chnl=15},
-    { id=40,   x=169, y=0,   width=34, height=81, xoffset=-3, yoffset=-1, xadvance=28, page=0, chnl=15},
-    { id=41,   x=204, y=0,   width=31, height=81, xoffset=-4, yoffset=-1, xadvance=24, page=0, chnl=15},
-    { id=42,   x=229, y=465, width=21, height=26, xoffset=-3, yoffset=10, xadvance=15, page=0, chnl=15},
-    { id=43,   x=202, y=465, width=26, height=29, xoffset=-3, yoffset=23, xadvance=20, page=0, chnl=15},
-    { id=44,   x=494, y=352, width=17, height=23, xoffset=-4, yoffset=46, xadvance=11, page=0, chnl=15},
-    { id=45,   x=323, y=465, width=31, height=17, xoffset=-3, yoffset=27, xadvance=25, page=0, chnl=15},
-    { id=46,   x=302, y=465, width=20, height=19, xoffset=-3, yoffset=47, xadvance=14, page=0, chnl=15},
-    { id=47,   x=0,   y=161, width=34, height=65, xoffset=-3, yoffset=2, xadvance=28, page=0, chnl=15},
-    { id=48,   x=282, y=161, width=45, height=63, xoffset=-6, yoffset=3, xadvance=37, page=0, chnl=15},
-    { id=49,   x=205, y=227, width=28, height=62, xoffset=-4, yoffset=2, xadvance=21, page=0, chnl=15},
-    { id=50,   x=402, y=291, width=45, height=58, xoffset=-3, yoffset=8, xadvance=38, page=0, chnl=15},
-    { id=51,   x=455, y=227, width=57, height=51, xoffset=-3, yoffset=9, xadvance=50, page=0, chnl=15},
-    { id=52,   x=403, y=92,  width=37, height=65, xoffset=-3, yoffset=1, xadvance=32, page=0, chnl=15},
-    { id=53,   x=137, y=352, width=56, height=57, xoffset=-3, yoffset=9, xadvance=51, page=0, chnl=15},
-    { id=54,   x=448, y=291, width=48, height=58, xoffset=-3, yoffset=8, xadvance=42, page=0, chnl=15},
-    { id=55,   x=0,   y=291, width=45, height=60, xoffset=-4, yoffset=6, xadvance=39, page=0, chnl=15},
-    { id=56,   x=234, y=227, width=48, height=62, xoffset=-3, yoffset=4, xadvance=42, page=0, chnl=15},
-    { id=57,   x=441, y=92,  width=45, height=65, xoffset=-3, yoffset=1, xadvance=39, page=0, chnl=15},
-    { id=58,   x=487, y=92,  width=21, height=46, xoffset=3, yoffset=31, xadvance=28, page=0, chnl=15},
-    { id=59,   x=106, y=352, width=30, height=58, xoffset=-5, yoffset=30, xadvance=28, page=0, chnl=15},
-    { id=61,   x=102, y=465, width=39, height=34, xoffset=-3, yoffset=16, xadvance=34, page=0, chnl=15},
-    { id=63,   x=251, y=161, width=30, height=64, xoffset=-3, yoffset=2, xadvance=25, page=0, chnl=15},
-    { id=64,   x=314, y=411, width=54, height=51, xoffset=-3, yoffset=15, xadvance=48, page=0, chnl=15},
-    { id=65,   x=145, y=92,  width=48, height=67, xoffset=-7, yoffset=5, xadvance=36, page=0, chnl=15},
-    { id=66,   x=316, y=291, width=50, height=59, xoffset=-4, yoffset=7, xadvance=44, page=0, chnl=15},
-    { id=67,   x=369, y=227, width=39, height=62, xoffset=-9, yoffset=5, xadvance=22, page=0, chnl=15},
-    { id=68,   x=54,  y=411, width=53, height=53, xoffset=-7, yoffset=14, xadvance=40, page=0, chnl=15},
-    { id=69,   x=51,  y=465, width=50, height=44, xoffset=-3, yoffset=16, xadvance=45, page=0, chnl=15},
-    { id=70,   x=400, y=352, width=50, height=56, xoffset=-9, yoffset=9, xadvance=33, page=0, chnl=15},
-    { id=71,   x=138, y=291, width=49, height=60, xoffset=-3, yoffset=6, xadvance=43, page=0, chnl=15},
-    { id=72,   x=150, y=161, width=38, height=64, xoffset=-8, yoffset=8, xadvance=22, page=0, chnl=15},
-    { id=73,   x=276, y=92,  width=34, height=66, xoffset=-8, yoffset=0, xadvance=20, page=0, chnl=15},
-    { id=74,   x=409, y=227, width=45, height=62, xoffset=-5, yoffset=10, xadvance=32, page=0, chnl=15},
-    { id=75,   x=250, y=352, width=55, height=57, xoffset=-9, yoffset=9, xadvance=39, page=0, chnl=15},
-    { id=76,   x=0,   y=227, width=40, height=63, xoffset=-3, yoffset=3, xadvance=35, page=0, chnl=15},
-    { id=77,   x=41,  y=227, width=44, height=63, xoffset=-8, yoffset=6, xadvance=29, page=0, chnl=15},
-    { id=78,   x=188, y=291, width=41, height=60, xoffset=-9, yoffset=6, xadvance=24, page=0, chnl=15},
-    { id=79,   x=86,  y=227, width=34, height=63, xoffset=-3, yoffset=5, xadvance=29, page=0, chnl=15},
-    { id=80,   x=211, y=411, width=52, height=52, xoffset=-5, yoffset=14, xadvance=40, page=0, chnl=15},
-    { id=81,   x=53,  y=352, width=52, height=58, xoffset=-9, yoffset=8, xadvance=36, page=0, chnl=15},
-    { id=82,   x=264, y=411, width=49, height=52, xoffset=-5, yoffset=14, xadvance=37, page=0, chnl=15},
-    { id=83,   x=455, y=0,   width=49, height=71, xoffset=-7, yoffset=3, xadvance=31, page=0, chnl=15},
-    { id=84,   x=311, y=92,  width=46, height=66, xoffset=-5, yoffset=0, xadvance=32, page=0, chnl=15},
-    { id=85,   x=189, y=161, width=34, height=64, xoffset=-6, yoffset=2, xadvance=20, page=0, chnl=15},
-    { id=86,   x=367, y=291, width=34, height=59, xoffset=-2, yoffset=7, xadvance=24, page=0, chnl=15},
-    { id=87,   x=121, y=227, width=51, height=63, xoffset=-4, yoffset=9, xadvance=38, page=0, chnl=15},
-    { id=88,   x=48,  y=92,  width=47, height=68, xoffset=-10, yoffset=-2, xadvance=27, page=0, chnl=15},
-    { id=89,   x=280, y=0,   width=43, height=80, xoffset=-5, yoffset=3, xadvance=29, page=0, chnl=15},
-    { id=90,   x=451, y=352, width=42, height=56, xoffset=-10, yoffset=10, xadvance=29, page=0, chnl=15},
-    { id=91,   x=108, y=0,   width=30, height=82, xoffset=1, yoffset=5, xadvance=32, page=0, chnl=15},
-    { id=93,   x=139, y=0,   width=29, height=82, xoffset=1, yoffset=5, xadvance=32, page=0, chnl=15},
-    { id=94,   x=169, y=465, width=32, height=31, xoffset=-3, yoffset=7, xadvance=26, page=0, chnl=15},
-    { id=95,   x=251, y=465, width=50, height=19, xoffset=-3, yoffset=47, xadvance=44, page=0, chnl=15},
-    { id=97,   x=96,  y=92,  width=48, height=67, xoffset=-7, yoffset=5, xadvance=36, page=0, chnl=15},
-    { id=98,   x=230, y=291, width=50, height=59, xoffset=-4, yoffset=7, xadvance=44, page=0, chnl=15},
-    { id=99,   x=283, y=227, width=39, height=62, xoffset=-9, yoffset=5, xadvance=22, page=0, chnl=15},
-    { id=100,  x=0,   y=411, width=53, height=53, xoffset=-7, yoffset=14, xadvance=40, page=0, chnl=15},
-    { id=101,  x=0,   y=465, width=50, height=44, xoffset=-3, yoffset=16, xadvance=45, page=0, chnl=15},
-    { id=102,  x=306, y=352, width=50, height=56, xoffset=-9, yoffset=9, xadvance=33, page=0, chnl=15},
-    { id=103,  x=46,  y=291, width=49, height=60, xoffset=-3, yoffset=6, xadvance=43, page=0, chnl=15},
-    { id=104,  x=76,  y=161, width=38, height=64, xoffset=-8, yoffset=8, xadvance=22, page=0, chnl=15},
-    { id=105,  x=194, y=92,  width=34, height=66, xoffset=-8, yoffset=0, xadvance=20, page=0, chnl=15},
-    { id=106,  x=323, y=227, width=45, height=62, xoffset=-5, yoffset=10, xadvance=32, page=0, chnl=15},
-    { id=107,  x=194, y=352, width=55, height=57, xoffset=-9, yoffset=9, xadvance=39, page=0, chnl=15},
-    { id=108,  x=328, y=161, width=40, height=63, xoffset=-3, yoffset=3, xadvance=35, page=0, chnl=15},
-    { id=109,  x=369, y=161, width=44, height=63, xoffset=-8, yoffset=6, xadvance=29, page=0, chnl=15},
-    { id=110,  x=96,  y=291, width=41, height=60, xoffset=-9, yoffset=6, xadvance=24, page=0, chnl=15},
-    { id=111,  x=414, y=161, width=34, height=63, xoffset=-3, yoffset=5, xadvance=29, page=0, chnl=15},
-    { id=112,  x=108, y=411, width=52, height=52, xoffset=-5, yoffset=14, xadvance=40, page=0, chnl=15},
-    { id=113,  x=0,   y=352, width=52, height=58, xoffset=-9, yoffset=8, xadvance=36, page=0, chnl=15},
-    { id=114,  x=161, y=411, width=49, height=52, xoffset=-5, yoffset=14, xadvance=37, page=0, chnl=15},
-    { id=115,  x=405, y=0,   width=49, height=71, xoffset=-7, yoffset=3, xadvance=31, page=0, chnl=15},
-    { id=116,  x=229, y=92,  width=46, height=66, xoffset=-5, yoffset=0, xadvance=32, page=0, chnl=15},
-    { id=117,  x=115, y=161, width=34, height=64, xoffset=-6, yoffset=2, xadvance=20, page=0, chnl=15},
-    { id=118,  x=281, y=291, width=34, height=59, xoffset=-2, yoffset=7, xadvance=24, page=0, chnl=15},
-    { id=119,  x=449, y=161, width=51, height=63, xoffset=-4, yoffset=9, xadvance=38, page=0, chnl=15},
-    { id=120,  x=0,   y=92, width=47, height=68, xoffset=-10, yoffset=-2, xadvance=27, page=0, chnl=15},
-    { id=121,  x=236, y=0, width=43, height=80, xoffset=-5, yoffset=3, xadvance=29, page=0, chnl=15},
-    { id=122,  x=357, y=352, width=42, height=56, xoffset=-10, yoffset=10, xadvance=29, page=0, chnl=15},
-    { id=123,  x=18,  y=0, width=44, height=84, xoffset=3, yoffset=5, xadvance=52, page=0, chnl=15},
-    { id=124,  x=0,   y=0, width=17, height=91, xoffset=5, yoffset=4, xadvance=28, page=0, chnl=15},
-    { id=125,  x=63,  y=0, width=44, height=84, xoffset=5, yoffset=5, xadvance=52, page=0, chnl=15},
-    { id=8470, x=324, y=0, width=80, height=74, xoffset=-2, yoffset=4, xadvance=77, page=0, chnl=15},
+-- Adding custom fonts here to prevent main clutter
+fontdataCharacteristic = {
+    ["A"] = {x = 0,    y = 0, width = 26, height = 32},
+    ["B"] = {x = 32,   y = 0, width = 25, height = 32},
+    ["C"] = {x = 32*2, y = 0, width = 25, height = 32},
+    ["D"] = {x = 32*3, y = 0, width = 23, height = 32},
+    ["E"] = {x = 32*4, y = 0, width = 24, height = 32},
+    ["F"] = {x = 32*5, y = 0, width = 24, height = 32},
+    ["G"] = {x = 32*6, y = 0, width = 26, height = 32},
+    ["H"] = {x = 32*7, y = 0, width = 25, height = 32},
+    
+    ["I"] = {x = 0,    y = 32, width = 15, height = 32},
+    ["J"] = {x = 32,   y = 32, width = 21, height = 32},
+    ["K"] = {x = 32*2, y = 32, width = 25, height = 32},
+    ["L"] = {x = 32*3, y = 32, width = 22, height = 32},
+    ["M"] = {x = 32*4, y = 32, width = 29, height = 32},
+    ["N"] = {x = 32*5, y = 32, width = 27, height = 32},
+    ["Ñ"] = {x = 32*6, y = 32, width = 27, height = 32},
+    ["O"] = {x = 32*7, y = 32, width = 26, height = 32},
+    
+    ["P"] = {x = 0,    y = 32*2, width = 25, height = 32},
+    ["Q"] = {x = 32,   y = 32*2, width = 27, height = 32},
+    ["R"] = {x = 32*2, y = 32*2, width = 25, height = 32},
+    ["S"] = {x = 32*3, y = 32*2, width = 24, height = 32},
+    ["T"] = {x = 32*4, y = 32*2, width = 28, height = 32},
+    ["U"] = {x = 32*5, y = 32*2, width = 26, height = 32},
+    ["V"] = {x = 32*6, y = 32*2, width = 27, height = 32},
+    ["W"] = {x = 32*7, y = 32*2, width = 30, height = 32},
+    
+    ["X"] = {x = 0,    y = 32*3, width = 28, height = 32},
+    ["Y"] = {x = 32,   y = 32*3, width = 27, height = 32},
+    ["Z"] = {x = 32*2, y = 32*3, width = 27, height = 32},
+    ["!"] = {x = 32*3, y = 32*3, width = 30, height = 32},
+    ["?"] = {x = 32*4, y = 32*3, width = 27, height = 32},
+    ["@"] = {x = 32*5, y = 32*3, width = 29, height = 32},
+    ["#"] = {x = 32*6, y = 32*3, width = 29, height = 32},
+    ["$"] = {x = 32*7, y = 32*3, width = 23, height = 32},
+    
+    ["%"] = {x = 0,    y = 32*4, width = 27, height = 32},
+    ["^"] = {x = 32,   y = 32*4, width = 24, height = 32},
+    ["&"] = {x = 32*2, y = 32*4, width = 29, height = 32},
+    ["*"] = {x = 32*3, y = 32*4, width = 18, height = 32},
+    ["("] = {x = 32*4, y = 32*4, width = 17, height = 32},
+    [")"] = {x = 32*5, y = 32*4, width = 17, height = 32},
+    ["_"] = {x = 32*6, y = 32*4, width = 31, height = 32},
+    ["-"] = {x = 32*7, y = 32*4, width = 23, height = 32},
+    
+    ["+"] = {x = 0,    y = 32*5, width = 24, height = 32},
+    ["="] = {x = 32,   y = 32*5, width = 27, height = 32},
+    ["<"] = {x = 32*2, y = 32*5, width = 23, height = 32},
+    [">"] = {x = 32*3, y = 32*5, width = 23, height = 32},
+    ["."] = {x = 32*4, y = 32*5, width = 11, height = 32},
+    [","] = {x = 32*5, y = 32*5, width = 11, height = 32},
+    [":"] = {x = 32*6, y = 32*5, width = 11, height = 32},
+    [";"] = {x = 32*7, y = 32*5, width = 11, height = 32},
+    
+    ["/"] = {x = 0,    y = 32*6, width = 28, height = 32},
+    ["\\"] = {x = 32,  y = 32*6, width = 28, height = 32},
+    ['"'] = {x = 32*2, y = 32*6, width = 14, height = 32},
+    ["'"] = {x = 32*3, y = 32*6, width = 9,  height = 32},
+    ["|"] = {x = 32*4, y = 32*6, width = 10, height = 32},
+    ["~"] = {x = 32*5, y = 32*6, width = 23, height = 32},
+    ["1"] = {x = 32*6, y = 32*6, width = 23, height = 32},
+    ["2"] = {x = 32*7, y = 32*6, width = 26, height = 32},
+    
+    ["3"] = {x = 0,    y = 32*7, width = 24, height = 32},
+    ["4"] = {x = 32,   y = 32*7, width = 24, height = 32},
+    ["5"] = {x = 32*2, y = 32*7, width = 26, height = 32},
+    ["6"] = {x = 32*3, y = 32*7, width = 26, height = 32},
+    ["7"] = {x = 32*4, y = 32*7, width = 30, height = 32},
+    ["8"] = {x = 32*5, y = 32*7, width = 22, height = 32},
+    ["9"] = {x = 32*6, y = 32*7, width = 24, height = 32},
+    ["0"] = {x = 32*7, y = 32*7, width = 24, height = 32},
+    
 }
 
-FONT_BRICK = djui_hud_add_font(get_texture_info("char-select-font-brick"), fontdataBrick, -10, 0, "x", 1)
+FONT_CHARACTERISTIC = djui_hud_add_font(get_texture_info("char-select-font-characteristic"), fontdataCharacteristic, -5, 0, "X", 1)
