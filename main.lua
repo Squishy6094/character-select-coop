@@ -1350,6 +1350,9 @@ end
 
 local gridButtonsPerRow = 5
 local paletteXOffset = 0
+local categoryOpenTimer = 0
+local categoryXOffset = 0
+local categoryYOffset = 64
 local paletteTrans = 0
 local optionsMenuOffset = 0
 local optionsMenuOffsetMax = 210
@@ -1429,7 +1432,7 @@ local function on_hud_render()
                 if i == 0 then
                     paletteShirt = network_player_get_palette_color(gNetworkPlayers[0], SHIRT)
                     palettePants = network_player_get_palette_color(gNetworkPlayers[0], PANTS)
-                    paletteName = "User"
+                    paletteName = "Custom"
                 else
                     paletteShirt = palettes[i][SHIRT]
                     palettePants = palettes[i][PANTS]
@@ -1616,15 +1619,31 @@ local function on_hud_render()
         djui_hud_set_rotation(get_global_timer() * 0x10, 0.5, 0.5)
         djui_hud_render_texture(TEX_RECORD, -152 - menuOffsetX*0.1 - optionsMenuOffset, height*0.5 - 96 - menuOffsetY*0.1, 0.75, 0.75)
         djui_hud_set_rotation(0, 0, 0)
-
-        -- Render Categories
-        local spacing = width*0.3/#characterCategories
-        for i = 1, #characterCategories do
-            djui_hud_render_texture_auto_interpolated("categorybanner" .. i, TEX_CATEGORY_BANNER, width*0.3 + i*spacing - 16, (currCategory == i and -5 or -10) - optionsMenuOffset*0.2, 0.5, 0.5)
+        
+        categoryXOffset = math.lerp(categoryXOffset, currCategory*40, 0.1)
+        if categoryOpenTimer > 0 then
+            categoryYOffset = math.max(categoryYOffset/1.1, 0.1)
+            categoryOpenTimer = categoryOpenTimer - 1
+        else
+            categoryYOffset = math.min(categoryYOffset*1.1, 64)
         end
+        djui_hud_set_color(0, 0, 255, 255)
+        djui_hud_render_rect(0 - optionsMenuOffset, 16 - categoryYOffset, width*2, 16)
+        for i = 1, #characterCategories do
+            -- Render Lamp
+            if i == currCategory then
+                djui_hud_set_color(255, 0, 0, 255)
+            else
+                djui_hud_set_color(120, 0, 0, 255)
+            end
+            djui_hud_render_rect(width*0.45 + i*40 - categoryXOffset - optionsMenuOffset, 8 - categoryYOffset, 32, 32)
+
+        end
+        -- Render Text
         djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-        djui_hud_set_font(FONT_RECOLOR_HUD)
-        djui_hud_print_text(characterCategories[currCategory], width*0.45 - djui_hud_measure_text(characterCategories[currCategory])*0.3, 30 - optionsMenuOffset*0.2, 0.6)
+        djui_hud_set_font(FONT_CHARACTERISTIC)
+        local categoryText = string.upper(characterCategories[currCategory])
+        djui_hud_print_text(categoryText, width*0.5 - optionsMenuOffset - djui_hud_measure_text(categoryText)*0.2, 50 - categoryYOffset, 0.4)
 
         -- Render Options Menu
         local tvScale = 0.5
@@ -1739,7 +1758,7 @@ local function on_hud_render()
         end
         descRender = descRender .. " - " .. desc
         djui_hud_print_text_auto_interpolated("creditcreators", "Creator: " .. credit, 5 + menuOffsetX*0.2, height - 30 + menuOffsetY*0.2, 0.8)
-        djui_hud_print_text_auto_interpolated("whoareyou", descRender, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8 + menuOffsetX*0.15, height - 17 + menuOffsetY*0.15, 0.8)
+        djui_hud_print_text_interpolated(descRender, 5 - (get_global_timer()%djui_hud_measure_text(desc .. " - ") - 1)*0.8 + menuOffsetX*0.15, height - 17 + menuOffsetY*0.15, 0.8, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8 + menuOffsetX*0.15, height - 17 + menuOffsetY*0.15, 0.8)
 
         -- API Rendering (Above Text)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
@@ -1913,6 +1932,7 @@ local function before_mario_update(m)
                 (controller.buttonPressed & L_TRIG) ~= 0,
                 function ()
                     currCategory = num_wrap(currCategory - 1, 1, #characterCategories)
+                    categoryOpenTimer = 150
                     update_character_render_table()
                     play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
                 end
@@ -1922,6 +1942,7 @@ local function before_mario_update(m)
                 (controller.buttonPressed & R_TRIG) ~= 0,
                 function ()
                     currCategory = num_wrap(currCategory + 1, 1, #characterCategories)
+                    categoryOpenTimer = 150
                     update_character_render_table()
                     play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
                 end
