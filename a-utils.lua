@@ -38,9 +38,6 @@ local dependacyFiles = {
     "palettes.lua",
     "voice.lua",
     "z-api.lua",
-
-    --- Required Actors
-    "actors/armature_geo.bin",
 }
 local legacyFiles = {
     "z-anims.lua",
@@ -110,8 +107,6 @@ for i in pairs(gActiveMods) do
         break
     end
 end
-
-E_MODEL_ARMATURE = smlua_model_util_get_id("armature_geo")
 
 local saveableCharacters = {
     ["1"] = 1,
