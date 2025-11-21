@@ -38,6 +38,7 @@ local currOption = 1
 local currCredits = 1
 local currCreditScroll = 0
 local creditScrollMin = 6
+local totalPlaytime = 0
 
 local menuCrossFade = 7
 local menuCrossFadeCap = menuCrossFade
@@ -98,6 +99,7 @@ characterTable = {
         currAlt = 1,
         hasMoveset = false,
         locked = LOCKED_NEVER,
+        playtime = 0,
         [1] = {
             name = "Mario",
             description = "The iconic Italian plumber himself! He's quite confident and brave, always prepared to jump into action to save the Mushroom Kingdom!",
@@ -119,6 +121,7 @@ characterTable = {
         currAlt = 1,
         hasMoveset = false,
         locked = LOCKED_NEVER,
+        playtime = 0,
         [1] = {
             name = "Luigi",
             description = "The other iconic Italian plumber! He's a bit shy and scares easily, but he's willing to follow his brother Mario through any battle that may come their way!",
@@ -146,6 +149,7 @@ characterTable = {
         currAlt = 1,
         hasMoveset = false,
         locked = LOCKED_NEVER,
+        playtime = 0,
         [1] = {
             name = "Toad",
             description = "Princess Peach's little attendant! He's an energetic little mushroom that's never afraid to follow Mario and Luigi on their adventures!",
@@ -173,6 +177,7 @@ characterTable = {
         currAlt = 1,
         hasMoveset = false,
         locked = LOCKED_NEVER,
+        playtime = 0,
         [1] = {
             name = "Waluigi",
             description = "The mischievous rival of Luigi! He's a narcissistic competitor that takes great taste in others getting pummeled from his success!",
@@ -200,6 +205,7 @@ characterTable = {
         currAlt = 1,
         hasMoveset = false,
         locked = LOCKED_NEVER,
+        playtime = 0,
         [1] = {
             name = "Wario",
             description = "The mischievous rival of Mario! He's a greed-filled treasure hunter obsessed with money and gold coins. He's always ready for a brawl if his money is on the line!",
@@ -1045,6 +1051,12 @@ local function mario_update(m)
             worldColor.vertex.r = get_vertex_color(0)
             worldColor.vertex.g = get_vertex_color(1)
             worldColor.vertex.b = get_vertex_color(2)
+
+            if stallFrame == stallComplete then
+                -- Update playtime
+                characterTable[currChar].playtime = characterTable[currChar].playtime + 1
+                totalPlaytime = totalPlaytime + 1
+            end
         end
 
         --Open Credits
@@ -1375,7 +1387,7 @@ local function on_hud_render()
     end
 
     if menuAndTransition then
-        if characterTable[currChar][characterTable[currChar].currAlt].model == E_MODEL_ARMATURE then
+        if characterTable[currChar][characterTable[currChar].currAlt].model == E_MODEL_ERROR_MODEL then
             djui_hud_set_color(0, 0, 0, 200)
             djui_hud_render_rect(0, 0, width, height)
             djui_hud_set_color(255, 255, 255, 255)
@@ -1396,17 +1408,17 @@ local function on_hud_render()
         djui_hud_render_rect(width * 0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
 
         -- Render Character Name
+        djui_hud_set_rotation(angle_from_2d_points(width*0.7, 8, width*1.1, 40), 0, 1)
+        djui_hud_set_color(menuColor.r*0.1, menuColor.g*0.1, menuColor.b*0.1, 200)
+        djui_hud_render_rect(width*0.7, -50, width*0.4, 59)
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_render_caution_tape(width*0.7, 8, width*1.1, 40, 1) -- Top Tape
+
         djui_hud_set_font(FONT_CHARACTERISTIC)
         local charName = string.upper(characterTable[currChar][characterTable[currChar].currAlt].name)
         local nameScale = math.min(width*0.2/djui_hud_measure_text(charName), 1)
-        local nameScaleCapped = math.max(nameScale, 0.3)
-        --djui_hud_set_color(menuColor.r*0.5, menuColor.g*0.5, menuColor.b*0.5, 255)
-        --djui_hud_render_rect(width*0.7 - 5, 30 - 35*nameScaleCapped, width*0.5, 70*nameScaleCapped)
-        --djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        --djui_hud_render_caution_tape(width*0.7 - 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 - 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Top Tape
-        --djui_hud_render_caution_tape(width*0.7 - 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), width + 5, 27 + 32*nameScaleCapped + (math.random(0, 4) - 2), 1, 0.4) -- Bottom Tape
         djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-        djui_hud_print_text(charName, width*0.85 - djui_hud_measure_text(charName)*0.5*nameScale - 2 + menuOffsetX*0.3, 30 - 16*nameScale + menuOffsetY*0.3, nameScale)
+        djui_hud_print_text(charName, width*0.85 - djui_hud_measure_text(charName)*0.5*nameScale - 2 + menuOffsetX*0.3, 25 - 16*nameScale + menuOffsetY*0.3, nameScale)
 
         -- Palette Selection
         local charColor = characterTableRender[currCharRender][characterTableRender[currCharRender].currAlt].color
@@ -1505,25 +1517,29 @@ local function on_hud_render()
                     local charTable = characterTableRender[i]
                     local currAlt = characterTableRender[i].currAlt
                     local char = characterTableRender[i][currAlt]
-                    local charName = char.name
+                    local charName = charTable.nickname
+                    local charAltName = char.name
+                    local charNameLength = djui_hud_measure_text(charName)
                     local charColor = char.color
                     local x = -(math.abs(i - gridYOffset/buttonSpacing)^2)*5 + 32 - menuOffsetX*0.2 - optionsMenuOffset
                     local y = height*0.45 - buttonSpacing*0.5 + i*buttonSpacing - gridYOffset - menuOffsetY*0.2
-                    local segmentsMeasured = (math.ceil(((djui_hud_measure_text(charName)*textScale + 16*scale))/(16*scale)))
+                    local segmentsMeasured = (math.ceil(((charNameLength*textScale + 16*scale))/(16*scale)))
                     local segments = segmentsMeasured
                     local charAltCount = #characterTableRender[i]
-                    local channel = characterInstrumentals[i] and tostring(math.floor(879 + hash(characterTableRender[i].saveName)%(1029 - 879))*0.1) .. " FM" or "---.- --"
+                    local channel = characterInstrumentals[i] and tostring(math.floor(879 + hash(characterTableRender[i].saveName)%(1029 - 879))*0.1) .. " FM " or "---.- -- "
+                    channel = channel .. tostring(math.ceil(charTable.playtime / totalPlaytime * 100)) .. "%"
                     -- Backlight
                     djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
                     djui_hud_render_rect(x + 96*scale, y + 24*scale, (128*scale + segments*16*scale), 80*scale)
                     -- Name Screen
                     djui_hud_set_color(charColor.r*0.5, charColor.g*0.5, charColor.b*0.5, 255)
-                    djui_hud_print_text(charName, x + 112*scale + segments*16*scale*0.5 - djui_hud_measure_text(charName)*textScale*0.5, y + 32*scale, textScale)
+                    djui_hud_print_text(charName, x + 112*scale + segments*16*scale*0.5 - charNameLength*textScale*0.5, y + 32*scale, textScale)
                     
+                    -- Bottom Info
                     djui_hud_render_rect(x + 112*scale, y + 84*scale, segments*16*scale, scale)
-                    if channel then
-                        djui_hud_print_text(channel, x + 112*scale, y + 85*scale, 0.3*scale)
-                    end
+                    djui_hud_print_text(channel, x + 112*scale, y + 85*scale, 0.3*scale)
+                    djui_hud_print_text(charAltName, x + segments*16*scale + 112*scale - djui_hud_measure_text(charAltName)*0.3*scale, y + 85*scale, 0.3*scale)
+
                     -- Icon
                     djui_hud_set_color(charColor.r, charColor.g, charColor.b, 150)
                     djui_hud_render_life_icon(char, x + 112*scale + segments*16*scale + 45*scale, y + 40*scale, scale*3)
@@ -1769,8 +1785,7 @@ local function on_hud_render()
         end
 
         -- Render Header BG
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_set_rotation(0x1000, 0.5, 0.5)
+        djui_hud_set_rotation(angle_from_2d_points(-10, 50, 160, -10), 0.5, 0.5)
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(-150, -50, 300, 100)
 

@@ -55,7 +55,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         lifeIcon = lifeIcon:sub(1,1)
     end
 
-    local addedModel = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or E_MODEL_ARMATURE
+    local addedModel = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or E_MODEL_ERROR_MODEL
     local charNum = #characterTable + 1
 
     if name and type(name) == TYPE_STRING and not _G["CT_"..name:upper():gsub(" ", "_")] then
@@ -71,6 +71,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         locked = LOCKED_NEVER,
         category = "All",
         ogNum = charNum,
+        playtime = 0,
         [1] = {
             name = name,
             description = type(description) == TYPE_STRING and description or "No description has been provided",
