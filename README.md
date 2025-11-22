@@ -1,6 +1,6 @@
 <p align=center> <img src="images/char-select-logo-big.png" width="800"> </p>
 
-### <p align=center> A Model Selector for SM64CoopDX with an Extensive API and tons of Support!</p>
+### <p align=center> A Character Creation API for SM64CoopDX with an Extensive API and tons of Support!</p>
 
 <p align=center> <img src="images/menu-preview.png" width="720"> </p>
  
