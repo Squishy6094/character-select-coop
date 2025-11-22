@@ -103,7 +103,7 @@ characterTable = {
         [1] = {
             name = "Mario",
             description = "The iconic Italian plumber himself! He's quite confident and brave, always prepared to jump into action to save the Mushroom Kingdom!",
-            credit = "Nintendo / Coop Team",
+            credit = "Nintendo/CoopDX",
             color = { r = 255, g = 50,  b = 50  },
             model = E_MODEL_MARIO,
             ogModel = E_MODEL_MARIO,
@@ -125,7 +125,7 @@ characterTable = {
         [1] = {
             name = "Luigi",
             description = "The other iconic Italian plumber! He's a bit shy and scares easily, but he's willing to follow his brother Mario through any battle that may come their way!",
-            credit = "Nintendo / Coop Team",
+            credit = "Nintendo/CoopDX",
             color = { r = 50,  g = 255, b = 50  },
             model = E_MODEL_LUIGI,
             ogModel = E_MODEL_LUIGI,
@@ -153,7 +153,7 @@ characterTable = {
         [1] = {
             name = "Toad",
             description = "Princess Peach's little attendant! He's an energetic little mushroom that's never afraid to follow Mario and Luigi on their adventures!",
-            credit = "Nintendo / Coop Team",
+            credit = "Nintendo/CoopDX",
             color = { r = 50,  g = 50,  b = 255 },
             model = E_MODEL_TOAD_PLAYER,
             ogModel = E_MODEL_TOAD_PLAYER,
@@ -181,7 +181,7 @@ characterTable = {
         [1] = {
             name = "Waluigi",
             description = "The mischievous rival of Luigi! He's a narcissistic competitor that takes great taste in others getting pummeled from his success!",
-            credit = "Nintendo / Coop Team",
+            credit = "Nintendo/CoopDX",
             color = { r = 130, g = 25,  b = 130 },
             model = E_MODEL_WALUIGI,
             ogModel = E_MODEL_WALUIGI,
@@ -209,7 +209,7 @@ characterTable = {
         [1] = {
             name = "Wario",
             description = "The mischievous rival of Mario! He's a greed-filled treasure hunter obsessed with money and gold coins. He's always ready for a brawl if his money is on the line!",
-            credit = "Nintendo / Coop Team",
+            credit = "Nintendo/CoopDX",
             color = { r = 255, g = 255, b = 50  },
             model = E_MODEL_WARIO,
             ogModel = E_MODEL_WARIO,
@@ -1408,17 +1408,27 @@ local function on_hud_render()
         djui_hud_render_rect(width * 0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
 
         -- Render Character Name
-        djui_hud_set_rotation(angle_from_2d_points(width*0.7, 8, width*1.1, 40), 0, 1)
+        local angle1 = angle_from_2d_points(width*0.7, 8, width*1.1, 30)
+        local angle2 = angle_from_2d_points(width*0.7, 40, width*1.1, 35)
         djui_hud_set_color(menuColor.r*0.1, menuColor.g*0.1, menuColor.b*0.1, 200)
+        djui_hud_set_rotation(angle1, 0, 1)
         djui_hud_render_rect(width*0.7, -50, width*0.4, 59)
+        djui_hud_set_rotation(angle2, 0, 1)
+        djui_hud_render_rect(width*0.7, -50, width*0.4, 96)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_caution_tape(width*0.7, 8, width*1.1, 40, 1) -- Top Tape
+        djui_hud_set_rotation(angle1, 0, 1)
+        djui_hud_render_caution_tape(width*0.7, 8, width*1.1, 30, 1)
+        djui_hud_set_rotation(angle2, 0, 1)
+        djui_hud_render_caution_tape(width*0.7, 40, width*1.1, 35, 1)
 
         djui_hud_set_font(FONT_CHARACTERISTIC)
         local charName = string.upper(characterTable[currChar][characterTable[currChar].currAlt].name)
-        local nameScale = math.min(width*0.2/djui_hud_measure_text(charName), 1)
+        local nameScale = math.min(width*0.23/djui_hud_measure_text(charName), 1)
+        local charCreator = string.upper(characterTable[currChar][characterTable[currChar].currAlt].credit)
+        local creatorScale = math.min(width*0.23/djui_hud_measure_text(charCreator), 0.4)
         djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-        djui_hud_print_text(charName, width*0.85 - djui_hud_measure_text(charName)*0.5*nameScale - 2 + menuOffsetX*0.3, 25 - 16*nameScale + menuOffsetY*0.3, nameScale)
+        djui_hud_print_text_auto_interpolated("topName", charName, width*0.85 - djui_hud_measure_text(charName)*0.5*nameScale - 2 + menuOffsetX*0.3, 21 - 16*nameScale + menuOffsetY*0.3, nameScale)
+        djui_hud_print_text_auto_interpolated("topCreator", charCreator, width*0.85 - djui_hud_measure_text(charCreator)*0.5*creatorScale - 2 + menuOffsetX*0.2, 42 - 16*creatorScale + menuOffsetY*0.2, creatorScale)
 
         -- Palette Selection
         local charColor = characterTableRender[currCharRender][characterTableRender[currCharRender].currAlt].color
@@ -1773,8 +1783,9 @@ local function on_hud_render()
             descRender = descRender .. " - " .. desc
         end
         descRender = descRender .. " - " .. desc
-        djui_hud_print_text_auto_interpolated("creditcreators", "Creator: " .. credit, 5 + menuOffsetX*0.2, height - 30 + menuOffsetY*0.2, 0.8)
-        djui_hud_print_text_interpolated(descRender, 5 - (get_global_timer()%djui_hud_measure_text(desc .. " - ") - 1)*0.8 + menuOffsetX*0.15, height - 17 + menuOffsetY*0.15, 0.8, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8 + menuOffsetX*0.15, height - 17 + menuOffsetY*0.15, 0.8)
+        --djui_hud_print_text_auto_interpolated("creditcreators", "Creator: " .. credit, 5 + menuOffsetX*0.2, height - 30 + menuOffsetY*0.2, 0.8)
+        djui_hud_print_text_interpolated(descRender, 5 - (get_global_timer()%djui_hud_measure_text(desc .. " - ") - 1)*0.8 + menuOffsetX*0.15, height - 25 + menuOffsetY*0.15, 0.8, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8 + menuOffsetX*0.15, height - 25 + menuOffsetY*0.15, 0.8)
+        djui_hud_print_text(TEXT_VERSION, 2, height - 7, 0.4)
 
         -- API Rendering (Above Text)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
