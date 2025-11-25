@@ -183,7 +183,7 @@ def write_readme(documentation, output_file_path):
     print(f"Debug: Documentation successfully written to {output_file_path}")
 
 if __name__ == "__main__":
-    lua_file_path = str(os.getcwd() + "/o-api.lua")
+    lua_file_path = str(os.getcwd() + "/z-api.lua")
     output_file_path = str(os.getcwd() + "/" + GITHUB_REPO + ".wiki/API-Documentation.md")
 
     print("Debug: Starting script execution.")
