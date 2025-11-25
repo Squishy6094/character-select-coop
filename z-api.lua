@@ -72,6 +72,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         category = "All",
         ogNum = charNum,
         playtime = 0,
+        replaceModels = {},
         [1] = {
             name = name,
             description = type(description) == TYPE_STRING and description or "No description has been provided",
@@ -343,16 +344,23 @@ local function character_add_course_texture(charNum, courseTexture)
     character_add_costume_course_texture(charNum, 1, courseTexture)
 end
 
+---@param charNum ModelExtendedId|integer Player Model ID	
+---@param bhvId BehaviorId|integer Behavior ID of the type of objects you want to replace
+---@param replaceModel ModelExtendedId|integer? Model ID
+local function character_add_model_replacement(charNum, bhvId, replaceModel)
+    characterTable[charNum].replaceModels[bhvId] = replaceModel
+end
+
 ---@description A function that adds a celebration star model to a character
 ---@added 1.7
----@param modelInfo ModelExtendedId|integer Model Information Received from smlua_model_util_get_id()	
----@param starModel ModelExtendedId|integer Model Information Received from smlua_model_util_get_id()	
----@param starIcon TextureInfo? Texture Information Received from get_texture_info()
+---@param modelInfo ModelExtendedId|integer Player Model ID	
+---@param starModel ModelExtendedId|integer Custom Star Model ID
+---@param starIcon TextureInfo? Custom Star Texture
 local function character_add_celebration_star(modelInfo, starModel, starIcon)
-    characterCelebrationStar[modelInfo] = starModel
-    for i = 2, #characterTable do
+    for i = 0, #characterTable do
         for a = 1, #characterTable[i] do 
             if characterTable[i][a].model == modelInfo then
+                character_add_model_replacement(i, id_bhvCelebrationStar, starModel)
                 characterTable[i][a].starIcon = type(starIcon) == TYPE_TABLE and starIcon or gTextures.star
                 return
             end
@@ -369,27 +377,20 @@ end
 ---@param peachletterleft TextureInfo? left side of the texture to replace peach's letter texture in the intro
 ---@param peachletterright TextureInfo? right side of the texture to replace peach's letter texture in the intro
 ---@param peachlettersig TextureInfo?  texture to replace peach's letter texture in the intro
-local function character_add_peach_custom(modelInfo, peachmodelstart,peachmodelend,peachletterleft,peachletterright,peachlettersig)
-        characterpeachstart[modelInfo] = peachmodelstart
-        characterpeachend[modelInfo] = peachmodelend
-        if (peachletterleft ~= nil) and (peachletterright ~= nil) and (peachlettersig ~= nil) then
-            characterpeachletter[modelInfo] = {left = peachletterleft,right = peachletterright,sig = peachlettersig}
-        end
+local function character_add_peach_custom(modelInfo, peachmodelstart, peachmodelend, peachletterleft, peachletterright, peachlettersig)
+    character_add_model_replacement(character_get_number_from_model(modelInfo), id_bhvBeginningPeach, peachmodelstart)
+    character_add_model_replacement(character_get_number_from_model(modelInfo), id_bhvEndPeach, peachmodelend)
+    if (peachletterleft ~= nil) and (peachletterright ~= nil) and (peachlettersig ~= nil) then
+        characterpeachletter[modelInfo] = {left = peachletterleft, right = peachletterright, sig = peachlettersig}
+    end
 end
 
 ---@description A function that adds a peach model to a character for the opening letter and ending cutscene
 ---@added 1.16
 ---@param modelInfo ModelExtendedId|integer Model Information Received from smlua_model_util_get_id()	
----@param toad_one ModelExtendedId Model Information Received from smlua_model_util_get_id()	the model used for one of the toads in the ending if left blank said toad will use the default npc toad model
----@param toad_two ModelExtendedId? Model Information Received from smlua_model_util_get_id()	the model used for one of the toads in the ending if left blank said toad will use the default npc toad model
-local function character_add_ending_toad_model(modelInfo, toad_one,toad_two)
-    characterendtoad1[modelInfo] = toad_one
-    if toad_two == nil then
-        characterendtoad2[modelInfo] = toad_one
-    else
-        characterendtoad2[modelInfo] = toad_two
-    end
-    
+---@param toadModel ModelExtendedId Model Information Received from smlua_model_util_get_id()	the model used for one of the toads in the ending if left blank said toad will use the default npc toad model
+local function character_add_ending_toad_model(modelInfo, toadModel)
+    character_add_model_replacement(character_get_number_from_model(modelInfo), id_bhvEndToad, toadModel)
 end
 
 ---@description A function that adds a palette preset to a character
@@ -548,9 +549,10 @@ end
 ---@description A function that searches for a character's table posision based on name
 ---@added 1
 ---@param name string
-local function character_get_number_from_string(name)
+---@return integer?
+function character_get_number_from_string(name)
     if type(name) ~= TYPE_STRING then return nil end
-    for i = 2, #characterTable do
+    for i = 0, #characterTable do
         for a = 1, #characterTable[i] do
             if characterTable[i][a].name == name or characterTable[i][a].name == string_space_to_underscore(name) then
                 return i
@@ -558,6 +560,21 @@ local function character_get_number_from_string(name)
         end
     end
     return nil
+end
+
+---@description A function that searches for a character's table posision based on model
+---@added 1.16
+---@param model integer|ModelExtendedId
+---@return integer?
+function character_get_number_from_model(model)
+    if type(model) ~= TYPE_INTEGER then return nil end
+    for i = 0, #characterTable do
+        for a = 1, #characterTable[i] do
+            if characterTable[i][a].model == model or characterTable[i][a].ogModel == model then
+                return i
+            end
+        end
+    end
 end
 
 ---@description A function that gets the current character's voice table
@@ -1069,6 +1086,7 @@ _G.charSelect = {
     character_add_voice = character_add_voice,
     character_add_caps = character_add_caps,
     character_get_caps = character_get_caps,
+    character_add_model_replacement = character_add_model_replacement,
     character_add_celebration_star = character_add_celebration_star,
     character_add_peach_custom = character_add_peach_custom,
     character_add_ending_toad_model = character_add_ending_toad_model,
@@ -1088,6 +1106,7 @@ _G.charSelect = {
     character_get_current_palette = character_get_current_palette,
     character_get_current_palette_number = character_get_current_palette_number,
     character_get_number_from_string = character_get_number_from_string,
+    character_get_number_from_model = character_get_number_from_model,
     character_get_voice = character_get_voice,
     character_get_life_icon = life_icon_from_local_index, -- Function located in n-hud.lua
     character_render_life_icon = render_life_icon_from_local_index, -- Function located in n-hud.lua

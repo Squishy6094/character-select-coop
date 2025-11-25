@@ -64,7 +64,6 @@ local TEX_CD_LAYER3 = get_texture_info("char-select-cd-layer3")
 local TEX_CD_LAYER4 = get_texture_info("char-select-cd-layer4")
 local TEX_RECORD = get_texture_info("char-select-record")
 local TEX_PALETTE_BUCKET = get_texture_info("char-select-palette-bucket")
-local TEX_CATEGORY_BANNER = get_texture_info("char-select-category")
 local TEX_OPTIONS_TV = get_texture_info("char-select-options-tv")
 
 LOCKED_NEVER = 0
@@ -100,6 +99,7 @@ characterTable = {
         hasMoveset = false,
         locked = LOCKED_NEVER,
         playtime = 0,
+        replaceModels = {},
         [1] = {
             name = "Mario",
             description = "The iconic Italian plumber himself! He's quite confident and brave, always prepared to jump into action to save the Mushroom Kingdom!",
@@ -122,6 +122,7 @@ characterTable = {
         hasMoveset = false,
         locked = LOCKED_NEVER,
         playtime = 0,
+        replaceModels = {},
         [1] = {
             name = "Luigi",
             description = "The other iconic Italian plumber! He's a bit shy and scares easily, but he's willing to follow his brother Mario through any battle that may come their way!",
@@ -150,6 +151,7 @@ characterTable = {
         hasMoveset = false,
         locked = LOCKED_NEVER,
         playtime = 0,
+        replaceModels = {},
         [1] = {
             name = "Toad",
             description = "Princess Peach's little attendant! He's an energetic little mushroom that's never afraid to follow Mario and Luigi on their adventures!",
@@ -178,6 +180,7 @@ characterTable = {
         hasMoveset = false,
         locked = LOCKED_NEVER,
         playtime = 0,
+        replaceModels = {},
         [1] = {
             name = "Waluigi",
             description = "The mischievous rival of Luigi! He's a narcissistic competitor that takes great taste in others getting pummeled from his success!",
@@ -206,6 +209,7 @@ characterTable = {
         hasMoveset = false,
         locked = LOCKED_NEVER,
         playtime = 0,
+        replaceModels = {},
         [1] = {
             name = "Wario",
             description = "The mischievous rival of Mario! He's a greed-filled treasure hunter obsessed with money and gold coins. He's always ready for a brawl if his money is on the line!",
@@ -240,14 +244,8 @@ characterCategories = {
 local characterTableRender = {}
 
 characterCaps = {}
-characterCelebrationStar = {}
 characterColorPresets = {}
-characterpeachstart = {} --the custom model a character uses for peach in the opening
 characterpeachletter = {} --the custom texture a character uses for peach's letter in the opening
-characterpeachend = {}--the custom model a character uses for peach in the ending
-characterendtoad1 = {}--the custom model a character uses for one of the toads in the ending
-characterendtoad2 = {}--the custom model a character uses for one of the toads in the ending
-local setting1stendtoad = true --variable used for making the two toads in the ending able to have different models
 characterAnims = {
     [E_MODEL_MARIO] = {
         anims = {[CS_ANIM_MENU] = MARIO_ANIM_CS_MENU},
@@ -1137,6 +1135,7 @@ local function on_star_or_key_grab(m, o, type)
     end
 end
 
+---@param o Object
 function set_model(o, model)
     -- Player Models
     if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
@@ -1164,16 +1163,26 @@ function set_model(o, model)
         return
     end
 
+    --[[
     -- Star Models
-    if obj_has_behavior_id(o, id_bhvCelebrationStar) ~= 0 and o.parentObj ~= nil then
-        local i = network_local_index_from_global(o.parentObj.globalPlayerIndex)
-        local starModel = characterCelebrationStar[gCSPlayers[i].modelId]
-        if gCSPlayers[i].modelId ~= nil and starModel ~= nil and obj_has_model_extended(o, starModel) == 0 and not BowserKey then
+    if obj_get_model_id_extended(o) == E_MODEL_STAR then
+        local i = network_local_index_from_global(o.parentObj.globalPlayerIndex) or 0
+        local starModel = characterCelebrationStar[gCSPlayers[i].modelId].trans
+        if starModel ~= nil and obj_has_model_extended(o, starModel) == 0 and not BowserKey then
             obj_set_model_extended(o, starModel)
         end
         return
     end
-    -- peach models
+
+    if obj_get_model_id_extended(o) == E_MODEL_TRANSPARENT_STAR then
+        local starModel = characterCelebrationStar[gCSPlayers[0].modelId].star
+        if starModel ~= nil and obj_has_model_extended(o, starModel) == 0 and not BowserKey then
+            obj_set_model_extended(o, starModel)
+        end
+        return
+    end
+
+    -- Peach models
     if (obj_has_behavior_id(o, id_bhvEndPeach) ~= 0) then
         local peachModel = characterpeachend[gCSPlayers[0].modelId]
         if gCSPlayers[0].modelId ~= nil and peachModel ~= nil and obj_has_model_extended(o, peachModel) == 0 then
@@ -1206,7 +1215,9 @@ function set_model(o, model)
             setting1stendtoad = not setting1stendtoad
         end
     end
+    ]]
 
+    -- Cap Behaviors
     if sCapBhvs[get_id_from_behavior(o.behavior)] then
         local playerToObj = nearest_player_to_object(o.parentObj)
         o.globalPlayerIndex = playerToObj and playerToObj.globalPlayerIndex or 0
@@ -1233,6 +1244,14 @@ function set_model(o, model)
             if capModel ~= E_MODEL_NONE and capModel ~= E_MODEL_ERROR_MODEL and capModel ~= nil then
                 obj_set_model_extended(o, capModel)
             end
+        end
+    end
+
+    -- Other Custom Models
+    if characterTable[currChar].replaceModels ~= nil then
+        local model = characterTable[currChar].replaceModels[get_id_from_behavior(o.behavior)]
+        if model ~= nil and obj_has_model_extended(o, model) == 0 then
+            obj_set_model_extended(o, model)
         end
     end
 end
