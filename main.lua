@@ -1586,7 +1586,6 @@ local function on_hud_render()
                     if i == currCharRender then
                         djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 33*scale, y + 48*scale, scale, scale, 320, 48, 32, 32)
                     end
-                    if charTable.dialAnim == nil then charTable.dialAnim = 0 end
                     angleAnim = -0x10000*((1/charAltCount))*charTable.dialAnim/10
                     charTable.dialAnim = math.lerp(charTable.dialAnim, 0, 0.2)
                     djui_hud_set_rotation(angle + angleAnim, 0.5, 0.5)
@@ -2015,6 +2014,7 @@ local function before_mario_update(m)
 
                 -- Alt switcher
                 if #characterTable[currChar] > 1 then
+                    if characterTableRender[currCharRender].dialAnim == nil then characterTableRender[currCharRender].dialAnim = 0 end
                     run_func_with_condition_and_cooldown(FUNC_INDEX_HORIZONTAL,
                         (controller.buttonPressed & R_JPAD) ~= 0 or controller.stickX > 60,
                         function ()

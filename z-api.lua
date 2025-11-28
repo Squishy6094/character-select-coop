@@ -84,7 +84,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
             lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or "?",
             starIcon = gTextures.star,
             camScale = type(camScale) == TYPE_INTEGER and camScale or 1,
-            healthTexture = nil,
+            healthMeter = nil,
         },
     })
     characterMovesets[charNum] = {}
@@ -132,7 +132,7 @@ local function character_add_costume(charNum, name, description, credit, color, 
         lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or tableCache.lifeIcon,
         starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce
         camScale = type(camScale) == TYPE_INTEGER and camScale or tableCache.camScale,
-        healthTexture = tableCache.healthTexture,
+        healthMeter = tableCache.healthMeter,
     })
     return #characterTable[charNum]
 end
@@ -176,7 +176,7 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
         lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or tableCache.lifeIcon,
         starIcon = tableCache.starIcon, -- Done to prevent it getting lost in the sauce
         camScale = type(camScale) == TYPE_INTEGER and camScale or tableCache.camScale,
-        healthTexture = tableCache.healthTexture,
+        healthMeter = tableCache.healthMeter,
     } or nil
 
     if modelInfo and characterColorPresets[modelInfo] and tableCache.model and characterColorPresets[tableCache.model] and #characterColorPresets[modelInfo] == #characterColorPresets[tableCache.model] then
@@ -325,17 +325,38 @@ end
 ---@added 1.12
 ---@param charNum integer The number/table position of the Character you want to add a meter to
 ---@param charAlt integer The number/table position of the Costume you want to add a meter to
----@param healthTexture table? A Table with your Character's Health Textures (Table Shown in character_add_health_meter)
-local function character_add_costume_health_meter(charNum, charAlt, healthTexture)
+---@param healthMeter table|function? A Table with your Character's Health Textures (Table Shown in character_add_health_meter) or Rendering Function
+local function character_add_costume_health_meter(charNum, charAlt, healthMeter)
     if type(charNum) ~= TYPE_INTEGER or charNum == nil then return end
     if type(charAlt) ~= TYPE_INTEGER or charAlt == nil then return end
-    characterTable[charNum][charAlt].healthTexture = type(healthTexture) == TYPE_TABLE and healthTexture or nil
+    if healthMeter == nil then
+        return
+    elseif type(healthMeter) == TYPE_FUNCTION then
+        characterTable[charNum][charAlt].healthMeter = healthMeter
+    elseif type(healthMeter) == TYPE_TABLE then
+        characterTable[charNum][charAlt].healthMeter = {
+            label = {
+                left = healthMeter.left or defaultMeterInfo.left,
+                right = healthMeter.right or defaultMeterInfo.right,
+            },
+            pie = {
+                healthMeter[1] or defaultMeterInfo[1],
+                healthMeter[2] or defaultMeterInfo[2],
+                healthMeter[3] or defaultMeterInfo[3],
+                healthMeter[4] or defaultMeterInfo[4],
+                healthMeter[5] or defaultMeterInfo[5],
+                healthMeter[6] or defaultMeterInfo[6],
+                healthMeter[7] or defaultMeterInfo[7],
+                healthMeter[8] or defaultMeterInfo[8],
+            }
+        }
+    end
 end
 
 ---@description A function that adds health meter textures to a character
 ---@added 1.9
 ---@param charNum integer The number/table position of the Character you want to add a meter to
----@param healthTexture table? A Table with your Character's Health Textures (Table Shown Below)
+---@param healthMeter table? A Table with your Character's Health Textures (Table Shown Below) or Rendering Function
 ---@note ```lua
 ---@note local HEALTH_METER_CHAR = {
 ---@note     label = {
@@ -354,8 +375,8 @@ end
 ---@note     }
 ---@note }
 ---@note ```
-local function character_add_health_meter(charNum, healthTexture)
-    character_add_costume_health_meter(charNum, 1, healthTexture)
+local function character_add_health_meter(charNum, healthMeter)
+    character_add_costume_health_meter(charNum, 1, healthMeter)
 end
 
 ---@description A function that adds course textures to a costume in the Star Select
