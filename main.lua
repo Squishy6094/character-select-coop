@@ -1243,6 +1243,7 @@ function set_model(o, model)
             end
             if capModel ~= E_MODEL_NONE and capModel ~= E_MODEL_ERROR_MODEL and capModel ~= nil then
                 obj_set_model_extended(o, capModel)
+                return
             end
         end
     end
@@ -1252,6 +1253,7 @@ function set_model(o, model)
         local model = characterTable[currChar].replaceModels[get_id_from_behavior(o.behavior)]
         if model ~= nil and obj_has_model_extended(o, model) == 0 then
             obj_set_model_extended(o, model)
+            return
         end
     end
 end

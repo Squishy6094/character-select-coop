@@ -3,10 +3,9 @@ if incompatibleClient then return 0 end
 -- localize functions to improve performance - z-voice.lua
 local type,audio_sample_stop,audio_sample_load,math_random,audio_sample_play,is_game_paused,table_insert,play_character_sound = type,audio_sample_stop,audio_sample_load,math.random,audio_sample_play,is_game_paused,table.insert,play_character_sound
 
--- rewritten custom voice system for Character Select
--- by Agent X
-
--- will need some revising in the future, but this will do for now.
+local TYPE_TABLE = "table"
+local TYPE_USERDATA = "userdata"
+local TYPE_STRING = "string"
 
 local SLEEP_TALK_SNORES = 8
 local STARTING_SNORE = 46
@@ -154,21 +153,6 @@ local function stop_sound_with_reverb(sample)
     end
 end
 
-local TYPE_TABLE = "table"
-local TYPE_USERDATA = "userdata"
-local TYPE_STRING = "string"
-local function check_sound_exists(sound)
-    if sound == nil then return false end
-    local soundType = type(sound)
-    if soundType == TYPE_USERDATA and sound._pointer ~= nil then
-        return true
-    elseif soundType == TYPE_STRING then
-        sound = "sound/"..sound
-        return (mod_file_exists(sound))
-    end
-    return false
-end
-
 local function stop_all_custom_character_sounds()
     -- run through each player
     for i = 0, MAX_PLAYERS - 1 do
@@ -213,76 +197,53 @@ function custom_character_sound(m, sound, pos)
         end
     end
     local index = m.playerIndex
-    if check_sound_exists(playerSample[index]) and type(playerSample[index]) ~= TYPE_STRING then
+    if playerSample[index] ~= nil and type(playerSample[index]) ~= TYPE_STRING then
         stop_sound_with_reverb(playerSample[index])
     end
     if optionTable[optionTableRef.localVoices].toggle == 0 then return NO_SOUND end
 
-    -- get the voice table
-    local voiceTable = character_get_voice(m)
-    -- Check nil table for vanilla voices
-    if voiceTable == nil then return end
-    -- Check empty table for no sound
-    if voiceTable == nil then return NO_SOUND end
-
-    -- load samples that haven't been loaded
-    for voice, name in pairs(voiceTable) do
-        if check_sound_exists(voiceTable[voice]) and type(voiceTable[voice]) == "string" then
-            local load = audio_sample_load(name)
-            if load ~= nil then
-                voiceTable[voice] = load
-            end
-        end
-    end
-
     -- get the sample to play
-    local voice = voiceTable[sound]
-    if voice == nil or (type(voice) == TYPE_TABLE and #voice == 0) then return NO_SOUND end
-    playerSample[index] = voice
+    local voice = character_get_voice(m)[sound]
+    log_to_console(type(voice))
+    if voice == nil then return NO_SOUND end
+    log_to_console("cherck")
     -- if there's no pointer then it must be a sound clip table
-    if voice._pointer == nil and type(voice) ~= TYPE_STRING then
-        -- run through each sample and load in any samples that haven't been loaded
-        for i, name in pairs(voice) do
-            if check_sound_exists(voice[i]) and type(voice[i]) == "string" then
-                local load = audio_sample_load(name)
-                if load ~= nil then
-                    voice[i] = load
-                end
-            end
+    if type(voice) == TYPE_TABLE then
+        log_to_console("table")
+        if #voice > 0 then
+            playerSample[index] = voice[math.random(1, #voice)]
+        else
+            return NO_SOUND
         end
-        if #voice ~= 0 then
-            -- choose a random sample
-            playerSample[index] = voice[math_random(#voice)]
-        end
+    else
+        playerSample[index] = voice
     end
 
     -- Play the sample
-    if check_sound_exists(playerSample[index]) then
-        -- Volume based on sound type
-        local baseVolume = 1.0
-        if sound == CHAR_SOUND_SNORING1 or sound == CHAR_SOUND_SNORING2 or sound == CHAR_SOUND_SNORING3 then
-            baseVolume = 0.5
-        end
-
-        local position = pos or m.pos
-        local reverbAmount = 0x08
-        if levelReverbs[np.currLevelNum] ~= nil and levelReverbs[np.currLevelNum][np.currAreaIndex] ~= nil then
-            reverbAmount = levelReverbs[np.currLevelNum][np.currAreaIndex]/127
-        elseif smlua_level_util_get_info(np.currLevelNum) ~= nil then
-            local levelInfo = smlua_level_util_get_info(np.currLevelNum)
-            levelReverbs[np.currLevelNum] = {}
-            levelReverbs[np.currLevelNum][1] = levelInfo.echoLevel1 or reverbAmount
-            levelReverbs[np.currLevelNum][2] = levelInfo.echoLevel2 or reverbAmount
-            levelReverbs[np.currLevelNum][3] = levelInfo.echoLevel3 or reverbAmount
-            reverbAmount = levelReverbs[np.currLevelNum][np.currAreaIndex]/127
-        else
-            reverbAmount = levelReverbs[np.currLevelNum][1]/127
-        end
-        
-        play_sound_with_reverb(playerSample[index], position, baseVolume, reverbAmount)
-
-        return NO_SOUND
+    -- Volume based on sound type
+    local baseVolume = 1.0
+    if sound == CHAR_SOUND_SNORING1 or sound == CHAR_SOUND_SNORING2 or sound == CHAR_SOUND_SNORING3 then
+        baseVolume = 0.5
     end
+
+    local position = pos or m.pos
+    local reverbAmount = 0x08
+    if levelReverbs[np.currLevelNum] ~= nil and levelReverbs[np.currLevelNum][np.currAreaIndex] ~= nil then
+        reverbAmount = levelReverbs[np.currLevelNum][np.currAreaIndex]/127
+    elseif smlua_level_util_get_info(np.currLevelNum) ~= nil then
+        local levelInfo = smlua_level_util_get_info(np.currLevelNum)
+        levelReverbs[np.currLevelNum] = {}
+        levelReverbs[np.currLevelNum][1] = levelInfo.echoLevel1 or reverbAmount
+        levelReverbs[np.currLevelNum][2] = levelInfo.echoLevel2 or reverbAmount
+        levelReverbs[np.currLevelNum][3] = levelInfo.echoLevel3 or reverbAmount
+        reverbAmount = levelReverbs[np.currLevelNum][np.currAreaIndex]/127
+    else
+        reverbAmount = levelReverbs[np.currLevelNum][1]/127
+    end
+    
+    play_sound_with_reverb(playerSample[index], position, baseVolume, reverbAmount)
+
+    return NO_SOUND
 end
 
 ---@param m MarioState
@@ -371,9 +332,7 @@ hook_event(HOOK_ON_LEVEL_INIT, stop_all_custom_character_sounds)
 
 -- Must be ran on startup
 function config_character_sounds()
-    hook_event(HOOK_CHARACTER_SOUND, custom_character_sound)
-    --hook_event(HOOK_MARIO_UPDATE, custom_character_snore)
-    cs_hook_mario_update(custom_character_snore)
+    log_to_console_once("'config_character_sounds()' is deprecated, and functionality is now baked into `character_add_voice()`")
 end
 
 -- Join sound
@@ -389,11 +348,12 @@ local function mario_update(m)
     custom_character_snore(m)
 end
 
+hook_event(HOOK_CHARACTER_SOUND, custom_character_sound)
 cs_hook_mario_update(mario_update)
 
+-- Peach Line Replacements
 ---@param soundbits integer
 ---@param pos Vec3f 
----	Called when a sound is going to play, return a SOUND_* constant or NO_SOUND to override the sound
 local function on_play_sound(soundbits,pos)
     local endpeachsoundtable = {[SOUND_PEACH_MARIO] = true,[SOUND_PEACH_POWER_OF_THE_STARS] = true,[SOUND_PEACH_THANKS_TO_YOU] = true, [SOUND_PEACH_THANK_YOU_MARIO] = true,[SOUND_PEACH_SOMETHING_SPECIAL] = true,[SOUND_PEACH_BAKE_A_CAKE] = true,[SOUND_PEACH_FOR_MARIO] = true,[SOUND_PEACH_MARIO2] = true}
     local m = gMarioStates[0]
@@ -409,10 +369,4 @@ local function on_play_sound(soundbits,pos)
     end
 end
 
-local function waluigi_char_sound(m, sound, pos)
-    if charSelect.character_get_current_number(m.playerIndex) == 3 then
-        return custom_character_sound(m, sound, pos)
-    end
-end
-hook_event(HOOK_CHARACTER_SOUND, waluigi_char_sound)
-hook_event(HOOK_ON_PLAY_SOUND, on_play_sound) --	Called when a sound is going to play, return a SOUND_* constant or NO_SOUND to override the sound
+hook_event(HOOK_ON_PLAY_SOUND, on_play_sound)
