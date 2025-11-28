@@ -203,13 +203,10 @@ function custom_character_sound(m, sound, pos)
     if optionTable[optionTableRef.localVoices].toggle == 0 then return NO_SOUND end
 
     -- get the sample to play
+    if character_get_voice(m) == nil then return end
     local voice = character_get_voice(m)[sound]
-    log_to_console(type(voice))
     if voice == nil then return NO_SOUND end
-    log_to_console("cherck")
-    -- if there's no pointer then it must be a sound clip table
     if type(voice) == TYPE_TABLE then
-        log_to_console("table")
         if #voice > 0 then
             playerSample[index] = voice[math.random(1, #voice)]
         else
