@@ -2101,6 +2101,7 @@ local function before_mario_update(m)
                     if characterTable[currChar] ~= nil then
                         mod_storage_save_pref_char(characterTable[currChar])
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject)
+                        play_character_sound(m, CHAR_SOUND_LETS_A_GO)
                     else
                         play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
                     end
