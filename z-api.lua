@@ -255,39 +255,40 @@ end
 ---@note }
 ---@note ```
 local function character_add_voice(modelInfo, clips)
-    hook_event(HOOK_ON_MODS_LOADED, function ()
-        local voiceTable = {}
-        -- Check nil table for vanilla voices
-        if clips == nil then return end
-        -- Check empty table for no sound
-        if clips == nil then return NO_SOUND end
+    --hook_event(HOOK_ON_MODS_LOADED, function ()
+    local voiceTable = {}
+    -- Check nil table for vanilla voices
+    if clips == nil then return end
+    -- Check empty table for no sound
+    if clips == nil then return NO_SOUND end
 
-        -- Load samples that haven't been loaded
-        for voice, sound in pairs(clips) do
-            if sound then 
-                if type(sound) == TYPE_STRING then
-                    local load = audio_sample_load(sound)
-                    if load ~= nil then
-                        voiceTable[voice] = load
-                    end
-                elseif type(sound) == TYPE_TABLE then
-                    -- load RNG/Table Samples
-                    voiceTable[voice] = {}
-                    for i, subsound in pairs(sound) do
-                        if type(subsound) == TYPE_STRING then
-                            local load = audio_sample_load(subsound)
-                            if load ~= nil then
-                                voiceTable[voice][i] = load
-                            end
+    -- Load samples that haven't been loaded
+    for voice, sound in pairs(clips) do
+        if sound then 
+            if type(sound) == TYPE_STRING then
+                local load = audio_sample_load(sound)
+                if load ~= nil then
+                    voiceTable[voice] = load
+                end
+            elseif type(sound) == TYPE_TABLE then
+                -- load RNG/Table Samples
+                voiceTable[voice] = {}
+                for i, subsound in pairs(sound) do
+                    if type(subsound) == TYPE_STRING then
+                        local load = audio_sample_load(subsound)
+                        if load ~= nil then
+                            voiceTable[voice][i] = load
                         end
-                    end
+                        nd
                 end
             end
         end
+    end
 
-        characterVoices[modelInfo] = voiceTable
-    end)
+    characterVoices[modelInfo] = voiceTable
+    --end)
 end
+hook_event(HOOK_ON_MODS_LOADED, character_add_voice)
 
 ---@description A function that gets the current character's voice table
 ---@added 1.5
