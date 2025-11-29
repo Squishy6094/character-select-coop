@@ -50,6 +50,42 @@ local TYPE_STRING = "string"
 local TYPE_INTEGER = "number"
 local TYPE_TABLE = "table"
 
+local MENU_BINDS_DEFAULT = 1
+local MENU_BINDS_GRID = 2
+local MENU_BINDS_OPTIONS = 3
+local MENU_BINDS_CREDITS = 4
+local TEXT_TABLE_MENU_BINDS = {
+    [MENU_BINDS_DEFAULT] = {
+        {bind = "Up / Down",    desc = "Change Character"},
+        {bind = "Left / Right", desc = "Change Costume"},
+        {bind = "A Button",     desc = "Set Preferred Character"},
+        {bind = "B Button",     desc = "Exit Menu"},
+        {bind = "X Button",     desc = "Toggle Grid View"},
+        {bind = "Y Button",     desc = "Toggle Palette"},
+        {bind = "L/R Triggers", desc = "Change Categories"},
+        {bind = "Start Button", desc = "Options Menu"},
+    },
+    [MENU_BINDS_GRID] = {
+        {bind = "Up / Down / Left / Right", desc = "Change Character"},
+        {bind = "A Button",     desc = "Set Preferred Character"},
+        {bind = "B Button",     desc = "Exit Menu"},
+        {bind = "X Button",     desc = "Toggle List View"},
+        {bind = "Y Button",     desc = "Toggle Palette"},
+        {bind = "L/R Triggers", desc = "Change Categories"},
+        {bind = "Start Button", desc = "Options Menu"},
+    },
+    [MENU_BINDS_OPTIONS] = {
+        {bind = "Up / Down",    desc = "Scroll Options"},
+        {bind = "Left / Right", desc = "Toggle Option"},
+        {bind = "B Button",     desc = "Exit Options Menu"},
+    },
+    [MENU_BINDS_CREDITS] = {
+        {bind = "Up / Down",    desc = "Scroll Credits"},
+        {bind = "Left / Right", desc = "Switch Page"},
+        {bind = "B Button",     desc = "Exit Credits Menu"},
+    },
+}
+
 local TEX_LOGO = get_texture_info("char-select-logo")
 local TEX_WALL_LEFT = get_texture_info("char-select-wall-left")
 local TEX_WALL_RIGHT = get_texture_info("char-select-wall-right")
@@ -1807,6 +1843,7 @@ local function on_hud_render()
         --djui_hud_print_text_auto_interpolated("creditcreators", "Creator: " .. credit, 5 + menuOffsetX*0.2, height - 30 + menuOffsetY*0.2, 0.8)
         djui_hud_print_text_interpolated(descRender, 5 - (get_global_timer()%djui_hud_measure_text(desc .. " - ") - 1)*0.8 + menuOffsetX*0.15, height - 25 + menuOffsetY*0.15, 0.8, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8 + menuOffsetX*0.15, height - 25 + menuOffsetY*0.15, 0.8)
         djui_hud_print_text(TEXT_VERSION, 2, height - 7, 0.4)
+        djui_hud_print_text(TEXT_TABLE_MENU_BINDS[1][math.floor(get_global_timer()/150)%(#TEXT_TABLE_MENU_BINDS[1]) + 1].bind, 10, height - 10, 1)
 
         -- API Rendering (Above Text)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
@@ -1824,7 +1861,8 @@ local function on_hud_render()
         -- Render Tape
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_caution_tape(-10, 50, 160, -10, 1) -- Top Tape
-        djui_hud_render_caution_tape(width*0.7 + 5, -10, width*0.7 - 5, height - 35, 1, 0.6) -- Side Tape
+        djui_hud_render_caution_tape(width*0.7 + 5, -10, width*0.7 - 5, height - 35, 1, 0.6) -- Right Tape
+        djui_hud_render_caution_tape(width*0.3, height - 45, width*0.3 - 5, height, 0.5) -- Left Bottom Tape
         djui_hud_render_caution_tape(-10, height - 50, width + 10, height - 35, 1) -- Bottom Tape
 
         -- Render Header
