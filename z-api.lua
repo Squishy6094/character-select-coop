@@ -279,7 +279,7 @@ local function character_add_voice(modelInfo, clips)
                         if load ~= nil then
                             voiceTable[voice][i] = load
                         end
-                        nd
+                    end
                 end
             end
         end
