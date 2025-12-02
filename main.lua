@@ -1824,13 +1824,12 @@ local function on_hud_render()
 
         djui_hud_reset_scissor()
 
-        -- Render Background Bottom
+        -- Render Character Description
         djui_hud_set_rotation(angle_from_2d_points(-10, height - 50, width + 10, height - 35), 0, 0)
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(-10, height - 50, width*1.5, 100)
         djui_hud_set_rotation(0, 0, 0)
 
-        -- Render Character Description
         djui_hud_set_font(FONT_TINY)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         local credit = characterTable[currChar][characterTable[currChar].currAlt].credit
@@ -1840,10 +1839,18 @@ local function on_hud_render()
             descRender = descRender .. " - " .. desc
         end
         descRender = descRender .. " - " .. desc
-        --djui_hud_print_text_auto_interpolated("creditcreators", "Creator: " .. credit, 5 + menuOffsetX*0.2, height - 30 + menuOffsetY*0.2, 0.8)
-        djui_hud_print_text_interpolated(descRender, 5 - (get_global_timer()%djui_hud_measure_text(desc .. " - ") - 1)*0.8 + menuOffsetX*0.15, height - 25 + menuOffsetY*0.15, 0.8, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8 + menuOffsetX*0.15, height - 25 + menuOffsetY*0.15, 0.8)
+        djui_hud_print_text_interpolated(descRender, 5 - (get_global_timer()%djui_hud_measure_text(desc .. " - ") - 1)*0.8 - menuOffsetX*0.1, height - 25 + menuOffsetY*0.15, 0.8, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8 - menuOffsetX*0.1, height - 25 + menuOffsetY*0.15, 0.8)
+
+        djui_hud_set_rotation(angle_from_2d_points(-10, height - 50, width + 10, height - 35), 0, 0)
+        djui_hud_set_color(0, 0, 0, 255)
+        djui_hud_render_rect(0, height - 45, width*0.3, 100)
+        djui_hud_set_rotation(0, 0, 0)
+
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_print_text(TEXT_VERSION, 2, height - 7, 0.4)
-        djui_hud_print_text(TEXT_TABLE_MENU_BINDS[1][math.floor(get_global_timer()/150)%(#TEXT_TABLE_MENU_BINDS[1]) + 1].bind, 10, height - 10, 1)
+        local bindInfo = TEXT_TABLE_MENU_BINDS[1][math.floor(get_global_timer()/150)%(#TEXT_TABLE_MENU_BINDS[1]) + 1]
+        djui_hud_print_text(bindInfo.bind, width*0.15 - djui_hud_measure_text(bindInfo.bind)*0.4, height - 35, 0.8)
+        djui_hud_print_text(bindInfo.desc, width*0.15 - djui_hud_measure_text(bindInfo.desc)*0.4, height - 25, 0.8)
 
         -- API Rendering (Above Text)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
@@ -1861,8 +1868,8 @@ local function on_hud_render()
         -- Render Tape
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_render_caution_tape(-10, 50, 160, -10, 1) -- Top Tape
-        djui_hud_render_caution_tape(width*0.7 + 5, -10, width*0.7 - 5, height - 35, 1, 0.6) -- Right Tape
-        djui_hud_render_caution_tape(width*0.3, height - 45, width*0.3 - 5, height, 0.5) -- Left Bottom Tape
+        djui_hud_render_caution_tape(width*0.7 - 5, -10, width*0.7 + 5, height - 35, 1, 0.6) -- Right Tape
+        djui_hud_render_caution_tape(width*0.3, height - 45, width*0.3 - 5, height, 1, 0.5) -- Left Bottom Tape
         djui_hud_render_caution_tape(-10, height - 50, width + 10, height - 35, 1) -- Bottom Tape
 
         -- Render Header
