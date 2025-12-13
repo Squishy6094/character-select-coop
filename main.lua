@@ -765,6 +765,7 @@ local function menu_is_allowed(m)
     end
 
     -- Cutscene Check
+    if m.action & ACT_GROUP_CUTSCENE ~= 0 then return false end
     if gNetworkPlayers[0].currActNum == 99 then return false end
     if m.action == ACT_INTRO_CUTSCENE then return false end
     if obj_get_first_with_behavior_id(id_bhvActSelector) ~= nil then return false end
@@ -828,13 +829,7 @@ local function act_cs_menu_idle(m)
 end
 hook_mario_action(ACT_CS_MENU_IDLE, act_cs_menu_idle)
 
-
-local stallFrame = 0
-local stallComplete = 3
-
 CUTSCENE_CS_MENU = 0xFA
-
-local MATH_PI = math.pi
 
 local prevBaseCharFrame = gNetworkPlayers[0].modelIndex
 local prevBasePalette = {
@@ -860,9 +855,7 @@ local camScale = 1
 local prevMusicToggle = 1
 ---@param m MarioState
 local function mario_update(m)
-    local np = gNetworkPlayers[m.playerIndex]
-    local p = gCSPlayers[m.playerIndex]
-    if stallFrame == stallComplete - 1 or queueStorageFailsafe then
+    if m.playerIndex == 0 and (startup_init_stall(1) or queueStorageFailsafe) then
         failsafe_options()
         if not queueStorageFailsafe then
             load_preferred_char()
@@ -872,13 +865,12 @@ local function mario_update(m)
         end
         queueStorageFailsafe = false
     end
+    
+    local np = gNetworkPlayers[m.playerIndex]
+    local p = gCSPlayers[m.playerIndex]
 
     if network_is_server() and gGlobalSyncTable.charSelectRestrictMovesets < 2 then
         gGlobalSyncTable.charSelectRestrictMovesets = optionTable[optionTableRef.restrictMovesets].toggle
-    end
-
-    if stallFrame < stallComplete then
-        stallFrame = stallFrame + 1
     end
 
     if m.playerIndex == 0 then
@@ -897,7 +889,7 @@ local function mario_update(m)
                 if char.locked ~= prevLockState then
                     update_character_render_table()
                     if prevLockState == LOCKED_TRUE then -- Character was unlocked
-                        if stallFrame == stallComplete and notif then
+                        if startup_init_stall() and notif then
                             if optionTable[optionTableRef.notification].toggle > 0 then
                                 djui_popup_create('Character Select:\nUnlocked '..tostring(char[1].name)..'\nas a Playable Character!', 3)
                             end
@@ -1086,7 +1078,7 @@ local function mario_update(m)
             worldColor.vertex.g = get_vertex_color(1)
             worldColor.vertex.b = get_vertex_color(2)
 
-            if stallFrame == stallComplete then
+            if startup_init_stall() then
                 -- Update playtime
                 characterTable[currChar].playtime = characterTable[currChar].playtime + 1
                 totalPlaytime = totalPlaytime + 1
@@ -1436,7 +1428,7 @@ local function on_hud_render()
     local height = 240
     local widthScale = math.max(width, 320) * MATH_DIVIDE_320
 
-    if stallFrame == stallComplete then
+    if startup_init_stall() then
         update_menu_color()
         if not menu_is_allowed() then
             menu = false
@@ -1976,7 +1968,7 @@ local mouseScroll = 0
 ---@param m MarioState
 local function before_mario_update(m)
     if m.playerIndex ~= 0 then return end
-    if stallFrame < stallComplete then return end
+    if not startup_init_stall() then return end
     local controller = m.controller
     local character = characterTable[currChar]
     for index, num in pairs(menuInputCooldowns) do

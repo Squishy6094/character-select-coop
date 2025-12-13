@@ -206,15 +206,13 @@ function update_preset_palette(np)
     end
 end
 
-local stallTimer = 5
-
 local prevPresetPalette = {}
 local prevModel = {}
 
 local function mario_update(m)
     local np = gNetworkPlayers[m.playerIndex]
     local p = gCSPlayers[m.playerIndex]
-    local currAlt = characterTable[currChar].currAlt
+    if not startup_init_stall() then return end
     
     if m.playerIndex == 0 and not p.isUpdating then
         p.isUpdating = true
@@ -227,10 +225,6 @@ local function mario_update(m)
     if m.playerIndex == 0 then
         if gGlobalSyncTable.charSelectRestrictPalettes == 0 then
             gCSPlayers[0].presetPalette = characterColorPresets[gCSPlayers[0].modelId] ~= nil and characterColorPresets[gCSPlayers[0].modelId].currPalette or 0
-        end 
-
-        if stallTimer > 0 then
-            stallTimer = stallTimer - 1
         end
     end
 

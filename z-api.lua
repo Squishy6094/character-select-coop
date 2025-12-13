@@ -337,18 +337,18 @@ local function character_add_costume_health_meter(charNum, charAlt, healthMeter)
     elseif type(healthMeter) == TYPE_TABLE then
         characterTable[charNum][charAlt].healthMeter = {
             label = {
-                left = healthMeter.left or defaultMeterInfo.left,
-                right = healthMeter.right or defaultMeterInfo.right,
+                left = is_texture_valid(healthMeter.label.left) and healthMeter.label.left or defaultMeterInfo.label.left,
+                right = is_texture_valid(healthMeter.label.right) and healthMeter.label.right or defaultMeterInfo.label.right,
             },
             pie = {
-                healthMeter[1] or defaultMeterInfo[1],
-                healthMeter[2] or defaultMeterInfo[2],
-                healthMeter[3] or defaultMeterInfo[3],
-                healthMeter[4] or defaultMeterInfo[4],
-                healthMeter[5] or defaultMeterInfo[5],
-                healthMeter[6] or defaultMeterInfo[6],
-                healthMeter[7] or defaultMeterInfo[7],
-                healthMeter[8] or defaultMeterInfo[8],
+                is_texture_valid(healthMeter.pie[1]) and healthMeter.pie[1] or defaultMeterInfo.pie[1],
+                is_texture_valid(healthMeter.pie[2]) and healthMeter.pie[2] or defaultMeterInfo.pie[2],
+                is_texture_valid(healthMeter.pie[3]) and healthMeter.pie[3] or defaultMeterInfo.pie[3],
+                is_texture_valid(healthMeter.pie[4]) and healthMeter.pie[4] or defaultMeterInfo.pie[4],
+                is_texture_valid(healthMeter.pie[5]) and healthMeter.pie[5] or defaultMeterInfo.pie[5],
+                is_texture_valid(healthMeter.pie[6]) and healthMeter.pie[6] or defaultMeterInfo.pie[6],
+                is_texture_valid(healthMeter.pie[7]) and healthMeter.pie[7] or defaultMeterInfo.pie[7],
+                is_texture_valid(healthMeter.pie[8]) and healthMeter.pie[8] or defaultMeterInfo.pie[8],
             }
         }
     end

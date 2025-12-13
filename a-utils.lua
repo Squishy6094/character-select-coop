@@ -27,6 +27,8 @@ if VERSION_NUMBER < VERSION_REQUIRED then
     return 0
 end
 
+log_to_console("Character Select "..MOD_VERSION_STRING)
+
 local dependacyFiles = {
     --- Required Lua Files
     "a-font-handler.lua",
@@ -292,9 +294,24 @@ for i = 0, MAX_PLAYERS - 1 do
     }
 end
 
+local stallFrame = 0
+local stallComplete = 3
+function startup_init_stall(framesBefore)
+    framesBefore = framesBefore or 0
+    return stallFrame == (stallComplete - framesBefore)
+end
+
 local stallPacket = 0
-local function update()
-    stallPacket = (stallPacket+1)%3 -- refresh rate (to reduce stress)
+local function network_update(m)
+    if m.playerIndex ~= 0 then return end
+
+    -- Initialization Update
+    if stallFrame < stallComplete then
+        stallFrame = stallFrame + 1
+    end
+
+    -- Packet Refresh Rate
+    stallPacket = (stallPacket+1)%3
     if stallPacket == 0 then
         network_send(false, gCSPlayers[0])
     end
@@ -306,7 +323,7 @@ local function on_packet_recieve(data)
 end
 
 hook_event(HOOK_ON_PACKET_RECEIVE, on_packet_recieve)
-hook_event(HOOK_UPDATE, update)
+hook_event(HOOK_MARIO_UPDATE, network_update)
 
 -- Default Actions Check
 local defaultActions = {
@@ -584,6 +601,18 @@ local hasBeenLogged = {}
 function log_to_console_once(message, level)
     if not hasBeenLogged[message] then
         hasBeenLogged[message] = true
-        log_to_console(message, level and level or CONSOLE_MESSAGE_WARNING)
+    end
+end
+
+function is_power_of_two(n)
+    return (n & (n - 1)) == 0
+end
+
+---@param tex TextureInfo
+function is_texture_valid(tex)
+    if tex ~= nil then
+        return is_power_of_two(tex.width) and is_power_of_two(tex.height)
+    else
+        return false
     end
 end

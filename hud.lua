@@ -423,14 +423,9 @@ function health_meter_from_local_index(localIndex)
     local p = gCSPlayers[localIndex]
     for i = 0, #characterTable do
         local char = characterTable[i]
-        local healthTexture = char[p.currAlt].healthTexture or char[1].healthTexture
-        if char.saveName == p.saveName and healthTexture ~= nil then
-            if not healthTexture.label then
-                healthTexture.label = defaultMeterInfo.label
-            elseif not healthTexture.pie then
-                healthTexture.pie = defaultMeterInfo.pie
-            end
-            return healthTexture
+        local healthMeter = char[p.currAlt].healthMeter or char[1].healthMeter
+        if char.saveName == p.saveName and healthMeter ~= nil then
+            return healthMeter
         end
     end
     return defaultMeterInfo
@@ -500,21 +495,13 @@ local function render_hud_health()
 		end
         return
     end
-	local textureTable = characterTable[currChar][characterTable[currChar].currAlt].healthTexture
+	local textureTable = health_meter_from_local_index(0)
 	if textureTable then -- sets health HUD to custom textures
-		if textureTable.label.left and textureTable.label.right then -- if left and right label textures exist. BOTH have to exist to be set!
-			texture_override_set("texture_power_meter_left_side", textureTable.label.left)
-			texture_override_set("texture_power_meter_right_side", textureTable.label.right)
-		end
+        texture_override_set("texture_power_meter_left_side", textureTable.label.left)
+        texture_override_set("texture_power_meter_right_side", textureTable.label.right)
         for i = 1, 8 do
             texture_override_set("texture_power_meter_" .. pieTextureNames[i], (textureTable.pie and textureTable.pie[i]) and textureTable.pie[i] or defaultMeterInfo.pie[i])
         end
-	else -- resets the health HUD
-        texture_override_set("texture_power_meter_left_side", defaultMeterInfo.label.left)
-        texture_override_set("texture_power_meter_right_side", defaultMeterInfo.label.right)
-		for i = 1, 8 do
-			texture_override_set("texture_power_meter_" .. pieTextureNames[i], defaultMeterInfo.pie[i])
-		end
 	end
 end
 

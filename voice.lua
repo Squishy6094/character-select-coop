@@ -192,7 +192,7 @@ end
 function custom_character_sound(m, sound, pos)
     local np = gNetworkPlayers[m.playerIndex]
     if m.playerIndex == 0 then
-        if stallTimer < stallSayLine then
+        if not startup_init_stall() then
             return NO_SOUND
         end
     end
@@ -333,13 +333,14 @@ function config_character_sounds()
 end
 
 -- Join sound
+introLine = false
 local function mario_update(m)
     if m.playerIndex ~= 0 then return end
-    if stallTimer == stallSayLine then
-        play_character_sound(m, CHAR_SOUND_OKEY_DOKEY)
-        stallTimer = stallTimer + 1
-    elseif stallTimer < stallSayLine then
-        stallTimer = stallTimer + 1
+    if startup_init_stall() and not introLine then
+        if m.action ~= ACT_INTRO_CUTSCENE then
+            play_character_sound(m, CHAR_SOUND_OKEY_DOKEY)
+        end
+        introLine = true
     end
 
     custom_character_snore(m)
