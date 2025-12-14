@@ -2,13 +2,14 @@
 if incompatibleClient then return 0 end
 
 local function find_character_number(index)
+    if not startup_init_stall() then return 0 end
     if index == nil then index = 0 end
     for i = 1, #characterTable do
         if characterTable[i].saveName == gCSPlayers[index].saveName then
             return i
         end
     end
-    return 1
+    return 0
 end
 
 local function is_moveset_restricted()

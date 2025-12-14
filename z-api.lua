@@ -549,6 +549,7 @@ end
 ---@param localIndex integer? The local player index you want to get the character number from, Default is `0`
 ---@return integer?
 local function character_get_current_number(localIndex)
+    if not startup_init_stall() then return end
     if localIndex == nil or localIndex == 0 then
         return currChar
     else
