@@ -616,3 +616,11 @@ function is_texture_valid(tex)
         return false
     end
 end
+
+function run_func_or_get_var(x, ...)
+    if type(x) == "function" then
+        return x(...)
+    else
+        return x
+    end
+end

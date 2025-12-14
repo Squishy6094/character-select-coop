@@ -1129,15 +1129,16 @@ local function mario_update(m)
 
     -- Character Animations
     if characterAnims[p.modelId] then
-        local animID = characterAnims[p.modelId].anims and characterAnims[p.modelId].anims[m.marioObj.header.gfx.animInfo.animID]
+        local animInfo = m.marioObj.header.gfx.animInfo
+        local animID = characterAnims[p.modelId].anims and run_func_or_get_var(characterAnims[p.modelId].anims[animInfo.animID], m, animInfo.animFrame)
         if animID then
             smlua_anim_util_set_animation(m.marioObj, animID)
         end
-        local eyeState = characterAnims[p.modelId].eyes and characterAnims[p.modelId].eyes[m.marioObj.header.gfx.animInfo.animID]
+        local eyeState = characterAnims[p.modelId].eyes and run_func_or_get_var(characterAnims[p.modelId].eyes[animInfo.animID], m, animInfo.animFrame)
         if eyeState then
             m.marioBodyState.eyeState = eyeState
         end
-        local handState = characterAnims[p.modelId].hands and characterAnims[p.modelId].hands[m.marioObj.header.gfx.animInfo.animID]
+        local handState = characterAnims[p.modelId].hands and run_func_or_get_var(characterAnims[p.modelId].hands[animInfo.animID], m, animInfo.animFrame)
         if handState then
             m.marioBodyState.handState = handState
         end
