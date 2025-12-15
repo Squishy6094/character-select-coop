@@ -30,9 +30,10 @@ menuAndTransition = false
 gridMenu = mod_storage_load_bool("PrefGridView")
 options = nil; OPTIONS_MAIN = 0; OPTIONS_CREDITS = 1
 prevOptions = nil; optionsTimer = 0
-currChar = gMarioStates[0].character.type
-local prevChar = gMarioStates[0].character.type
-currCharRender = gMarioStates[0].character.type
+bootChar = gMarioStates[0].character.type or CT_MARIO
+currChar = bootChar
+local prevChar = bootChar
+currCharRender = bootChar
 currCategory = 1
 local currOption = 1
 local currCredits = 1
@@ -593,8 +594,8 @@ local function load_preferred_char()
     local savedAlt = tonumber(mod_storage_load("PrefAlt"))
     local savedPalette = tonumber(mod_storage_load("PrefPalette"))
     if savedChar == nil or savedChar == "" then
-        mod_storage_save("PrefChar", characterTable[m.character.type].saveName)
-        savedChar = characterTable[m.character.type].saveName
+        mod_storage_save("PrefChar", characterTable[bootChar].saveName)
+        savedChar = characterTable[bootChar].saveName
     end
     if savedAlt == nil then
         mod_storage_save("PrefAlt", "1")
@@ -632,15 +633,6 @@ local function load_preferred_char()
         characterColorPresets[model].currPalette = gCSPlayers[0].presetPalette
     end
 
-    --[[
-    if savedChar == "Default" or currChar == CT_MARIO then
-        currChar = m.character.type
-        local model = characterTable[currChar][1].model
-        gCSPlayers[0].presetPalette = 0
-        characterColorPresets[model].currPalette = 0
-    end
-    ]]
-
     local savedCharColors = mod_storage_load("PrefCharColor")
     if savedCharColors ~= nil and savedCharColors ~= "" then
         local savedCharColorsTable = string_split(savedCharColors, "_")
@@ -672,7 +664,7 @@ local function load_preferred_char()
 end
 
 local function mod_storage_save_pref_char(charTable)
-    charTable = charTable or characterTable[gMarioStates[0].character.type]
+    charTable = charTable or characterTable[bootChar]
     mod_storage_save("PrefChar", charTable.saveName)
     mod_storage_save("PrefNick", string_space_to_underscore(charTable.nickname))
     mod_storage_save("PrefAlt", tostring(charTable.currAlt))
