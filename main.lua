@@ -30,7 +30,10 @@ menuAndTransition = false
 gridMenu = mod_storage_load_bool("PrefGridView")
 options = nil; OPTIONS_MAIN = 0; OPTIONS_CREDITS = 1
 prevOptions = nil; optionsTimer = 0
-bootChar = gMarioStates[0].character.type or CT_MARIO
+bootChar = CT_MARIO
+if gMarioStates[0].character ~= nil then
+   bootChar = gMarioStates[0].character.type
+end
 currChar = bootChar
 local prevChar = bootChar
 currCharRender = bootChar
