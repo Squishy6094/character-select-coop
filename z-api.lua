@@ -1232,14 +1232,12 @@ _G.charSelect = {
 -- Replace base functions
 local obj_set_model_extended_original = obj_set_model_extended
 
-local warnExtended = false
 -- Replace obj_set_model_extended to warn for mario models
 ---@ignore
 local function obj_set_model_extended(obj, modelInfo)
     for i = 0, MAX_PLAYERS - 1 do
-        if gMarioStates[i].marioObj == obj and not warnExtended then
-            log_to_console("Character Select: Mario Object cannot be changed with 'obj_set_model_extended' while Character Select is Active, please use 'character_edit'!!", CONSOLE_MESSAGE_WARNING)
-            warnExtended = true
+        if gMarioStates[i].marioObj == obj then
+            log_to_console_once("Character Select: Mario Object cannot be changed with 'obj_set_model_extended' while Character Select is Active, please use 'character_edit'!!", CONSOLE_MESSAGE_WARNING)
         end
     end
     return obj_set_model_extended_original(obj, modelInfo)
