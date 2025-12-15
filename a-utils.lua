@@ -624,3 +624,11 @@ function run_func_or_get_var(x, ...)
         return x
     end
 end
+
+---@param x integer
+function mirror_mode_number(x)
+    if _G.mirrorMode ~= nil and _G.mirrorMode.is_mirrored() then
+        return x * -1
+    end
+    return x
+end

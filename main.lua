@@ -998,9 +998,9 @@ local function mario_update(m)
             local camDist = 400 * camScale
             local camAngle = m.faceAngle.y + 0x800
             local focusPos = {
-                x = m.pos.x + sins(camAngle - 0x4000)*(150/widthScale - menuOffsetX)*camScale*widthScale,
+                x = m.pos.x + sins(camAngle - 0x4000)*(mirror_mode_number(150)/widthScale - mirror_mode_number(menuOffsetX))*camScale*widthScale,
                 y = m.pos.y + (camDist*0.175/widthScale - menuOffsetY) * camScale ,
-                z = m.pos.z + coss(camAngle - 0x4000)*(150/widthScale - menuOffsetX)*camScale*widthScale,
+                z = m.pos.z + coss(camAngle - 0x4000)*(mirror_mode_number(150)/widthScale - mirror_mode_number(menuOffsetX))*camScale*widthScale,
             }
             vec3f_copy(gLakituState.focus, focusPos)
             m.marioBodyState.eyeState = MARIO_EYES_OPEN
