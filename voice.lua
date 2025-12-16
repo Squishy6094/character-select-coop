@@ -201,6 +201,7 @@ function custom_character_sound(m, sound, pos)
         stop_sound_with_reverb(playerSample[index])
     end
     if optionTable[optionTableRef.localVoices].toggle == 0 then return NO_SOUND end
+    if optionTable[optionTableRef.localVoices].toggle == 2 and m.playerIndex ~= 0 then return NO_SOUND end
 
     -- get the sample to play
     if character_get_voice(m) == nil then return end
@@ -245,7 +246,7 @@ end
 
 ---@param m MarioState
 function custom_character_snore(m)
-    if is_game_paused() or optionTable[optionTableRef.localVoices].toggle == 0 then
+    if is_game_paused() or optionTable[optionTableRef.localVoices].toggle == 0 or (optionTable[optionTableRef.localVoices].toggle == 2 and m.playerIndex ~= 0) then
         -- Remove echo lines that should have played while paused
         if #stalledAudio > 0 then
             for i = 1, #stalledAudio do

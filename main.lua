@@ -414,7 +414,8 @@ optionTable = {
         toggle = tonumber(mod_storage_load("localVoices")),
         toggleSaveName = "localVoices",
         toggleDefault = 1,
-        toggleMax = 1,
+        toggleMax = 2,
+        toggleNames = {"Off", "On", "Local Only"},
         description = {"Toggle if Custom Voicelines play", "for Characters who support it"}
     },
     [optionTableRef.localMoveset] = {
