@@ -177,11 +177,12 @@ end
 
 -- Updates the Chracter Select hud flags along with the vanilla hud flags
 
-local sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_STAR_COUNT | HUD_DISPLAY_FLAG_CAMERA -- Initializes custom hud flags
+local hiddenList = HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_STAR_COUNT | HUD_DISPLAY_FLAG_CAMERA | HUD_DISPLAY_FLAG_POWER
+local sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | hiddenList -- Initializes custom hud flags
 
 function flags_update()
-    sCharSelectHudDisplayFlags = sCharSelectHudDisplayFlags & (og_hud_get_value(HUD_DISPLAY_FLAGS) | HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_STAR_COUNT | HUD_DISPLAY_FLAG_CAMERA) -- Updated the custom flags
-    og_hud_set_value(HUD_DISPLAY_FLAGS, og_hud_get_value(HUD_DISPLAY_FLAGS) & ~(HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_STAR_COUNT | HUD_DISPLAY_FLAG_CAMERA)) -- Update the vanilla flags
+    sCharSelectHudDisplayFlags = sCharSelectHudDisplayFlags & (og_hud_get_value(HUD_DISPLAY_FLAGS) | hiddenList) -- Updated the custom flags
+    og_hud_set_value(HUD_DISPLAY_FLAGS, og_hud_get_value(HUD_DISPLAY_FLAGS) & ~(hiddenList)) -- Update the vanilla flags
 end
 hook_event(HOOK_ON_HUD_RENDER_BEHIND, flags_update)
 
@@ -206,7 +207,7 @@ end
 function _G.hud_set_value(type, value)
     if type == HUD_DISPLAY_FLAGS then
         sCharSelectHudDisplayFlags = value
-        og_hud_set_value(type, value & ~(HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_STAR_COUNT | HUD_DISPLAY_FLAG_CAMERA))
+        og_hud_set_value(type, value & ~(hiddenList))
     else
         og_hud_set_value(type, value)
     end
@@ -440,14 +441,18 @@ end
 function render_health_meter_from_local_index(localIndex, health, x, y, scaleX, scaleY)
     localIndex = localIndex or 0
     health = health >> 8
-    local textureTable = health_meter_from_local_index(localIndex)
-    local tex = textureTable.label.left
-    djui_hud_render_texture(tex, x, y, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64)
-    tex = textureTable.label.right
-    djui_hud_render_texture(tex, x + 31*scaleX*MATH_DIVIDE_64, y, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64)
-    if health > 0 then
-        tex = textureTable.pie[health]
-        djui_hud_render_texture(tex, x + 15*scaleX*MATH_DIVIDE_64, y + 16*scaleY*MATH_DIVIDE_64, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_32) * MATH_DIVIDE_64)
+    local meter = health_meter_from_local_index(localIndex)
+    if type(meter) == "function" then
+        meter(localIndex, health, x, y, scaleX, scaleY, x, y, scaleX, scaleY)
+    else
+        local tex = meter.label.left
+        djui_hud_render_texture(tex, x, y, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64)
+        tex = meter.label.right
+        djui_hud_render_texture(tex, x + 31*scaleX*MATH_DIVIDE_64, y, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64)
+        if health > 0 then
+            tex = meter.pie[health]
+            djui_hud_render_texture(tex, x + 15*scaleX*MATH_DIVIDE_64, y + 16*scaleY*MATH_DIVIDE_64, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_32) * MATH_DIVIDE_64)
+        end
     end
 end
 
@@ -464,14 +469,18 @@ end
 function render_health_meter_from_local_index_interpolated(localIndex, health, prevX, prevY, prevScaleX, prevScaleY, x, y, scaleX, scaleY)
     localIndex = localIndex or 0
     health = health >> 8
-    local textureTable = health_meter_from_local_index(localIndex)
-    local tex = textureTable.label.left
-    djui_hud_render_texture_interpolated(tex, prevX, prevY, prevScaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, prevScaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64, x, y, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64)
-    tex = textureTable.label.right
-    djui_hud_render_texture_interpolated(tex, prevX + 31*prevScaleX*MATH_DIVIDE_64, prevY, prevScaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, prevScaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64, x + 31*scaleX*MATH_DIVIDE_64, y, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64)
-    if health > 0 then
-        tex = textureTable.pie[health]
-        djui_hud_render_texture_interpolated(tex, prevX + 15*prevScaleX*MATH_DIVIDE_64, prevY + 16*scaleY*MATH_DIVIDE_64, prevScaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, prevScaleY / (tex.height * MATH_DIVIDE_32) * MATH_DIVIDE_64, x + 15*scaleX*MATH_DIVIDE_64, y + 16*scaleY*MATH_DIVIDE_64, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_32) * MATH_DIVIDE_64)
+    local meter = health_meter_from_local_index(localIndex)
+    if type(meter) == "function" then
+        meter(localIndex, health, prevX, prevY, prevScaleX, prevScaleY, x, y, scaleX, scaleY)
+    else
+        local tex = meter.label.left
+        djui_hud_render_texture_interpolated(tex, prevX, prevY, prevScaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, prevScaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64, x, y, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64)
+        tex = meter.label.right
+        djui_hud_render_texture_interpolated(tex, prevX + 31*prevScaleX*MATH_DIVIDE_64, prevY, prevScaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, prevScaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64, x + 31*scaleX*MATH_DIVIDE_64, y, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64)
+        if health > 0 then
+            tex = meter.pie[health]
+            djui_hud_render_texture_interpolated(tex, prevX + 15*prevScaleX*MATH_DIVIDE_64, prevY + 16*scaleY*MATH_DIVIDE_64, prevScaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, prevScaleY / (tex.height * MATH_DIVIDE_32) * MATH_DIVIDE_64, x + 15*scaleX*MATH_DIVIDE_64, y + 16*scaleY*MATH_DIVIDE_64, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_32) * MATH_DIVIDE_64)
+        end
     end
 end
 
@@ -486,23 +495,140 @@ local pieTextureNames = {
     "full",
 }
 
-local function render_hud_health()
-    if currChar == CT_MARIO then
-        texture_override_reset("texture_power_meter_left_side")
-        texture_override_reset("texture_power_meter_right_side")
-		for i = 1, 8 do
-			texture_override_reset("texture_power_meter_" .. pieTextureNames[i])
-		end
-        return
-    end
-	local textureTable = health_meter_from_local_index(0)
-	if textureTable then -- sets health HUD to custom textures
-        texture_override_set("texture_power_meter_left_side", textureTable.label.left)
-        texture_override_set("texture_power_meter_right_side", textureTable.label.right)
-        for i = 1, 8 do
-            texture_override_set("texture_power_meter_" .. pieTextureNames[i], (textureTable.pie and textureTable.pie[i]) and textureTable.pie[i] or defaultMeterInfo.pie[i])
+-- Health Meter Code
+local POWER_METER_HIDDEN = 0
+local POWER_METER_EMPHASIZED = 1
+local POWER_METER_DEEMPHASIZING = 2
+local POWER_METER_HIDING = 3
+local POWER_METER_VISIBLE = 4
+
+local sPowerMeterHUD = {
+    animation = POWER_METER_HIDDEN,
+    x = 140,
+    y = 166,
+    unused = 1.0,
+};
+local sPowerMeterVisibleTimer = 0
+local sPowerMeterStoredHealth = 0
+
+local function animate_power_meter_emphasized()
+    local hudDisplayFlags = hud_get_value(HUD_DISPLAY_FLAGS)
+
+    if ((hudDisplayFlags & HUD_DISPLAY_FLAG_EMPHASIZE_POWER) == 0) then
+        if (sPowerMeterVisibleTimer == 45.0) then
+            sPowerMeterHUD.animation = POWER_METER_DEEMPHASIZING;
         end
-	end
+    else
+        sPowerMeterVisibleTimer = 0;
+    end
+end
+
+
+-- Power meter animation called after emphasized mode.
+-- Moves power meter y pos speed until it's at 200 to be visible.
+local function animate_power_meter_deemphasizing()
+    local speed = 5;
+
+    if (sPowerMeterHUD.y >= 181) then
+        speed = 3;
+    end
+
+    if (sPowerMeterHUD.y >= 191) then
+        speed = 2;
+    end
+
+    if (sPowerMeterHUD.y >= 196) then
+        speed = 1;
+    end
+
+    sPowerMeterHUD.y = sPowerMeterHUD.y + speed;
+
+    if (sPowerMeterHUD.y >= 201) then
+        sPowerMeterHUD.y = 200;
+        sPowerMeterPrevY = 200;
+        sPowerMeterHUD.animation = POWER_METER_VISIBLE;
+    end
+end
+
+
+-- Power meter animation called when there's 8 health segments.
+-- Moves power meter y pos quickly until it's at 301 to be hidden.
+
+local function animate_power_meter_hiding()
+    sPowerMeterHUD.y = sPowerMeterHUD.y + 20;
+    if (sPowerMeterHUD.y >= 301) then
+        sPowerMeterHUD.animation = POWER_METER_HIDDEN;
+        sPowerMeterVisibleTimer = 0;
+    end
+end
+
+-- Handles power meter actions depending of the health segments values.
+local function handle_power_meter_actions(numHealthWedges)
+    local gPlayerCameraState = gMarioStates[0].statusForCamera
+
+    -- Show power meter if health is not full, less than 8
+    if (numHealthWedges < 8 and sPowerMeterStoredHealth == 8 and sPowerMeterHUD.animation == POWER_METER_HIDDEN) then
+        sPowerMeterHUD.animation = POWER_METER_EMPHASIZED;
+        sPowerMeterHUD.y = 166;
+        sPowerMeterPrevY = 166;
+    end
+
+    -- Show power meter if health is full, has 8
+    if (numHealthWedges == 8 and sPowerMeterStoredHealth == 7) then
+        sPowerMeterVisibleTimer = 0;
+    end
+
+    -- After health is full, hide power meter
+    if (numHealthWedges == 8 and sPowerMeterVisibleTimer > 45.0) then
+        sPowerMeterHUD.animation = POWER_METER_HIDING;
+    end
+
+    -- Update to match health value
+    sPowerMeterStoredHealth = numHealthWedges;
+
+    -- If Mario is swimming, keep power meter visible
+    if (gPlayerCameraState.action & ACT_FLAG_SWIMMING ~= 0) then
+        if (sPowerMeterHUD.animation == POWER_METER_HIDDEN
+            or sPowerMeterHUD.animation == POWER_METER_EMPHASIZED) then
+            sPowerMeterHUD.animation = POWER_METER_DEEMPHASIZING;
+            sPowerMeterHUD.y = 166;
+            sPowerMeterPrevY = 166;
+        end
+        sPowerMeterVisibleTimer = 0;
+    end
+end
+
+
+-- Renders the power meter that shows when Mario is in underwater
+-- or has taken damage and has less than 8 health segments.
+-- And calls a power meter animation function depending of the value defined.
+local function render_hud_power_meter()
+    local shownHealthWedges = hud_get_value(HUD_DISPLAY_WEDGES);
+    sPowerMeterHUD.x = djui_hud_get_screen_width()*0.5 - 51
+
+    if (sPowerMeterHUD.animation ~= POWER_METER_HIDING) then
+        handle_power_meter_actions(shownHealthWedges);
+    end
+
+    if (sPowerMeterHUD.animation == POWER_METER_HIDDEN) then
+        return;
+    end
+
+    local powerMeterPrevY = sPowerMeterHUD.y
+
+    local anim = sPowerMeterHUD.animation
+    if anim == POWER_METER_EMPHASIZED then
+        animate_power_meter_emphasized();
+    elseif anim == POWER_METER_DEEMPHASIZING then
+        animate_power_meter_deemphasizing();
+    elseif anim == POWER_METER_HIDING then
+        animate_power_meter_hiding();
+    end
+
+    --render_dl_power_meter(shownHealthWedges);
+    render_health_meter_from_local_index_interpolated(0, gMarioStates[0].health, sPowerMeterHUD.x, 208 - powerMeterPrevY, 64, 64, sPowerMeterHUD.x, 208 - sPowerMeterHUD.y, 64, 64)
+
+    sPowerMeterVisibleTimer = sPowerMeterVisibleTimer + 1;
 end
 
 local function render_hud_act_select_course()
@@ -805,7 +931,6 @@ function render_playerlist_and_modlist()
 end
 
 -- Yes the ending stuffs is hardcoded, no there's not much of a better way to do it
-
 local DIALOG_ENDING_REPLACE_1 = "$CHARNAME!"
 local DIALOG_ENDING_REPLACE_2 = "Thank you $CHARNAME!"
 local DIALOG_ENDING_REPLACE_3 = "...for $CHARNAME..."
@@ -1019,7 +1144,7 @@ local function on_hud_render_behind()
         render_hud_mario_lives()
         render_hud_stars()
         render_hud_camera_status()
-        render_hud_health()
+        render_hud_power_meter()
         sVisibleStars = 0
     else
         if enablePlayersInLevelDisplay then

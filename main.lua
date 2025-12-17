@@ -151,6 +151,22 @@ characterTable = {
             lifeIcon = gTextures.mario_head,
             starIcon = gTextures.star,
             camScale = 1.0,
+            healthMeter = {
+                label = {
+                    left = get_texture_info("texture_power_meter_left_side"),
+                    right = get_texture_info("texture_power_meter_right_side"),
+                },
+                pie = {
+                    [1] = get_texture_info("texture_power_meter_one_segments"),
+                    [2] = get_texture_info("texture_power_meter_two_segments"),
+                    [3] = get_texture_info("texture_power_meter_three_segments"),
+                    [4] = get_texture_info("texture_power_meter_four_segments"),
+                    [5] = get_texture_info("texture_power_meter_five_segments"),
+                    [6] = get_texture_info("texture_power_meter_six_segments"),
+                    [7] = get_texture_info("texture_power_meter_seven_segments"),
+                    [8] = get_texture_info("texture_power_meter_full"),
+                }
+            }
         },
     },
     [CT_LUIGI] = {
@@ -174,11 +190,12 @@ characterTable = {
             lifeIcon = gTextures.luigi_head,
             starIcon = gTextures.star,
             camScale = 1.0,
-            healthTexture = {
+            healthMeter = {
                 label = {
                     left = get_texture_info("char-select-luigi-meter-left"),
                     right = get_texture_info("char-select-luigi-meter-right"),
-                }
+                },
+                pie = defaultMeterInfo.pie
             }
         },
     },
@@ -203,11 +220,12 @@ characterTable = {
             lifeIcon = gTextures.toad_head,
             starIcon = gTextures.star,
             camScale = 0.8,
-            healthTexture = {
+            healthMeter = {
                 label = {
                     left = get_texture_info("char-select-toad-meter-left"),
                     right = get_texture_info("char-select-toad-meter-right"),
-                }
+                },
+                pie = defaultMeterInfo.pie
             }
         },
     },
@@ -232,11 +250,12 @@ characterTable = {
             lifeIcon = gTextures.waluigi_head,
             starIcon = gTextures.star,
             camScale = 1.1,
-            healthTexture = {
+            healthMeter = {
                 label = {
                     left = get_texture_info("char-select-waluigi-meter-left"),
                     right = get_texture_info("char-select-waluigi-meter-right"),
-                }
+                },
+                pie = defaultMeterInfo.pie
             }
         },
     },
@@ -261,11 +280,12 @@ characterTable = {
             lifeIcon = gTextures.wario_head,
             starIcon = gTextures.star,
             camScale = 1.0,
-            healthTexture = {
+            healthMeter = {
                 label = {
                     left = get_texture_info("char-select-wario-meter-left"),
                     right = get_texture_info("char-select-wario-meter-right"),
-                }
+                },
+                pie = defaultMeterInfo.pie
             }
         },
     },
@@ -2179,7 +2199,7 @@ local function before_mario_update(m)
 
         nullify_inputs(m)
         if is_game_paused() then
-            controller.buttonPressed = START_BUTTON
+            game_unpause()
         end
     end
 

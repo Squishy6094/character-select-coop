@@ -357,7 +357,7 @@ end
 ---@description A function that adds health meter textures to a character
 ---@added 1.9
 ---@param charNum integer The number/table position of the Character you want to add a meter to
----@param healthMeter table? A Table with your Character's Health Textures (Table Shown Below) or Rendering Function
+---@param healthMeter table|function? A Table with your Character's Health Textures (Table Shown Below) or Rendering Function
 ---@note ```lua
 ---@note local HEALTH_METER_CHAR = {
 ---@note     label = {
