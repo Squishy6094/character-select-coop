@@ -440,11 +440,11 @@ end
 ---@param scaleY integer
 function render_health_meter_from_local_index(localIndex, health, x, y, scaleX, scaleY)
     localIndex = localIndex or 0
-    health = health >> 8
     local meter = health_meter_from_local_index(localIndex)
     if type(meter) == "function" then
         meter(localIndex, health, x, y, scaleX, scaleY, x, y, scaleX, scaleY)
     else
+        health = health >> 8
         local tex = meter.label.left
         djui_hud_render_texture(tex, x, y, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64)
         tex = meter.label.right
@@ -468,11 +468,11 @@ end
 ---@param scaleY integer
 function render_health_meter_from_local_index_interpolated(localIndex, health, prevX, prevY, prevScaleX, prevScaleY, x, y, scaleX, scaleY)
     localIndex = localIndex or 0
-    health = health >> 8
     local meter = health_meter_from_local_index(localIndex)
     if type(meter) == "function" then
         meter(localIndex, health, prevX, prevY, prevScaleX, prevScaleY, x, y, scaleX, scaleY)
     else
+        health = health >> 8
         local tex = meter.label.left
         djui_hud_render_texture_interpolated(tex, prevX, prevY, prevScaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, prevScaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64, x, y, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_64) * MATH_DIVIDE_64)
         tex = meter.label.right
@@ -484,16 +484,14 @@ function render_health_meter_from_local_index_interpolated(localIndex, health, p
     end
 end
 
-local pieTextureNames = {
-    "one_segments",
-    "two_segments",
-    "three_segments",
-    "four_segments",
-    "five_segments",
-    "six_segments",
-    "seven_segments",
-    "full",
-}
+-- Force Default Health function to render CS' Meter
+
+_G.hud_render_power_meter = function(health, x, y, scaleX, scaleY)
+    render_health_meter_from_local_index(0, health, x, y, scaleX, scaleY)
+end
+_G.hud_render_power_meter_interpolated = function(health, prevX, prevY, prevScaleX, prevScaleY, x, y, scaleX, scaleY)
+    render_health_meter_from_local_index_interpolated(0, health, prevX, prevY, prevScaleX, prevScaleY, x, y, scaleX, scaleY)
+end
 
 -- Health Meter Code
 local POWER_METER_HIDDEN = 0
