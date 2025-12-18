@@ -375,6 +375,15 @@ end
 ---@note         [8] = get_texture_info("hp-pie-8"),
 ---@note     }
 ---@note }
+---@note
+---@note -- or --
+---@note
+---@note local function char_meter_render (localIndex, health, prevX, prevY, prevScaleX, prevScaleY, x, y, scaleX, scaleY)
+---@note     local squares = health >> 8
+---@note     for i = 1, squares do
+---@note         djui_hud_render_rect(x + (i * 17), y, 16, 16)
+---@note     end
+---@note end
 ---@note ```
 local function character_add_health_meter(charNum, healthMeter)
     character_add_costume_health_meter(charNum, 1, healthMeter)
