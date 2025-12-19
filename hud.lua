@@ -424,7 +424,7 @@ function health_meter_from_local_index(localIndex)
     local p = gCSPlayers[localIndex]
     for i = 0, #characterTable do
         local char = characterTable[i]
-        local healthMeter = char[p.currAlt].healthMeter or char[1].healthMeter
+        local healthMeter = (char[p.currAlt] and char[p.currAlt].healthMeter) or char[1].healthMeter
         if char.saveName == p.saveName and healthMeter ~= nil then
             return healthMeter
         end
@@ -439,6 +439,7 @@ end
 ---@param scaleX integer
 ---@param scaleY integer
 function render_health_meter_from_local_index(localIndex, health, x, y, scaleX, scaleY)
+    local color = djui_hud_get_color()
     localIndex = localIndex or 0
     local meter = health_meter_from_local_index(localIndex)
     if type(meter) == "function" then
@@ -454,6 +455,7 @@ function render_health_meter_from_local_index(localIndex, health, x, y, scaleX, 
             djui_hud_render_texture(tex, x + 15*scaleX*MATH_DIVIDE_64, y + 16*scaleY*MATH_DIVIDE_64, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_32) * MATH_DIVIDE_64)
         end
     end
+    djui_hud_set_color(color.r, color.g, color.b, color.a)
 end
 
 ---@param localIndex integer
@@ -467,6 +469,7 @@ end
 ---@param scaleX integer
 ---@param scaleY integer
 function render_health_meter_from_local_index_interpolated(localIndex, health, prevX, prevY, prevScaleX, prevScaleY, x, y, scaleX, scaleY)
+    local color = djui_hud_get_color()
     localIndex = localIndex or 0
     local meter = health_meter_from_local_index(localIndex)
     if type(meter) == "function" then
@@ -482,6 +485,7 @@ function render_health_meter_from_local_index_interpolated(localIndex, health, p
             djui_hud_render_texture_interpolated(tex, prevX + 15*prevScaleX*MATH_DIVIDE_64, prevY + 16*scaleY*MATH_DIVIDE_64, prevScaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, prevScaleY / (tex.height * MATH_DIVIDE_32) * MATH_DIVIDE_64, x + 15*scaleX*MATH_DIVIDE_64, y + 16*scaleY*MATH_DIVIDE_64, scaleX / (tex.width * MATH_DIVIDE_32) * MATH_DIVIDE_64, scaleY / (tex.height * MATH_DIVIDE_32) * MATH_DIVIDE_64)
         end
     end
+    djui_hud_set_color(color.r, color.g, color.b, color.a)
 end
 
 -- Force Default Health function to render CS' Meter
