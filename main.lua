@@ -806,6 +806,9 @@ hookTableOnCharacterChange = {
         else
             set_mario_action(m, ACT_FREEFALL, 0)
         end
+
+        -- Switch all models to either Vanilla or the Character's
+        set_all_models()
     end
 }
 
@@ -879,6 +882,7 @@ local function mario_update(m)
                 boot_note()
             end
         end
+        set_all_models()
         queueStorageFailsafe = false
     end
     
@@ -1167,21 +1171,16 @@ local sCapBhvs = {
     [id_bhvMetalCap] = true
 }
 
----@param o Object
----@param model integer
-local BowserKey = false
-local function on_star_or_key_grab(m, o, type)
-    if type == INTERACT_STAR_OR_KEY then
-        if get_id_from_behavior(o.behavior) == id_bhvBowserKey then
-            BowserKey = true
-        else
-            BowserKey = false
-        end
-    end
-end
+define_custom_obj_fields({
+    oOriginalModel = 'u32',
+})
 
 ---@param o Object
 function set_model(o, model)
+    if o.oOriginalModel == 0 then
+        o.oOriginalModel = obj_get_model_id_extended(o)
+    end
+
     -- Player Models
     if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
         local i = network_local_index_from_global(o.globalPlayerIndex)
@@ -1295,17 +1294,28 @@ function set_model(o, model)
 
     -- Other Custom Models
     if characterTable[currChar].replaceModels ~= nil then
-        local model = characterTable[currChar].replaceModels[get_id_from_behavior(o.behavior)]
-        if model ~= nil and obj_has_model_extended(o, model) == 0 then
+        local model = characterTable[currChar].replaceModels[get_id_from_behavior(o.behavior)] or o.oOriginalModel
+        if obj_has_model_extended(o, model) == 0 then
             obj_set_model_extended(o, model)
             return
         end
     end
 end
 
+function set_all_models()
+    for i = 0, NUM_OBJ_LISTS - 1 do
+        local o = obj_get_first(i)
+        repeat
+            if o ~= nil then
+                set_model(o, o.oOriginalModel)
+            end
+            o = obj_get_next(o)
+        until o == nil
+    end
+end
+
 --hook_event(HOOK_MARIO_UPDATE, mario_update)
 cs_hook_mario_update(mario_update)
-hook_event(HOOK_ON_INTERACT, on_star_or_key_grab)
 hook_event(HOOK_OBJECT_SET_MODEL, set_model)
 
 ------------------
