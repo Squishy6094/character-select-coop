@@ -186,10 +186,17 @@ for i = 0, MAX_PLAYERS - 1 do
     playerSample[i] = nil
 end
 
+local characterAddonSounds = {
+    [CHAR_SOUND_PUNCH_YAH] = SOUND_ACTION_THROW,
+    [CHAR_SOUND_PUNCH_WAH] = SOUND_ACTION_THROW,
+    [CHAR_SOUND_PUNCH_HOO] = SOUND_ACTION_THROW,
+}
+
 ---@param m MarioState
 ---@param sound CharacterSound
 ---@param pos Vec3f?
 function custom_character_sound(m, sound, pos)
+
     local np = gNetworkPlayers[m.playerIndex]
     if m.playerIndex == 0 then
         if not startup_init_stall() then
@@ -203,8 +210,15 @@ function custom_character_sound(m, sound, pos)
     if optionTable[optionTableRef.localVoices].toggle == 0 then return NO_SOUND end
     if optionTable[optionTableRef.localVoices].toggle == 2 and m.playerIndex ~= 0 then return NO_SOUND end
 
-    -- get the sample to play
+    -- Vanilla Voicelines
     if character_get_voice(m) == nil then return end
+
+    -- Add punch "woosh" since NO_SOUND removes it
+    if characterAddonSounds[sound] then
+        play_sound(characterAddonSounds[sound], m.marioObj.header.gfx.cameraToObject);
+    end
+
+    -- Load the appropriate sample
     local voice = character_get_voice(m)[sound]
     if voice == nil then return NO_SOUND end
     if type(voice) == TYPE_TABLE then
@@ -353,6 +367,7 @@ cs_hook_mario_update(mario_update)
 ---@param soundbits integer
 ---@param pos Vec3f 
 local function on_play_sound(soundbits,pos)
+    djui_chat_message_create(tostring(soundbits))
     local endpeachsoundtable = {[SOUND_PEACH_MARIO] = true,[SOUND_PEACH_POWER_OF_THE_STARS] = true,[SOUND_PEACH_THANKS_TO_YOU] = true, [SOUND_PEACH_THANK_YOU_MARIO] = true,[SOUND_PEACH_SOMETHING_SPECIAL] = true,[SOUND_PEACH_BAKE_A_CAKE] = true,[SOUND_PEACH_FOR_MARIO] = true,[SOUND_PEACH_MARIO2] = true}
     local m = gMarioStates[0]
     if endpeachsoundtable[soundbits] and (character_get_voice(m) ~= nil) and (character_get_voice(m)[soundbits] ~= nil) then --ending peach cutscene sounds
