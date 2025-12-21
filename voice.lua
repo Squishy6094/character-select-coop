@@ -187,17 +187,19 @@ for i = 0, MAX_PLAYERS - 1 do
 end
 
 local characterAddonSounds = {
-    [CHAR_SOUND_PUNCH_YAH] = SOUND_ACTION_THROW,
-    [CHAR_SOUND_PUNCH_WAH] = SOUND_ACTION_THROW,
-    [CHAR_SOUND_PUNCH_HOO] = SOUND_ACTION_THROW,
+    [CHAR_SOUND_PUNCH_YAH] = {sound = SOUND_ACTION_THROW, pitch = 1.1},
+    [CHAR_SOUND_PUNCH_WAH] = {sound = SOUND_ACTION_THROW, pitch = 1.0},
+    [CHAR_SOUND_PUNCH_HOO] = {sound = SOUND_ACTION_THROW, pitch = 0.9},
 }
 
 ---@param m MarioState
 ---@param sound CharacterSound
 ---@param pos Vec3f?
 function custom_character_sound(m, sound, pos)
-
     local np = gNetworkPlayers[m.playerIndex]
+    local voiceTable = character_get_voice(m)
+    local voiceToggle = optionTable[optionTableRef.localVoices].toggle
+    local voiceOff = (voiceToggle == 0 or (voiceToggle == 2 and m.playerIndex ~= 0))
     if m.playerIndex == 0 then
         if not startup_init_stall() then
             return NO_SOUND
@@ -207,16 +209,18 @@ function custom_character_sound(m, sound, pos)
     if playerSample[index] ~= nil and type(playerSample[index]) ~= TYPE_STRING then
         stop_sound_with_reverb(playerSample[index])
     end
-    if optionTable[optionTableRef.localVoices].toggle == 0 then return NO_SOUND end
-    if optionTable[optionTableRef.localVoices].toggle == 2 and m.playerIndex ~= 0 then return NO_SOUND end
-
-    -- Vanilla Voicelines
-    if character_get_voice(m) == nil then return end
 
     -- Add punch "woosh" since NO_SOUND removes it
-    if characterAddonSounds[sound] then
-        play_sound(characterAddonSounds[sound], m.marioObj.header.gfx.cameraToObject);
+    if characterAddonSounds[sound] and (voiceTable ~= nil or voiceOff) then
+        local soundInfo = characterAddonSounds[sound]
+        play_sound_with_freq_scale(soundInfo.sound, m.marioObj.header.gfx.cameraToObject, soundInfo.pitch);
     end
+
+    -- Voice Toggle
+    if voiceOff then return NO_SOUND end
+
+    -- Vanilla Voicelines
+    if voiceTable == nil then return end
 
     -- Load the appropriate sample
     local voice = character_get_voice(m)[sound]
