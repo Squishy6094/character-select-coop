@@ -367,7 +367,6 @@ cs_hook_mario_update(mario_update)
 ---@param soundbits integer
 ---@param pos Vec3f 
 local function on_play_sound(soundbits,pos)
-    djui_chat_message_create(tostring(soundbits))
     local endpeachsoundtable = {[SOUND_PEACH_MARIO] = true,[SOUND_PEACH_POWER_OF_THE_STARS] = true,[SOUND_PEACH_THANKS_TO_YOU] = true, [SOUND_PEACH_THANK_YOU_MARIO] = true,[SOUND_PEACH_SOMETHING_SPECIAL] = true,[SOUND_PEACH_BAKE_A_CAKE] = true,[SOUND_PEACH_FOR_MARIO] = true,[SOUND_PEACH_MARIO2] = true}
     local m = gMarioStates[0]
     if endpeachsoundtable[soundbits] and (character_get_voice(m) ~= nil) and (character_get_voice(m)[soundbits] ~= nil) then --ending peach cutscene sounds
