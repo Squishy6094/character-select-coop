@@ -416,7 +416,7 @@ end
 
 ---@param charNum ModelExtendedId|integer Player Model ID	
 ---@param bhvId BehaviorId|integer Behavior ID of the type of objects you want to replace
----@param replaceModel ModelExtendedId|integer? Model ID
+---@param replaceModel ModelExtendedId|integer|function? Model ID
 local function character_add_model_replacement(charNum, bhvId, replaceModel)
     characterTable[charNum].replaceModels[bhvId] = replaceModel
 end
@@ -455,12 +455,19 @@ local function character_add_peach_custom(modelInfo, peachmodelstart, peachmodel
     end
 end
 
----@description A function that adds a peach model to a character for the opening letter and ending cutscene
+---@description A function that sets the toad models during the ending cutscene
 ---@added 1.16
----@param modelInfo ModelExtendedId|integer Model Information Received from smlua_model_util_get_id()	
----@param toadModel ModelExtendedId Model Information Received from smlua_model_util_get_id()	the model used for one of the toads in the ending if left blank said toad will use the default npc toad model
-local function character_add_ending_toad_model(modelInfo, toadModel)
-    character_add_model_replacement(character_get_number_from_model(modelInfo), id_bhvEndToad, toadModel)
+---@param modelInfo ModelExtendedId|integer Model Information Received from smlua_model_util_get_id()
+---@param toadModelRight ModelExtendedId Model Information Received from smlua_model_util_get_id(), the model used for the right toad in the ending if left blank said toad will use the default npc toad model
+---@param toadModelLeft ModelExtendedId Model Information Received from smlua_model_util_get_id(), the model used for the left toad in the ending if left blank said toad will use the default npc toad model
+local function character_add_ending_toad_model(modelInfo, toadModelRight, toadModelLeft)
+    character_add_model_replacement(character_get_number_from_model(modelInfo), id_bhvEndToad, function (o)
+        -- Only difference between the two objects is positions
+        if o.oPosX > 0 then
+            return toadModelRight
+        end
+        return toadModelLeft
+    end)
 end
 
 ---@description A function that adds a palette preset to a character

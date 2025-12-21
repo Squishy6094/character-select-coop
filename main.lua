@@ -1294,7 +1294,7 @@ function set_model(o, model)
 
     -- Other Custom Models
     if characterTable[currChar].replaceModels ~= nil then
-        local model = characterTable[currChar].replaceModels[get_id_from_behavior(o.behavior)] or o.oOriginalModel
+        local model = run_func_or_get_var(characterTable[currChar].replaceModels[get_id_from_behavior(o.behavior)], o) or o.oOriginalModel
         if obj_has_model_extended(o, model) == 0 then
             obj_set_model_extended(o, model)
             return
