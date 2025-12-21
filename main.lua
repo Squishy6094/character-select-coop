@@ -1175,13 +1175,8 @@ define_custom_obj_fields({
     oOriginalModel = 'u32',
 })
 
-local blockedBehaviors = {
-    [id_bhvStaticObject] = true, -- Likely Level Geometry
-}
-
 ---@param o Object
 function set_model(o, model)
-    local bhvId = get_id_from_behavior(o.behavior)
     if o.oOriginalModel == 0 then
         o.oOriginalModel = obj_get_model_id_extended(o)
     end
@@ -1189,6 +1184,7 @@ function set_model(o, model)
     -- Player Models
     if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
         local i = network_local_index_from_global(o.globalPlayerIndex)
+        local prevModelData = obj_get_model_id_extended(o)
         local localModelData = nil
         for c = 0, #characterTable do
             if gCSPlayers[i].saveName == characterTable[c].saveName then
@@ -1211,8 +1207,62 @@ function set_model(o, model)
         return
     end
 
+    --[[
+    -- Star Models
+    if obj_get_model_id_extended(o) == E_MODEL_STAR then
+        local i = network_local_index_from_global(o.parentObj.globalPlayerIndex) or 0
+        local starModel = characterCelebrationStar[gCSPlayers[i].modelId].trans
+        if starModel ~= nil and obj_has_model_extended(o, starModel) == 0 and not BowserKey then
+            obj_set_model_extended(o, starModel)
+        end
+        return
+    end
+
+    if obj_get_model_id_extended(o) == E_MODEL_TRANSPARENT_STAR then
+        local starModel = characterCelebrationStar[gCSPlayers[0].modelId].star
+        if starModel ~= nil and obj_has_model_extended(o, starModel) == 0 and not BowserKey then
+            obj_set_model_extended(o, starModel)
+        end
+        return
+    end
+
+    -- Peach models
+    if (obj_has_behavior_id(o, id_bhvEndPeach) ~= 0) then
+        local peachModel = characterpeachend[gCSPlayers[0].modelId]
+        if gCSPlayers[0].modelId ~= nil and peachModel ~= nil and obj_has_model_extended(o, peachModel) == 0 then
+            obj_set_model_extended(o, peachModel)
+        end
+    elseif (obj_has_behavior_id(o, id_bhvBeginningPeach) ~= 0) then
+        
+        local peachModel = characterpeachstart[gCSPlayers[0].modelId]
+
+        if characterpeachletter[gCSPlayers[0].modelId] ~= nil then
+            texture_override_set("castle_grounds_seg7_texture_0700C9E8",characterpeachletter[gCSPlayers[0].modelId].left)
+            texture_override_set("castle_grounds_seg7_texture_0700D9E8",characterpeachletter[gCSPlayers[0].modelId].right)
+            texture_override_set("castle_grounds_seg7_us_texture_0700EAE8",characterpeachletter[gCSPlayers[0].modelId].sig)
+        end
+        
+        if gCSPlayers[0].modelId ~= nil and peachModel ~= nil and obj_has_model_extended(o, peachModel) == 0 then
+            obj_set_model_extended(o, peachModel)
+        end
+    elseif (obj_has_behavior_id(o, id_bhvEndToad) ~= 0) then
+        local i = network_local_index_from_global(o.parentObj.globalPlayerIndex)
+        local toadModel
+        if setting1stendtoad then
+            toadModel = characterendtoad1[gCSPlayers[i].modelId]
+        else
+            toadModel = characterendtoad2[gCSPlayers[i].modelId]
+        end
+        
+        if gCSPlayers[i].modelId ~= nil and toadModel ~= nil and (obj_has_model_extended(o, characterendtoad1[gCSPlayers[i].modelId]) == 0) and (obj_has_model_extended(o, characterendtoad2[gCSPlayers[i].modelId]) == 0) then
+            obj_set_model_extended(o, toadModel)
+            setting1stendtoad = not setting1stendtoad
+        end
+    end
+    ]]
+
     -- Cap Behaviors
-    if sCapBhvs[bhvId] then
+    if sCapBhvs[get_id_from_behavior(o.behavior)] then
         local playerToObj = nearest_player_to_object(o.parentObj)
         o.globalPlayerIndex = playerToObj and playerToObj.globalPlayerIndex or 0
     end
@@ -1243,8 +1293,8 @@ function set_model(o, model)
     end
 
     -- Other Custom Models
-    if characterTable[currChar].replaceModels ~= nil and not blockedBehaviors[bhvId] then
-        local model = run_func_or_get_var(characterTable[currChar].replaceModels[bhvId], o) or o.oOriginalModel
+    if characterTable[currChar].replaceModels ~= nil then
+        local model = run_func_or_get_var(characterTable[currChar].replaceModels[get_id_from_behavior(o.behavior)], o) or o.oOriginalModel
         if obj_has_model_extended(o, model) == 0 then
             obj_set_model_extended(o, model)
             return
