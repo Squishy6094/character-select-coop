@@ -1181,10 +1181,12 @@ function set_model(o, model)
         o.oOriginalModel = obj_get_model_id_extended(o)
     end
 
+    -- Extended Model Incompatible
+    if o.oOriginalModel == E_MODEL_ERROR_MODEL then return end
+
     -- Player Models
     if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
         local i = network_local_index_from_global(o.globalPlayerIndex)
-        local prevModelData = obj_get_model_id_extended(o)
         local localModelData = nil
         for c = 0, #characterTable do
             if gCSPlayers[i].saveName == characterTable[c].saveName then
@@ -1205,96 +1207,39 @@ function set_model(o, model)
             end
         end
         return
-    end
-
-    --[[
-    -- Star Models
-    if obj_get_model_id_extended(o) == E_MODEL_STAR then
-        local i = network_local_index_from_global(o.parentObj.globalPlayerIndex) or 0
-        local starModel = characterCelebrationStar[gCSPlayers[i].modelId].trans
-        if starModel ~= nil and obj_has_model_extended(o, starModel) == 0 and not BowserKey then
-            obj_set_model_extended(o, starModel)
-        end
-        return
-    end
-
-    if obj_get_model_id_extended(o) == E_MODEL_TRANSPARENT_STAR then
-        local starModel = characterCelebrationStar[gCSPlayers[0].modelId].star
-        if starModel ~= nil and obj_has_model_extended(o, starModel) == 0 and not BowserKey then
-            obj_set_model_extended(o, starModel)
-        end
-        return
-    end
-
-    -- Peach models
-    if (obj_has_behavior_id(o, id_bhvEndPeach) ~= 0) then
-        local peachModel = characterpeachend[gCSPlayers[0].modelId]
-        if gCSPlayers[0].modelId ~= nil and peachModel ~= nil and obj_has_model_extended(o, peachModel) == 0 then
-            obj_set_model_extended(o, peachModel)
-        end
-    elseif (obj_has_behavior_id(o, id_bhvBeginningPeach) ~= 0) then
-        
-        local peachModel = characterpeachstart[gCSPlayers[0].modelId]
-
-        if characterpeachletter[gCSPlayers[0].modelId] ~= nil then
-            texture_override_set("castle_grounds_seg7_texture_0700C9E8",characterpeachletter[gCSPlayers[0].modelId].left)
-            texture_override_set("castle_grounds_seg7_texture_0700D9E8",characterpeachletter[gCSPlayers[0].modelId].right)
-            texture_override_set("castle_grounds_seg7_us_texture_0700EAE8",characterpeachletter[gCSPlayers[0].modelId].sig)
-        end
-        
-        if gCSPlayers[0].modelId ~= nil and peachModel ~= nil and obj_has_model_extended(o, peachModel) == 0 then
-            obj_set_model_extended(o, peachModel)
-        end
-    elseif (obj_has_behavior_id(o, id_bhvEndToad) ~= 0) then
-        local i = network_local_index_from_global(o.parentObj.globalPlayerIndex)
-        local toadModel
-        if setting1stendtoad then
-            toadModel = characterendtoad1[gCSPlayers[i].modelId]
-        else
-            toadModel = characterendtoad2[gCSPlayers[i].modelId]
-        end
-        
-        if gCSPlayers[i].modelId ~= nil and toadModel ~= nil and (obj_has_model_extended(o, characterendtoad1[gCSPlayers[i].modelId]) == 0) and (obj_has_model_extended(o, characterendtoad2[gCSPlayers[i].modelId]) == 0) then
-            obj_set_model_extended(o, toadModel)
-            setting1stendtoad = not setting1stendtoad
-        end
-    end
-    ]]
-
-    -- Cap Behaviors
-    if sCapBhvs[get_id_from_behavior(o.behavior)] then
+    elseif sCapBhvs[get_id_from_behavior(o.behavior)] then -- Cap Behaviors
         local playerToObj = nearest_player_to_object(o.parentObj)
         o.globalPlayerIndex = playerToObj and playerToObj.globalPlayerIndex or 0
-    end
-    local i = network_local_index_from_global(o.globalPlayerIndex)
 
-    local c = gMarioStates[i].character
-    if model == c.capModelId or
-       model == c.capWingModelId or
-       model == c.capMetalModelId or
-       model == c.capMetalWingModelId then
-        local capModels = characterCaps[gCSPlayers[i].modelId]
-        if capModels ~= nil then
-            local capModel = E_MODEL_NONE
-            if model == c.capModelId then
-                capModel = capModels.normal
-            elseif model == c.capWingModelId then
-                capModel = capModels.wing
-            elseif model == c.capMetalModelId then
-                capModel = capModels.metal
-            elseif model == c.capMetalWingModelId then
-                capModel = capModels.metalWing
-            end
-            if capModel ~= E_MODEL_NONE and capModel ~= E_MODEL_ERROR_MODEL and capModel ~= nil then
-                obj_set_model_extended(o, capModel)
-                return
+        local i = network_local_index_from_global(o.globalPlayerIndex)
+
+        local c = gMarioStates[i].character
+        if model == c.capModelId or
+        model == c.capWingModelId or
+        model == c.capMetalModelId or
+        model == c.capMetalWingModelId then
+            local capModels = characterCaps[gCSPlayers[i].modelId]
+            if capModels ~= nil then
+                local capModel = E_MODEL_NONE
+                if model == c.capModelId then
+                    capModel = capModels.normal
+                elseif model == c.capWingModelId then
+                    capModel = capModels.wing
+                elseif model == c.capMetalModelId then
+                    capModel = capModels.metal
+                elseif model == c.capMetalWingModelId then
+                    capModel = capModels.metalWing
+                end
+                if capModel ~= E_MODEL_NONE and capModel ~= E_MODEL_ERROR_MODEL and capModel ~= nil then
+                    if obj_has_model_extended(o, capModel) == 0 then
+                        obj_set_model_extended(o, capModel)
+                    end
+                    return
+                end
             end
         end
-    end
-
-    -- Other Custom Models
-    if characterTable[currChar].replaceModels ~= nil then
-        local model = run_func_or_get_var(characterTable[currChar].replaceModels[get_id_from_behavior(o.behavior)], o) or o.oOriginalModel
+    elseif characterTable[currChar].replaceModels ~= nil then -- Other Custom Models
+        local model = run_func_or_get_var(characterTable[currChar].replaceModels[get_id_from_behavior(o.behavior)], o, o.oOriginalModel) or o.oOriginalModel
         if obj_has_model_extended(o, model) == 0 then
             obj_set_model_extended(o, model)
             return
@@ -1314,7 +1259,16 @@ function set_all_models()
     end
 end
 
---hook_event(HOOK_MARIO_UPDATE, mario_update)
+local function koopa_model_update(o)
+    if o.oKoopaMovementType == KOOPA_BP_UNSHELLED then
+        o.oOriginalModel = E_MODEL_KOOPA_WITHOUT_SHELL
+    else
+        o.oOriginalModel = E_MODEL_KOOPA_WITH_SHELL
+    end
+    set_model(o)
+end
+hook_behavior(id_bhvKoopa, OBJ_LIST_PUSHABLE, false, nil, koopa_model_update)
+
 cs_hook_mario_update(mario_update)
 hook_event(HOOK_OBJECT_SET_MODEL, set_model)
 
