@@ -1177,10 +1177,6 @@ define_custom_obj_fields({
 
 ---@param o Object
 function set_model(o, model)
-    if o.oOriginalModel == 0 then
-        o.oOriginalModel = obj_get_model_id_extended(o)
-    end
-
     -- Extended Model Incompatible
     if o.oOriginalModel == E_MODEL_ERROR_MODEL then return end
 
@@ -1239,8 +1235,13 @@ function set_model(o, model)
             end
         end
     elseif characterTable[currChar].replaceModels ~= nil then -- Other Custom Models
-        local model = run_func_or_get_var(characterTable[currChar].replaceModels[get_id_from_behavior(o.behavior)], o, o.oOriginalModel) or o.oOriginalModel
-        if obj_has_model_extended(o, model) == 0 then
+    local currReplace = characterTable[currChar].replaceModels[get_id_from_behavior(o.behavior)]
+        if o.oOriginalModel == 0 then
+            o.oOriginalModel = obj_get_model_id_extended(o)
+        end
+        local model = run_func_or_get_var(currReplace, o, o.oOriginalModel)
+        
+        if model ~= nil and obj_has_model_extended(o, model) == 0 then
             obj_set_model_extended(o, model)
             return
         end
