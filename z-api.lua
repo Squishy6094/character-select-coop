@@ -461,12 +461,18 @@ end
 ---@param toadModelRight ModelExtendedId Model Information Received from smlua_model_util_get_id(), the model used for the right toad in the ending if left blank said toad will use the default npc toad model
 ---@param toadModelLeft ModelExtendedId Model Information Received from smlua_model_util_get_id(), the model used for the left toad in the ending if left blank said toad will use the default npc toad model
 local function character_add_ending_toad_model(modelInfo, toadModelRight, toadModelLeft)
+    rightEndToad = true --variable for keeping track of which toad is being changed 
     character_add_model_replacement(character_get_number_from_model(modelInfo), id_bhvEndToad, function (o)
-        -- Only difference between the two objects is positions
-        if o.oPosX > 0 then
-            return toadModelRight
+        if (obj_has_model_extended(o,toadModelRight) == 0) and (obj_has_model_extended(o,toadModelLeft) == 0)  then --if the model was already changed
+            rightEndToad = not rightEndToad
+                if rightEndToad  then
+                    return toadModelRight
+                end
+                return toadModelLeft
+        else --the ending toads model was already changed
+            return obj_get_model_id_extended(o)
         end
-        return toadModelLeft
+        
     end)
 end
 
