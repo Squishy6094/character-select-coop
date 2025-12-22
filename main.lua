@@ -369,6 +369,7 @@ optionTableRef = {
     -- Characters
     localMoveset = make_table_ref_num(),
     localVoices = make_table_ref_num(),
+    localVisuals = make_table_ref_num(),
     -- CS
     credits = make_table_ref_num(),
     resetSaveData = make_table_ref_num(),
@@ -437,6 +438,15 @@ optionTable = {
         toggleMax = 2,
         toggleNames = {"Off", "On", "Local Only"},
         description = {"Toggle if Custom Voicelines play", "for Characters who support it"}
+    },
+    [optionTableRef.localVisuals] = {
+        name = "Character Visuals",
+        category = OPTION_CHAR,
+        toggle = tonumber(mod_storage_load("localVisuals")),
+        toggleSaveName = "localVisuals",
+        toggleDefault = 1,
+        toggleMax = 1,
+        description = {"Toggle if Characters can", "change how objects/textures appear"}
     },
     [optionTableRef.localMoveset] = {
         name = "Character Moveset",
@@ -556,8 +566,10 @@ creditTable = {
         { creditee = "Squishy6094",     credit = "Creator" },
         { creditee = "JerThePear",      credit = "Menu Assets/Anims" },
         { creditee = "Trashcam",        credit = "Menu Music" },
+        { creditee = "Charity",         credit = "Sound Design" },
+        { creditee = "Charlotte",       credit = "Menu Asset Renders" },
         { creditee = "xLuigiGamerx",    credit = "HUD Accuracy" },
-        { creditee = "Wibblus",         credit = "Menu Anims Implementation" },
+        { creditee = "Wibblus",         credit = "Menu Anims Code" },
     }
 }
 
@@ -872,6 +884,7 @@ local menuOffsetX = 0
 local menuOffsetY = 0 
 local camScale = 1
 local prevMusicToggle = 1
+local prevVisualToggle = 1
 ---@param m MarioState
 local function mario_update(m)
     if m.playerIndex == 0 and (startup_init_stall(1) or queueStorageFailsafe) then
@@ -888,10 +901,6 @@ local function mario_update(m)
     
     local np = gNetworkPlayers[m.playerIndex]
     local p = gCSPlayers[m.playerIndex]
-
-    if network_is_server() and gGlobalSyncTable.charSelectRestrictMovesets < 2 then
-        gGlobalSyncTable.charSelectRestrictMovesets = optionTable[optionTableRef.restrictMovesets].toggle
-    end
 
     if m.playerIndex == 0 then
         -- Check for Locked Chars
@@ -955,6 +964,19 @@ local function mario_update(m)
 
         if menu and m.action == ACT_SLEEPING then
             set_mario_action(m, ACT_WAKING_UP, m.actionArg)
+        end
+
+        if menu and options == OPTIONS_MAIN then
+            if (network_is_server() or network_is_moderator()) and gGlobalSyncTable.charSelectRestrictMovesets < 2 then
+                gGlobalSyncTable.charSelectRestrictMovesets = optionTable[optionTableRef.restrictMovesets].toggle
+            end
+        else
+            optionTable[optionTableRef.restrictMovesets].toggle = gGlobalSyncTable.charSelectRestrictMovesets
+        end
+
+        if prevVisualToggle ~= optionTable[optionTableRef.localVisuals].toggle then
+            set_all_models()
+            prevVisualToggle = optionTable[optionTableRef.localVisuals].toggle
         end
 
         if menuAndTransition then
@@ -1173,12 +1195,15 @@ local sCapBhvs = {
 
 define_custom_obj_fields({
     oOriginalModel = 'u32',
+    oModelHasBeenReplaced = 'u32',
 })
 
 ---@param o Object
 function set_model(o, model)
     -- Extended Model Incompatible
     if o.oOriginalModel == E_MODEL_ERROR_MODEL then return end
+
+    local visualToggle = optionTable[optionTableRef.localVisuals].toggle == 1
 
     -- Player Models
     if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
@@ -1239,12 +1264,20 @@ function set_model(o, model)
         if o.oOriginalModel == 0 then
             o.oOriginalModel = obj_get_model_id_extended(o)
         end
+        
         local model = run_func_or_get_var(currReplace, o, o.oOriginalModel)
         
-        if model ~= nil and obj_has_model_extended(o, model) == 0 then
-            obj_set_model_extended(o, model)
-            return
+        if model ~= nil and visualToggle then
+            o.oModelHasBeenReplaced = 1
+            if obj_has_model_extended(o, model) == 0 then
+                obj_set_model_extended(o, model)
+            end
+        elseif o.oModelHasBeenReplaced ~= 0 then
+            if obj_has_model_extended(o, o.oOriginalModel) == 0 then
+                obj_set_model_extended(o, o.oOriginalModel)
+            end
         end
+        return
     end
 end
 

@@ -646,9 +646,12 @@ function djui_hud_render_texture_auto_interpolated(index, texture, x, y, width, 
 end
 
 local hasBeenLogged = {}
+---@param message string
+---@param level ConsoleMessageLevel
 function log_to_console_once(message, level)
     if not hasBeenLogged[message] then
         hasBeenLogged[message] = true
+        log_to_console("Character Select: "..message, level)
     end
 end
 

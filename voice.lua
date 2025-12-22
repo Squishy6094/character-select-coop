@@ -347,7 +347,7 @@ hook_event(HOOK_UPDATE, update)
 hook_event(HOOK_ON_LEVEL_INIT, stop_all_custom_character_sounds)
 
 function config_character_sounds()
-    log_to_console_once("'config_character_sounds()' is deprecated, and functionality is now baked into `character_add_voice()`")
+    log_to_console_once("'config_character_sounds' is deprecated, and functionality is now baked into `character_add_voice`", CONSOLE_MESSAGE_WARNING)
 end
 
 -- Join sound

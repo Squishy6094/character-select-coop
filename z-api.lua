@@ -414,10 +414,22 @@ local function character_add_course_texture(charNum, courseTexture)
     character_add_costume_course_texture(charNum, 1, courseTexture)
 end
 
+-- Here because the model replacement feature is unstable
+local bhvAllowReplace = {
+    [id_bhvEndToad] = true,
+    [id_bhvBeginningPeach] = true,
+    [id_bhvEndPeach] = true,
+    --[id_bhvGoomba] = true,
+    [id_bhvCelebrationStar] = true,
+}
+
 ---@param charNum ModelExtendedId|integer Player Model ID	
 ---@param bhvId BehaviorId|integer Behavior ID of the type of objects you want to replace
 ---@param replaceModel ModelExtendedId|integer|function? Model ID
 local function character_add_model_replacement(charNum, bhvId, replaceModel)
+    if not bhvAllowReplace[bhvId] then
+        log_to_console_once("Using `character_add_model_replacement` on untested behaviors such as '" .. get_behavior_name_from_id(bhvId) .. "' may be unstable!", CONSOLE_MESSAGE_WARNING)
+    end
     characterTable[charNum].replaceModels[bhvId] = replaceModel
 end
 
@@ -461,9 +473,11 @@ end
 ---@param toadModelRight ModelExtendedId Model Information Received from smlua_model_util_get_id(), the model used for the right toad in the ending if left blank said toad will use the default npc toad model
 ---@param toadModelLeft ModelExtendedId Model Information Received from smlua_model_util_get_id(), the model used for the left toad in the ending if left blank said toad will use the default npc toad model
 local function character_add_ending_toad_model(modelInfo, toadModelRight, toadModelLeft)
+    local settingRightToad = false
     character_add_model_replacement(character_get_number_from_model(modelInfo), id_bhvEndToad, function (o)
         -- Only difference between the two objects is positions
-        if o.oPosX > 0 then
+        settingRightToad = not settingRightToad
+        if settingRightToad then
             return toadModelRight
         end
         return toadModelLeft
