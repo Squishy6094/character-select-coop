@@ -379,7 +379,7 @@ function render_star_icon_from_local_index_interpolated(localIndex, prevX, prevY
 end
 
 -- Health Meter --
-local TEXT_DEFAULT_METER_PREFIX = "char-select-custom-meter-"
+local TEXT_DEFAULT_METER_PREFIX = "char_select_custom_meter_"
 local TEX_DEFAULT_METER_LEFT = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."left")
 local TEX_DEFAULT_METER_RIGHT = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."right")
 local TEX_DEFAULT_METER_PIE1 = get_texture_info(TEXT_DEFAULT_METER_PREFIX.."pie1")
@@ -407,7 +407,7 @@ defaultMeterInfo = {
     }
 }
 
-local TEXT_DEFAULT_COURSE_PREFIX = "char-select-custom-course-"
+local TEXT_DEFAULT_COURSE_PREFIX = "char_select_custom_course_"
 local TEX_DEFAULT_COURSE_TOP = get_texture_info(TEXT_DEFAULT_COURSE_PREFIX.."top")
 local TEX_DEFAULT_COURSE_BOTTOM = get_texture_info(TEXT_DEFAULT_COURSE_PREFIX.."bottom")
 local defaultCourseInfo = {

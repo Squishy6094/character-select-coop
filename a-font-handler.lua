@@ -350,4 +350,4 @@ fontdataCharacteristic = {
     
 }
 
-FONT_CHARACTERISTIC = djui_hud_add_font(get_texture_info("char-select-font-characteristic"), fontdataCharacteristic, -5, 0, "X", 1)
+FONT_CHARACTERISTIC = djui_hud_add_font(get_texture_info("char_select_font_characteristic"), fontdataCharacteristic, -5, 0, "X", 1)

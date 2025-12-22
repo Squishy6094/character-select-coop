@@ -90,28 +90,28 @@ local TEXT_TABLE_MENU_BINDS = {
     },
 }
 
-local TEX_LOGO = get_texture_info("char-select-logo")
-local TEX_WALL_LEFT = get_texture_info("char-select-wall-left")
-local TEX_WALL_RIGHT = get_texture_info("char-select-wall-right")
-TEX_GRAFFITI_DEFAULT = get_texture_info("char-select-graffiti-default")
-local TEX_NAMEPLATE = get_texture_info("char-select-list-button")
-local TEX_ALBUM_LAYER1 = get_texture_info("char-select-album-back")
-local TEX_ALBUM_LAYER2 = get_texture_info("char-select-album-front")
-local TEX_ALBUM_LAYER3 = get_texture_info("char-select-album-overlay")
-local TEX_CD_LAYER1 = get_texture_info("char-select-cd-layer1")
-local TEX_CD_LAYER2 = get_texture_info("char-select-cd-layer2")
-local TEX_CD_LAYER3 = get_texture_info("char-select-cd-layer3")
-local TEX_CD_LAYER4 = get_texture_info("char-select-cd-layer4")
-local TEX_RECORD = get_texture_info("char-select-record")
-local TEX_PALETTE_BUCKET = get_texture_info("char-select-palette-bucket")
-local TEX_OPTIONS_TV = get_texture_info("char-select-options-tv")
+local TEX_LOGO           = get_texture_info("char_select_logo")
+local TEX_WALL_LEFT      = get_texture_info("char_select_wall_left")
+local TEX_WALL_RIGHT     = get_texture_info("char_select_wall_right")
+TEX_GRAFFITI_DEFAULT     = get_texture_info("char_select_graffiti_default")
+local TEX_NAMEPLATE      = get_texture_info("char_select_list_button")
+local TEX_ALBUM_LAYER1   = get_texture_info("char_select_album_back")
+local TEX_ALBUM_LAYER2   = get_texture_info("char_select_album_front")
+local TEX_ALBUM_LAYER3   = get_texture_info("char_select_album_overlay")
+local TEX_CD_LAYER1      = get_texture_info("char_select_cd_layer1")
+local TEX_CD_LAYER2      = get_texture_info("char_select_cd_layer2")
+local TEX_CD_LAYER3      = get_texture_info("char_select_cd_layer3")
+local TEX_CD_LAYER4      = get_texture_info("char_select_cd_layer4")
+local TEX_RECORD         = get_texture_info("char_select_record")
+local TEX_PALETTE_BUCKET = get_texture_info("char_select_palette_bucket")
+local TEX_OPTIONS_TV     = get_texture_info("char_select_options_tv")
 
 LOCKED_NEVER = 0
 LOCKED_TRUE = 1
 LOCKED_FALSE = 2
 
-local SOUND_CHAR_SELECT_THEME = audio_stream_load("char-select-menu-theme.ogg")
-local SOUND_CHAR_SELECT_DIAL = audio_stream_load("char-select-dial-wind.ogg")
+local SOUND_CHAR_SELECT_THEME = audio_stream_load("char_select_menu_theme.ogg")
+local SOUND_CHAR_SELECT_DIAL = audio_stream_load("char_select_dial_wind.ogg")
 local menuThemeTargetVolume = 0
 local menuThemeVolume = menuThemeTargetVolume
 audio_stream_set_looping(SOUND_CHAR_SELECT_THEME, true)
@@ -192,8 +192,8 @@ characterTable = {
             camScale = 1.0,
             healthMeter = {
                 label = {
-                    left = get_texture_info("char-select-luigi-meter-left"),
-                    right = get_texture_info("char-select-luigi-meter-right"),
+                    left =  get_texture_info("char_select_luigi_meter_left"),
+                    right = get_texture_info("char_select_luigi_meter_right"),
                 },
                 pie = defaultMeterInfo.pie
             }
@@ -222,8 +222,8 @@ characterTable = {
             camScale = 0.8,
             healthMeter = {
                 label = {
-                    left = get_texture_info("char-select-toad-meter-left"),
-                    right = get_texture_info("char-select-toad-meter-right"),
+                    left =  get_texture_info("char_select_toad_meter_left"),
+                    right = get_texture_info("char_select_toad_meter_right"),
                 },
                 pie = defaultMeterInfo.pie
             }
@@ -252,8 +252,8 @@ characterTable = {
             camScale = 1.1,
             healthMeter = {
                 label = {
-                    left = get_texture_info("char-select-waluigi-meter-left"),
-                    right = get_texture_info("char-select-waluigi-meter-right"),
+                    left =  get_texture_info("char_select_waluigi_meter_left"),
+                    right = get_texture_info("char_select_waluigi_meter_right"),
                 },
                 pie = defaultMeterInfo.pie
             }
@@ -282,8 +282,8 @@ characterTable = {
             camScale = 1.0,
             healthMeter = {
                 label = {
-                    left = get_texture_info("char-select-wario-meter-left"),
-                    right = get_texture_info("char-select-wario-meter-right"),
+                    left =  get_texture_info("char_select_wario_meter_left"),
+                    right = get_texture_info("char_select_wario_meter_right"),
                 },
                 pie = defaultMeterInfo.pie
             }
@@ -339,11 +339,11 @@ characterMovesets = {
 characterUnlock = {}
 characterInstrumentals = {}
 characterGraffiti = {
-    [CT_MARIO] = get_texture_info("char-select-graffiti-mario"),
-    [CT_LUIGI] = get_texture_info("char-select-graffiti-luigi"),
-    [CT_TOAD] = get_texture_info("char-select-graffiti-toad"),
-    [CT_WALUIGI] = get_texture_info("char-select-graffiti-waluigi"),
-    [CT_WARIO] = get_texture_info("char-select-graffiti-wario"),
+    [CT_MARIO]   = get_texture_info("char_select_graffiti_mario"),
+    [CT_LUIGI]   = get_texture_info("char_select_graffiti_luigi"),
+    [CT_TOAD]    = get_texture_info("char_select_graffiti_toad"),
+    [CT_WALUIGI] = get_texture_info("char_select_graffiti_waluigi"),
+    [CT_WARIO]   = get_texture_info("char_select_graffiti_wario"),
 }
 characterDialog = {}
 
@@ -1284,7 +1284,7 @@ local function button_to_analog(controller, negInput, posInput)
     return num
 end
 
-local TEX_CAUTION_TAPE = get_texture_info("char-select-caution-tape")
+local TEX_CAUTION_TAPE = get_texture_info("char_select_caution_tape")
 -- Renders caution tape from xy1 to xy2, tape extends based on dist (0 - 1)
 local function djui_hud_render_caution_tape(x1, y1, x2, y2, dist, scale)
     if not scale then scale = 0.5 end

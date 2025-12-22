@@ -361,18 +361,18 @@ end
 ---@note ```lua
 ---@note local HEALTH_METER_CHAR = {
 ---@note     label = {
----@note         left = get_texture_info("hp-back-left"),
----@note         right = get_texture_info("hp-back-right"),
+---@note         left = get_texture_info("char_hp_pie_left"),
+---@note         right = get_texture_info("char_hp_pie_right"),
 ---@note     },
 ---@note     pie = {
----@note         [1] = get_texture_info("hp-pie-1"),
----@note         [2] = get_texture_info("hp-pie-2"),
----@note         [3] = get_texture_info("hp-pie-3"),
----@note         [4] = get_texture_info("hp-pie-4"),
----@note         [5] = get_texture_info("hp-pie-5"),
----@note         [6] = get_texture_info("hp-pie-6"),
----@note         [7] = get_texture_info("hp-pie-7"),
----@note         [8] = get_texture_info("hp-pie-8"),
+---@note         [1] = get_texture_info("char_hp_pie_1"),
+---@note         [2] = get_texture_info("char_hp_pie_2"),
+---@note         [3] = get_texture_info("char_hp_pie_3"),
+---@note         [4] = get_texture_info("char_hp_pie_4"),
+---@note         [5] = get_texture_info("char_hp_pie_5"),
+---@note         [6] = get_texture_info("char_hp_pie_6"),
+---@note         [7] = get_texture_info("char_hp_pie_7"),
+---@note         [8] = get_texture_info("char_hp_pie_8"),
 ---@note     }
 ---@note }
 ---@note
@@ -406,8 +406,8 @@ end
 ---@param courseTexture table? A Table with your Character's Health Textures (Table Shown Below)
 ---@note ```lua
 ---@note local COURSE_CHAR = {
----@note     top = get_texture_info("char-course-top"),
----@note     bottom = get_texture_info("char-course-bottom"),
+---@note     top = get_texture_info("char_course_top"),
+---@note     bottom = get_texture_info("char_course_bottom"),
 ---@note }
 ---@note ```
 local function character_add_course_texture(charNum, courseTexture)
