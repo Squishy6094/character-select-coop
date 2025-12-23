@@ -279,7 +279,7 @@ characterTable = {
             baseChar = CT_WARIO,
             lifeIcon = gTextures.wario_head,
             starIcon = gTextures.star,
-            camScale = 1.0,
+            camScale = 1.1,
             healthMeter = {
                 label = {
                     left =  get_texture_info("char_select_wario_meter_left"),
@@ -903,6 +903,9 @@ local function mario_update(m)
     local p = gCSPlayers[m.playerIndex]
 
     if m.playerIndex == 0 then
+        -- Used for Viewport stuffs
+        m.marioObj.header.gfx.sharedChild.hookProcess = 1
+
         -- Check for Locked Chars
         for i = CT_MAX, #characterTable do
             local char = characterTable[i]
@@ -1037,23 +1040,31 @@ local function mario_update(m)
             hud_hide()
             djui_hud_set_resolution(RESOLUTION_N64)
             local widthScale = djui_hud_get_screen_width()/320
-            set_override_fov(45/widthScale)
             if m.area.camera.cutscene == 0 then
                 m.area.camera.cutscene = CUTSCENE_CS_MENU
             end
-            camScale = math.lerp(camScale, charTable[charTable.currAlt].camScale*widthScale, 0.1)
+            m.marioBodyState.eyeState = MARIO_EYES_OPEN
+            camScale = math.lerp(camScale, charTable[charTable.currAlt].camScale, 0.1)
             local camDist = 400 * camScale
             local camAngle = m.faceAngle.y + 0x800
+            local camOffsetX = mirror_mode_number(-menuOffsetX/widthScale)
             local focusPos = {
-                x = m.pos.x + sins(camAngle - 0x4000)*(mirror_mode_number(150)/widthScale - mirror_mode_number(menuOffsetX))*camScale*widthScale,
-                y = m.pos.y + (camDist*0.175/widthScale - menuOffsetY) * camScale ,
-                z = m.pos.z + coss(camAngle - 0x4000)*(mirror_mode_number(150)/widthScale - mirror_mode_number(menuOffsetX))*camScale*widthScale,
+                x = m.pos.x + sins(camAngle - 0x4000)*camOffsetX*camScale,
+                y = m.pos.y + (100 - menuOffsetY) * camScale ,
+                z = m.pos.z + coss(camAngle - 0x4000)*camOffsetX*camScale,
             }
             vec3f_copy(gLakituState.focus, focusPos)
-            m.marioBodyState.eyeState = MARIO_EYES_OPEN
-            gLakituState.pos.x = m.pos.x + sins(camAngle) * camDist + sins(camAngle - 0x4000)*(menuOffsetX*0.5)
-            gLakituState.pos.y = m.pos.y + 10
-            gLakituState.pos.z = m.pos.z + coss(camAngle) * camDist + sins(camAngle - 0x4000)*(menuOffsetX*0.5)
+
+            local camPos = {
+                x = (m.pos.x + sins(camAngle) * camDist + sins(camAngle - 0x4000)*camOffsetX),
+                y =  m.pos.y - (menuOffsetY*camScale),
+                z = (m.pos.z + coss(camAngle) * camDist + sins(camAngle - 0x4000)*camOffsetX),
+            }
+            camPos.y = collision_find_surface_on_ray(camPos.x, camPos.y + 300, camPos.z, 0, -300, 0).hitPos.y + 20
+
+            local camHit = collision_find_surface_on_ray(focusPos.x, focusPos.y, focusPos.z, camPos.x - focusPos.x, camPos.y - focusPos.y, camPos.z - focusPos.z).hitPos
+            vec3f_copy(gLakituState.pos, camHit)
+            set_override_fov(45/widthScale)
 
             set_lighting_color(0, (menuColor.r*0.33 + 255*0.66) * worldColor.lighting.r/255)
             set_lighting_color(1, (menuColor.g*0.33 + 255*0.66) * worldColor.lighting.g/255)
@@ -1080,6 +1091,7 @@ local function mario_update(m)
                     end
                 end
                 stop_secondary_music(50)
+                m.marioObj.header.gfx.sharedChild.hookProcess = 1
                 camera_unfreeze()
                 hud_show()
                 set_override_fov(0)
@@ -1186,6 +1198,24 @@ local function mario_update(m)
         end
     end
 end
+
+function geo_function()
+    local viewport = geo_get_current_root()
+    if menuAndTransition then
+        djui_hud_set_resolution(RESOLUTION_N64)
+        viewport.x = 320*0.85
+        viewport.y = 205*0.5
+        viewport.width = 320*0.15
+        viewport.height = 205*0.5
+    else
+        viewport.x = 320*0.5
+        viewport.y = 240*0.5
+        viewport.width = 320*0.5
+        viewport.height = 240*0.5
+    end
+end
+
+hook_event(HOOK_ON_GEO_PROCESS, geo_function)
 
 local sCapBhvs = {
     [id_bhvWingCap] = true,
@@ -1646,14 +1676,14 @@ local function on_hud_render()
         else
             -- Render Character Grid
             local currRow = math.floor((currCharRender)/gridButtonsPerRow)
-            gridYOffset = lerp(gridYOffset, currRow*35, 0.1)
+            gridYOffset = lerp(gridYOffset, currRow*buttonSpacing, 0.1)
             for i = 0, #characterTableRender do
                 local row = math.floor(i/gridButtonsPerRow)
                 local column = i%gridButtonsPerRow
                 local charIcon = characterTableRender[i][characterTableRender[i].currAlt].lifeIcon
                 local charColor = characterTableRender[i][characterTableRender[i].currAlt].color
-                local x = width*0.3 - gridButtonsPerRow*35*0.5 + 35*column - math.abs(row - gridYOffset/35)^2*3 + math.sin((get_global_timer() + i*10)*0.1) - menuOffsetX*0.5 - optionsMenuOffset + 4
-                local y = height*0.5 - 35*0.5 + row*35 - gridYOffset + math.cos((get_global_timer() + i*10)*0.1) - characterTableRender[i].UIOffset*0.5 - menuOffsetY*0.5 + 4
+                local x = 32 + buttonSpacing*column - math.abs(row - gridYOffset/buttonSpacing)^2*3 + math.sin((get_global_timer() + i*10)*0.1) - menuOffsetX*0.5 - optionsMenuOffset + 4
+                local y = height*0.5 - buttonSpacing*0.5 + row*buttonSpacing - gridYOffset + math.cos((get_global_timer() + i*10)*0.1) - characterTableRender[i].UIOffset*0.5 - menuOffsetY*0.5 + 4
                 djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
                 if characterInstrumentals[i] ~= nil then
                     djui_hud_render_texture(TEX_ALBUM_LAYER1, x + 3, y, 0.1875, 0.1875)
