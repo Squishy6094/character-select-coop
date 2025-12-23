@@ -1047,7 +1047,7 @@ local function mario_update(m)
             camScale = math.lerp(camScale, charTable[charTable.currAlt].camScale, 0.1)
             local camDist = 400 * camScale
             local camAngle = m.faceAngle.y + 0x800
-            local camOffsetX = mirror_mode_number(-menuOffsetX/widthScale)
+            local camOffsetX = mirror_mode_number(-menuOffsetX)
             local focusPos = {
                 x = m.pos.x + sins(camAngle - 0x4000)*camOffsetX*camScale,
                 y = m.pos.y + (100 - menuOffsetY) * camScale ,
