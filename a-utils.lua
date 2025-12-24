@@ -100,40 +100,42 @@ local legacyFiles = {
 
 local fileErrorList = {}
 
--- Check for Missing Files
-for i = 1, #dependacyFiles do
-    if not mod_file_exists(dependacyFiles[i]) then
-        log_to_console("Character Select file missing: '" .. dependacyFiles[i] .. "'", CONSOLE_MESSAGE_WARNING)
-        table_insert(fileErrorList, "Missing File '" .. dependacyFiles[i] .. "'")
-    end
-end
--- Check for Legacy Files
-for i = 1, #legacyFiles do
-    if mod_file_exists(legacyFiles[i]) then
-        log_to_console("Character Select legacy file found: '" .. legacyFiles[i] .. "'", CONSOLE_MESSAGE_WARNING)
-        table_insert(fileErrorList, "Legacy File '" .. legacyFiles[i] .. "'")
-    end
-end
-if #fileErrorList > 0 then
-    incompatibleClient = true
-    local frameCount = 0
-    hook_event(HOOK_UPDATE, function ()
-        frameCount = frameCount + 1
-        if frameCount == 5 then
-            local errorString = "\\#FFAAAA\\Character Select File Issues:"
-            djui_popup_create("\\#FFAAAA\\Character Select is having\nfile issues and cannot load!\n\nErrors have been logged in chat!", 4)
-            for i = 1, #fileErrorList do
-                errorString = errorString .. "\n" .. fileErrorList[i]
-            end
-            log_to_console(errorString)
-            djui_chat_message_create(errorString)
-
-            errorString = "\\#FFAAAA\\The best way to resolve these issues is to delete your current version of Character Select and then install the latest version from the Github Repo!\n\\#AAAAFF\\https://github.com/Squishy6094/character-select-coop/\\#FFAAAA\\"
-            log_to_console(errorString)
-            djui_chat_message_create(errorString)
+if network_is_server() then
+    -- Check for Missing Files
+    for i = 1, #dependacyFiles do
+        if not mod_file_exists(dependacyFiles[i]) then
+            log_to_console("Character Select file missing: '" .. dependacyFiles[i] .. "'", CONSOLE_MESSAGE_WARNING)
+            table_insert(fileErrorList, "Missing File '" .. dependacyFiles[i] .. "'")
         end
-    end)
-    return 0
+    end
+    -- Check for Legacy Files
+    for i = 1, #legacyFiles do
+        if mod_file_exists(legacyFiles[i]) then
+            log_to_console("Character Select legacy file found: '" .. legacyFiles[i] .. "'", CONSOLE_MESSAGE_WARNING)
+            table_insert(fileErrorList, "Legacy File '" .. legacyFiles[i] .. "'")
+        end
+    end
+    if #fileErrorList > 0 then
+        incompatibleClient = true
+        local frameCount = 0
+        hook_event(HOOK_UPDATE, function ()
+            frameCount = frameCount + 1
+            if frameCount == 5 then
+                local errorString = "\\#FFAAAA\\Character Select File Issues:"
+                djui_popup_create("\\#FFAAAA\\Character Select is having\nfile issues and cannot load!\n\nErrors have been logged in chat!", 4)
+                for i = 1, #fileErrorList do
+                    errorString = errorString .. "\n" .. fileErrorList[i]
+                end
+                log_to_console(errorString)
+                djui_chat_message_create(errorString)
+
+                errorString = "\\#FFAAAA\\The best way to resolve these issues is to delete your current version of Character Select and then install the latest version from the Github Repo!\n\\#AAAAFF\\https://github.com/Squishy6094/character-select-coop/\\#FFAAAA\\"
+                log_to_console(errorString)
+                djui_chat_message_create(errorString)
+            end
+        end)
+        return 0
+    end
 end
 
 -- Failsafe printing nil text
