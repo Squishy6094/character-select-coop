@@ -567,7 +567,7 @@ creditTable = {
         { creditee = "JerThePear",      credit = "Menu Assets/Anims" },
         { creditee = "Trashcam",        credit = "Menu Music" },
         { creditee = "Charity",         credit = "Sound Design" },
-        { creditee = "Charlotte",       credit = "Menu Asset Renders" },
+        { creditee = "WinbowBreaker",   credit = "Menu Asset Renders" },
         { creditee = "xLuigiGamerx",    credit = "HUD Accuracy" },
         { creditee = "Wibblus",         credit = "Menu Anims Code" },
     }
@@ -766,9 +766,10 @@ local function reset_options(wasChatTriggered)
 end
 
 local function boot_note()
-    if #characterTable >= CT_MAX then
-        djui_chat_message_create("Character Select has " .. (#characterTable - 1) .. " character" .. (#characterTable > 2 and "s" or "") .." available!\nYou can use \\#ffff33\\/char-select \\#ffffff\\to open the menu!")
-        if #characterTable > 32 and network_is_server() then
+    local charCount = (#characterTable + 1) - CT_MAX
+    if charCount > 0 then
+        djui_chat_message_create("Character Select has " .. charCount .. " character" .. (charCount > 0 and "s" or "") .." available!\nYou can use \\#ffff33\\/char-select \\#ffffff\\to open the menu!")
+        if charCount > 32 and network_is_server() then
             djui_chat_message_create("\\#FFAAAA\\Warning: Having a lot of characters\nmay be unstable, For a better experience please\ndisable a few packs!")
         end
     else
