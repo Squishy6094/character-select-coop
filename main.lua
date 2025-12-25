@@ -768,7 +768,7 @@ end
 local function boot_note()
     local charCount = (#characterTable + 1) - CT_MAX
     if charCount > 0 then
-        djui_chat_message_create("Character Select has " .. charCount .. " character" .. (charCount > 0 and "s" or "") .." available!\nYou can use \\#ffff33\\/char-select \\#ffffff\\to open the menu!")
+        djui_chat_message_create("Character Select has " .. charCount .. " character" .. (charCount > 1 and "s" or "") .." available!\nYou can use \\#ffff33\\/char-select \\#ffffff\\to open the menu!")
         if charCount > 32 and network_is_server() then
             djui_chat_message_create("\\#FFAAAA\\Warning: Having a lot of characters\nmay be unstable, For a better experience please\ndisable a few packs!")
         end
