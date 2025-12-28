@@ -685,3 +685,41 @@ function mirror_mode_number(x)
     end
     return x
 end
+
+---@param str1 string
+---@param str2 string
+local function levenshtein_distance(str1, str2)
+    local len1 = #str1
+    local len2 = #str2
+    
+    local matrix = {}
+    for i = 0, len1 do
+        matrix[i] = {}
+        matrix[i][0] = i
+    end
+    for j = 0, len2 do
+        matrix[0][j] = j
+    end
+
+    for i = 1, len1 do
+        for j = 1, len2 do
+            local cost = (str1:sub(i, i) == str2:sub(j, j)) and 0 or 1
+            local del = matrix[i-1][j] + 1
+            local ins = matrix[i][j-1] + 1
+            local sub = matrix[i-1][j-1] + cost
+            matrix[i][j] = math.min(del, ins, sub)
+        end
+    end
+
+    return matrix[len1][len2]
+end
+
+---@param str1 string
+---@param str2 string
+-- Compares two strings and returns simularity (0-1)
+function string_sim(str1, str2)
+    local distance = levenshtein_distance(str1, str2)
+    local maxLength = math.max(#str1, #str2)
+    if maxLength == 0 then return 1 end
+    return (distance / maxLength)
+end

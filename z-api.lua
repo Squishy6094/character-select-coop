@@ -775,24 +775,34 @@ end
 
 ---@description A function that sets a character under a specific category
 ---@added 1.14
----@param charNum integer? The number of the Character you want to set the category for
----@param category string The Category Name (Will create a new category if category does not exist)
-local function character_set_category(charNum, category)
-    if category == nil then return end
-    category = string_underscore_to_space(category)
-    local foundCategory = false
+---@param charNum integer The number of the Character you want to set the category for
+---@param categoryName string The Category Name (Will create a new category if category does not exist)
+---@param forceIcon boolean Forces the icon to be used as a category icon
+local function character_set_category(charNum, categoryName, forceIcon)
+    if not charNum then return end
+    if not categoryName then return end
+    categoryName = string_underscore_to_space(categoryName)
+    local foundCategory = nil
     for i = 1, #characterCategories do
-        if characterCategories[i] == category then
-            foundCategory = true
+        if characterCategories[i].name == categoryName then
+            foundCategory = characterCategories[i]
         end
     end
-    if not foundCategory then 
-        table_insert(characterCategories, category)
+    if not foundCategory then
+        table_insert(characterCategories, {name = categoryName, icon1 = nil, icon2 = nil})
+        foundCategory = characterCategories[#characterCategories]
     end
-    characterTable[charNum].category = characterTable[charNum].category .. "_" .. category
+    if forceIcon then
+        if not foundCategory.icon1 then
+            foundCategory.icon1 = charNum
+        elseif not foundCategory.icon2 then
+            foundCategory.icon2 = charNum
+        end
+    end
+    characterTable[charNum].category = characterTable[charNum].category .. "_" .. categoryName
 end
 
----@description A function that sets a character under a specific category
+---@description A function that replaces dialog if you are playing as a specific character
 ---@added 1.16
 ---@param charNum integer The number of the Character you want to replace dislog for
 ---@param dialogId integer|DialogId The ID of the dialog you want to replace

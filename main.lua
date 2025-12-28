@@ -105,6 +105,7 @@ local TEX_CD_LAYER4      = get_texture_info("char_select_cd_layer4")
 local TEX_RECORD         = get_texture_info("char_select_record")
 local TEX_PALETTE_BUCKET = get_texture_info("char_select_palette_bucket")
 local TEX_OPTIONS_TV     = get_texture_info("char_select_options_tv")
+local TEX_GEAR           = get_texture_info("char_select_gear")
 
 LOCKED_NEVER = 0
 LOCKED_TRUE = 1
@@ -297,8 +298,8 @@ function character_is_vanilla(charNum)
 end
 
 characterCategories = {
-    "All",
-    "CoopDX",
+    {name = "All", icon1 = CT_MARIO, icon2 = CT_LUIGI},
+    {name = "CoopDX", icon1 = CT_WARIO, icon2 = CT_WALUIGI},
 }
 
 local characterTableRender = {}
@@ -513,7 +514,7 @@ local function update_character_render_table()
         local charCategories = string_split(characterTable[i].category, "_")
         if characterTable[i].locked ~= LOCKED_TRUE then
             for c = 1, #charCategories do
-                if category == charCategories[c] then
+                if category.name == charCategories[c] then
                     characterTableRender[insertNum] = characterTable[i]
                     characterTableRender[insertNum].UIOffset = 0
                     if ogNum == i then
@@ -525,7 +526,22 @@ local function update_character_render_table()
             end
         end
     end
+    
     if #characterTableRender > 1 then
+        -- Get icons for category based on name similarity
+        if category.icon1 == nil or category.icon2 == nil then
+            local sorted = {}
+            for i = 0, #characterTableRender do
+                local char = characterTableRender[i]
+                table.insert(sorted, {ogNum = char.ogNum, sim = string_sim(char.saveName, category.name)})
+            end
+            table.sort(sorted, function(a, b)
+                return a.sim < b.sim
+            end)
+            category.icon1 = category.icon1 or sorted[1].ogNum
+            category.icon2 = category.icon2 or sorted[2].ogNum
+        end
+        -- Set Character if they are in the category
         currChar = (characterTableRender[currCharRender] and characterTableRender[currCharRender].ogNum or characterTableRender[0].ogNum)
         return true
     else
@@ -1404,6 +1420,7 @@ local MATH_DIVIDE_16 = 1/16
 local targetMenuColor = {r = 0 , g = 0, b = 0}
 menuColor = targetMenuColor
 local menuColorHalf = menuColor
+local menuColorTint = menuColor
 local transSpeed = 0.1
 local playerShirt = network_player_get_override_palette_color(gNetworkPlayers[0], SHIRT)
 local playerPants = network_player_get_override_palette_color(gNetworkPlayers[0], PANTS)
@@ -1425,6 +1442,11 @@ function update_menu_color()
         r = menuColor.r * 0.5 + 127,
         g = menuColor.g * 0.5 + 127,
         b = menuColor.b * 0.5 + 127
+    }
+    menuColorTint = {
+        r = 205 + 50*menuColor.r/256,
+        g = 205 + 50*menuColor.g/256,
+        b = 205 + 50*menuColor.b/256
     }
 
     -- Update BG Wall Color
@@ -1453,13 +1475,13 @@ local function djui_hud_render_life_icon(char, x, y, scale)
         djui_hud_set_color(djuiColor.r, djuiColor.g, djuiColor.b, djuiColor.a)
         djui_hud_render_texture(icon, x, y, scale / (icon.width * MATH_DIVIDE_16), scale / (icon.height * MATH_DIVIDE_16))
     end
+    djui_hud_set_color(djuiColor.r, djuiColor.g, djuiColor.b, djuiColor.a)
 end
 
 local gridButtonsPerRow = 5
 local paletteXOffset = 0
-local categoryOpenTimer = 0
-local categoryXOffset = 0
-local categoryYOffset = 64
+local gearRotationTarget = 0
+local gearRotation = 0
 local paletteTrans = 0
 local optionsMenuOffset = 0
 local optionsMenuOffsetMax = 210
@@ -1649,7 +1671,7 @@ local function on_hud_render()
                     djui_hud_set_color(charColor.r, charColor.g, charColor.b, 150)
                     djui_hud_render_life_icon(char, x + 112*scale + segments*16*scale + 45*scale, y + 40*scale, scale*3)
                     -- Nameplate Rendering
-                    djui_hud_set_color(205 + 50*menuColor.r/256, 205 + 50*menuColor.g/256, 205 + 50*menuColor.b/256, 255)
+                    djui_hud_set_color(menuColorTint.r, menuColorTint.g, menuColorTint.b, 255)
                     djui_hud_render_texture_tile(TEX_NAMEPLATE, 0, y, (scale*128/8)*x*0.5, scale, 0, 0, 8, 128) -- stretch to left side of screen
                     djui_hud_render_texture_tile(TEX_NAMEPLATE, x, y, scale*128/112, scale, 0, 0, 112, 128)
                     for s = 1, segments do
@@ -1740,31 +1762,16 @@ local function on_hud_render()
         djui_hud_set_rotation(get_global_timer() * 0x10, 0.5, 0.5)
         djui_hud_render_texture(TEX_RECORD, -152 - menuOffsetX*0.1 - optionsMenuOffset, height*0.5 - 96 - menuOffsetY*0.1, 0.75, 0.75)
         djui_hud_set_rotation(0, 0, 0)
-        
-        categoryXOffset = math.lerp(categoryXOffset, currCategory*40, 0.1)
-        if categoryOpenTimer > 0 then
-            categoryYOffset = math.max(categoryYOffset/1.1, 0.1)
-            categoryOpenTimer = categoryOpenTimer - 1
-        else
-            categoryYOffset = math.min(categoryYOffset*1.1, 64)
-        end
-        djui_hud_set_color(0, 0, 255, 255)
-        djui_hud_render_rect(0 - optionsMenuOffset, 16 - categoryYOffset, width*2, 16)
-        for i = 1, #characterCategories do
-            -- Render Lamp
-            if i == currCategory then
-                djui_hud_set_color(255, 0, 0, 255)
-            else
-                djui_hud_set_color(120, 0, 0, 255)
-            end
-            djui_hud_render_rect(width*0.45 + i*40 - categoryXOffset - optionsMenuOffset, 8 - categoryYOffset, 32, 32)
 
-        end
-        -- Render Text
-        djui_hud_set_color(menuColorHalf.r, menuColorHalf.g, menuColorHalf.b, 255)
-        djui_hud_set_font(FONT_CHARACTERISTIC)
-        local categoryText = string.upper(characterCategories[currCategory])
-        djui_hud_print_text(categoryText, width*0.5 - optionsMenuOffset - djui_hud_measure_text(categoryText)*0.2, 50 - categoryYOffset, 0.4)
+        -- Render Category Gear
+        djui_hud_set_color(menuColorTint.r, menuColorTint.g, menuColorTint.b, 255)
+        djui_hud_set_rotation(gearRotation, 0.5, 0.5)
+        gearRotation = math.lerp(gearRotation, gearRotationTarget, 0.1)
+        djui_hud_render_texture(TEX_GEAR, width*0.7 - 15 - TEX_GEAR.width*0.175, -TEX_GEAR.height*0.175, 0.35, 0.35)
+        djui_hud_set_rotation(0, 0, 0)
+        djui_hud_render_life_icon(characterTable[characterCategories[currCategory].icon2][1], width*0.7 - 30 - 4, 10 - 4, 1)
+        djui_hud_render_life_icon(characterTable[characterCategories[currCategory].icon1][1], width*0.7 - 30 + 4, 10 + 4, 1)
+        djui_hud_set_color(255, 255, 255, 255)
 
         -- Render Options Menu
         local tvScale = 0.5
@@ -1857,7 +1864,7 @@ local function on_hud_render()
             djui_hud_render_rect(tvX, tvY + tvHeight - tvShutOffHeight, tvWidth, tvShutOffHeight)
         end
 
-        djui_hud_set_color(205 + 50*menuColor.r/256, 205 + 50*menuColor.g/256, 205 + 50*menuColor.b/256, 255)
+        djui_hud_set_color(menuColorTint.r, menuColorTint.g, menuColorTint.b, 255)
         djui_hud_render_texture_auto_interpolated("tvBoarder", TEX_OPTIONS_TV, tvX - 133*tvScale, tvY - 168*tvScale, tvScale, tvScale)
 
         djui_hud_reset_scissor()
@@ -2062,6 +2069,7 @@ local function before_mario_update(m)
                 (controller.buttonPressed & L_TRIG) ~= 0,
                 function ()
                     currCategory = num_wrap(currCategory - 1, 1, #characterCategories)
+                    gearRotationTarget = gearRotationTarget + 0x10000/#characterCategories
                     categoryOpenTimer = 150
                     update_character_render_table()
                     play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
@@ -2072,6 +2080,7 @@ local function before_mario_update(m)
                 (controller.buttonPressed & R_TRIG) ~= 0,
                 function ()
                     currCategory = num_wrap(currCategory + 1, 1, #characterCategories)
+                    gearRotationTarget = gearRotationTarget - 0x10000/#characterCategories
                     categoryOpenTimer = 150
                     update_character_render_table()
                     play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
