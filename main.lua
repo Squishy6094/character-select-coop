@@ -1769,8 +1769,12 @@ local function on_hud_render()
         gearRotation = math.lerp(gearRotation, gearRotationTarget, 0.1)
         djui_hud_render_texture(TEX_GEAR, width*0.7 - 15 - TEX_GEAR.width*0.175, -TEX_GEAR.height*0.175, 0.35, 0.35)
         djui_hud_set_rotation(0, 0, 0)
-        djui_hud_render_life_icon(characterTable[characterCategories[currCategory].icon2][1], width*0.7 - 30 - 4, 10 - 4, 1)
-        djui_hud_render_life_icon(characterTable[characterCategories[currCategory].icon1][1], width*0.7 - 30 + 4, 10 + 4, 1)
+        local icon1 = characterCategories[currCategory].icon1
+        local icon2 = characterCategories[currCategory].icon2
+        local char1 = characterTable[icon1] and characterTable[icon1][1]
+        local char2 = characterTable[icon2] and characterTable[icon2][1]
+        djui_hud_render_life_icon(char1, width*0.7 - 30 - 4, 10 - 4, 1)
+        djui_hud_render_life_icon(char2, width*0.7 - 30 + 4, 10 + 4, 1)
         djui_hud_set_color(255, 255, 255, 255)
 
         -- Render Options Menu
