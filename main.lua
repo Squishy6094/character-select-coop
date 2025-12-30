@@ -1248,7 +1248,7 @@ define_custom_obj_fields({
 ---@param o Object
 function set_model(o, model)
     -- Extended Model Incompatible
-    if o.oOriginalModel == E_MODEL_ERROR_MODEL then return end
+    if obj_get_model_id_extended(o) == E_MODEL_ERROR_MODEL then return end
 
     local visualToggle = optionTable[optionTableRef.localVisuals].toggle == 1
 
