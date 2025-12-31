@@ -200,9 +200,12 @@ end
 ---@added 1.16
 ---@param charNum integer The number/table position of the Character you want to nickname
 ---@param nickname string The Character's new nickname
-local function character_set_nickname(charNum, nickname)
+---@param autoSetDialog boolean Wheather dialog is automatically set (Defaults to `true`)
+local function character_set_nickname(charNum, nickname, autoSetDialog)
+    if autoSetDialog == nil then autoSetDialog = true end
     if characterTable[charNum] == nil or type(nickname) == TYPE_STRING then
         characterTable[charNum].nickname = nickname
+        characterTable[charNum].autoDialog = autoSetDialog
     end
 end
 
