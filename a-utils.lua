@@ -1,6 +1,3 @@
--- localize functions to improve performance - a-utils.lua
-local string_lower,string_format,table_insert,get_date_and_time = string.lower,string.format,table.insert,get_date_and_time
-
 -- Version Data --
 MOD_VERSION_API = 1
 MOD_VERSION_MAJOR = 16
@@ -105,14 +102,14 @@ if network_is_server() then
     for i = 1, #dependacyFiles do
         if not mod_file_exists(dependacyFiles[i]) then
             log_to_console("Character Select file missing: '" .. dependacyFiles[i] .. "'", CONSOLE_MESSAGE_WARNING)
-            table_insert(fileErrorList, "Missing File '" .. dependacyFiles[i] .. "'")
+            table.insert(fileErrorList, "Missing File '" .. dependacyFiles[i] .. "'")
         end
     end
     -- Check for Legacy Files
     for i = 1, #legacyFiles do
         if mod_file_exists(legacyFiles[i]) then
             log_to_console("Character Select legacy file found: '" .. legacyFiles[i] .. "'", CONSOLE_MESSAGE_WARNING)
-            table_insert(fileErrorList, "Legacy File '" .. legacyFiles[i] .. "'")
+            table.insert(fileErrorList, "Legacy File '" .. legacyFiles[i] .. "'")
         end
     end
     if #fileErrorList > 0 then
@@ -219,9 +216,9 @@ function string_space_to_underscore(string)
     local s = ''
     for i = 1, #string do
         local c = string:sub(i,i)
-        if saveableCharacters[string_lower(c)] == 1 then
+        if saveableCharacters[string.lower(c)] == 1 then
             s = s .. c
-        elseif saveableCharacters[string_lower(c)] == 0 then
+        elseif saveableCharacters[string.lower(c)] == 0 then
             s = s .. "_"
         end
     end
@@ -235,8 +232,8 @@ function string_split(string, splitAt)
         splitAt = " "
     end
     local result = {}
-    for match in string:gmatch(string_format("[^%s]+", splitAt)) do
-        table_insert(result, match)
+    for match in string:gmatch(string.format("[^%s]+", splitAt)) do
+        table.insert(result, match)
     end
     return result
 end

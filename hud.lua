@@ -4,20 +4,14 @@
 
 if incompatibleClient then return 0 end
 
--- localize functions to improve performance - n-hud.lua
-local og_hud_get_value,og_hud_set_value,djui_hud_print_text,tostring,hud_set_flash,get_global_timer,hud_get_flash,djui_hud_get_screen_width,math_ceil,obj_get_first_with_behavior_id,get_behavior_from_id,count_objects_with_behavior,djui_hud_render_rect,djui_hud_set_resolution,djui_hud_get_screen_height,djui_hud_set_color,djui_hud_set_font,djui_hud_measure_text,djui_chat_message_create,hud_is_hidden,djui_is_playerlist_open = hud_get_value,hud_set_value,djui_hud_print_text,tostring,hud_set_flash,get_global_timer,hud_get_flash,djui_hud_get_screen_width,math.ceil,obj_get_first_with_behavior_id,get_behavior_from_id,count_objects_with_behavior,djui_hud_render_rect,djui_hud_set_resolution,djui_hud_get_screen_height,djui_hud_set_color,djui_hud_set_font,djui_hud_measure_text,djui_chat_message_create,hud_is_hidden,djui_is_playerlist_open
-
---[[
-    Some functions we need for the hud
-    Color hud code written by EmilyEmmi
-    Djui box code written by xLuigiGamerx (Use outside of character select is forbidden as these functions were made for another mod I'm planning to release)
-]]
+local og_hud_get_value = hud_get_value
+local og_hud_set_value = hud_set_value
 
 ---@param text string
----@return nil, number, number, number, number
+---@return number?, number?, number?, number?
 local function convert_color(text)
     if text:sub(2, 2) ~= "#" then
-        return nil
+        return
     end
     text = text:sub(3, -2)
     local rstring, gstring, bstring = "", "", ""
@@ -39,7 +33,7 @@ end
 
 ---@param text string
 ---@param get_color boolean|nil
----@return string, string, string, boolean
+---@return string, string?, string?
 local function remove_color(text, get_color)
     local start = text:find("\\")
     local next = 1
@@ -672,11 +666,11 @@ local function render_hud_stars()
         end
     end
 
-    local x = math_ceil(djui_hud_get_screen_width() - 76)
+    local x = math.ceil(djui_hud_get_screen_width() - 76)
     if x % 2 ~= 0 then
         x = x - 1
     end
-    local y = math_ceil(240 - 209 - 16)
+    local y = math.ceil(240 - 209 - 16)
 
     local showX = 0
     local hudDisplayStars = hud_get_value(HUD_DISPLAY_STARS)
@@ -870,10 +864,11 @@ function render_playerlist_and_modlist()
         local entryY = y + 88 + ((entryHeight + 4) * (i-1))
         djui_hud_render_rect(entryX, entryY, entryWidth, entryHeight)
 
+        local capColor = network_player_get_override_palette_color(np, CAP)
         playerNameColor = {
-            r = 127 + network_player_get_override_palette_color_channel(np, CAP, 0) / 2,
-            g = 127 + network_player_get_override_palette_color_channel(np, CAP, 1) / 2,
-            b = 127 + network_player_get_override_palette_color_channel(np, CAP, 2) / 2
+            r = 127 + capColor/2,
+            g = 127 + capColor/2,
+            b = 127 + capColor/2
         }
 
         djui_hud_set_color(255, 255, 255, 255)
@@ -1139,7 +1134,7 @@ local function on_hud_render_behind()
 
     if gNetworkPlayers[0].currActNum == 99 or gMarioStates[0].action == ACT_INTRO_CUTSCENE or hud_is_hidden() then return end
 
-    sServerSettings.enablePlayersInLevelDisplay = false -- Disables the original playersInLevel Display
+    sServerSettings.enablePlayersInLevelDisplay = 0 -- Disables the original playersInLevel Display
 
     local enablePlayersInLevelDisplay = gServerSettings.enablePlayersInLevelDisplay
     if not obj_get_first_with_behavior_id(id_bhvActSelector) then
@@ -1166,7 +1161,7 @@ local function on_hud_render()
         render_hud_ending_dialog()
     end
 
-    sServerSettings.enablePlayerList = false -- Disables the original playerlist and modlist
+    sServerSettings.enablePlayerList = 0 -- Disables the original playerlist and modlist
 
     local enablePlayerList = gServerSettings.enablePlayerList
     djui_hud_set_resolution(RESOLUTION_DJUI)

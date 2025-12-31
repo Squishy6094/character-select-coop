@@ -1,8 +1,5 @@
 if incompatibleClient then return 0 end
 
--- localize functions to improve performance - o-api.lua
-local table_insert,djui_hud_measure_text,smlua_model_util_get_id,type,tonumber = table.insert,djui_hud_measure_text,smlua_model_util_get_id,type,tonumber
-
 ---@class CharacterTable
 ---@field public name string
 ---@field public saveName string
@@ -63,7 +60,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         define_valid_global("CT_"..name:upper():gsub(" ", "_"), charNum)
     end
 
-    table_insert(characterTable, {
+    table.insert(characterTable, {
         saveName = type(name) == TYPE_STRING and string_space_to_underscore(name.."_"..credit) or "Untitled",
         nickname = type(name) == TYPE_STRING and name or "Untitled",
         currAlt = 1,
@@ -121,7 +118,7 @@ local function character_add_costume(charNum, name, description, credit, color, 
     end
     local tableCache = characterTable[charNum][1]
     local addedModel = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model
-    table_insert(characterTable[charNum], {
+    table.insert(characterTable[charNum], {
         name = type(name) == TYPE_STRING and name or tableCache.name,
         description = type(description) == TYPE_STRING and description or tableCache.description,
         credit = type(credit) == TYPE_STRING and credit or tableCache.credit,
@@ -151,7 +148,7 @@ end
 ---@param camScale integer? Zooms the camera based on a multiplier (Default `1`)
 local function character_edit_costume(charNum, charAlt, name, description, credit, color, modelInfo, baseChar, lifeIcon, camScale)
     if tonumber(charNum) == nil or charNum > #characterTable or charNum < 0 then return end
-    if type(description) == TYPE_TABLE then
+    if description ~= nil and type(description) == TYPE_TABLE then
         local table = description
         description = ""
         for i = 1, #table do
@@ -532,7 +529,7 @@ local function character_add_palette_preset(modelInfo, paletteTable, paletteName
             currPalette = 1,
         }
     end
-    table_insert(characterColorPresets[modelInfo], paletteTableOut)
+    table.insert(characterColorPresets[modelInfo], paletteTableOut)
 end
 
 ---@description A function that adds animations to a model
@@ -616,7 +613,7 @@ end
 local function character_set_current_number(charNum, charAlt)
     if type(charNum) ~= TYPE_INTEGER or characterTable[charNum] == nil then return end
     if charAlt == nil then charAlt = 1 end
-    charAlt = clamp(charAlt, 1, #characterTable[charNum])
+    charAlt = math.clamp(charAlt, 1, #characterTable[charNum])
     force_set_character(charNum, charAlt)
     charBeingSet = true
 end
@@ -789,7 +786,7 @@ local function character_set_category(charNum, categoryName, forceIcon)
         end
     end
     if not foundCategory then
-        table_insert(characterCategories, {name = categoryName, icon1 = nil, icon2 = nil})
+        table.insert(characterCategories, {name = categoryName, icon1 = nil, icon2 = nil})
         foundCategory = characterCategories[#characterCategories]
     end
     if forceIcon then
@@ -925,14 +922,14 @@ local function credit_add(modName, creditee, credit)
     end
     if not credits then
         credits = { packName = modName }
-        table_insert(creditTable, credits)
+        table.insert(creditTable, credits)
     end
 
     if type(creditee) == "table" then
         for _, credit in ipairs(creditee) do
-            table_insert(credits, { creditee = credit[1], credit = credit[2] })
+            table.insert(credits, { creditee = credit[1], credit = credit[2] })
         end
-    else table_insert(credits, { creditee = creditee, credit = credit }) end
+    else table.insert(credits, { creditee = creditee, credit = credit }) end
 end
 
 ---@description A function that sets if palettes are restricted (Default `false` unless a mod with the incompatible `gamemode` is on)
@@ -993,7 +990,7 @@ local controller = {
 local function add_option(name, toggleDefault, toggleMax, toggleNames, description, save)
     if save == nil then save = true end
     local saveName = string_space_to_underscore(name)
-    table_insert(optionTable, {
+    table.insert(optionTable, {
         name = type(name) == TYPE_STRING and name or "Unknown Toggle",
         category = OPTION_API,
         toggle = nil, -- Set as nil for Failsafe to Catch
@@ -1039,10 +1036,12 @@ end
 ---@description A function that sets the name to be replaced in Dialog, Default is `"Mario"`
 ---@added 1.10
 ---@param name string
----@note This function does *NOT* change what NPCs will refer to your character as, this function is intended for Rom-Hack ports with alternate protagonists.
----@forcedoc dialog_set_replace_name
+---@note This function does *NOT* change what NPCs will refer to your character as, this function is intended for Rom-Hack ports with alternate protagonists such as `"Luigi"`.
+function dialog_set_replace_name(name)
+    DIALOG_NAME = name
+end
 
----@description A function that sets the preset palette for a network player forcefully
+---@description A function that sets the preset palette for a network player forcefully their current Preset Palette
 ---@added 1.11
 ---@param np NetworkPlayer
 ---@forcedoc update_preset_palette
@@ -1078,7 +1077,7 @@ end
 ---@param func function
 local function hook_allow_menu_open(func)
     if type(func) ~= TYPE_FUNCTION then return end
-    table_insert(allowMenu, func)
+    table.insert(allowMenu, func)
 end
 
 ---@description A function that allows you to render HUD Elements in the menu (Behind transistions such as Option and going in/out of menu)
@@ -1087,9 +1086,9 @@ end
 local function hook_render_in_menu(func, underText)
     if type(func) ~= TYPE_FUNCTION then return end
     if underText then
-        table_insert(hookTableRenderInMenu.back, func)
+        table.insert(hookTableRenderInMenu.back, func)
     else
-        table_insert(hookTableRenderInMenu.front, func)
+        table.insert(hookTableRenderInMenu.front, func)
     end
 end
 
@@ -1099,7 +1098,7 @@ end
 ---@note Function gives `currChar` and `prevChar` as function inputs
 local function hook_on_character_change(func)
     if type(func) ~= TYPE_FUNCTION then return end
-    table_insert(hookTableOnCharacterChange, func)
+    table.insert(hookTableOnCharacterChange, func)
 end
 
 ---@description A function that adds the necessary hooks in order for your pack to have function voicelines
@@ -1133,8 +1132,8 @@ end
 
 ---@description A function that adds an instrument track to a specific character
 ---@added 1.16
----@param charNum integer? The character number you want to add instruments for
----@param loadedAudio ModAudio? The loaded instrumental audio file
+---@param charNum integer The character number you want to add instruments for
+---@param loadedAudio ModAudio The loaded instrumental audio file
 ---@note Original Song is `.ogg` File Format, `Mono` Channel, `G# Major Key`, `82` BPM, `93.659` Seconds Long, and is set to a sample rate of `22050`. If these requirements are not met then the song will not properly play, or incorrectly fit with the base theme.
 local function character_add_menu_instrumental(charNum, loadedAudio)
     audio_stream_set_looping(loadedAudio, true)
@@ -1167,7 +1166,7 @@ end
 ---@note Function gives `currChar` and `prevChar` as function inputs
 local function hook_on_save_data_reset(func)
     if type(func) ~= TYPE_FUNCTION then return end
-    table_insert(hookTableOnReset, func)
+    table.insert(hookTableOnReset, func)
 end
 
 _G.charSelectExists = true

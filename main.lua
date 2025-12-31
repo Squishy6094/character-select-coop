@@ -22,9 +22,6 @@ end
 
 cs_hook_mario_update = create_hook_wrapper(HOOK_MARIO_UPDATE)
 
--- localize functions to improve performance - main.lua
-local mod_storage_load,tonumber,mod_storage_save,djui_popup_create,tostring,djui_chat_message_create,is_game_paused,obj_get_first_with_behavior_id,djui_hud_is_pause_menu_created,camera_freeze,hud_hide,vec3f_copy,set_mario_action,set_character_animation,camera_unfreeze,hud_show,type,get_id_from_behavior,obj_has_behavior_id,network_local_index_from_global,obj_has_model_extended,obj_set_model_extended,nearest_player_to_object,math_random,djui_hud_set_resolution,djui_hud_set_font,djui_hud_get_screen_width,maxf,djui_hud_set_color,djui_hud_render_rect,djui_hud_measure_text,djui_hud_print_text,min,math_min,math_ceil,math_abs,math_sin,minf,djui_hud_set_rotation,table_insert,djui_hud_print_text_interpolated,math_max,play_sound,play_character_sound,string_lower = mod_storage_load,tonumber,mod_storage_save,djui_popup_create,tostring,djui_chat_message_create,is_game_paused,obj_get_first_with_behavior_id,djui_hud_is_pause_menu_created,camera_freeze,hud_hide,vec3f_copy,set_mario_action,set_character_animation,camera_unfreeze,hud_show,type,get_id_from_behavior,obj_has_behavior_id,network_local_index_from_global,obj_has_model_extended,obj_set_model_extended,nearest_player_to_object,math.random,djui_hud_set_resolution,djui_hud_set_font,djui_hud_get_screen_width,maxf,djui_hud_set_color,djui_hud_render_rect,djui_hud_measure_text,djui_hud_print_text,min,math.min,math.ceil,math.abs,math.sin,minf,djui_hud_set_rotation,table.insert,djui_hud_print_text_interpolated,math.max,play_sound,play_character_sound,string.lower
-
 menu = false
 menuAndTransition = false
 gridMenu = mod_storage_load_bool("PrefGridView")
@@ -1403,7 +1400,7 @@ local TEXT_PALETTE_RESTRICTED = "Palettes are Restricted"
 local TEXT_MOVESET_AND_PALETTE_RESTRICTED = "Moveset and Palettes are Restricted"
 -- Easter Egg if you get lucky loading the mod
 -- Referencing the original sm64ex DynOS options by PeachyPeach >v<
-if math_random(100) == 64 then
+if math.random(100) == 64 then
     TEXT_PAUSE_Z_OPEN = "Z - DynOS"
     TEXT_PAUSE_CURR_CHAR = "Model: "
 end
@@ -1672,12 +1669,12 @@ local function on_hud_render()
                     djui_hud_render_life_icon(char, x + 112*scale + segments*16*scale + 45*scale, y + 40*scale, scale*3)
                     -- Nameplate Rendering
                     djui_hud_set_color(menuColorTint.r, menuColorTint.g, menuColorTint.b, 255)
-                    djui_hud_render_texture_tile(TEX_NAMEPLATE, 0, y, (scale*128/8)*x*0.5, scale, 0, 0, 8, 128) -- stretch to left side of screen
-                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x, y, scale*128/112, scale, 0, 0, 112, 128)
+                    djui_hud_render_texture_tile(TEX_NAMEPLATE, 0, y, (128/8)*x*0.5*scale, scale, 0, 0, 8, 128) -- stretch to left side of screen
+                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x, y, (128/112)*scale, scale, 0, 0, 112, 128)
                     for s = 1, segments do
-                        djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + (s-1)*16*scale, y, scale*8, scale, 112, 0, 16, 128)
+                        djui_hud_render_texture_tile(TEX_NAMEPLATE, x + (112 + (s-1)*16)*scale, y, scale*8, scale, 112, 0, 16, 128)
                     end
-                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale, y, scale*128/192, scale, 128, 0, 192, 128)
+                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x + (112 + segments*16)*scale, y, scale*128/192, scale, 128, 0, 192, 128)
                     local angle = -0x10000*((characterTableRender[i].currAlt - 1)/charAltCount)
                     if i == currCharRender then
                         djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 33*scale, y + 48*scale, scale, scale, 320, 48, 32, 32)
@@ -1686,13 +1683,13 @@ local function on_hud_render()
                     angleAnim = -0x10000*((1/charAltCount))*charTable.dialAnim/10
                     charTable.dialAnim = math.lerp(charTable.dialAnim, 0, 0.2)
                     djui_hud_set_rotation(angle + angleAnim, 0.5, 0.5)
-                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + 134*scale, y + 48*scale, scale, scale, 352, 48, 32, 32)
+                    djui_hud_render_texture_tile(TEX_NAMEPLATE, x + (112 + segments*16 + 134)*scale, y + 48*scale, scale, scale, 352, 48, 32, 32)
                     djui_hud_set_rotation(0, 0, 0)
                     for a = 1, charAltCount do
                         local angle = -0x10000*((a - 1)/charAltCount) + 0x8000
                         local altColor = characterTableRender[i][a].color
                         djui_hud_set_color(altColor.r * 0.5 + 127, altColor.g * 0.5 + 127, altColor.b * 0.5 + 127, 255)
-                        djui_hud_render_texture_tile(TEX_NAMEPLATE, x + 112*scale + segments*16*scale + (134 + 14)*scale + sins(angle)*16*scale, y + 62*scale + coss(angle)*16*scale, scale, scale, 384, 48 + (currAlt ~= a and 16 or 0), 4, 4)
+                        djui_hud_render_texture_tile(TEX_NAMEPLATE, x + (112 + segments*16 + (134 + 14) + sins(angle)*16)*scale, y + (62 + coss(angle)*16)*scale, scale, scale, 384, 48 + (currAlt ~= a and 16 or 0), 4, 4)
                     end
                 end
             end
@@ -1936,7 +1933,7 @@ local function on_hud_render()
                 optionAnimTimer = optionAnimTimer * 1.3
             end
         end
-        optionAnimTimer = maxf(optionAnimTimer, -200)
+        optionAnimTimer = math.max(optionAnimTimer, -200)
     else
         options = nil
         optionAnimTimer = optionAnimTimerCap
@@ -1995,7 +1992,7 @@ local function on_hud_render()
 
     -- Cross Fade to Menu
     djui_hud_set_resolution(RESOLUTION_N64)
-    djui_hud_set_color(0, 0, 0, (math_abs(menuCrossFade)) * -menuCrossFadeMath)
+    djui_hud_set_color(0, 0, 0, (math.abs(menuCrossFade)) * -menuCrossFadeMath)
     djui_hud_render_rect(0, 0, width, height)
 end
 
@@ -2366,7 +2363,7 @@ hook_event(HOOK_ON_HUD_RENDER, on_hud_render)
 promptedAreYouSure = false
 
 local function chat_command(msg)
-    msg = string_lower(msg)
+    msg = string.lower(msg)
 
     -- Open Menu Check
     if (msg == "" or msg == "menu") then
@@ -2404,9 +2401,9 @@ local function chat_command(msg)
     -- Name Check
     for i = 0, #characterTable do
         if characterTable[i].locked ~= LOCKED_TRUE then
-            local saveName = string_underscore_to_space(string_lower(characterTable[i].saveName))
+            local saveName = string_underscore_to_space(string.lower(characterTable[i].saveName))
             for a = 1, #characterTable[i] do
-                if msg == string_lower(characterTable[i][a].name) or msg == saveName then
+                if msg == string.lower(characterTable[i][a].name) or msg == saveName then
                     force_set_character(i, msg ~= saveName and a or 1)
                     djui_chat_message_create('Character set to "' .. characterTable[i][characterTable[i].currAlt].name .. '" Successfully!')
                     return true

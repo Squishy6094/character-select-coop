@@ -1,13 +1,8 @@
 if incompatibleClient then return 0 end
 
-local DIALOG_NAME = "Mario"
+DEFAULT_DIALOG_NAME = "Mario"
 
 local ogDialog = {}
-
----@param name string
-function dialog_set_replace_name(name)
-    DIALOG_NAME = name
-end
 
 local function dialog_update(dialogId)
     -- Save Original Dialog

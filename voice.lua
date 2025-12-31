@@ -1,8 +1,5 @@
 if incompatibleClient then return 0 end
 
--- localize functions to improve performance - z-voice.lua
-local type,audio_sample_stop,audio_sample_load,math_random,audio_sample_play,is_game_paused,table_insert,play_character_sound = type,audio_sample_stop,audio_sample_load,math.random,audio_sample_play,is_game_paused,table.insert,play_character_sound
-
 local TYPE_TABLE = "table"
 local TYPE_USERDATA = "userdata"
 local TYPE_STRING = "string"
@@ -129,7 +126,7 @@ local function play_sound_with_reverb(sample, pos, baseVolume, reverbAmount)
     }
 
     for i = 1, #echoDelays do
-        table_insert(stalledAudio, {
+        table.insert(stalledAudio, {
             path = sample.filepath,
             frame = (get_global_timer() + math.floor(echoDelays[i]*30)),
             sample = sample, 
@@ -305,7 +302,7 @@ function custom_character_snore(m)
         snoreTable = {}
         for i = CHAR_SOUND_SNORING1, CHAR_SOUND_SNORING3 do
             if voiceTable[i] ~= nil then
-                table_insert(snoreTable, voiceTable[i])
+                table.insert(snoreTable, voiceTable[i])
             end
         end
     end
