@@ -524,7 +524,7 @@ local function update_character_render_table()
         end
     end
     
-    if #characterTableRender > 1 then
+    if #characterTableRender > 0 then
         -- Get icons for category based on name similarity
         if category.icon1 == nil or category.icon2 == nil then
             local sorted = {}
@@ -533,6 +533,8 @@ local function update_character_render_table()
                 table.insert(sorted, {ogNum = char.ogNum, sim = string_sim(char.saveName, category.name)})
             end
             table.sort(sorted, function(a, b)
+                log_to_console_once(tostring(a.ogNum) .. " - " .. tostring(a.sim), CONSOLE_MESSAGE_INFO)
+                log_to_console_once(tostring(b.ogNum) .. " - " .. tostring(b.sim), CONSOLE_MESSAGE_INFO)
                 return a.sim < b.sim
             end)
             category.icon1 = category.icon1 or sorted[1].ogNum
@@ -1232,9 +1234,10 @@ end
 hook_event(HOOK_ON_GEO_PROCESS, geo_function)
 
 local sCapBhvs = {
+    [id_bhvNormalCap] = true,
     [id_bhvWingCap] = true,
     [id_bhvVanishCap] = true,
-    [id_bhvMetalCap] = true
+    [id_bhvMetalCap] = true,
 }
 
 define_custom_obj_fields({
@@ -1304,7 +1307,7 @@ function set_model(o, model)
             end
         end
     elseif characterTable[currChar].replaceModels ~= nil then -- Other Custom Models
-    local currReplace = characterTable[currChar].replaceModels[get_id_from_behavior(o.behavior)]
+        local currReplace = characterTable[currChar].replaceModels[get_id_from_behavior(o.behavior)]
         if o.oOriginalModel == 0 then
             o.oOriginalModel = obj_get_model_id_extended(o)
         end
@@ -1459,8 +1462,8 @@ function update_menu_color()
 end
 
 local function djui_hud_render_life_icon(char, x, y, scale)
-    local icon = char.lifeIcon
-    local color = char.color
+    local icon = char and char.lifeIcon or "?"
+    local color = char and char.color or {r = 255, g = 255, b = 255}
     local djuiColor = djui_hud_get_color()
     if type(icon) == TYPE_STRING then
         local font = djui_hud_get_font()
@@ -2069,10 +2072,12 @@ local function before_mario_update(m)
             run_func_with_condition_and_cooldown(FUNC_INDEX_CATEGORY,
                 (controller.buttonPressed & L_TRIG) ~= 0,
                 function ()
-                    currCategory = num_wrap(currCategory - 1, 1, #characterCategories)
+                    repeat
+                        currCategory = num_wrap(currCategory - 1, 1, #characterCategories)
+                    until update_character_render_table()
                     gearRotationTarget = gearRotationTarget + 0x10000/#characterCategories
                     categoryOpenTimer = 150
-                    update_character_render_table()
+                    
                     play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
                 end
             )
@@ -2080,7 +2085,9 @@ local function before_mario_update(m)
             run_func_with_condition_and_cooldown(FUNC_INDEX_CATEGORY,
                 (controller.buttonPressed & R_TRIG) ~= 0,
                 function ()
-                    currCategory = num_wrap(currCategory + 1, 1, #characterCategories)
+                    repeat
+                        currCategory = num_wrap(currCategory + 1, 1, #characterCategories)
+                    until update_character_render_table()
                     gearRotationTarget = gearRotationTarget - 0x10000/#characterCategories
                     categoryOpenTimer = 150
                     update_character_render_table()
