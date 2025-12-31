@@ -69,6 +69,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         category = "All",
         ogNum = charNum,
         playtime = 0,
+        autoDialog = true,
         replaceModels = {},
         [1] = {
             name = name,
@@ -1041,7 +1042,7 @@ end
 ---@param name string
 ---@note This function does *NOT* change what NPCs will refer to your character as, this function is intended for Rom-Hack ports with alternate protagonists such as `"Luigi"`.
 function dialog_set_replace_name(name)
-    DIALOG_NAME = name
+    DEFAULT_DIALOG_NAME = name
 end
 
 ---@description A function that sets the preset palette for a network player forcefully their current Preset Palette

@@ -137,6 +137,7 @@ characterTable = {
         hasMoveset = false,
         locked = LOCKED_NEVER,
         playtime = 0,
+        autoDialog = true,
         replaceModels = {},
         [1] = {
             name = "Mario",
@@ -176,6 +177,7 @@ characterTable = {
         hasMoveset = false,
         locked = LOCKED_NEVER,
         playtime = 0,
+        autoDialog = true,
         replaceModels = {},
         [1] = {
             name = "Luigi",
@@ -206,6 +208,7 @@ characterTable = {
         hasMoveset = false,
         locked = LOCKED_NEVER,
         playtime = 0,
+        autoDialog = true,
         replaceModels = {},
         [1] = {
             name = "Toad",
@@ -236,6 +239,7 @@ characterTable = {
         hasMoveset = false,
         locked = LOCKED_NEVER,
         playtime = 0,
+        autoDialog = true,
         replaceModels = {},
         [1] = {
             name = "Waluigi",
@@ -266,6 +270,7 @@ characterTable = {
         hasMoveset = false,
         locked = LOCKED_NEVER,
         playtime = 0,
+        autoDialog = true,
         replaceModels = {},
         [1] = {
             name = "Wario",
@@ -1556,16 +1561,9 @@ local function on_hud_render()
             paletteTrans = math.max(paletteTrans - 6, 0)
             local bottomTapeAngle = angle_from_2d_points(-10, height - 50, width + 10, height - 35)
 
-            local paletteName = (palettes.currPalette == 0) and "Custom" or (palettes[palettes.currPalette].name or ("Palette "..palettes.currPalette))
-            djui_hud_set_font(FONT_RECOLOR_HUD)
-            local x = width*0.85 - djui_hud_measure_text(paletteName)*0.25
-            local y = height*0.68 + math.max((-paletteTrans + 300), 0)^2*0.0005
-            djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, math.min(paletteTrans, 255))
-            djui_hud_print_text(paletteName, x, y, 0.5)
-
             for i = 0, #palettes do
                 local x = width*0.85 - 16 - paletteXOffset + coss(bottomTapeAngle)*bucketSpacing*i
-                local y = height*0.72 + math.abs(math.cos((get_global_timer() + i*bucketSpacing)*0.05)) - sins(bottomTapeAngle)*bucketSpacing*(i - paletteXOffset/bucketSpacing)
+                local y = height*0.72 - math.abs(math.cos((get_global_timer() - i*10)*0.05))*3 - sins(bottomTapeAngle)*bucketSpacing*(i - paletteXOffset/bucketSpacing)
                 local paletteShirt = nil
                 local palettePants = nil
                 if i == 0 then
@@ -1595,6 +1593,13 @@ local function on_hud_render()
                     end
                 end
             end
+
+            local paletteName = (palettes.currPalette == 0) and "Custom" or (palettes[palettes.currPalette].name or ("Palette "..palettes.currPalette))
+            djui_hud_set_font(FONT_RECOLOR_HUD)
+            local x = width*0.85 - djui_hud_measure_text(paletteName)*0.25
+            local y = height*0.68 - math.abs(math.cos((get_global_timer() - palettes.currPalette*10)*0.05))*3
+            djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, math.min(paletteTrans, 255))
+            djui_hud_print_text(paletteName, x, y, 0.5)
         end
     
         -- Render Background Wall
@@ -1771,10 +1776,13 @@ local function on_hud_render()
         djui_hud_set_rotation(0, 0, 0)
         local icon1 = characterCategories[currCategory].icon1
         local icon2 = characterCategories[currCategory].icon2
+        local name = characterCategories[currCategory].name
         local char1 = characterTable[icon1] and characterTable[icon1][1]
         local char2 = characterTable[icon2] and characterTable[icon2][1]
         djui_hud_render_life_icon(char1, width*0.7 - 30 - 4, 10 - 4, 1)
         djui_hud_render_life_icon(char2, width*0.7 - 30 + 4, 10 + 4, 1)
+        djui_hud_set_font(FONT_NORMAL)
+        djui_hud_print_text(name, width*0.7 - 65 - djui_hud_measure_text(name)*0.4, 2, 0.4)
         djui_hud_set_color(255, 255, 255, 255)
 
         -- Render Options Menu

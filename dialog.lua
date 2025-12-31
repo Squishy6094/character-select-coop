@@ -21,19 +21,18 @@ local function dialog_update(dialogId)
     local charName = characterTable[currChar].nickname
     local charAuto = characterTable[currChar].autoDialog
     -- Check for Override Dialog and use it instead
-    local autoReplace = true
+    local colorDialog = false
     if characterDialog[currChar] ~= nil and characterDialog[currChar][dialogId] ~= nil then
         dialog = characterDialog[currChar][dialogId]
-        autoReplace = false
-    end
-
-    if not charAuto then
-        autoReplace = false
+        --colorDialog = true
+    elseif charAuto then
+        dialog.text = dialog.text:gsub(DEFAULT_DIALOG_NAME, charName)
+        colorDialog = true
     end
 
     -- Set color if Dialog has Character's Name
     reset_dialog_override_color()
-    if dialog.text:find(DIALOG_NAME) or (characterDialog[currChar] ~= nil and characterDialog[currChar][dialogId] ~= nil) then
+    if colorDialog then
         local charColor = characterTable[currChar][characterTable[currChar].currAlt].color
         set_dialog_override_color(charColor.r*0.3, charColor.g*0.3, charColor.b*0.3, 150, 255, 255, 255, 255)
     end
@@ -45,7 +44,7 @@ local function dialog_update(dialogId)
         dialog.linesPerBox,
         dialog.leftOffset,
         dialog.width,
-        (autoReplace and dialog.text:gsub(DIALOG_NAME, charName) or dialog.text)
+        dialog.text
     )
 
     -- Reminder to later change this to true, string

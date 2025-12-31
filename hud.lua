@@ -866,9 +866,9 @@ function render_playerlist_and_modlist()
 
         local capColor = network_player_get_override_palette_color(np, CAP)
         playerNameColor = {
-            r = 127 + capColor/2,
-            g = 127 + capColor/2,
-            b = 127 + capColor/2
+            r = 127 + capColor.r/2,
+            g = 127 + capColor.g/2,
+            b = 127 + capColor.b/2
         }
 
         djui_hud_set_color(255, 255, 255, 255)
