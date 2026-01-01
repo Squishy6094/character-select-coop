@@ -476,12 +476,16 @@ end
 local function character_add_ending_toad_model(modelInfo, toadModelRight, toadModelLeft)
     local settingRightToad = false
     character_add_model_replacement(character_get_number_from_model(modelInfo), id_bhvEndToad, function (o)
-        -- Only difference between the two objects is positions
-        settingRightToad = not settingRightToad
-        if settingRightToad then
-            return toadModelRight
+        if (obj_has_model_extended(o,toadModelRight) == 0) and (obj_has_model_extended(o,toadModelLeft) == 0)  then --if the model was already changed
+            settingRightToad = not settingRightToad
+            if settingRightToad then
+                return toadModelRight
+            end
+            return toadModelLeft
+        else --the ending toads model was already changed
+            return obj_get_model_id_extended(o)
         end
-        return toadModelLeft
+        
     end)
 end
 
