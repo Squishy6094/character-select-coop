@@ -569,7 +569,7 @@ end
 ---@return number?
 function get_options_status(tableNum)
     if type(tableNum) ~= TYPE_INTEGER then return 1 end
-    return optionTable[tableNum].toggle
+    return (optionTable[tableNum] and optionTable[tableNum].toggle or 1)
 end
 
 ---@class Credits
