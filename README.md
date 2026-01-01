@@ -6,8 +6,6 @@
  
 <p align=center > Our main goal is to make Character Creation on Lua's end as simple as possible, and to move away from the old Skin Pack mod people keep copying and pasting. With this goal in mind, we tried to make everything as streamlined as possible throughout the character addition process, while allowing for tons of customizability! </p>
 
-<p align=center > Our main goal is to make Character Creation on Lua's end as simple as possible, and to move away from the old Skin Pack mod people keep copying and pasting. With this goal in mind, we tried to make everything as streamlined as possible throughout the character addition process, while allowing for tons of customizability! </p>
-
 ### <p align=center>⭐ [Download Here](https://github.com/Squishy6094/character-select-coop/releases) ⭐ - 🧰 [CoopDX Forum Upload](https://mods.sm64coopdx.com/mods/character-select.149/) 🧰</p>
 ### <p align=center>☕ [Support Development on Ko-Fi](https://ko-fi.com/squishy6094) ☕</p>
 
