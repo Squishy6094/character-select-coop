@@ -1851,7 +1851,7 @@ local function on_hud_render()
             else
                 for i = 1, #creditTable[currCredits] do
                     local creditData = creditTable[currCredits][i]
-                    djui_hud_print_text(creditData.creditee, tvX + tvWidth*0.25*(((i - 1)%3) + 1) - djui_hud_measure_text(creditData.creditee)*0.2, tvY + 19 + creditScrollMin*(math.ceil(i/3) - currCreditScroll), 0.4)
+                    djui_hud_print_text(creditData.creditee, tvX - tvWidth*0.1 + tvWidth*0.3*(((i - 1)%3) + 1) - djui_hud_measure_text(creditData.creditee)*0.2, tvY + 19 + creditScrollMin*(math.ceil(i/3) - currCreditScroll), 0.4)
                 end
 
                 -- Render Support Link

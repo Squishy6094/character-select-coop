@@ -6,4 +6,10 @@ CREDIT_SUPPORTERS = {
     "maemae",
     "charity",
     "FunkyLion",
+    "VioletArts",
+    "Nope208",
+    "Jack Black",
+    "GRAND DAD",
+    "Key's Artworks",
+    "Kale!",
 }

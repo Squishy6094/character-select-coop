@@ -24,7 +24,7 @@ local function dialog_update(dialogId)
     local colorDialog = false
     if characterDialog[currChar] ~= nil and characterDialog[currChar][dialogId] ~= nil then
         dialog = characterDialog[currChar][dialogId]
-        --colorDialog = true
+        colorDialog = true
     elseif charAuto then
         dialog.text = dialog.text:gsub(DEFAULT_DIALOG_NAME, charName)
         colorDialog = true
