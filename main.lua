@@ -1772,17 +1772,17 @@ local function on_hud_render()
         djui_hud_set_color(menuColorTint.r, menuColorTint.g, menuColorTint.b, 255)
         djui_hud_set_rotation(gearRotation, 0.5, 0.5)
         gearRotation = math.lerp(gearRotation, gearRotationTarget, 0.1)
-        djui_hud_render_texture(TEX_GEAR, width*0.7 - 15 - TEX_GEAR.width*0.175, -TEX_GEAR.height*0.175, 0.35, 0.35)
+        djui_hud_render_texture(TEX_GEAR, width*0.7 - 15 - TEX_GEAR.width*0.175 - menuOffsetX*0.1, -TEX_GEAR.height*0.175 - menuOffsetY*0.1, 0.35, 0.35)
         djui_hud_set_rotation(0, 0, 0)
         local icon1 = characterCategories[currCategory].icon1
         local icon2 = characterCategories[currCategory].icon2
         local name = characterCategories[currCategory].name
         local char1 = characterTable[icon1] and characterTable[icon1][1]
         local char2 = characterTable[icon2] and characterTable[icon2][1]
-        djui_hud_render_life_icon(char1, width*0.7 - 30 - 4, 10 - 4, 1)
-        djui_hud_render_life_icon(char2, width*0.7 - 30 + 4, 10 + 4, 1)
+        djui_hud_render_life_icon(char1, width*0.7 - 30 - 4 - menuOffsetX*0.1, 10 - 4 - menuOffsetY*0.1, 1)
+        djui_hud_render_life_icon(char2, width*0.7 - 30 + 4 - menuOffsetX*0.1, 10 + 4 - menuOffsetY*0.1, 1)
         djui_hud_set_font(FONT_NORMAL)
-        djui_hud_print_text(name, width*0.7 - 65 - djui_hud_measure_text(name)*0.4, 2, 0.4)
+        djui_hud_print_text(name, width*0.7 - 65 - djui_hud_measure_text(name)*0.4 - menuOffsetX*0.1, 2 - menuOffsetY*0.1, 0.4)
         djui_hud_set_color(255, 255, 255, 255)
 
         -- Render Options Menu
