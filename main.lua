@@ -1710,7 +1710,7 @@ local function on_hud_render()
                 local column = i%gridButtonsPerRow
                 local charIcon = characterTableRender[i][characterTableRender[i].currAlt].lifeIcon
                 local charColor = characterTableRender[i][characterTableRender[i].currAlt].color
-                local x = 32 + buttonSpacing*column - math.abs(row - gridYOffset/buttonSpacing)^2*3 + math.sin((get_global_timer() + i*10)*0.1) - menuOffsetX*0.5 - optionsMenuOffset + 4
+                local x = 40 + buttonSpacing*column - math.abs(row - gridYOffset/buttonSpacing)^2*3 + math.sin((get_global_timer() + i*10)*0.1) - menuOffsetX*0.5 - optionsMenuOffset + 4
                 local y = height*0.5 - buttonSpacing*0.5 + row*buttonSpacing - gridYOffset + math.cos((get_global_timer() + i*10)*0.1) - characterTableRender[i].UIOffset*0.5 - menuOffsetY*0.5 + 4
                 djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
                 if characterInstrumentals[i] ~= nil then
@@ -1905,7 +1905,13 @@ local function on_hud_render()
 
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         djui_hud_print_text(TEXT_VERSION, 2, height - 7, 0.4)
-        local bindInfo = TEXT_TABLE_MENU_BINDS[1][math.floor(get_global_timer()/150)%(#TEXT_TABLE_MENU_BINDS[1]) + 1]
+        local currMenu = gridMenu and MENU_BINDS_GRID or MENU_BINDS_DEFAULT
+        if options == OPTIONS_MAIN then
+            currMenu = MENU_BINDS_OPTIONS 
+        elseif options == OPTIONS_CREDITS then
+            currMenu = MENU_BINDS_GRID
+        end
+        local bindInfo = TEXT_TABLE_MENU_BINDS[currMenu][math.floor(get_global_timer()/150)%(#TEXT_TABLE_MENU_BINDS[currMenu]) + 1]
         djui_hud_print_text(bindInfo.bind, width*0.15 - djui_hud_measure_text(bindInfo.bind)*0.4, height - 35, 0.8)
         djui_hud_print_text(bindInfo.desc, width*0.15 - djui_hud_measure_text(bindInfo.desc)*0.4, height - 25, 0.8)
 
