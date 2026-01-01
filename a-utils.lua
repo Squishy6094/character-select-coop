@@ -2,7 +2,7 @@
 MOD_VERSION_API = 1
 MOD_VERSION_MAJOR = 16
 MOD_VERSION_MINOR = 0
-MOD_VERSION_INDEV = true
+MOD_VERSION_INDEV = false
 MOD_VERSION_STRING = tostring(MOD_VERSION_API) .. "." .. tostring(MOD_VERSION_MAJOR) .. (MOD_VERSION_MINOR > 0 and ("." .. tostring(MOD_VERSION_MINOR)) or "") .. (MOD_VERSION_INDEV and " (In-Dev)" or "")
 
 -- Check CoopDX Version
@@ -62,6 +62,7 @@ local dependacyFiles = {
     "textures/char_select_custom_meter_right.tex",
     "textures/char_select_font_brick.tex",
     "textures/char_select_font_characteristic.tex",
+    "textures/char_select_gear.tex",
     "textures/char_select_graffiti_default.tex",
     "textures/char_select_graffiti_luigi.tex",
     "textures/char_select_graffiti_mario.tex",
