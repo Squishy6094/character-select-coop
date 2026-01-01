@@ -568,7 +568,7 @@ end
 ---@param tableNum integer The table position of the option
 ---@return number?
 function get_options_status(tableNum)
-    if type(tableNum) ~= TYPE_INTEGER then return nil end
+    if type(tableNum) ~= TYPE_INTEGER then return 1 end
     return optionTable[tableNum].toggle
 end
 
