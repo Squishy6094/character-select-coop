@@ -271,6 +271,8 @@ local function character_add_voice(modelInfo, clips)
                 if load ~= nil then
                     voiceTable[voice] = load
                 end
+            elseif sound._pointer ~= nil then
+                voiceTable[voice] = sound
             elseif type(sound) == TYPE_TABLE then
                 -- load RNG/Table Samples
                 voiceTable[voice] = {}
@@ -280,6 +282,8 @@ local function character_add_voice(modelInfo, clips)
                         if load ~= nil then
                             voiceTable[voice][i] = load
                         end
+                    elseif subsound._pointer ~= nil then
+                        voiceTable[voice][i] = subsound
                     end
                 end
             end
