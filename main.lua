@@ -584,13 +584,13 @@ creditTable = {
     [1] = {
         packName = "Character Select Coop",
         { creditee = "Squishy6094",     credit = "Creator" },
-        { creditee = "JerThePear",      credit = "Menu Assets/Anims" },
         { creditee = "Trashcam",        credit = "Menu Music" },
         { creditee = "Charity",         credit = "Sound Design" },
+        { creditee = "JerThePear",      credit = "Menu Assets/Anims" },
+        { creditee = "Shell_x33",       credit = "Palettes / Font Assets" },
         { creditee = "WinbowBreaker",   credit = "Menu Asset Renders" },
         { creditee = "xLuigiGamerx",    credit = "HUD Accuracy" },
         { creditee = "Wibblus",         credit = "Menu Anims Code" },
-        { creditee = "Shell_x33",       credit = "Palette Sprites" },
     }
 }
 
