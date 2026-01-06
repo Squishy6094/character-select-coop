@@ -590,6 +590,7 @@ creditTable = {
         { creditee = "WinbowBreaker",   credit = "Menu Asset Renders" },
         { creditee = "xLuigiGamerx",    credit = "HUD Accuracy" },
         { creditee = "Wibblus",         credit = "Menu Anims Code" },
+        { creditee = "Shell_x33",       credit = "Palette Sprites" },
     }
 }
 
