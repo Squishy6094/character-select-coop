@@ -465,7 +465,19 @@ end
 ---@param peachletterright TextureInfo? right side of the texture to replace peach's letter texture in the intro
 ---@param peachlettersig TextureInfo?  texture to replace peach's letter texture in the intro
 local function character_add_peach_custom(modelInfo, peachmodelstart, peachmodelend, peachletterleft, peachletterright, peachlettersig)
-    character_add_model_replacement(character_get_number_from_model(modelInfo), id_bhvBeginningPeach, peachmodelstart)
+    character_add_model_replacement(character_get_number_from_model(modelInfo), id_bhvBeginningPeach, function(o)
+        if characterpeachletter[modelInfo]  ~= nil then
+            texture_override_set("castle_grounds_seg7_texture_0700C9E8",characterpeachletter[modelInfo].left)
+            texture_override_set("castle_grounds_seg7_texture_0700D9E8",characterpeachletter[modelInfo].right)
+            texture_override_set("castle_grounds_seg7_us_texture_0700EAE8",characterpeachletter[modelInfo].sig)
+        end
+        
+        if peachmodelstart ~= nil then
+            return peachmodelstart
+        else
+            return obj_get_model_id_extended(o)
+        end
+    end)
     character_add_model_replacement(character_get_number_from_model(modelInfo), id_bhvEndPeach, peachmodelend)
     if (peachletterleft ~= nil) and (peachletterright ~= nil) and (peachlettersig ~= nil) then
         characterpeachletter[modelInfo] = {left = peachletterleft, right = peachletterright, sig = peachlettersig}
