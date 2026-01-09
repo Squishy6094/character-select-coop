@@ -1358,6 +1358,7 @@ hook_behavior(id_bhvKoopa, OBJ_LIST_PUSHABLE, false, nil, koopa_model_update)
 
 cs_hook_mario_update(mario_update)
 hook_event(HOOK_OBJECT_SET_MODEL, set_model)
+hook_event(HOOK_ON_SYNC_VALID, set_all_models)
 
 ------------------
 -- Menu Handler --

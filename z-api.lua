@@ -798,7 +798,7 @@ end
 ---@added 1.14
 ---@param charNum integer The number of the Character you want to set the category for
 ---@param categoryName string The Category Name (Will create a new category if category does not exist)
----@param forceIcon boolean Forces the icon to be used as a category icon
+---@param forceIcon boolean? Forces the icon to be used as a category icon
 local function character_set_category(charNum, categoryName, forceIcon)
     if not charNum then return end
     if not categoryName then return end
