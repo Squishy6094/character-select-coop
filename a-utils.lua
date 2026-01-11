@@ -721,3 +721,9 @@ function string_sim(str1, str2)
     if maxLength == 0 then return 1 end
     return (distance / maxLength)
 end
+
+-- Object Fields
+define_custom_obj_fields({
+    oOriginalModel = 'u32',
+    oModelHasBeenReplaced = 'u32',
+})
