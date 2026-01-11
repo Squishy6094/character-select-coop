@@ -445,7 +445,7 @@ end
 ---@added 1.16.2
 ---@param charNum integer Player Model ID	
 ---@param textureName string Behavior ID of the type of objects you want to replace
----@param overrideTexInfo TextureInfo Model ID
+---@param overrideTexInfo TextureInfo|function Model ID
 local function character_add_texture_replacement(charNum, textureName, overrideTexInfo)
     table.insert(texturesModified, textureName)
     characterTable[charNum].replaceTextures[textureName] = overrideTexInfo

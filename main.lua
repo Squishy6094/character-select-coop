@@ -1362,7 +1362,7 @@ function set_all_visuals(charNum)
             local texName = texturesModified[i]
             local tex = characterTable[charNum].replaceTextures[texName]
             if tex ~= nil and visualToggle then
-                texture_override_set(texName, tex)
+                texture_override_set(texName, run_func_or_get_var(tex))
             else
                 texture_override_reset(texName)
             end
