@@ -606,22 +606,19 @@ local function render_hud_power_meter()
         handle_power_meter_actions(shownHealthWedges);
     end
 
-    if (sPowerMeterHUD.animation == POWER_METER_HIDDEN) then
-        return;
-    end
-
     local powerMeterPrevY = sPowerMeterHUD.y
-
-    local anim = sPowerMeterHUD.animation
-    if anim == POWER_METER_EMPHASIZED then
-        animate_power_meter_emphasized();
-    elseif anim == POWER_METER_DEEMPHASIZING then
-        animate_power_meter_deemphasizing();
-    elseif anim == POWER_METER_HIDING then
-        animate_power_meter_hiding();
+    
+    if (sPowerMeterHUD.animation ~= POWER_METER_HIDDEN) then
+        local anim = sPowerMeterHUD.animation
+        if anim == POWER_METER_EMPHASIZED then
+            animate_power_meter_emphasized();
+        elseif anim == POWER_METER_DEEMPHASIZING then
+            animate_power_meter_deemphasizing();
+        elseif anim == POWER_METER_HIDING then
+            animate_power_meter_hiding();
+        end
     end
 
-    --render_dl_power_meter(shownHealthWedges);
     render_health_meter_from_local_index_interpolated(0, gMarioStates[0].health, sPowerMeterHUD.x, 208 - powerMeterPrevY, 64, 64, sPowerMeterHUD.x, 208 - sPowerMeterHUD.y, 64, 64)
 
     sPowerMeterVisibleTimer = sPowerMeterVisibleTimer + 1;
