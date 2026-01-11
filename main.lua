@@ -139,6 +139,7 @@ characterTable = {
         playtime = 0,
         autoDialog = true,
         replaceModels = {},
+        replaceTextures = {},
         [1] = {
             name = "Mario",
             description = "The iconic Italian plumber himself! He's quite confident and brave, always prepared to jump into action to save the Mushroom Kingdom!",
@@ -179,6 +180,7 @@ characterTable = {
         playtime = 0,
         autoDialog = true,
         replaceModels = {},
+        replaceTextures = {},
         [1] = {
             name = "Luigi",
             description = "The other iconic Italian plumber! He's a bit shy and scares easily, but he's willing to follow his brother Mario through any battle that may come their way!",
@@ -210,6 +212,7 @@ characterTable = {
         playtime = 0,
         autoDialog = true,
         replaceModels = {},
+        replaceTextures = {},
         [1] = {
             name = "Toad",
             description = "Princess Peach's little attendant! He's an energetic little mushroom that's never afraid to follow Mario and Luigi on their adventures!",
@@ -241,6 +244,7 @@ characterTable = {
         playtime = 0,
         autoDialog = true,
         replaceModels = {},
+        replaceTextures = {},
         [1] = {
             name = "Waluigi",
             description = "The mischievous rival of Luigi! He's a narcissistic competitor that takes great taste in others getting pummeled from his success!",
@@ -272,6 +276,7 @@ characterTable = {
         playtime = 0,
         autoDialog = true,
         replaceModels = {},
+        replaceTextures = {},
         [1] = {
             name = "Wario",
             description = "The mischievous rival of Mario! He's a greed-filled treasure hunter obsessed with money and gold coins. He's always ready for a brawl if his money is on the line!",
@@ -308,7 +313,6 @@ local characterTableRender = {}
 
 characterCaps = {}
 characterColorPresets = {}
-characterpeachletter = {} --the custom texture a character uses for peach's letter in the opening
 characterAnims = {
     [E_MODEL_MARIO] = {
         anims = {[CS_ANIM_MENU] = MARIO_ANIM_CS_MENU},
@@ -349,6 +353,8 @@ characterGraffiti = {
     [CT_WARIO]   = get_texture_info("char_select_graffiti_wario"),
 }
 characterDialog = {}
+
+texturesModified = {}
 
 tableRefNum = 0
 local function make_table_ref_num()
@@ -842,7 +848,7 @@ hookTableOnCharacterChange = {
         end
 
         -- Switch all models to either Vanilla or the Character's
-        set_all_models()
+        set_all_visuals()
     end
 }
 
@@ -917,7 +923,7 @@ local function mario_update(m)
                 boot_note()
             end
         end
-        set_all_models()
+        set_all_visuals()
         queueStorageFailsafe = false
     end
     
@@ -1000,7 +1006,7 @@ local function mario_update(m)
         end
 
         if prevVisualToggle ~= optionTable[optionTableRef.localVisuals].toggle then
-            set_all_models()
+            set_all_visuals()
             prevVisualToggle = optionTable[optionTableRef.localVisuals].toggle
         end
 
@@ -1246,11 +1252,6 @@ local sCapBhvs = {
     [id_bhvMetalCap] = true,
 }
 
-define_custom_obj_fields({
-    oOriginalModel = 'u32',
-    oModelHasBeenReplaced = 'u32',
-})
-
 ---@param o Object
 function set_model(o, model)
     -- Extended Model Incompatible
@@ -1334,7 +1335,12 @@ function set_model(o, model)
     end
 end
 
-function set_all_models()
+hook_event(HOOK_OBJECT_SET_MODEL, set_model)
+
+function set_all_visuals()
+    local visualToggle = optionTable[optionTableRef.localVisuals].toggle == 1
+
+    -- Replace all Object Models
     for i = 0, NUM_OBJ_LISTS - 1 do
         local o = obj_get_first(i)
         repeat
@@ -1344,21 +1350,23 @@ function set_all_models()
             o = obj_get_next(o)
         until o == nil
     end
-end
 
-local function koopa_model_update(o)
-    if o.oKoopaMovementType == KOOPA_BP_UNSHELLED then
-        o.oOriginalModel = E_MODEL_KOOPA_WITHOUT_SHELL
-    else
-        o.oOriginalModel = E_MODEL_KOOPA_WITH_SHELL
+    -- Replace all Textures
+    for i = 1, #texturesModified do
+        if characterTable[currChar].replaceTextures ~= nil then
+            local texName = texturesModified[i]
+            local tex = characterTable[currChar].replaceTextures[texName]
+            if tex ~= nil and visualToggle then
+                texture_override_set(texName, tex)
+            else
+                texture_override_reset(texName)
+            end
+        end
     end
-    set_model(o)
 end
-hook_behavior(id_bhvKoopa, OBJ_LIST_PUSHABLE, false, nil, koopa_model_update)
 
 cs_hook_mario_update(mario_update)
-hook_event(HOOK_OBJECT_SET_MODEL, set_model)
-hook_event(HOOK_ON_SYNC_VALID, set_all_models)
+hook_event(HOOK_ON_SYNC_VALID, set_all_visuals)
 
 ------------------
 -- Menu Handler --

@@ -71,6 +71,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         playtime = 0,
         autoDialog = true,
         replaceModels = {},
+        replaceTextures = {},
         [1] = {
             name = name,
             description = type(description) == TYPE_STRING and description or "No description has been provided",
@@ -428,7 +429,9 @@ local bhvAllowReplace = {
     [id_bhvCelebrationStar] = true,
 }
 
----@param charNum ModelExtendedId|integer Player Model ID	
+---@description A function that replaces a behaviors model with your own
+---@added 1.16.2
+---@param charNum integer Player Model ID	
 ---@param bhvId BehaviorId|integer Behavior ID of the type of objects you want to replace
 ---@param replaceModel ModelExtendedId|integer|function? Model ID
 local function character_add_model_replacement(charNum, bhvId, replaceModel)
@@ -436,6 +439,16 @@ local function character_add_model_replacement(charNum, bhvId, replaceModel)
         log_to_console_once("Using `character_add_model_replacement` on untested behaviors such as '" .. get_behavior_name_from_id(bhvId) .. "' may be unstable!", CONSOLE_MESSAGE_WARNING)
     end
     characterTable[charNum].replaceModels[bhvId] = replaceModel
+end
+
+---@description A function that replaces a texture with your own
+---@added 1.16.2
+---@param charNum integer Player Model ID	
+---@param textureName string Behavior ID of the type of objects you want to replace
+---@param overrideTexInfo TextureInfo Model ID
+local function character_add_texture_replacement(charNum, textureName, overrideTexInfo)
+    table.insert(texturesModified, textureName)
+    characterTable[charNum].replaceTextures[textureName] = overrideTexInfo
 end
 
 ---@description A function that adds a celebration star model to a character
@@ -465,22 +478,20 @@ end
 ---@param peachletterright TextureInfo? right side of the texture to replace peach's letter texture in the intro
 ---@param peachlettersig TextureInfo?  texture to replace peach's letter texture in the intro
 local function character_add_peach_custom(modelInfo, peachmodelstart, peachmodelend, peachletterleft, peachletterright, peachlettersig)
-    character_add_model_replacement(character_get_number_from_model(modelInfo), id_bhvBeginningPeach, function(o)
-        if characterpeachletter[modelInfo]  ~= nil then
-            texture_override_set("castle_grounds_seg7_texture_0700C9E8",characterpeachletter[modelInfo].left)
-            texture_override_set("castle_grounds_seg7_texture_0700D9E8",characterpeachletter[modelInfo].right)
-            texture_override_set("castle_grounds_seg7_us_texture_0700EAE8",characterpeachletter[modelInfo].sig)
-        end
-        
+    if modelInfo == nil then return end
+    local charNum = character_get_number_from_model(modelInfo) ---@type integer
+    character_add_model_replacement(charNum, id_bhvBeginningPeach, function(o)
         if peachmodelstart ~= nil then
             return peachmodelstart
         else
             return obj_get_model_id_extended(o)
         end
     end)
-    character_add_model_replacement(character_get_number_from_model(modelInfo), id_bhvEndPeach, peachmodelend)
+    character_add_model_replacement(charNum, id_bhvEndPeach, peachmodelend)
     if (peachletterleft ~= nil) and (peachletterright ~= nil) and (peachlettersig ~= nil) then
-        characterpeachletter[modelInfo] = {left = peachletterleft, right = peachletterright, sig = peachlettersig}
+        character_add_texture_replacement(charNum, "castle_grounds_seg7_texture_0700C9E8", peachletterleft)
+        character_add_texture_replacement(charNum, "castle_grounds_seg7_texture_0700D9E8", peachletterright)
+        character_add_texture_replacement(charNum, "castle_grounds_seg7_us_texture_0700EAE8", peachlettersig)
     end
 end
 
@@ -490,8 +501,10 @@ end
 ---@param toadModelRight ModelExtendedId Model Information Received from smlua_model_util_get_id(), the model used for the right toad in the ending if left blank said toad will use the default npc toad model
 ---@param toadModelLeft ModelExtendedId Model Information Received from smlua_model_util_get_id(), the model used for the left toad in the ending if left blank said toad will use the default npc toad model
 local function character_add_ending_toad_model(modelInfo, toadModelRight, toadModelLeft)
+    if modelInfo == nil then return end
     local settingRightToad = false
-    character_add_model_replacement(character_get_number_from_model(modelInfo), id_bhvEndToad, function (o)
+    local charNum = character_get_number_from_model(modelInfo) ---@type integer
+    character_add_model_replacement(charNum, id_bhvEndToad, function (o)
         if (obj_has_model_extended(o,toadModelRight) == 0) and (obj_has_model_extended(o,toadModelLeft) == 0)  then --if the model was already changed
             settingRightToad = not settingRightToad
             if settingRightToad then
@@ -1206,6 +1219,7 @@ _G.charSelect = {
     character_add_caps = character_add_caps,
     character_get_caps = character_get_caps,
     character_add_model_replacement = character_add_model_replacement,
+    character_add_texture_replacement = character_add_texture_replacement,
     character_add_celebration_star = character_add_celebration_star,
     character_add_peach_custom = character_add_peach_custom,
     character_add_ending_toad_model = character_add_ending_toad_model,
