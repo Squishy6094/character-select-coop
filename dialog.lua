@@ -26,8 +26,8 @@ local function dialog_update(dialogId)
         dialog = characterDialog[currChar][dialogId]
         colorDialog = true
     elseif charAuto then
+        colorDialog = dialog.text:find(DEFAULT_DIALOG_NAME) ~= nil
         dialog.text = dialog.text:gsub(DEFAULT_DIALOG_NAME, charName)
-        colorDialog = true
     end
 
     -- Set color if Dialog has Character's Name
@@ -47,7 +47,6 @@ local function dialog_update(dialogId)
         dialog.text
     )
 
-    -- Reminder to later change this to true, string
     return true
 end
 
