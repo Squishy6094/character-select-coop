@@ -12,12 +12,13 @@ local function find_character_number(index)
     return 0
 end
 
-local function is_moveset_restricted()
-    return gGlobalSyncTable.charSelectRestrictMovesets > 0
+local function moveset_is_active(index)
+    index = index or 0
+    return gCSPlayers[index].movesetToggle
 end
 
 local function mario_update(m)
-    if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
+    if not moveset_is_active(m.playerIndex) then return end
     local hook = HOOK_MARIO_UPDATE
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -28,7 +29,7 @@ local function mario_update(m)
 end
 
 local function before_mario_update(m)
-    if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
+    if not moveset_is_active(m.playerIndex) then return end
     local hook = HOOK_BEFORE_MARIO_UPDATE
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -39,7 +40,7 @@ local function before_mario_update(m)
 end
 
 local function before_phys_step(m, stepType, stepArg)
-    if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
+    if not moveset_is_active(m.playerIndex) then return end
     local hook = HOOK_BEFORE_PHYS_STEP
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -50,7 +51,7 @@ local function before_phys_step(m, stepType, stepArg)
 end
 
 local function allow_pvp_attack(attacker, victim, int)
-    if is_moveset_restricted() then return end
+    if not moveset_is_active(attacker.playerIndex) and not moveset_is_active(victim.playerIndex) then return end
     local hook = HOOK_ALLOW_PVP_ATTACK
     local attackerMoveset = characterMovesets[find_character_number(attacker.playerIndex)]
     local victimMoveset = characterMovesets[find_character_number(victim.playerIndex)]
@@ -74,7 +75,7 @@ local function allow_pvp_attack(attacker, victim, int)
 end
 
 local function on_pvp_attack(attacker, victim, int)
-    if is_moveset_restricted() then return end
+    if not moveset_is_active(attacker.playerIndex) and not moveset_is_active(victim.playerIndex) then return end
     local hook = HOOK_ON_PVP_ATTACK
     local attackerMoveset = characterMovesets[find_character_number(attacker.playerIndex)]
     local victimMoveset = characterMovesets[find_character_number(victim.playerIndex)]
@@ -97,7 +98,7 @@ local function on_pvp_attack(attacker, victim, int)
 end
 
 local function on_interact(m, o, intType, intValue)
-    if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
+    if not moveset_is_active(m.playerIndex) then return end
     local hook = HOOK_ON_INTERACT
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -108,7 +109,7 @@ local function on_interact(m, o, intType, intValue)
 end
 
 local function allow_interact(m, o, intType)
-    if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
+    if not moveset_is_active(m.playerIndex) then return end
     local hook = HOOK_ALLOW_INTERACT
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -119,7 +120,7 @@ local function allow_interact(m, o, intType)
 end
 
 local function on_set_mario_action(m)
-    if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
+    if not moveset_is_active(m.playerIndex) then return end
     local hook = HOOK_ON_SET_MARIO_ACTION
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -130,7 +131,7 @@ local function on_set_mario_action(m)
 end
 
 local function before_set_mario_action(m, nextAct, actionArg)
-    if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
+    if not moveset_is_active(m.playerIndex) then return end
     local hook = HOOK_BEFORE_SET_MARIO_ACTION
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -141,7 +142,7 @@ local function before_set_mario_action(m, nextAct, actionArg)
 end
 
 local function on_death(m)
-    if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
+    if not moveset_is_active(m.playerIndex) then return end
     local hook = HOOK_ON_DEATH
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -152,7 +153,7 @@ local function on_death(m)
 end
 
 local function hud_render()
-    if is_moveset_restricted() or not gCSPlayers[0].movesetToggle then return end
+    if not moveset_is_active(0) then return end
     local hook = HOOK_ON_HUD_RENDER
     local currMoveset = characterMovesets[find_character_number(0)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -163,7 +164,7 @@ local function hud_render()
 end
 
 local function hud_render_behind()
-    if is_moveset_restricted() or not gCSPlayers[0].movesetToggle then return end
+    if not moveset_is_active(0) then return end
     local hook = HOOK_ON_HUD_RENDER_BEHIND
     local currMoveset = characterMovesets[find_character_number(0)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -174,7 +175,7 @@ local function hud_render_behind()
 end
 
 local function level_init(type, levelNum, areaIdx, nodeId, arg)
-    if is_moveset_restricted() or not gCSPlayers[0].movesetToggle then return end
+    if not moveset_is_active(0) then return end
     local hook = HOOK_ON_LEVEL_INIT
     local currMoveset = characterMovesets[find_character_number(0)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -185,7 +186,7 @@ local function level_init(type, levelNum, areaIdx, nodeId, arg)
 end
 
 local function sync_valid()
-    if is_moveset_restricted() or not gCSPlayers[0].movesetToggle then return end
+    if not moveset_is_active(0) then return end
     local hook = HOOK_ON_SYNC_VALID
     local currMoveset = characterMovesets[find_character_number(0)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -196,7 +197,7 @@ local function sync_valid()
 end
 
 local function object_render(obj)
-    if is_moveset_restricted() or not gCSPlayers[0].movesetToggle then return end
+    if not moveset_is_active(0) then return end
     local hook = HOOK_ON_OBJECT_RENDER
     local currMoveset = characterMovesets[find_character_number(0)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
@@ -207,9 +208,9 @@ local function object_render(obj)
 end
 
 local function allow_water_action(m, water)
-    if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
+    if not moveset_is_active(m.playerIndex) then return end
     local hook = HOOK_ALLOW_FORCE_WATER_ACTION
-    local currMoveset = characterMovesets[find_character_number(0)]
+    local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
     local returnVar = currMoveset[hook](m, water)
     if returnVar ~= nil then
@@ -218,9 +219,20 @@ local function allow_water_action(m, water)
 end
 
 local function mario_override_floor_class(m, floorClass)
-    if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
+    if not moveset_is_active(m.playerIndex) then return end
     local hook = HOOK_ALLOW_FORCE_WATER_ACTION
-    local currMoveset = characterMovesets[find_character_number(0)]
+    local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
+    if currMoveset == nil or currMoveset[hook] == nil then return end
+    local returnVar = currMoveset[hook](m, floorClass)
+    if returnVar ~= nil then
+        return returnVar
+    end
+end
+
+local function override_phys_step_defacto_speed(m)
+    if not moveset_is_active(m.playerIndex) then return end
+    local hook = HOOK_MARIO_OVERRIDE_PHYS_STEP_DEFACTO_SPEED
+    local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
     local returnVar = currMoveset[hook](m, floorClass)
     if returnVar ~= nil then
@@ -247,4 +259,5 @@ hook_event(HOOK_ON_MODS_LOADED, function()
     hook_event(HOOK_ON_OBJECT_RENDER, object_render)
     hook_event(HOOK_ALLOW_FORCE_WATER_ACTION, allow_water_action)
     hook_event(HOOK_MARIO_OVERRIDE_FLOOR_CLASS, mario_override_floor_class)
+    hook_event(HOOK_MARIO_OVERRIDE_PHYS_STEP_DEFACTO_SPEED, override_phys_step_defacto_speed)
 end)
