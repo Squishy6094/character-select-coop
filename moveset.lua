@@ -26,7 +26,6 @@ local function mario_update(m)
         return returnVar
     end
 end
-hook_event(HOOK_MARIO_UPDATE, mario_update)
 
 local function before_mario_update(m)
     if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
@@ -38,7 +37,6 @@ local function before_mario_update(m)
         return returnVar
     end
 end
-hook_event(HOOK_BEFORE_MARIO_UPDATE, before_mario_update)
 
 local function before_phys_step(m, stepType, stepArg)
     if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
@@ -50,7 +48,6 @@ local function before_phys_step(m, stepType, stepArg)
         return returnVar
     end
 end
-hook_event(HOOK_BEFORE_PHYS_STEP, before_phys_step)
 
 local function allow_pvp_attack(attacker, victim, int)
     if is_moveset_restricted() then return end
@@ -75,7 +72,6 @@ local function allow_pvp_attack(attacker, victim, int)
         end
     end
 end
-hook_event(HOOK_ALLOW_PVP_ATTACK, allow_pvp_attack)
 
 local function on_pvp_attack(attacker, victim, int)
     if is_moveset_restricted() then return end
@@ -99,7 +95,6 @@ local function on_pvp_attack(attacker, victim, int)
         end
     end
 end
-hook_event(HOOK_ON_PVP_ATTACK, on_pvp_attack)
 
 local function on_interact(m, o, intType, intValue)
     if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
@@ -111,7 +106,6 @@ local function on_interact(m, o, intType, intValue)
         return returnVar
     end
 end
-hook_event(HOOK_ON_INTERACT, on_interact)
 
 local function allow_interact(m, o, intType)
     if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
@@ -123,7 +117,6 @@ local function allow_interact(m, o, intType)
         return returnVar
     end
 end
-hook_event(HOOK_ALLOW_INTERACT, allow_interact)
 
 local function on_set_mario_action(m)
     if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
@@ -135,7 +128,6 @@ local function on_set_mario_action(m)
         return returnVar
     end
 end
-hook_event(HOOK_ON_SET_MARIO_ACTION, on_set_mario_action)
 
 local function before_set_mario_action(m, nextAct, actionArg)
     if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
@@ -147,7 +139,6 @@ local function before_set_mario_action(m, nextAct, actionArg)
         return returnVar
     end
 end
-hook_event(HOOK_BEFORE_SET_MARIO_ACTION, before_set_mario_action)
 
 local function on_death(m)
     if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
@@ -159,7 +150,6 @@ local function on_death(m)
         return returnVar
     end
 end
-hook_event(HOOK_ON_DEATH, on_death)
 
 local function hud_render()
     if is_moveset_restricted() or not gCSPlayers[0].movesetToggle then return end
@@ -171,7 +161,6 @@ local function hud_render()
         return returnVar
     end
 end
-hook_event(HOOK_ON_HUD_RENDER, hud_render)
 
 local function hud_render_behind()
     if is_moveset_restricted() or not gCSPlayers[0].movesetToggle then return end
@@ -183,7 +172,6 @@ local function hud_render_behind()
         return returnVar
     end
 end
-hook_event(HOOK_ON_HUD_RENDER_BEHIND, hud_render_behind)
 
 local function level_init(type, levelNum, areaIdx, nodeId, arg)
     if is_moveset_restricted() or not gCSPlayers[0].movesetToggle then return end
@@ -195,7 +183,6 @@ local function level_init(type, levelNum, areaIdx, nodeId, arg)
         return returnVar
     end
 end
-hook_event(HOOK_ON_LEVEL_INIT, level_init)
 
 local function sync_valid()
     if is_moveset_restricted() or not gCSPlayers[0].movesetToggle then return end
@@ -207,7 +194,6 @@ local function sync_valid()
         return returnVar
     end
 end
-hook_event(HOOK_ON_SYNC_VALID, sync_valid)
 
 local function object_render(obj)
     if is_moveset_restricted() or not gCSPlayers[0].movesetToggle then return end
@@ -219,7 +205,6 @@ local function object_render(obj)
         return returnVar
     end
 end
-hook_event(HOOK_ON_OBJECT_RENDER, object_render)
 
 local function allow_water_action(m, water)
     if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
@@ -231,7 +216,6 @@ local function allow_water_action(m, water)
         return returnVar
     end
 end
-hook_event(HOOK_ALLOW_FORCE_WATER_ACTION, allow_water_action)
 
 local function mario_override_floor_class(m, floorClass)
     if is_moveset_restricted() or not gCSPlayers[m.playerIndex].movesetToggle then return end
@@ -243,4 +227,24 @@ local function mario_override_floor_class(m, floorClass)
         return returnVar
     end
 end
-hook_event(HOOK_MARIO_OVERRIDE_FLOOR_CLASS, mario_override_floor_class)
+
+-- Hook everything after other mods
+hook_event(HOOK_ON_MODS_LOADED, function()
+    hook_event(HOOK_MARIO_UPDATE, mario_update)
+    hook_event(HOOK_BEFORE_MARIO_UPDATE, before_mario_update)
+    hook_event(HOOK_BEFORE_PHYS_STEP, before_phys_step)
+    hook_event(HOOK_ALLOW_PVP_ATTACK, allow_pvp_attack)
+    hook_event(HOOK_ON_PVP_ATTACK, on_pvp_attack)
+    hook_event(HOOK_ON_INTERACT, on_interact)
+    hook_event(HOOK_ALLOW_INTERACT, allow_interact)
+    hook_event(HOOK_ON_SET_MARIO_ACTION, on_set_mario_action)
+    hook_event(HOOK_BEFORE_SET_MARIO_ACTION, before_set_mario_action)
+    hook_event(HOOK_ON_DEATH, on_death)
+    hook_event(HOOK_ON_HUD_RENDER, hud_render)
+    hook_event(HOOK_ON_HUD_RENDER_BEHIND, hud_render_behind)
+    hook_event(HOOK_ON_LEVEL_INIT, level_init)
+    hook_event(HOOK_ON_SYNC_VALID, sync_valid)
+    hook_event(HOOK_ON_OBJECT_RENDER, object_render)
+    hook_event(HOOK_ALLOW_FORCE_WATER_ACTION, allow_water_action)
+    hook_event(HOOK_MARIO_OVERRIDE_FLOOR_CLASS, mario_override_floor_class)
+end)
