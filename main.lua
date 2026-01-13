@@ -1187,7 +1187,7 @@ local function mario_update(m)
             optionTable[i].optionBeingSet = false
         end
 
-        p.movesetToggle = optionTable[optionTableRef.localMoveset].toggle ~= 0
+        p.movesetToggle = optionTable[optionTableRef.localMoveset].toggle ~= 0 and gGlobalSyncTable.charSelectRestrictMovesets == 0
         if prevChar ~= currChar then
             on_character_change(prevChar, currChar)
             prevChar = currChar
