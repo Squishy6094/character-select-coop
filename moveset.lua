@@ -234,7 +234,18 @@ local function override_phys_step_defacto_speed(m)
     local hook = HOOK_MARIO_OVERRIDE_PHYS_STEP_DEFACTO_SPEED
     local currMoveset = characterMovesets[find_character_number(m.playerIndex)]
     if currMoveset == nil or currMoveset[hook] == nil then return end
-    local returnVar = currMoveset[hook](m, floorClass)
+    local returnVar = currMoveset[hook](m)
+    if returnVar ~= nil then
+        return returnVar
+    end
+end
+
+local function on_play_sound(soundBits, pos)
+    if not moveset_is_active(0) then return end
+    local hook = HOOK_ON_PLAY_SOUND
+    local currMoveset = characterMovesets[find_character_number(0)]
+    if currMoveset == nil or currMoveset[hook] == nil then return end
+    local returnVar = currMoveset[hook](soundBits, pos)
     if returnVar ~= nil then
         return returnVar
     end
@@ -260,4 +271,5 @@ hook_event(HOOK_ON_MODS_LOADED, function()
     hook_event(HOOK_ALLOW_FORCE_WATER_ACTION, allow_water_action)
     hook_event(HOOK_MARIO_OVERRIDE_FLOOR_CLASS, mario_override_floor_class)
     hook_event(HOOK_MARIO_OVERRIDE_PHYS_STEP_DEFACTO_SPEED, override_phys_step_defacto_speed)
+    hook_event(HOOK_ON_PLAY_SOUND, on_play_sound)
 end)
