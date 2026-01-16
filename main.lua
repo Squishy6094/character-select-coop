@@ -1255,11 +1255,19 @@ local sCapBhvs = {
     [id_bhvMetalCap] = true,
 }
 
+
 ---@param o Object
-function set_model(o, model, _, charNum)
+---@param model ModelExtendedId?
+---@param extendedModel ModelExtendedId?
+---@param charNum integer
+function set_model(o, model, extendedModel, charNum)
     local charNum = charNum or currChar
+    -- "unused1" refers to an object's original model, will find a better solution later
+    if o.unused1 == 0 then
+        o.unused1 = extendedModel or obj_get_model_id_extended(o)
+    end
     -- Extended Model Incompatible
-    if obj_get_model_id_extended(o) == E_MODEL_ERROR_MODEL then return end
+    if o.unused1 == E_MODEL_ERROR_MODEL or o.unused1 == E_MODEL_NONE then return end
 
     local visualToggle = optionTable[optionTableRef.localVisuals].toggle == 1
 
@@ -1319,21 +1327,17 @@ function set_model(o, model, _, charNum)
         end
     elseif characterTable[charNum].replaceModels ~= nil then -- Other Custom Models
         local currReplace = characterTable[charNum].replaceModels[get_id_from_behavior(o.behavior)]
-        if o.oOriginalModel == 0 then
-            o.oOriginalModel = obj_get_model_id_extended(o)
+        if o.unused1 ~= extendedModel and currReplace == nil then
+            o.unused1 = extendedModel
         end
         
-        local model = run_func_or_get_var(currReplace, o, o.oOriginalModel)
+        local model = run_func_or_get_var(currReplace, o, o.unused1) or o.unused1
+        if not visualToggle then
+            model = o.unused1
+        end
         
-        if model ~= nil and visualToggle then
-            o.oModelHasBeenReplaced = 1
-            if obj_has_model_extended(o, model) == 0 then
-                obj_set_model_extended(o, model)
-            end
-        elseif o.oModelHasBeenReplaced ~= 0 then
-            if obj_has_model_extended(o, o.oOriginalModel) == 0 then
-                obj_set_model_extended(o, o.oOriginalModel)
-            end
+        if obj_has_model_extended(o, model) == 0 then
+            obj_set_model_extended(o, model)
         end
         return
     end
@@ -1350,7 +1354,7 @@ function set_all_visuals(charNum)
         local o = obj_get_first(i)
         repeat
             if o ~= nil then
-                set_model(o, o.oOriginalModel, nil, charNum)
+                set_model(o, nil, o.unused1, charNum)
             end
             o = obj_get_next(o)
         until o == nil
