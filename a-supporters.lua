@@ -5,11 +5,16 @@ CREDIT_SUPPORTERS = {
     "Sophia",
     "maemae",
     "charity",
-    "FunkyLion",
+    "Yuyake",
     "VioletArts",
     "Nope208",
     "Jack Black",
     "GRAND DAD",
     "Key's Artworks",
     "Kale!",
+    "Mori",
+    "milk",
+    "Konata Kisaragi",
+    "Gamebun",
+    "Mama Moon"
 }
