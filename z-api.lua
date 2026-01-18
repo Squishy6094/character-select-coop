@@ -384,7 +384,7 @@ end
 ---@note
 ---@note -- or --
 ---@note
----@note local function char_meter_render (localIndex, health, prevX, prevY, prevScaleX, prevScaleY, x, y, scaleX, scaleY)
+---@note local function char_meter_render(localIndex, health, prevX, prevY, prevScaleX, prevScaleY, x, y, scaleX, scaleY)
 ---@note     local squares = health >> 8
 ---@note     for i = 1, squares do
 ---@note         djui_hud_render_rect(x + (i * 17), y, 16, 16)
@@ -617,7 +617,7 @@ local function character_get_current_number(localIndex)
     if localIndex == nil or localIndex == 0 then
         return currChar
     else
-        for i = 1, #characterTable do
+        for i = 0, #characterTable do
             if characterTable[i].saveName == gCSPlayers[localIndex].saveName then
                 return i
             end
@@ -634,7 +634,7 @@ local function character_get_current_costume(localIndex)
     if localIndex == nil or localIndex == 0 then
         return characterTable[currChar].currAlt
     else
-        for i = 1, #characterTable do
+        for i = 0, #characterTable do
             if characterTable[i].saveName == gCSPlayers[localIndex].saveName then
                 return characterTable[i].currAlt
             end
