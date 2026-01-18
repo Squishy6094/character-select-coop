@@ -14,7 +14,7 @@ CREDIT_SUPPORTERS = {
     "Kale!",
     "Mori",
     "milk",
-    "Konata Kisaragi",
+    "Konata K.",
     "Gamebun",
     "Mama Moon"
 }

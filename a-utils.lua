@@ -287,9 +287,7 @@ function lerp(a, b, t)
 end
 
 function num_wrap(num, min, max)
-    if num > max then num = min end
-    if num < min then num = max end
-    return num
+    return min + (num - min) % ((max + 1) - min)
 end
 
 allowMenu = {}

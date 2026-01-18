@@ -38,7 +38,7 @@ currCategory = 1
 local currOption = 1
 local currCredits = 1
 local currCreditScroll = 0
-local creditScrollMin = 6
+local creditScrollMin = 8
 local totalPlaytime = 0
 
 local menuCrossFade = 7
@@ -78,12 +78,12 @@ local TEXT_TABLE_MENU_BINDS = {
     [MENU_BINDS_OPTIONS] = {
         {bind = "Up / Down",    desc = "Scroll Options"},
         {bind = "Left / Right", desc = "Toggle Option"},
-        {bind = "B Button",     desc = "Exit Options Menu"},
+        {bind = "Start / B Button", desc = "Exit Options Menu"},
     },
     [MENU_BINDS_CREDITS] = {
         {bind = "Up / Down",    desc = "Scroll Credits"},
         {bind = "Left / Right", desc = "Switch Page"},
-        {bind = "B Button",     desc = "Exit Credits Menu"},
+        {bind = "Start / B Button", desc = "Exit Credits Menu"},
     },
 }
 
@@ -110,6 +110,7 @@ LOCKED_FALSE = 2
 
 local SOUND_CHAR_SELECT_THEME = audio_stream_load("char_select_menu_theme.ogg")
 local SOUND_CHAR_SELECT_DIAL = audio_stream_load("char_select_dial_wind.ogg")
+local SOUND_CHAR_SELECT_TV_ON = audio_sample_load("char_select_tv_on.ogg")
 local menuThemeTargetVolume = 0
 local menuThemeVolume = menuThemeTargetVolume
 audio_stream_set_looping(SOUND_CHAR_SELECT_THEME, true)
@@ -379,12 +380,12 @@ optionTableRef = {
     localMoveset = make_table_ref_num(),
     localVoices = make_table_ref_num(),
     localVisuals = make_table_ref_num(),
-    -- CS
-    credits = make_table_ref_num(),
-    resetSaveData = make_table_ref_num(),
     -- Moderation
     --restrictPalettes = make_table_ref_num(),
     restrictMovesets = make_table_ref_num(),
+    -- Misc
+    resetSaveData = make_table_ref_num(),
+    credits = make_table_ref_num(),
 }
 
 optionTable = {
@@ -455,7 +456,7 @@ optionTable = {
         toggleSaveName = "localVisuals",
         toggleDefault = 1,
         toggleMax = 1,
-        description = {"Toggle if Characters can", "change how objects/textures appear"}
+        description = {"Toggle if Characters can", "change the apperence of", "Objects and Textures"}
     },
     [optionTableRef.localMoveset] = {
         name = "Character Moveset",
@@ -471,29 +472,11 @@ optionTable = {
             end
         end,
     },
-    [optionTableRef.credits] = {
-        name = "Credits",
-        category = OPTION_MISC,
-        toggle = 0,
-        toggleDefault = 0,
-        toggleMax = 1,
-        toggleNames = {"Open Credits", "Open Credits"},
-        description = {"Thank you for choosing", "Character Select!"}
-    },
-    [optionTableRef.resetSaveData] = {
-        name = "Reset Save Data",
-        category = OPTION_MISC,
-        toggle = 0,
-        toggleDefault = 0,
-        toggleMax = 1,
-        toggleNames = {"Reset Save Data", "Reset Save Data"},
-        description = {"Resets Character Select's", "Save Data"}
-    },
     [optionTableRef.restrictMovesets] = {
         name = "Restrict Movesets",
         category = OPTION_MOD,
         toggle = 0,
-        toggleDefault = 1,
+        toggleDefault = 0,
         toggleMax = 1,
         description = {"Restricts turning on movesets", "(Host Only)"},
         lock = function ()
@@ -505,6 +488,24 @@ optionTable = {
                 return "API Only"
             end
         end,
+    },
+    [optionTableRef.resetSaveData] = {
+        name = "Reset Save Data",
+        category = OPTION_MISC,
+        toggle = 0,
+        toggleDefault = 0,
+        toggleMax = 1,
+        toggleNames = {"Reset Save Data", "Reset Save Data"},
+        description = {"Resets Character Select's", "Save Data"}
+    },
+    [optionTableRef.credits] = {
+        name = "Credits",
+        category = OPTION_MISC,
+        toggle = 0,
+        toggleDefault = 0,
+        toggleMax = 1,
+        toggleNames = {"Open Credits", "Open Credits"},
+        description = {"Thank you for choosing", "Character Select!"}
     },
 }
 
@@ -527,7 +528,7 @@ local function update_character_render_table()
                     characterTableRender[insertNum].UIOffset = 0
                     if ogNum == i then
                         currChar = ogNum
-                        currCharRender = num_wrap(insertNum, 0, #characterTableRender)
+                        currCharRender = math.clamp(insertNum, 0, #characterTableRender)
                     end
                     insertNum = insertNum + 1
                 end
@@ -626,8 +627,8 @@ creditTable = {
         { creditee = "Trashcam",        credit = "Menu Music" },
         { creditee = "Charity",         credit = "Sound Design" },
         { creditee = "JerThePear",      credit = "Menu Assets/Anims" },
-        { creditee = "Shell_x33",       credit = "Palettes / Font Assets" },
-        { creditee = "WinbowBreaker",   credit = "Menu Asset Renders" },
+        { creditee = "Shell_x33",       credit = "Menu Assets" },
+        { creditee = "WinbowBreaker",   credit = "Rendered Menu Assets" },
         { creditee = "xLuigiGamerx",    credit = "HUD Accuracy" },
         { creditee = "Wibblus",         credit = "Menu Anims Code" },
     }
@@ -1853,24 +1854,26 @@ local function on_hud_render()
                 djui_hud_render_rect(tvX + 4, tvY + (tvHeight - 10)*(i/#optionTable), 2, 2)
             end
         elseif options == OPTIONS_CREDITS then
+            creditScrollMin = (currCredits == 0 and 6 or 8)
             -- Render Scroll Bar
             djui_hud_set_color(0, 0, 0, 255)
             djui_hud_render_rect(tvX + 3, tvY + 24, 1, 40)
-            local creditSize = math.min(1, creditScrollMin/(#creditTable[currCredits] / (currCredits > 0 and 1 or 3)))
-            djui_hud_render_rect(tvX + 2, tvY + 24 + (currCreditScroll/(#creditTable[currCredits] - creditScrollMin))*(40*(1 - creditSize)), 3, 40*creditSize)
+            local creditLength = #creditTable[currCredits] / (currCredits > 0 and 1 or 3)
+            local creditSize = math.min(1, creditScrollMin/creditLength)
+            djui_hud_render_rect(tvX + 2, tvY + 24 + 40*(1-creditSize)/math.max(creditLength - creditScrollMin, 1)*(currCreditScroll), 3, 40*creditSize)
             -- Render Credits
             djui_hud_set_color(0, 0, 0, 255)
             djui_hud_set_font(FONT_TINY)
             if currCredits > 0 then
                 for i = 1, #creditTable[currCredits] do
                     local creditData = creditTable[currCredits][i]
-                    djui_hud_print_text(creditData.creditee, tvX + tvWidth*0.5 - 1 - djui_hud_measure_text(creditData.creditee)*0.4, tvY + 19 + creditScrollMin*(i - currCreditScroll), 0.4)
-                    djui_hud_print_text(creditData.credit, tvX + tvWidth*0.5 + 1, tvY + 19 + creditScrollMin*(i - currCreditScroll), 0.4)
+                    djui_hud_print_text(creditData.creditee, tvX + tvWidth*0.5 - 1 - djui_hud_measure_text(creditData.creditee)*0.4, tvY + 19 + 6*(i - currCreditScroll), 0.4)
+                    djui_hud_print_text(creditData.credit, tvX + tvWidth*0.5 + 1, tvY + 19 + 6*(i - currCreditScroll), 0.4)
                 end
             else
                 for i = 1, #creditTable[currCredits] do
                     local creditData = creditTable[currCredits][i]
-                    djui_hud_print_text(creditData.creditee, tvX - tvWidth*0.1 + tvWidth*0.3*(((i - 1)%3) + 1) - djui_hud_measure_text(creditData.creditee)*0.2, tvY + 19 + creditScrollMin*(math.ceil(i/3) - currCreditScroll), 0.4)
+                    djui_hud_print_text(creditData.creditee, tvX - tvWidth*0.1 + tvWidth*0.3*(((i - 1)%3) + 1) - djui_hud_measure_text(creditData.creditee)*0.2, tvY + 19 + 6*(math.ceil(i/3) - currCreditScroll), 0.4)
                 end
 
                 -- Render Support Link
@@ -2175,7 +2178,7 @@ local function before_mario_update(m)
                 run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
                     (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -45 --[[or prevMouseScroll < mouseScroll]],
                     function ()
-                        currCharRender = num_wrap(currCharRender + 5, currCharRender%5, #characterTableRender)
+                        currCharRender = num_wrap(currCharRender + 5, 0, #characterTableRender)
                         play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                     end
                 )
@@ -2183,9 +2186,7 @@ local function before_mario_update(m)
                 run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
                     (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 45 --[[or prevMouseScroll > mouseScroll]],
                     function ()
-                        local tableCap = #characterTableRender - #characterTableRender%5 + currCharRender%5
-                        tableCap = tableCap - (tableCap > #characterTable and 5 or 0)
-                        currCharRender = num_wrap(currCharRender - 5, currCharRender%5, tableCap)
+                        currCharRender = num_wrap(currCharRender - 5, 0, #characterTableRender)
                         play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                     end
                 )
@@ -2268,13 +2269,10 @@ local function before_mario_update(m)
                 (controller.buttonPressed & START_BUTTON) ~= 0,
                 function ()
                     options = OPTIONS_MAIN
+                    audio_sample_play(SOUND_CHAR_SELECT_TV_ON, m.pos, 1)
                 end
             )
         end
-
-        -- Handles Camera Posistioning
-        camAngle = m.faceAngle.y + 0x800
-        eyeState = MARIO_EYES_OPEN
 
         nullify_inputs(m)
         if is_game_paused() then
@@ -2333,7 +2331,7 @@ local function before_mario_update(m)
         )
 
         run_func_with_condition_and_cooldown(FUNC_INDEX_MISC,
-            (controller.buttonPressed & B_BUTTON) ~= 0,
+            (controller.buttonPressed & (B_BUTTON | START_BUTTON)) ~= 0,
             function ()
                 options = nil
             end
@@ -2372,14 +2370,14 @@ local function before_mario_update(m)
             run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
                 (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -60,
                 function ()
-                    currCreditScroll = num_wrap(currCreditScroll + 1, 0, math.max(0, #creditTable[currCredits] / math.ceil(currCredits > 0 and 1 or 3) - creditScrollMin))
+                    currCreditScroll = num_wrap(currCreditScroll + 1, 0, math.max(0, #creditTable[currCredits] / (math.ceil(currCredits > 0 and 1 or 3)) - creditScrollMin))
                     play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                 end
             )
         end
 
         run_func_with_condition_and_cooldown(FUNC_INDEX_MISC,
-            (controller.buttonPressed & (B_BUTTON | Z_TRIG)) ~= 0,
+            (controller.buttonPressed & (B_BUTTON | START_BUTTON)) ~= 0,
             function ()
                 options = OPTIONS_MAIN
                 currOption = optionTableRef.credits
