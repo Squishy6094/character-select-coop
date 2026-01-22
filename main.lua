@@ -1256,7 +1256,7 @@ local sCapBhvs = {
     [id_bhvMetalCap] = true,
 }
 
-
+local obj_set_model_extended = obj_set_model_extended
 ---@param o Object
 ---@param model ModelExtendedId?
 ---@param extendedModel ModelExtendedId?
