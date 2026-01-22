@@ -1595,7 +1595,7 @@ local function on_hud_render()
                     palettePants = palettes[i][PANTS]
                     paletteName = palettes[i].name
                 end
-                if paletteShirt and palettePants then
+                if paletteShirt and palettePants and (x > width*0.7 - 32 and x < width + 32) then
                     local bucketFrame = (math.floor((get_global_timer() + i*10)*0.2)%10) * 32
                     local bucketPaintFrame = (math.floor(get_global_timer()*0.3)%10) * 32
                     djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, math.min(paletteTrans, 255))
