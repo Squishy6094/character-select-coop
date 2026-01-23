@@ -1256,6 +1256,7 @@ local sCapBhvs = {
     [id_bhvMetalCap] = true,
 }
 
+local settingModel = false
 local obj_set_model_extended = obj_set_model_extended
 ---@param o Object
 ---@param model ModelExtendedId?
@@ -1272,75 +1273,83 @@ function set_model(o, model, extendedModel, charNum)
 
     local visualToggle = optionTable[optionTableRef.localVisuals].toggle == 1
 
-    -- Player Models
-    if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
-        local i = network_local_index_from_global(o.globalPlayerIndex)
-        local localModelData = nil
-        for c = 0, #characterTable do
-            if gCSPlayers[i].saveName == characterTable[c].saveName then
-                if gCSPlayers[i].currAlt <= #characterTable[c] then
-                    localModelData = characterTable[c][gCSPlayers[i].currAlt].ogModel + gCSPlayers[i].modelEditOffset
-                    break
-                end
-            end
-        end
-        if localModelData ~= nil then
-            if obj_has_model_extended(o, localModelData) == 0 then
-                obj_set_model_extended(o, localModelData)
-            end
-        else
-            -- Original/Backup
-            if gCSPlayers[i].modelId ~= nil and obj_has_model_extended(o, gCSPlayers[i].modelId) == 0 then
-                obj_set_model_extended(o, gCSPlayers[i].modelId)
-            end
-        end
-        return
-    elseif sCapBhvs[get_id_from_behavior(o.behavior)] then -- Cap Behaviors
-        local playerToObj = nearest_player_to_object(o.parentObj)
-        o.globalPlayerIndex = playerToObj and playerToObj.globalPlayerIndex or 0
-
-        local i = network_local_index_from_global(o.globalPlayerIndex)
-
-        local c = gMarioStates[i].character
-        if model == c.capModelId or
-        model == c.capWingModelId or
-        model == c.capMetalModelId or
-        model == c.capMetalWingModelId then
-            local capModels = characterCaps[gCSPlayers[i].modelId]
-            if capModels ~= nil then
-                local capModel = E_MODEL_NONE
-                if model == c.capModelId then
-                    capModel = capModels.normal
-                elseif model == c.capWingModelId then
-                    capModel = capModels.wing
-                elseif model == c.capMetalModelId then
-                    capModel = capModels.metal
-                elseif model == c.capMetalWingModelId then
-                    capModel = capModels.metalWing
-                end
-                if capModel ~= E_MODEL_NONE and capModel ~= E_MODEL_ERROR_MODEL and capModel ~= nil then
-                    if obj_has_model_extended(o, capModel) == 0 then
-                        obj_set_model_extended(o, capModel)
+    if settingModel then
+        -- Player Models
+        if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
+            local i = network_local_index_from_global(o.globalPlayerIndex)
+            local localModelData = nil
+            for c = 0, #characterTable do
+                if gCSPlayers[i].saveName == characterTable[c].saveName then
+                    if gCSPlayers[i].currAlt <= #characterTable[c] then
+                        localModelData = characterTable[c][gCSPlayers[i].currAlt].ogModel + gCSPlayers[i].modelEditOffset
+                        break
                     end
-                    return
                 end
             end
+            if localModelData ~= nil then
+                if obj_has_model_extended(o, localModelData) == 0 then
+                    obj_set_model_extended(o, localModelData)
+                    settingModel = true
+                end
+            else
+                -- Original/Backup
+                if gCSPlayers[i].modelId ~= nil and obj_has_model_extended(o, gCSPlayers[i].modelId) == 0 then
+                    obj_set_model_extended(o, gCSPlayers[i].modelId)
+                    settingModel = true
+                end
+            end
+            return
+        elseif sCapBhvs[get_id_from_behavior(o.behavior)] then -- Cap Behaviors
+            local playerToObj = nearest_player_to_object(o.parentObj)
+            o.globalPlayerIndex = playerToObj and playerToObj.globalPlayerIndex or 0
+
+            local i = network_local_index_from_global(o.globalPlayerIndex)
+
+            local c = gMarioStates[i].character
+            if model == c.capModelId or
+            model == c.capWingModelId or
+            model == c.capMetalModelId or
+            model == c.capMetalWingModelId then
+                local capModels = characterCaps[gCSPlayers[i].modelId]
+                if capModels ~= nil then
+                    local capModel = E_MODEL_NONE
+                    if model == c.capModelId then
+                        capModel = capModels.normal
+                    elseif model == c.capWingModelId then
+                        capModel = capModels.wing
+                    elseif model == c.capMetalModelId then
+                        capModel = capModels.metal
+                    elseif model == c.capMetalWingModelId then
+                        capModel = capModels.metalWing
+                    end
+                    if capModel ~= E_MODEL_NONE and capModel ~= E_MODEL_ERROR_MODEL and capModel ~= nil then
+                        if obj_has_model_extended(o, capModel) == 0 then
+                            obj_set_model_extended(o, capModel)
+                            settingModel = true
+                        end
+                        return
+                    end
+                end
+            end
+        elseif characterTable[charNum].replaceModels ~= nil then -- Other Custom Models
+            local currReplace = characterTable[charNum].replaceModels[get_id_from_behavior(o.behavior)]
+            if o.unused1 ~= extendedModel and currReplace == nil then
+                o.unused1 = extendedModel
+            end
+            
+            local model = run_func_or_get_var(currReplace, o, o.unused1) or o.unused1
+            if not visualToggle then
+                model = o.unused1
+            end
+            
+            if obj_has_model_extended(o, model) == 0 then
+                obj_set_model_extended(o, model)
+                settingModel = true
+            end
+            return
         end
-    elseif characterTable[charNum].replaceModels ~= nil then -- Other Custom Models
-        local currReplace = characterTable[charNum].replaceModels[get_id_from_behavior(o.behavior)]
-        if o.unused1 ~= extendedModel and currReplace == nil then
-            o.unused1 = extendedModel
-        end
-        
-        local model = run_func_or_get_var(currReplace, o, o.unused1) or o.unused1
-        if not visualToggle then
-            model = o.unused1
-        end
-        
-        if obj_has_model_extended(o, model) == 0 then
-            obj_set_model_extended(o, model)
-        end
-        return
+    else
+        settingModel = false
     end
 end
 
