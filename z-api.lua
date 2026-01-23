@@ -420,24 +420,12 @@ local function character_add_course_texture(charNum, courseTexture)
     character_add_costume_course_texture(charNum, 1, courseTexture)
 end
 
--- Here because the model replacement feature is unstable
-local bhvAllowReplace = {
-    [id_bhvEndToad] = true,
-    [id_bhvBeginningPeach] = true,
-    [id_bhvEndPeach] = true,
-    --[id_bhvGoomba] = true,
-    [id_bhvCelebrationStar] = true,
-}
-
 ---@description A function that replaces a behaviors model with your own
 ---@added 1.16.2
 ---@param charNum integer Player Model ID	
 ---@param bhvId BehaviorId|integer Behavior ID of the type of objects you want to replace
 ---@param replaceModel ModelExtendedId|integer|function? Model ID
 local function character_add_model_replacement(charNum, bhvId, replaceModel)
-    if not bhvAllowReplace[bhvId] then
-        log_to_console_once("Using `character_add_model_replacement` on untested behaviors such as '" .. get_behavior_name_from_id(bhvId) .. "' may be unstable!", CONSOLE_MESSAGE_WARNING)
-    end
     characterTable[charNum].replaceModels[bhvId] = replaceModel
 end
 
