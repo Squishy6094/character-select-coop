@@ -22,6 +22,7 @@ local function dialog_update(dialogId)
         }
     end
 
+    -- Clone original dialog table
     local dialog = {
         unused = ogDialog[dialogId].unused,
         linesPerBox = ogDialog[dialogId].linesPerBox,
