@@ -22,7 +22,13 @@ local function dialog_update(dialogId)
         }
     end
 
-    local dialog = ogDialog[dialogId]
+    local dialog = {
+        unused = ogDialog[dialogId].unused,
+        linesPerBox = ogDialog[dialogId].linesPerBox,
+        leftOffset = ogDialog[dialogId].leftOffset,
+        width = ogDialog[dialogId].width,
+        text = ogDialog[dialogId].text
+    }
     local charName = characterTable[currChar].nickname
     local charAuto = characterTable[currChar].autoDialog
     -- Check for Override Dialog and use it instead
@@ -41,6 +47,7 @@ local function dialog_update(dialogId)
         -- Assume you're talking to a signpost
         gDialogBoxType = DIALOG_TYPE_ZOOM
     end
+
     -- Set color if Dialog has Character's Name
     reset_dialog_override_color()
     if colorDialog then
@@ -62,7 +69,7 @@ local function dialog_update(dialogId)
         dialog.text
     )
 
-    return true
+    return true, dialog.text
 end
 
 hook_event(HOOK_ON_DIALOG, dialog_update)
