@@ -599,6 +599,7 @@ end
 -- or has taken damage and has less than 8 health segments.
 -- And calls a power meter animation function depending of the value defined.
 local function render_hud_power_meter()
+    if (hud_get_value(HUD_DISPLAY_FLAGS) & HUD_DISPLAY_FLAG_POWER) == 0 then return end
     local shownHealthWedges = hud_get_value(HUD_DISPLAY_WEDGES);
     sPowerMeterHUD.x = djui_hud_get_screen_width()*0.5 - 51
 
