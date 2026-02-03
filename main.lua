@@ -566,11 +566,13 @@ hookTableOnCharacterChange = {
 
         -- Switch all models to either Vanilla or the Character's
         set_all_visuals(currChar)
-        
-        -- Reset anim to ensure Custom Anims don't leak
-        m.marioObj.header.gfx.animInfo.animID = -1
+
         -- Check for Non-Vanilla Actions when switching Characters
         if is_mario_in_vanilla_action(m) or m.health < 256 then return end
+
+        -- Reset anim to ensure Custom Anims don't leak
+        m.marioObj.header.gfx.animInfo.animID = -1
+        
         if m.action & ACT_FLAG_RIDING_SHELL ~= 0 then
             set_mario_action(m, ACT_RIDING_SHELL_FALL, 0)
         elseif m.action & ACT_FLAG_ALLOW_FIRST_PERSON ~= 0 then
