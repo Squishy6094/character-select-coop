@@ -363,12 +363,6 @@ local function make_table_ref_num()
     return tableRefNum
 end
 
-OPTION_MENU = "Menu"
-OPTION_CHAR = "Character"
-OPTION_MISC = "Misc"
-OPTION_MOD = "Host"
-OPTION_API = "Packs"
-
 optionTableRef = {
     -- Menu
     openInputs = make_table_ref_num(),
@@ -391,7 +385,7 @@ optionTableRef = {
 optionTable = {
     [optionTableRef.openInputs] = {
         name = "Menu Bind",
-        category = OPTION_MENU,
+        category = "menu_category_menu",
         toggle = tonumber(mod_storage_load("MenuInput")),
         toggleSaveName = "MenuInput",
         toggleDefault = 1,
@@ -400,38 +394,38 @@ optionTable = {
         description = {"Sets a Bind to Open the Menu", "rather than using the command."}
     },
     [optionTableRef.notification] = {
-        name = "Notifications",
-        category = OPTION_MENU,
+        name = "notifs",
+        category = "menu_category_menu",
         toggle = tonumber(mod_storage_load("notifs")),
         toggleSaveName = "notifs",
         toggleDefault = 1,
         toggleMax = 2,
-        toggleNames = {"Off", "On", "Pop-ups Only"},
+        toggleNames = {"toggle_off", "toggle_on", "toggle_popups_only"},
         description = {"Toggles whether Pop-ups and", "Chat Messages display."}
     },
     [optionTableRef.menuColor] = {
-        name = "Menu Color",
-        category = OPTION_MENU,
+        name = "menu_color",
+        category = "menu_category_menu",
         toggle = tonumber(mod_storage_load("MenuColor")),
         toggleSaveName = "MenuColor",
         toggleDefault = 0,
         toggleMax = 10,
-        toggleNames = {"Auto", "Saved", "Red", "Orange", "Yellow", "Green", "Blue", "Pink", "Purple", "White", "Black"},
+        toggleNames = {"auto", "saved", "red", "orange", "yellow", "green", "blue", "pink", "purple", "white", "black"},
         description = {"Toggles the Menu Color"}
     },
     [optionTableRef.music] = {
-        name = "Menu Music",
-        category = OPTION_MENU,
+        name = "menu_music",
+        category = "menu_category_menu",
         toggle = tonumber(mod_storage_load("Music")),
         toggleSaveName = "Music",
         toggleDefault = 1,
         toggleMax = 3,
-        toggleNames = {"Off", "On", "Breakroom Only", "Character Only"},
+        toggleNames = {"off", "on", "Breakroom Only", "Character Only"},
         description = {"Toggles which music plays", "in the menu."}
     },
     [optionTableRef.inputLatency] = {
-        name = "Menu Scroll Speed",
-        category = OPTION_MENU,
+        name = "menu_scroll_speed",
+        category = "menu_category_menu",
         toggle = tonumber(mod_storage_load("Latency")),
         toggleSaveName = "Latency",
         toggleDefault = 1,
@@ -440,18 +434,18 @@ optionTable = {
         description = {"Sets how fast you scroll", "throughout the Menu"}
     },
     [optionTableRef.localVoices] = {
-        name = "Character Voices",
-        category = OPTION_CHAR,
+        name = "char_voices",
+        category = "menu_category_char",
         toggle = tonumber(mod_storage_load("localVoices")),
         toggleSaveName = "localVoices",
         toggleDefault = 1,
         toggleMax = 2,
-        toggleNames = {"Off", "On", "Local Only"},
+        toggleNames = {"off", "on", "Local Only"},
         description = {"Toggle if Custom Voicelines play", "for Characters who support it"}
     },
     [optionTableRef.localVisuals] = {
-        name = "Character Visuals",
-        category = OPTION_CHAR,
+        name = "char_visuals",
+        category = "menu_category_char",
         toggle = tonumber(mod_storage_load("localVisuals")),
         toggleSaveName = "localVisuals",
         toggleDefault = 1,
@@ -459,8 +453,8 @@ optionTable = {
         description = {"Toggle if Characters can", "change the apperence of", "Objects and Textures"}
     },
     [optionTableRef.localMoveset] = {
-        name = "Character Moveset",
-        category = OPTION_CHAR,
+        name = "char_moveset",
+        category = "menu_category_char",
         toggle = tonumber(mod_storage_load("localMoveset")),
         toggleSaveName = "localMoveset",
         toggleDefault = 1,
@@ -468,13 +462,13 @@ optionTable = {
         description = {"Toggles if Custom Movesets", "are active on compatible", "characters"},
         lock = function ()
             if gGlobalSyncTable.charSelectRestrictMovesets ~= 0 then
-                return "Forced Off"
+                return "forced_off"
             end
         end,
     },
     [optionTableRef.restrictMovesets] = {
-        name = "Restrict Movesets",
-        category = OPTION_MOD,
+        name = "restrict_movesets",
+        category = "menu_category_host",
         toggle = 0,
         toggleDefault = 0,
         toggleMax = 1,
@@ -482,29 +476,29 @@ optionTable = {
         lock = function ()
             if gGlobalSyncTable.charSelectRestrictMovesets < 2 then
                 if not network_is_server() then
-                    return "Host Only"
+                    return "host_only"
                 end
             else
-                return "API Only"
+                return "api_only"
             end
         end,
     },
     [optionTableRef.resetSaveData] = {
-        name = "Reset Save Data",
-        category = OPTION_MISC,
+        name = "reset_save_data",
+        category = "menu_category_misc",
         toggle = 0,
         toggleDefault = 0,
         toggleMax = 1,
-        toggleNames = {"Reset Save Data", "Reset Save Data"},
+        toggleNames = {"reset_save_data", "reset_save_data"},
         description = {"Resets Character Select's", "Save Data"}
     },
     [optionTableRef.credits] = {
-        name = "Credits",
-        category = OPTION_MISC,
+        name = "credits",
+        category = "menu_category_misc",
         toggle = 0,
         toggleDefault = 0,
         toggleMax = 1,
-        toggleNames = {"Open Credits", "Open Credits"},
+        toggleNames = {"open_credits", "open_credits"},
         description = {"Thank you for choosing", "Character Select!"}
     },
 }
@@ -1432,28 +1426,12 @@ end
 local optionAnimTimer = -200
 local optionAnimTimerCap = optionAnimTimer
 
---Basic Menu Text
-local yearsOfCS = get_date_and_time().year - 123 -- Zero years as of 2023
-local TEXT_VERSION = "Version: " .. MOD_VERSION_STRING .. " | sm64coopdx" .. (seasonalEvent == SEASON_EVENT_BIRTHDAY and (" | " .. tostring(yearsOfCS) .. " year" .. (yearsOfCS > 1 and "s" or "") .. " of Character Select!") or "")
-local TEXT_RATIO_UNSUPPORTED = "Your Current Aspect-Ratio isn't Supported!"
-local TEXT_PAUSE_Z_OPEN = "Z Button - Character Select"
-local TEXT_PAUSE_UNAVAILABLE = "Character Select is Unavailable"
-local TEXT_PAUSE_CURR_CHAR = "Current Character: "
-local TEXT_MOVESET_RESTRICTED = "Movesets are Restricted"
-local TEXT_PALETTE_RESTRICTED = "Palettes are Restricted"
-local TEXT_MOVESET_AND_PALETTE_RESTRICTED = "Moveset and Palettes are Restricted"
 -- Easter Egg if you get lucky loading the mod
 -- Referencing the original sm64ex DynOS options by PeachyPeach >v<
-if math.random(100) == 64 then
-    TEXT_PAUSE_Z_OPEN = "Z - DynOS"
-    TEXT_PAUSE_CURR_CHAR = "Model: "
-end
+local easterEggDynOS = math.random(100) == 64
 
 --Options/Credits Text
-local TEXT_LOCAL_MODEL_ERROR = "Failed to find a Character Model"
-local TEXT_LOCAL_MODEL_ERROR_FIX = "Please Verify the Integrity of the Pack!"
 local TEXT_KOFI_LINK = "ko-fi.com/squishy6094"
-local TEXT_CREDITS_HEADER = "CREDITS"
 
 local MATH_DIVIDE_320 = 1/320
 local MATH_DIVIDE_16 = 1/16
@@ -1549,16 +1527,11 @@ local function on_hud_render()
             djui_hud_set_color(0, 0, 0, 200)
             djui_hud_render_rect(0, 0, width, height)
             djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_print_text(TEXT_LOCAL_MODEL_ERROR, width*0.85 - djui_hud_measure_text(TEXT_LOCAL_MODEL_ERROR) * 0.15 * widthScale, height * 0.5, 0.3 * widthScale)
-            djui_hud_print_text(TEXT_LOCAL_MODEL_ERROR_FIX, width*0.85 - djui_hud_measure_text(TEXT_LOCAL_MODEL_ERROR_FIX) * 0.1 * widthScale, height * 0.5 + 10 * widthScale, 0.2 * widthScale)
+            djui_hud_print_text(get_lang_string("menu_error_model"), width*0.85 - djui_hud_measure_text(get_lang_string("menu_error_model")) * 0.15 * widthScale, height * 0.5, 0.3 * widthScale)
+            djui_hud_print_text(get_lang_string("menu_error_model_fix"), width*0.85 - djui_hud_measure_text(get_lang_string("menu_error_model_fix")) * 0.1 * widthScale, height * 0.5 + 10 * widthScale, 0.2 * widthScale)
         end
 
         optionsMenuOffset = lerp(optionsMenuOffset, options and optionsMenuOffsetMax or 0, 0.1)
-
-        --Unsupported Res Warning
-        if width < 319 or width > 575 then
-            djui_hud_print_text(TEXT_RATIO_UNSUPPORTED, 5, 39, 0.5)
-        end
 
         djui_hud_set_resolution(RESOLUTION_N64)
 
@@ -1833,9 +1806,9 @@ local function on_hud_render()
         if options == OPTIONS_MAIN then
             djui_hud_set_font(FONT_TINY)
             djui_hud_set_color(0, 0, 0, 255)
-            djui_hud_print_text(optionData.name, tvX + 12 + (tvWidth - 12)*0.5 - djui_hud_measure_text(optionData.name)*0.35, tvY + 20, 0.7)
-            local locked = optionTable[currOption].lock ~= nil and optionTable[currOption].lock() or nil
-            local toggleString = (locked == nil and "< " .. optionData.toggleNames[optionData.toggle + 1] .. " >" or locked)
+            djui_hud_print_text(get_lang_string(optionData.name), tvX + 12 + (tvWidth - 12)*0.5 - djui_hud_measure_text(get_lang_string(optionData.name))*0.35, tvY + 20, 0.7)
+            local locked = optionTable[currOption].lock ~= nil and get_lang_string(optionTable[currOption].lock()) or nil
+            local toggleString = (locked == nil and "< " .. get_lang_string(optionData.toggleNames[optionData.toggle + 1]) .. " >" or locked)
             djui_hud_print_text(toggleString, tvX + 12 + (tvWidth - 12)*0.5 - djui_hud_measure_text(toggleString)*0.25, tvY + 30, 0.5)
 
             for i = 1, #optionData.description do
@@ -1853,10 +1826,10 @@ local function on_hud_render()
             djui_hud_render_rect(tvX, tvY, tvWidth, 18)
             djui_hud_set_font(FONT_ALIASED)
             djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_print_text("OPTIONS", tvX + 13, tvY + 2, 0.5)
+            djui_hud_print_text(get_lang_string("menu_options_header"), tvX + 13, tvY + 2, 0.5)
             djui_hud_set_font(FONT_NORMAL)
-            local optionCategory = "... " .. string.upper(optionData.category)
-            djui_hud_print_text(optionCategory, tvX + 13 + djui_hud_measure_text("OPTIONS")*0.5, tvY + 8, 0.25)
+            local optionCategory = "... " .. string.upper(get_lang_string(optionData.category))
+            djui_hud_print_text(optionCategory, tvX + 13 + djui_hud_measure_text(get_lang_string("menu_options_header"))*0.5, tvY + 8, 0.25)
 
             -- Render Sidebar
             djui_hud_set_color(0, 0, 0, 255)
@@ -1904,7 +1877,7 @@ local function on_hud_render()
             djui_hud_render_rect(tvX, tvY, tvWidth, 21)
             djui_hud_set_color(255, 255, 255, 255)
             djui_hud_set_font(FONT_ALIASED)
-            djui_hud_print_text(TEXT_CREDITS_HEADER, tvX + tvWidth*0.5 - djui_hud_measure_text(TEXT_CREDITS_HEADER)*0.2, tvY + 2, 0.4)
+            djui_hud_print_text(get_lang_string("menu_credits_header"), tvX + tvWidth*0.5 - djui_hud_measure_text(get_lang_string("menu_credits_header"))*0.2, tvY + 2, 0.4)
             djui_hud_set_font(FONT_SPECIAL)
             djui_hud_print_text(creditTable[currCredits].packName, tvX + tvWidth*0.5 - djui_hud_measure_text(creditTable[currCredits].packName)*0.1, tvY + 14, 0.2)
         else
@@ -1942,7 +1915,11 @@ local function on_hud_render()
         djui_hud_set_rotation(0, 0, 0)
 
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_print_text(TEXT_VERSION, 2, height - 7, 0.4)
+        local verString = get_lang_string("menu_version", MOD_VERSION_STRING) 
+        if seasonalEvent == SEASON_EVENT_BIRTHDAY then
+            verString = verString .. " | " .. get_lang_string("menu_birthday", get_date_and_time().year - 123)
+        end
+        djui_hud_print_text(verString, 2, height - 7, 0.4)
         local currMenu = gridMenu and MENU_BINDS_GRID or MENU_BINDS_DEFAULT
         if options == OPTIONS_MAIN then
             currMenu = MENU_BINDS_OPTIONS 
@@ -2013,7 +1990,9 @@ local function on_hud_render()
         djui_hud_set_font(FONT_USER)
         if optionTable[optionTableRef.openInputs].toggle == 1 then
             currCharY = 27
-            local text = menu_is_allowed() and TEXT_PAUSE_Z_OPEN or TEXT_PAUSE_UNAVAILABLE
+            local text = (not easterEggDynOS
+            and (menu_is_allowed() and "Z " .. get_lang_string("button") .. " - " .. get_lang_string("mod_name") or get_lang_string("menu_unavailible"))
+            or "Z - DynOS")
             width = djui_hud_get_screen_width() - djui_hud_measure_text(text)
             djui_hud_set_color(255, 255, 255, 255)
             djui_hud_print_text(text, width - 20, 16, 1)
@@ -2021,21 +2000,21 @@ local function on_hud_render()
 
         local character = characterTable[currChar][characterTable[currChar].currAlt]
         local charName = string_underscore_to_space(character.name)
-        local TEXT_PAUSE_CURR_CHAR_WITH_NAME = TEXT_PAUSE_CURR_CHAR .. charName
+        local TEXT_PAUSE_CURR_CHAR_WITH_NAME = get_lang_string("menu_curr_char") .. charName
         width = djui_hud_get_screen_width() - djui_hud_measure_text(TEXT_PAUSE_CURR_CHAR_WITH_NAME)
         local charColor = character.color
         djui_hud_set_color(255, 255, 255, 255)
-        djui_hud_print_text(TEXT_PAUSE_CURR_CHAR, width - 20, 16 + currCharY, 1)
+        djui_hud_print_text(get_lang_string("menu_curr_char"), width - 20, 16 + currCharY, 1)
         djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
         djui_hud_print_text(charName, djui_hud_get_screen_width() - djui_hud_measure_text(charName) - 20, 16 + currCharY, 1)
 
         local text = nil
         if gGlobalSyncTable.charSelectRestrictMovesets > 0 and gGlobalSyncTable.charSelectRestrictPalettes > 0 then
-            text = TEXT_MOVESET_AND_PALETTE_RESTRICTED
+            text = get_lang_string("menu_restrict_moveset_and_palette")
         elseif gGlobalSyncTable.charSelectRestrictMovesets > 0 then
-            text = TEXT_MOVESET_RESTRICTED
+            text = get_lang_string("menu_restrict_moveset")
         elseif gGlobalSyncTable.charSelectRestrictPalettes > 0 then
-            text = TEXT_PALETTE_RESTRICTED
+            text = get_lang_string("menu_restrict_palette")
         end
         if text ~= nil then
             width = djui_hud_get_screen_width() - djui_hud_measure_text(text)
@@ -2425,7 +2404,7 @@ local function chat_command(msg)
             menu = not menu
             return true
         else
-            djui_chat_message_create(TEXT_PAUSE_UNAVAILABLE)
+            djui_chat_message_create(get_lang_string("menu_unavailible"))
             return true
         end
     end

@@ -5,26 +5,42 @@ MOD_VERSION_MINOR = 3
 MOD_VERSION_INDEV = false
 MOD_VERSION_STRING = tostring(MOD_VERSION_API) .. "." .. tostring(MOD_VERSION_MAJOR) .. (MOD_VERSION_MINOR > 0 and ("." .. tostring(MOD_VERSION_MINOR)) or "") .. (MOD_VERSION_INDEV and " (In-Dev)" or "")
 
+-- Load Language Data
+function get_lang_string(key, ...)
+    local langFileString = "languages/"..smlua_text_utils_get_language()
+    local langFallbackString = "languages/English"
+    local langFile = mod_file_exists(langFileString) and require(langFileString) or require(langFallbackString)
+    local str = langFile and langFile[key] or key
+    if select("#", ...) > 0 then
+        return string.format(str, ...)
+    end
+    return str
+end
+
+incompatibleClient = false
+
 -- Check CoopDX Version
 VERSION_REQUIRED = 41
 if VERSION_NUMBER < VERSION_REQUIRED then
     incompatibleClient = true
     local frameCount = 0
+    local errored = false
     hook_event(HOOK_UPDATE, function ()
-        frameCount = frameCount + 1
-        if frameCount == 5 then
-            djui_popup_create("\n\\#FFAAAA\\Character Select requires\n the latest version of CoopDX to use!\n\nYou can find CoopDX here:\n\\#AAAAFF\\https://sm64coopdx.com", 5)
+        if frameCount < 5 then
+            frameCount = frameCount + 1
+        elseif not errored then
+            errored = true
+            djui_popup_create(get_lang_string("error_version_popup"), 5)
             
-            djui_chat_message_create("\\#FFAAAA\\Character Select Version Issue:\nVersion " .. tostring(VERSION_NUMBER) .. " < " .. tostring(VERSION_REQUIRED))
-            local errorString = "\\#FFAAAA\\The best way to resolve this issue is to reinstall SM64CoopDX from the Offical Site or Github Repo!\n\\#AAAAFF\\https://sm64coopdx.com/\nhttps://github.com/coop-deluxe/sm64coopdx/"
-            log_to_console(errorString)
-            djui_chat_message_create(errorString)
+            djui_chat_message_create(get_lang_string("error_version_message", VERSION_NUMBER, VERSION_REQUIRED))
+            log_to_console(get_lang_string("error_version_fix"))
+            djui_chat_message_create(get_lang_string("error_version_fix"))
         end
     end)
     return 0
 end
 
-log_to_console("Character Select "..MOD_VERSION_STRING)
+log_to_console(get_lang_string("mod_name").." "..MOD_VERSION_STRING)
 
 local dependacyFiles = {
     --- Required Lua Files
@@ -102,34 +118,36 @@ if network_is_server() then
     -- Check for Missing Files
     for i = 1, #dependacyFiles do
         if not mod_file_exists(dependacyFiles[i]) then
-            log_to_console("Character Select file missing: '" .. dependacyFiles[i] .. "'", CONSOLE_MESSAGE_WARNING)
-            table.insert(fileErrorList, "Missing File '" .. dependacyFiles[i] .. "'")
+            log_to_console(get_lang_string("error_file_missing", dependacyFiles[i]), CONSOLE_MESSAGE_WARNING)
+            table.insert(fileErrorList, get_lang_string("error_file_missing", dependacyFiles[i]))
         end
     end
     -- Check for Legacy Files
     for i = 1, #legacyFiles do
         if mod_file_exists(legacyFiles[i]) then
-            log_to_console("Character Select legacy file found: '" .. legacyFiles[i] .. "'", CONSOLE_MESSAGE_WARNING)
-            table.insert(fileErrorList, "Legacy File '" .. legacyFiles[i] .. "'")
+            log_to_console(get_lang_string("error_file_old", dependacyFiles[i]), CONSOLE_MESSAGE_WARNING)
+            table.insert(fileErrorList, get_lang_string("error_file_old", dependacyFiles[i]))
         end
     end
     if #fileErrorList > 0 then
         incompatibleClient = true
         local frameCount = 0
+        local errored = false
         hook_event(HOOK_UPDATE, function ()
-            frameCount = frameCount + 1
-            if frameCount == 5 then
-                local errorString = "\\#FFAAAA\\Character Select File Issues:"
-                djui_popup_create("\\#FFAAAA\\Character Select is having\nfile issues and cannot load!\n\nErrors have been logged in chat!", 4)
+            if frameCount < 5 then
+                frameCount = frameCount + 1
+            elseif not errored then
+                errored = true
+                djui_popup_create(get_lang_string("error_file_popup"), 4)
+                local errorString = ""
                 for i = 1, #fileErrorList do
                     errorString = errorString .. "\n" .. fileErrorList[i]
                 end
-                log_to_console(errorString)
-                djui_chat_message_create(errorString)
+                log_to_console(get_lang_string("error_file_issues", errorString))
+                djui_chat_message_create(get_lang_string("error_file_issues", errorString))
 
-                errorString = "\\#FFAAAA\\The best way to resolve these issues is to delete your current version of Character Select and then install the latest version from the Github Repo!\n\\#AAAAFF\\https://github.com/Squishy6094/character-select-coop/\\#FFAAAA\\"
-                log_to_console(errorString)
-                djui_chat_message_create(errorString)
+                log_to_console(get_lang_string("error_file_fix"))
+                djui_chat_message_create(get_lang_string("error_file_fix"))
             end
         end)
         return 0
@@ -649,7 +667,7 @@ local hasBeenLogged = {}
 function log_to_console_once(message, level)
     if not hasBeenLogged[message] then
         hasBeenLogged[message] = true
-        log_to_console("Character Select: "..message, level)
+        log_to_console(get_lang_string("mod_name") .. ": " .. message, level)
     end
 end
 

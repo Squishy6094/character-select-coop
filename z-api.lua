@@ -1017,7 +1017,7 @@ local function add_option(name, toggleDefault, toggleMax, toggleNames, descripti
     local saveName = string_space_to_underscore(name)
     table.insert(optionTable, {
         name = type(name) == TYPE_STRING and name or "Unknown Toggle",
-        category = OPTION_API,
+        category = "menu_category_packs",
         toggle = nil, -- Set as nil for Failsafe to Catch
         toggleSaveName = save and saveName or nil,
         toggleDefault = type(toggleDefault) == TYPE_INTEGER and toggleDefault or 0,
