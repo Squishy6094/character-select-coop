@@ -85,6 +85,7 @@ return {
     menu_scroll_speed_desc2 = "throughout the Menu.",
     char_voices_desc1 = "Toggle if Custom Voicelines play",
     char_voices_desc2 = "for Characters who support it.",
+    char_voices_desc3 = "",
     char_visuals_desc1 = "Toggle if Characters can",
     char_visuals_desc2 = "change the apperence of",
     char_visuals_desc3 = "Objects and Textures.",

@@ -5,11 +5,26 @@ MOD_VERSION_MINOR = 3
 MOD_VERSION_INDEV = false
 MOD_VERSION_STRING = tostring(MOD_VERSION_API) .. "." .. tostring(MOD_VERSION_MAJOR) .. (MOD_VERSION_MINOR > 0 and ("." .. tostring(MOD_VERSION_MINOR)) or "") .. (MOD_VERSION_INDEV and " (In-Dev)" or "")
 
+local hasBeenLogged = {}
+---@param message string
+---@param level ConsoleMessageLevel
+function log_to_console_once(message, level)
+    if not hasBeenLogged[message] then
+        hasBeenLogged[message] = true
+        log_to_console(get_lang_string("mod_name") .. ": " .. message, level)
+    end
+end
+
 -- Load Language Data
 function get_lang_string(key, ...)
     local langFileString = "languages/"..smlua_text_utils_get_language()
     local langFallbackString = "languages/English"
-    local langFile = mod_file_exists(langFileString) and require(langFileString) or require(langFallbackString)
+    local langFile = require(langFallbackString)
+    if not mod_file_exists(langFileString .. ".lua") then
+        log_to_console_once("Language '" .. langFileString .. "' could not be found, falling back to '" .. langFallbackString .. "'", CONSOLE_MESSAGE_WARNING)
+    else
+        langFile = require(langFileString)
+    end
     local str = langFile and langFile[key] or key
     if select("#", ...) > 0 then
         return string.format(str, ...)
@@ -659,16 +674,6 @@ function djui_hud_render_texture_auto_interpolated(index, texture, x, y, width, 
     local interp = djui_get_interpolation(index, x, y, width, height)
     djui_hud_render_texture_interpolated(texture, interp.x, interp.y, interp.width, interp.height, x, y, width, height)
     djui_set_interpolation(index, x, y, width, height)
-end
-
-local hasBeenLogged = {}
----@param message string
----@param level ConsoleMessageLevel
-function log_to_console_once(message, level)
-    if not hasBeenLogged[message] then
-        hasBeenLogged[message] = true
-        log_to_console(get_lang_string("mod_name") .. ": " .. message, level)
-    end
 end
 
 function is_power_of_two(n)

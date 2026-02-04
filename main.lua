@@ -419,7 +419,7 @@ optionTable = {
         toggleSaveName = "Latency",
         toggleDefault = 1,
         toggleMax = 2,
-        toggleNames = {"Slow", "Normal", "Fast"},
+        toggleNames = {"slow", "normal", "fast"},
         description = {"menu_scroll_speed_desc1", "menu_scroll_speed_desc2"}
     },
     [optionTableRef.localVoices] = {
@@ -430,7 +430,7 @@ optionTable = {
         toggleDefault = 1,
         toggleMax = 2,
         toggleNames = {"off", "on", "Local Only"},
-        description = {"char_voices_desc1", "char_voices_desc2"}
+        description = {"char_voices_desc1", "char_voices_desc2", "char_voices_desc3"}
     },
     [optionTableRef.localVisuals] = {
         name = "char_visuals",
@@ -616,6 +616,7 @@ creditTable = {
         { creditee = "WinbowBreaker",   credit = "Rendered Menu Assets" },
         { creditee = "xLuigiGamerx",    credit = "HUD Accuracy" },
         { creditee = "Wibblus",         credit = "Menu Anims Code" },
+        { creditee = "DM-Kun",          credit = "German Translation" },
     }
 }
 
@@ -1796,14 +1797,19 @@ local function on_hud_render()
             local toggleString = (locked == nil and "< " .. get_lang_string(optionData.toggleNames[optionData.toggle + 1]) .. " >" or locked)
             djui_hud_print_text(toggleString, tvX + 12 + (tvWidth - 12)*0.5 - djui_hud_measure_text(toggleString)*0.25, tvY + 30, 0.5)
 
-            for i = 1, #optionData.description do
-                local textMeasure = djui_hud_measure_text(get_lang_string(optionData.description[i]))
-                local x = tvX + 12 + (tvWidth - 12)*0.5 - textMeasure*0.225
-                local y = tvY + tvHeight - 7*(#optionData.description + 2) + 7*i
-                djui_hud_set_color(0, 0, 0, 255)
-                djui_hud_render_rect(x - 2, y, textMeasure*0.45 + 4, 8)
-                djui_hud_set_color(255, 255, 255, 255)
-                djui_hud_print_text(get_lang_string(optionData.description[i]), x, y, 0.45)
+            local yOffset = 0
+            for i = #optionData.description, 1, -1 do
+                local text = get_lang_string(optionData.description[i])
+                if text ~= "" and text ~= nil then
+                    local textMeasure = djui_hud_measure_text(text)
+                    local x = tvX + 12 + (tvWidth - 12)*0.5 - textMeasure*0.225
+                    local y = tvY + tvHeight + yOffset - 14
+                    djui_hud_set_color(0, 0, 0, 255)
+                    djui_hud_render_rect(x - 2, y, textMeasure*0.45 + 4, 8)
+                    djui_hud_set_color(255, 255, 255, 255)
+                    djui_hud_print_text(text, x, y, 0.45)
+                    yOffset = yOffset - 7
+                end
             end
 
             -- Render Header
