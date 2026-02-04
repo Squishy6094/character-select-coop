@@ -365,7 +365,6 @@ end
 
 optionTableRef = {
     -- Menu
-    openInputs = make_table_ref_num(),
     notification = make_table_ref_num(),
     menuColor = make_table_ref_num(),
     music = make_table_ref_num(),
@@ -383,16 +382,6 @@ optionTableRef = {
 }
 
 optionTable = {
-    [optionTableRef.openInputs] = {
-        name = "Menu Bind",
-        category = "menu_category_menu",
-        toggle = tonumber(mod_storage_load("MenuInput")),
-        toggleSaveName = "MenuInput",
-        toggleDefault = 1,
-        toggleMax = 2,
-        toggleNames = {"None", "Z (Pause Menu)", ommActive and "D-pad Down + R" or "D-pad Down"},
-        description = {"Sets a Bind to Open the Menu", "rather than using the command."}
-    },
     [optionTableRef.notification] = {
         name = "notifs",
         category = "menu_category_menu",
@@ -1981,18 +1970,15 @@ local function on_hud_render()
 
     -- Info / Z Open Bind on Pause Menu
     if is_game_paused() and not djui_hud_is_pause_menu_created() and gMarioStates[0].action ~= ACT_EXIT_LAND_SAVE_DIALOG then
-        local currCharY = 0
         djui_hud_set_resolution(RESOLUTION_DJUI)
         djui_hud_set_font(FONT_USER)
-        if optionTable[optionTableRef.openInputs].toggle == 1 then
-            currCharY = 27
-            local text = (not easterEggDynOS
-            and (menu_is_allowed() and "Z " .. get_lang_string("button") .. " - " .. get_lang_string("mod_name") or get_lang_string("menu_unavailible"))
-            or "Z - DynOS")
-            width = djui_hud_get_screen_width() - djui_hud_measure_text(text)
-            djui_hud_set_color(255, 255, 255, 255)
-            djui_hud_print_text(text, width - 20, 16, 1)
-        end
+        local currCharY = 27
+        local text = (not easterEggDynOS
+        and (menu_is_allowed() and "Z " .. get_lang_string("button") .. " - " .. get_lang_string("mod_name") or get_lang_string("menu_unavailible"))
+        or "Z - DynOS")
+        width = djui_hud_get_screen_width() - djui_hud_measure_text(text)
+        djui_hud_set_color(255, 255, 255, 255)
+        djui_hud_print_text(text, width - 20, 16, 1)
 
         local character = characterTable[currChar][characterTable[currChar].currAlt]
         local charName = string_underscore_to_space(character.name)
@@ -2062,13 +2048,8 @@ local function before_mario_update(m)
     end
 
     -- Menu Inputs
-    if is_game_paused() and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and (controller.buttonPressed & Z_TRIG) ~= 0 and optionTable[optionTableRef.openInputs].toggle == 1 then
+    if is_game_paused() and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and (controller.buttonPressed & Z_TRIG) ~= 0 then
         menu = true
-    end
-    if not menu and (controller.buttonDown & D_JPAD) ~= 0 and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and optionTable[optionTableRef.openInputs].toggle == 2 then
-        if (controller.buttonDown & R_TRIG) ~= 0 or not ommActive then
-            menu = true
-        end
     end
 
     if not menu_is_allowed(m) then
