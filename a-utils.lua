@@ -11,17 +11,17 @@ local hasBeenLogged = {}
 function log_to_console_once(message, level)
     if not hasBeenLogged[message] then
         hasBeenLogged[message] = true
-        log_to_console(get_lang_string("mod_name") .. ": " .. message, level)
+        log_to_console("Character Select: " .. message, level)
     end
 end
 
 -- Load Language Data
+local langFallback = "languages/English"
 function get_lang_string(key, ...)
     local langFileString = "languages/"..smlua_text_utils_get_language()
-    local langFallbackString = "languages/English"
-    local langFile = require(langFallbackString)
+    local langFile = require(langFallback)
     if not mod_file_exists(langFileString .. ".lua") then
-        log_to_console_once("Language '" .. langFileString .. "' could not be found, falling back to '" .. langFallbackString .. "'", CONSOLE_MESSAGE_WARNING)
+        log_to_console_once("Language '" .. langFileString .. "' could not be found, falling back to '" .. langFallback .. "'", CONSOLE_MESSAGE_WARNING)
     else
         langFile = require(langFileString)
     end
