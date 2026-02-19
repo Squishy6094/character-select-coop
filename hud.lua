@@ -171,7 +171,7 @@ end
 
 -- Updates the Chracter Select hud flags along with the vanilla hud flags
 
-local hiddenList = HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_STAR_COUNT | HUD_DISPLAY_FLAG_CAMERA | HUD_DISPLAY_FLAG_POWER
+local hiddenList = --[[HUD_DISPLAY_FLAG_LIVES | HUD_DISPLAY_FLAG_CAMERA |]] HUD_DISPLAY_FLAG_STAR_COUNT | HUD_DISPLAY_FLAG_POWER
 local sCharSelectHudDisplayFlags = og_hud_get_value(HUD_DISPLAY_FLAGS) | hiddenList -- Initializes custom hud flags
 
 function flags_update()
@@ -1136,9 +1136,9 @@ local function on_hud_render_behind()
 
     local enablePlayersInLevelDisplay = gServerSettings.enablePlayersInLevelDisplay
     if not obj_get_first_with_behavior_id(id_bhvActSelector) then
-        render_hud_mario_lives()
+        --render_hud_mario_lives()
         render_hud_stars()
-        render_hud_camera_status()
+        --render_hud_camera_status()
         render_hud_power_meter()
         sVisibleStars = 0
     else
@@ -1159,14 +1159,14 @@ local function on_hud_render()
         render_hud_ending_dialog()
     end
 
-    sServerSettings.enablePlayerList = 0 -- Disables the original playerlist and modlist
+    --sServerSettings.enablePlayerList = 0 -- Disables the original playerlist and modlist
 
     local enablePlayerList = gServerSettings.enablePlayerList
     djui_hud_set_resolution(RESOLUTION_DJUI)
 
-    if djui_attempting_to_open_playerlist() and enablePlayerList then
-        render_playerlist_and_modlist()
-    end
+    --if djui_attempting_to_open_playerlist() and enablePlayerList then
+    --    render_playerlist_and_modlist()
+    --end
 end
 
 hook_event(HOOK_ON_HUD_RENDER_BEHIND, on_hud_render_behind)

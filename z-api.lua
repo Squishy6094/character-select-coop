@@ -52,17 +52,23 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         lifeIcon = lifeIcon:sub(1,1)
     end
 
-    local addedModel = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or E_MODEL_ERROR_MODEL
     local charNum = #characterTable + 1
 
     if name and type(name) == TYPE_STRING and not _G["CT_"..name:upper():gsub(" ", "_")] then
         local charNum = charNum ---@type CharacterType
         define_valid_global("CT_"..name:upper():gsub(" ", "_"), charNum)
     end
+    
+    -- Allocate Character for Coop
+    local allocate, index = character_allocate(name)
+    allocate.modelId = modelInfo
+    character_set_hud_head_texture(allocate, lifeIcon)
 
-    table.insert(characterTable, {
+    log_to_console(tostring(index).. " - " .. name)
+    characterTable[index] = {
+        allocate = allocate,
         saveName = type(name) == TYPE_STRING and string_space_to_underscore(name.."_"..credit) or "Untitled",
-        nickname = type(name) == TYPE_STRING and name or "Untitled",
+        nickname = name,
         currAlt = 1,
         hasMoveset = false,
         locked = LOCKED_NEVER,
@@ -77,15 +83,15 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
             description = type(description) == TYPE_STRING and description or "No description has been provided",
             credit = credit,
             color = type(color) == TYPE_TABLE and color or {r = 255, g = 255, b = 255},
-            model = addedModel,
-            ogModel = addedModel,
+            model = modelInfo,
+            ogModel = modelInfo,
             baseChar = baseChar and baseChar or CT_MARIO,
             lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or "?",
             starIcon = gTextures.star,
             camScale = type(camScale) == TYPE_INTEGER and camScale or 1,
             healthMeter = nil,
         },
-    })
+    }
     characterMovesets[charNum] = {}
     characterDialog[charNum] = {}
     return charNum
@@ -569,6 +575,16 @@ local function character_add_animations(modelInfo, animTable, eyeTable, handTabl
         eyes = type(eyeTable) == TYPE_TABLE and eyeTable or nil,
         hands = type(handTable) == TYPE_TABLE and handTable or nil,
     }
+
+    local charTable = characterTable[character_get_number_from_model(modelInfo)]
+    if charTable then
+        for i = 0, CHAR_ANIM_MAX do
+            if animTable[i] ~= nil then
+                character_set_animation(charTable.allocate, i, animTable[i])
+            end
+        end
+    end
+
 end
 
 ---@description A function that gets any animation table from a model
