@@ -998,7 +998,7 @@ local function mario_update(m)
 
         if menuAndTransition then
             local musicToggle = optionTable[optionTableRef.music].toggle
-            local charInst = characterInstrumentals[currChar]
+            local charInst = characterInstrumentals[characterTable[currChar].menuInst]
             if not p.inMenu or prevMusicToggle ~= musicToggle or prevChar ~= currChar then
                 local levelMusic = false
                 if musicToggle == 0 then
@@ -1013,11 +1013,10 @@ local function mario_update(m)
                 end
 
                 -- Set Target Volumes
-                for i = 0, #characterTable do
-                    local charInst = characterInstrumentals[i]
-                    if charInst ~= nil then
-                        audio_stream_play(charInst.audio, false, 1)
-                        charInst.targetVolume = 0
+                for _, inst in pairs(characterInstrumentals) do
+                    if inst ~= nil then
+                        audio_stream_play(inst.audio, false, 1)
+                        inst.targetVolume = 0
                     end
                 end
                 if musicToggle ~= 0 and musicToggle ~= 2 then
@@ -1042,11 +1041,10 @@ local function mario_update(m)
             menuThemeVolume = math.lerp(menuThemeVolume, menuThemeTargetVolume, 0.1)
             audio_stream_set_volume(SOUND_CHAR_SELECT_THEME, menuThemeVolume)
 
-            for i = 0, #characterTable do
-                local charInst = characterInstrumentals[i]
-                if charInst ~= nil then
-                    charInst.volume = math.lerp(charInst.volume, charInst.targetVolume, 0.1)
-                    audio_stream_set_volume(charInst.audio, charInst.volume)
+            for _, inst in pairs(characterInstrumentals) do
+                if inst ~= nil then
+                    inst.volume = math.lerp(inst.volume, inst.targetVolume, 0.1)
+                    audio_stream_set_volume(inst.audio, inst.volume)
                 end
             end
 
@@ -1098,10 +1096,9 @@ local function mario_update(m)
         else
             if p.inMenu then
                 audio_stream_stop(SOUND_CHAR_SELECT_THEME)
-                for i = 0, #characterTable do
-                    local charInst = characterInstrumentals[i]
-                    if charInst ~= nil then
-                        audio_stream_stop(charInst.audio)
+                for _, inst in pairs(characterInstrumentals) do
+                    if inst ~= nil then
+                        audio_stream_stop(inst.audio)
                     end
                 end
                 stop_secondary_music(50)
@@ -1653,7 +1650,7 @@ local function on_hud_render()
                     local segmentsMeasured = (math.ceil(((charNameLength*textScale + 16*scale))/(16*scale)))
                     local segments = segmentsMeasured
                     local charAltCount = #characterTableRender[i]
-                    local channel = characterInstrumentals[i] and tostring(math.floor(879 + hash(characterTableRender[i].saveName)%(1029 - 879))*0.1) .. " FM " or "---.- -- "
+                    local channel = charTable.menuInst and tostring(math.floor(879 + hash(charTable.menuInst)%(1029 - 879))*0.1) .. " FM " or "---.- -- "
                     channel = channel .. tostring(math.ceil(charTable.playtime / totalPlaytime * 100)) .. "%"
                     -- Backlight
                     djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
@@ -1705,10 +1702,11 @@ local function on_hud_render()
                 local column = i%gridButtonsPerRow
                 local charIcon = characterTableRender[i][characterTableRender[i].currAlt].lifeIcon
                 local charColor = characterTableRender[i][characterTableRender[i].currAlt].color
+                local charMusic = characterTableRender[i][characterTableRender[i].currAlt].menuInst
                 local x = 40 + buttonSpacing*column - math.abs(row - gridYOffset/buttonSpacing)^2*3 + math.sin((get_global_timer() + i*10)*0.1) - menuOffsetX*0.5 - optionsMenuOffset + 4
                 local y = height*0.5 - buttonSpacing*0.5 + row*buttonSpacing - gridYOffset + math.cos((get_global_timer() + i*10)*0.1) - characterTableRender[i].UIOffset*0.5 - menuOffsetY*0.5 + 4
                 djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
-                if characterInstrumentals[i] ~= nil then
+                if charMusic ~= nil then
                     djui_hud_render_texture(TEX_ALBUM_LAYER1, x + 3, y, 0.1875, 0.1875)
                     local discColors = {charColor, charColor, charColor}
                     local palettes = characterColorPresets[characterTableRender[i][characterTableRender[i].currAlt].model]
