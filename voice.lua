@@ -210,7 +210,7 @@ function custom_character_sound(m, sound, pos)
     -- Add punch "woosh" since NO_SOUND removes it
     if characterAddonSounds[sound] and (voiceTable ~= nil or voiceOff) then
         local soundInfo = characterAddonSounds[sound]
-        play_sound_with_freq_scale(soundInfo.sound, m.marioObj.header.gfx.cameraToObject, soundInfo.pitch);
+        play_sound_with_freq_scale(soundInfo.sound, m.marioObj.header.gfx.cameraToObject, soundInfo.pitch)
     end
 
     -- Voice Toggle

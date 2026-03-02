@@ -503,7 +503,7 @@ local sPowerMeterHUD = {
     x = 140,
     y = 166,
     unused = 1.0,
-};
+}
 local sPowerMeterVisibleTimer = 0
 local sPowerMeterStoredHealth = 0
 
@@ -512,10 +512,10 @@ local function animate_power_meter_emphasized()
 
     if ((hudDisplayFlags & HUD_DISPLAY_FLAG_EMPHASIZE_POWER) == 0) then
         if (sPowerMeterVisibleTimer == 45.0) then
-            sPowerMeterHUD.animation = POWER_METER_DEEMPHASIZING;
+            sPowerMeterHUD.animation = POWER_METER_DEEMPHASIZING
         end
     else
-        sPowerMeterVisibleTimer = 0;
+        sPowerMeterVisibleTimer = 0
     end
 end
 
@@ -523,26 +523,26 @@ end
 -- Power meter animation called after emphasized mode.
 -- Moves power meter y pos speed until it's at 200 to be visible.
 local function animate_power_meter_deemphasizing()
-    local speed = 5;
+    local speed = 5
 
     if (sPowerMeterHUD.y >= 181) then
-        speed = 3;
+        speed = 3
     end
 
     if (sPowerMeterHUD.y >= 191) then
-        speed = 2;
+        speed = 2
     end
 
     if (sPowerMeterHUD.y >= 196) then
-        speed = 1;
+        speed = 1
     end
 
-    sPowerMeterHUD.y = sPowerMeterHUD.y + speed;
+    sPowerMeterHUD.y = sPowerMeterHUD.y + speed
 
     if (sPowerMeterHUD.y >= 201) then
-        sPowerMeterHUD.y = 200;
-        sPowerMeterPrevY = 200;
-        sPowerMeterHUD.animation = POWER_METER_VISIBLE;
+        sPowerMeterHUD.y = 200
+        sPowerMeterPrevY = 200
+        sPowerMeterHUD.animation = POWER_METER_VISIBLE
     end
 end
 
@@ -551,10 +551,10 @@ end
 -- Moves power meter y pos quickly until it's at 301 to be hidden.
 
 local function animate_power_meter_hiding()
-    sPowerMeterHUD.y = sPowerMeterHUD.y + 20;
+    sPowerMeterHUD.y = sPowerMeterHUD.y + 20
     if (sPowerMeterHUD.y >= 301) then
-        sPowerMeterHUD.animation = POWER_METER_HIDDEN;
-        sPowerMeterVisibleTimer = 0;
+        sPowerMeterHUD.animation = POWER_METER_HIDDEN
+        sPowerMeterVisibleTimer = 0
     end
 end
 
@@ -564,65 +564,64 @@ local function handle_power_meter_actions(numHealthWedges)
 
     -- Show power meter if health is not full, less than 8
     if (numHealthWedges < 8 and sPowerMeterStoredHealth == 8 and sPowerMeterHUD.animation == POWER_METER_HIDDEN) then
-        sPowerMeterHUD.animation = POWER_METER_EMPHASIZED;
-        sPowerMeterHUD.y = 166;
-        sPowerMeterPrevY = 166;
+        sPowerMeterHUD.animation = POWER_METER_EMPHASIZED
+        sPowerMeterHUD.y = 166
+        sPowerMeterPrevY = 166
     end
 
     -- Show power meter if health is full, has 8
     if (numHealthWedges == 8 and sPowerMeterStoredHealth == 7) then
-        sPowerMeterVisibleTimer = 0;
+        sPowerMeterVisibleTimer = 0
     end
 
     -- After health is full, hide power meter
     if (numHealthWedges == 8 and sPowerMeterVisibleTimer > 45.0) then
-        sPowerMeterHUD.animation = POWER_METER_HIDING;
+        sPowerMeterHUD.animation = POWER_METER_HIDING
     end
 
     -- Update to match health value
-    sPowerMeterStoredHealth = numHealthWedges;
+    sPowerMeterStoredHealth = numHealthWedges
 
     -- If Mario is swimming, keep power meter visible
     if (gPlayerCameraState.action & ACT_FLAG_SWIMMING ~= 0) then
         if (sPowerMeterHUD.animation == POWER_METER_HIDDEN
             or sPowerMeterHUD.animation == POWER_METER_EMPHASIZED) then
-            sPowerMeterHUD.animation = POWER_METER_DEEMPHASIZING;
-            sPowerMeterHUD.y = 166;
-            sPowerMeterPrevY = 166;
+            sPowerMeterHUD.animation = POWER_METER_DEEMPHASIZING
+            sPowerMeterHUD.y = 166
+            sPowerMeterPrevY = 166
         end
-        sPowerMeterVisibleTimer = 0;
+        sPowerMeterVisibleTimer = 0
     end
 end
-
 
 -- Renders the power meter that shows when Mario is in underwater
 -- or has taken damage and has less than 8 health segments.
 -- And calls a power meter animation function depending of the value defined.
 local function render_hud_power_meter()
     if (hud_get_value(HUD_DISPLAY_FLAGS) & HUD_DISPLAY_FLAG_POWER) == 0 then return end
-    local shownHealthWedges = hud_get_value(HUD_DISPLAY_WEDGES);
+    local shownHealthWedges = hud_get_value(HUD_DISPLAY_WEDGES)
     sPowerMeterHUD.x = djui_hud_get_screen_width()*0.5 - 51
 
     if (sPowerMeterHUD.animation ~= POWER_METER_HIDING) then
-        handle_power_meter_actions(shownHealthWedges);
+        handle_power_meter_actions(shownHealthWedges)
     end
 
     local powerMeterPrevY = sPowerMeterHUD.y
-    
+
     if (sPowerMeterHUD.animation ~= POWER_METER_HIDDEN) then
         local anim = sPowerMeterHUD.animation
         if anim == POWER_METER_EMPHASIZED then
-            animate_power_meter_emphasized();
+            animate_power_meter_emphasized()
         elseif anim == POWER_METER_DEEMPHASIZING then
-            animate_power_meter_deemphasizing();
+            animate_power_meter_deemphasizing()
         elseif anim == POWER_METER_HIDING then
-            animate_power_meter_hiding();
+            animate_power_meter_hiding()
         end
+        
+        render_health_meter_from_local_index_interpolated(0, gMarioStates[0].health, sPowerMeterHUD.x, 208 - powerMeterPrevY, 64, 64, sPowerMeterHUD.x, 208 - sPowerMeterHUD.y, 64, 64)
+        
+        sPowerMeterVisibleTimer = sPowerMeterVisibleTimer + 1
     end
-
-    render_health_meter_from_local_index_interpolated(0, gMarioStates[0].health, sPowerMeterHUD.x, 208 - powerMeterPrevY, 64, 64, sPowerMeterHUD.x, 208 - sPowerMeterHUD.y, 64, 64)
-
-    sPowerMeterVisibleTimer = sPowerMeterVisibleTimer + 1;
 end
 
 local function render_hud_act_select_course()

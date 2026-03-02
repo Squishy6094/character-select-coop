@@ -856,11 +856,11 @@ local function act_cs_menu_idle(m)
     if not m then return 0 end
     local p = gCSPlayers[m.playerIndex]
     if (m.quicksandDepth > 30.0) then
-        return set_mario_action(m, ACT_IN_QUICKSAND, 0);
+        return set_mario_action(m, ACT_IN_QUICKSAND, 0)
     end
 
     if (check_common_idle_cancels(m) ~= 0) then
-        return 1;
+        return 1
     end
 
     m.actionState = 0
@@ -869,7 +869,7 @@ local function act_cs_menu_idle(m)
     local customIdleExists = (characterAnims[p.modelId] and characterAnims[p.modelId].anims and characterAnims[p.modelId].anims[CS_ANIM_MENU])
     set_character_animation(m, customIdleExists and CS_ANIM_MENU or CHAR_ANIM_FIRST_PERSON)
 
-    stationary_ground_step(m);
+    stationary_ground_step(m)
 
     return 0
 end
