@@ -67,11 +67,9 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
     -- Allocate Character for Coop
     local allocate, index = emerald_character_allocate(name)
     allocate.modelId = modelInfo or E_MODEL_MARIO
-    character_set_hud_head_texture(allocate, lifeIcon or get_texture_info("texture_hud_char_question"))
 
     log_to_console(tostring(index).. " - " .. name)
-    characterTable[index] = {
-        allocate = allocate,
+    table.insert(characterTable, {
         saveName = type(name) == TYPE_STRING and string_space_to_underscore(name.."_"..credit) or "Untitled",
         nickname = name,
         currAlt = 1,
@@ -84,6 +82,8 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         replaceModels = {},
         replaceTextures = {},
         [1] = {
+            allocate = allocate,
+            index = index,
             name = name,
             description = type(description) == TYPE_STRING and description or "No description has been provided",
             credit = credit,
@@ -91,12 +91,12 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
             model = modelInfo,
             ogModel = modelInfo,
             baseChar = baseChar and baseChar or CT_MARIO,
-            lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or "?",
+            lifeIcon = lifeIcon or get_texture_info("texture_hud_char_question"),
             starIcon = gTextures.star,
             camScale = type(camScale) == TYPE_INTEGER and camScale or 1,
             healthMeter = nil,
         },
-    }
+    })
     characterMovesets[charNum] = {}
     characterDialog[charNum] = {}
     return charNum
@@ -127,12 +127,22 @@ local function character_add_costume(charNum, name, description, credit, color, 
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
     if lifeIcon and type(lifeIcon) == TYPE_STRING then
-        lifeIcon = lifeIcon:sub(1,1)
+        lifeIcon = get_texture_info("texture_hud_char_"..string.upper(lifeIcon:sub(1,1)))
     end
+
     local tableCache = characterTable[charNum][1]
     local addedModel = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model
+    local name = type(name) == TYPE_STRING and name or tableCache.name
+
+    -- Allocate Character for Coop
+    local allocate, index = emerald_character_allocate(name)
+    allocate.modelId = addedModel
+
+    log_to_console(tostring(index).. " - " .. name)
     table.insert(characterTable[charNum], {
-        name = type(name) == TYPE_STRING and name or tableCache.name,
+        allocate = allocate,
+        index = index,
+        name = name,
         description = type(description) == TYPE_STRING and description or tableCache.description,
         credit = type(credit) == TYPE_STRING and credit or tableCache.credit,
         color = type(color) == TYPE_TABLE and color or tableCache.color,
@@ -175,7 +185,9 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
         lifeIcon = lifeIcon:sub(1,1)
     end
     local tableCache = characterTable[charNum][charAlt]
-    characterTable[charNum][charAlt] = characterTable[charNum][charAlt] and {
+    characterTable[charNum][charAlt] = characterTable[charNum][charAlt] ~= nil and {
+        allocate = tableCache.allocate,
+        index = tableCache.index,
         name = type(name) == TYPE_STRING and name or tableCache.name,
         description = type(description) == TYPE_STRING and description or tableCache.description,
         credit = type(credit) == TYPE_STRING and credit or tableCache.credit,
@@ -640,16 +652,7 @@ end
 ---@param localIndex integer?
 ---@return integer?
 local function character_get_current_costume(localIndex)
-    if localIndex == nil or localIndex == 0 then
-        return characterTable[currChar].currAlt
-    else
-        for i = 0, #characterTable do
-            if characterTable[i].saveName == gCSPlayers[localIndex].saveName then
-                return characterTable[i].currAlt
-            end
-        end
-        return nil
-    end
+    return gCSPlayers[localIndex or 0].currAlt or 1
 end
 
 ---@description A function that sets the current character based only table position with an optional second argument for setting a specific costume
@@ -1332,9 +1335,9 @@ _G.obj_set_model_extended = obj_set_model_extended
 -- CoopDX Implementation Support
 ---@param name string
 _G.character_allocate = function(name)
-    local charIndex = character_add(name, nil, nil, {r = 255, g = 255, b = 255}, nil, nil, nil, 1)
+    local charIndex = character_add(name, nil, nil, {r = 255, g = 255, b = 255}, E_MODEL_MARIO, nil, nil, 1)
     characterTable[charIndex].category = characterTable[charIndex].category .. "_Allocated"
-    return characterTable[charIndex].allocate, charIndex
+    return characterTable[charIndex][1].allocate, charIndex
 end
 
 ---@param character Character
@@ -1344,14 +1347,18 @@ _G.character_deallocate = function(character)
 end
 
 local function update()
-    for i = CT_MAX, #characterTable do
-        local char = characterTable[i]
-        local coopChar = characterTable[i].allocate ---@type Character
-        char[1].ogModel = char[1].ogModel or coopChar.modelId
-        char[1].model = coopChar.modelId
-        char[1].name = coopChar.name
-        char[1].baseChar = coopChar.type
-        char[1].lifeIcon = coopChar.hudHeadTexture
+    for i = 0, #characterTable do
+        for a = 1, #characterTable do
+            local char = characterTable[i][a]
+            if char ~= nil and char.allocate ~= nil then
+                local coopChar = char.allocate ---@type Character
+                char.ogModel = char.ogModel or coopChar.modelId
+                char.model = coopChar.modelId
+                char.name = coopChar.name
+                char.baseChar = coopChar.type
+                character_set_hud_head_texture(coopChar, char.lifeIcon)
+            end
+        end
     end
 end
 

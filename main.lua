@@ -142,6 +142,7 @@ characterTable = {
         replaceModels = {},
         replaceTextures = {},
         [1] = {
+            index = CT_MARIO,
             name = "Mario",
             description = "The iconic Italian plumber himself! He's quite confident and brave, always prepared to jump into action to save the Mushroom Kingdom!",
             credit = "Nintendo/CoopDX",
@@ -183,6 +184,7 @@ characterTable = {
         replaceModels = {},
         replaceTextures = {},
         [1] = {
+            index = CT_LUIGI,
             name = "Luigi",
             description = "The other iconic Italian plumber! He's a bit shy and scares easily, but he's willing to follow his brother Mario through any battle that may come their way!",
             credit = "Nintendo/CoopDX",
@@ -215,6 +217,7 @@ characterTable = {
         replaceModels = {},
         replaceTextures = {},
         [1] = {
+            index = CT_TOAD,
             name = "Toad",
             description = "Princess Peach's little attendant! He's an energetic little mushroom that's never afraid to follow Mario and Luigi on their adventures!",
             credit = "Nintendo/CoopDX",
@@ -247,6 +250,7 @@ characterTable = {
         replaceModels = {},
         replaceTextures = {},
         [1] = {
+            index = CT_WALUIGI,
             name = "Waluigi",
             description = "The mischievous rival of Luigi! He's a narcissistic competitor that takes great taste in others getting pummeled from his success!",
             credit = "Nintendo/CoopDX",
@@ -279,6 +283,7 @@ characterTable = {
         replaceModels = {},
         replaceTextures = {},
         [1] = {
+            index = CT_WARIO,
             name = "Wario",
             description = "The mischievous rival of Mario! He's a greed-filled treasure hunter obsessed with money and gold coins. He's always ready for a brawl if his money is on the line!",
             credit = "Nintendo/CoopDX",
@@ -946,9 +951,25 @@ local function mario_update(m)
             end
         end
 
+
+        for i = 0, #characterTable do
+            local char = characterTable[i]
+            if char.saveName == p.saveName then
+                np.overrideModelIndex = char[p.currAlt].index
+                m.character.type = char[p.currAlt].index
+            end
+        end
+
         if djui_hud_is_pause_menu_created() then     
             if prevBaseCharFrame ~= np.modelIndex then
-                force_set_character(np.modelIndex)
+                for i = 0, #characterTable do
+                    for a = 1, #characterTable[i] do
+                        local char = characterTable[i][a]
+                        if char.index == np.modelIndex then
+                            force_set_character(i, a)
+                        end
+                    end
+                end
                 p.presetPalette = 0
             end
 
@@ -1194,8 +1215,6 @@ local function mario_update(m)
         set_mario_action(m, ACT_IDLE, 0)
     end
 
-    np.overrideModelIndex = p.baseChar ~= nil and p.baseChar or CT_MARIO
-
     -- Character Animations
     if characterAnims[p.modelId] then
         local animInfo = m.marioObj.header.gfx.animInfo
@@ -1269,6 +1288,7 @@ function set_model(o, model, extendedModel, charNum)
 
     -- Player Models
     if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
+        
         local i = network_local_index_from_global(o.globalPlayerIndex)
         local localModelData = nil
         for c = 0, #characterTable do
@@ -1291,6 +1311,7 @@ function set_model(o, model, extendedModel, charNum)
                 obj_set_model_extended(o, gCSPlayers[i].modelId)
             end
         end
+        
     elseif sCapBhvs[bhvID] then -- Cap Behaviors
         local playerToObj = nearest_player_to_object(o.parentObj)
         o.globalPlayerIndex = playerToObj and playerToObj.globalPlayerIndex or 0
