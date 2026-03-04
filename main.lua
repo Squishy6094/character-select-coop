@@ -308,6 +308,7 @@ end
 characterCategories = {
     {name = "All", icon1 = CT_MARIO, icon2 = CT_LUIGI},
     {name = "CoopDX", icon1 = CT_WARIO, icon2 = CT_WALUIGI},
+    {name = "Allocated", icon1 = CT_MARIO, icon2 = CT_LUIGI},
 }
 
 local characterTableRender = {}

@@ -17,6 +17,11 @@ local TYPE_TABLE = "table"
 local TYPE_TEX_INFO = "userdata"
 local TYPE_FUNCTION = "function"
 
+
+emerald_character_allocate = character_allocate
+emerald_character_set_name = character_set_name
+emerald_character_deallocate = character_deallocate
+
 -------------------------
 -- Character Functions --
 -------------------------
@@ -49,7 +54,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
     if lifeIcon and type(lifeIcon) == TYPE_STRING then
-        lifeIcon = lifeIcon:sub(1,1)
+        lifeIcon = get_texture_info("texture_hud_char_"..string.upper(lifeIcon:sub(1,1)))
     end
 
     local charNum = #characterTable + 1
@@ -60,9 +65,9 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
     end
     
     -- Allocate Character for Coop
-    local allocate, index = character_allocate(name)
-    allocate.modelId = modelInfo
-    character_set_hud_head_texture(allocate, lifeIcon)
+    local allocate, index = emerald_character_allocate(name)
+    allocate.modelId = modelInfo or E_MODEL_MARIO
+    character_set_hud_head_texture(allocate, lifeIcon or get_texture_info("texture_hud_char_question"))
 
     log_to_console(tostring(index).. " - " .. name)
     characterTable[index] = {
@@ -1323,3 +1328,31 @@ local function obj_set_model_extended(obj, modelInfo)
     return obj_set_model_extended_original(obj, modelInfo)
 end
 _G.obj_set_model_extended = obj_set_model_extended
+
+-- CoopDX Implementation Support
+---@param name string
+_G.character_allocate = function(name)
+    local charIndex = character_add(name, nil, nil, {r = 255, g = 255, b = 255}, nil, nil, nil, 1)
+    characterTable[charIndex].category = characterTable[charIndex].category .. "_Allocated"
+    return characterTable[charIndex].allocate, charIndex
+end
+
+---@param character Character
+_G.character_deallocate = function(character)
+    log_to_console_once("'character_deallocate' is unsupported while Character Select is active.", CONSOLE_MESSAGE_WARNING)
+    return nil
+end
+
+local function update()
+    for i = CT_MAX, #characterTable do
+        local char = characterTable[i]
+        local coopChar = characterTable[i].allocate ---@type Character
+        char[1].ogModel = char[1].ogModel or coopChar.modelId
+        char[1].model = coopChar.modelId
+        char[1].name = coopChar.name
+        char[1].baseChar = coopChar.type
+        char[1].lifeIcon = coopChar.hudHeadTexture
+    end
+end
+
+hook_event(HOOK_UPDATE, update)

@@ -1,3 +1,6 @@
+-- Base Character Count
+CT_MAX = 5
+
 -- Version Data --
 MOD_VERSION_API = 1
 MOD_VERSION_MAJOR = 16
