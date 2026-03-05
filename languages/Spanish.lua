@@ -60,7 +60,7 @@ return {
     menu_category_menu = "Menú",
     menu_category_char = "Personaje",
     menu_category_misc = "Misc",
-    menu_category_host = "Huésped",
+    menu_category_host = "Anfitrión",
     menu_category_packs = "Paquetes",
 
     -- Toggles Options
@@ -92,7 +92,7 @@ return {
     char_moveset_desc2 = "Customizados se activan para",
     char_moveset_desc3 = "los personajes compatibles.",
     restrict_movesets_desc1 = "Restringe activar los Movesets.",
-    restrict_movesets_desc2 = "(Solo el Huésped)",
+    restrict_movesets_desc2 = "(Solo el Anfitrión)",
     reset_save_data_desc1 = "Resetea los datos de",
     reset_save_data_desc2 = "Character Select.",
     credits_desc1 = "Gracias por elegir",
@@ -102,7 +102,7 @@ return {
     on = "On",
     off = "Off",
     forced_off = "Off forzado",
-    host_only = "Solo el Huésped",
+    host_only = "Solo el Anfitrión",
     api_only = "Solo la API",
 
     popups_only = "Solo ventanas emergentes",
