@@ -21,6 +21,11 @@ local TYPE_FUNCTION = "function"
 emerald_character_allocate = character_allocate
 emerald_character_set_name = character_set_name
 emerald_character_deallocate = character_deallocate
+emerald_character_set_hud_head_texture = character_set_hud_head_texture
+emerald_character_set_animation = character_set_animation
+emerald_preset_palette_allocate = preset_palette_allocate
+emerald_preset_palette_set_color_of_part = preset_palette_set_color_of_part
+emerald_preset_palette_set_name = preset_palette_set_name
 
 -------------------------
 -- Character Functions --
@@ -185,6 +190,8 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
         lifeIcon = lifeIcon:sub(1,1)
     end
     local tableCache = characterTable[charNum][charAlt]
+    local model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model
+    tableCache.allocate.modelId = model
     characterTable[charNum][charAlt] = characterTable[charNum][charAlt] ~= nil and {
         allocate = tableCache.allocate,
         index = tableCache.index,
@@ -192,7 +199,7 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
         description = type(description) == TYPE_STRING and description or tableCache.description,
         credit = type(credit) == TYPE_STRING and credit or tableCache.credit,
         color = type(color) == TYPE_TABLE and color or tableCache.color,
-        model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model,
+        model = model,
         ogModel = tableCache.ogModel,
         baseChar = type(baseChar) == TYPE_INTEGER and baseChar or tableCache.baseChar,
         lifeIcon = (type(lifeIcon) == TYPE_TABLE or type(lifeIcon) == TYPE_TEX_INFO or type(lifeIcon) == TYPE_STRING) and lifeIcon or tableCache.lifeIcon,
@@ -572,6 +579,26 @@ local function character_add_palette_preset(modelInfo, paletteTable, paletteName
             paletteTableOut[i].b = (type(color) == TYPE_TABLE and color.b) and color.b or defaultColors[i].b
         end
     end
+
+    --[[
+    -- Add Palette to DJUI
+    if not check_palette_duplicate(paletteTableOut) then
+        if paletteName == "Default" then
+            for i = 0, #characterTable do
+                for a = 1, #characterTable[i] do
+                    local char = characterTable[i][a]
+                    if char.model == modelInfo then
+                        paletteName = char.name
+                    end
+                end
+            end
+        end
+        local coopPalette = emerald_preset_palette_allocate(paletteName)
+        for i = 0, 7 do
+            emerald_preset_palette_set_color_of_part(coopPalette, i, paletteTableOut[i].r, paletteTableOut[i].g, paletteTableOut[i].b)
+        end
+    end
+    ]]
     if characterColorPresets[modelInfo] == nil then
         characterColorPresets[modelInfo] = {
             currPalette = 1,
@@ -593,15 +620,19 @@ local function character_add_animations(modelInfo, animTable, eyeTable, handTabl
         hands = type(handTable) == TYPE_TABLE and handTable or nil,
     }
 
-    local charTable = characterTable[character_get_number_from_model(modelInfo)]
-    if charTable then
-        for i = 0, CHAR_ANIM_MAX do
-            if animTable[i] ~= nil then
-                character_set_animation(charTable.allocate, i, animTable[i])
+    --[[
+    local charNum, altNum = character_get_number_from_model(modelInfo)
+    if charNum and altNum then
+        local char = characterTable[charNum][altNum]
+        if char and animTable then
+            for i = 0, CHAR_ANIM_MAX do
+                if animTable[i] ~= nil then
+                    emerald_character_set_animation(char.allocate, i, animTable[i])
+                end
             end
         end
     end
-
+    ]]
 end
 
 ---@description A function that gets any animation table from a model
@@ -687,13 +718,13 @@ end
 ---@description A function that searches for a character's table posision based on name
 ---@added 1
 ---@param name string
----@return integer?
+---@return integer?, integer?
 function character_get_number_from_string(name)
     if type(name) ~= TYPE_STRING then return nil end
     for i = 0, #characterTable do
         for a = 1, #characterTable[i] do
             if characterTable[i][a].name == name or characterTable[i][a].name == string_space_to_underscore(name) then
-                return i
+                return i, a
             end
         end
     end
@@ -703,13 +734,28 @@ end
 ---@description A function that searches for a character's table posision based on model
 ---@added 1.16
 ---@param model integer|ModelExtendedId
----@return integer?
+---@return integer?, integer?
 function character_get_number_from_model(model)
     if type(model) ~= TYPE_INTEGER then return nil end
     for i = 0, #characterTable do
         for a = 1, #characterTable[i] do
             if characterTable[i][a].model == model or characterTable[i][a].ogModel == model then
-                return i
+                return i, a
+            end
+        end
+    end
+end
+
+---@description A function to get a Character's Number from an Allocated Character
+---@added 1.16.4
+---@param character Character|CharacterType|integer The number/table position of the Character you want to get the nickname of
+---@return integer?, integer?
+function character_get_number_from_allocation(character)
+    for i = 0, #characterTable do
+        for a = 1, #characterTable[i] do
+            local char = characterTable[i][a]
+            if char.allocate == character or char.index == character then
+                return i, a
             end
         end
     end
@@ -1252,6 +1298,7 @@ _G.charSelect = {
     character_get_current_palette_number = character_get_current_palette_number,
     character_get_number_from_string = character_get_number_from_string,
     character_get_number_from_model = character_get_number_from_model,
+    character_get_number_from_allocation = character_get_number_from_allocation,
     character_get_voice = character_get_voice,
     character_get_life_icon = life_icon_from_local_index, -- Function located in n-hud.lua
     character_render_life_icon = render_life_icon_from_local_index, -- Function located in n-hud.lua
@@ -1346,6 +1393,29 @@ _G.character_deallocate = function(character)
     return nil
 end
 
+---@param character Character
+_G.character_set_hud_head_texture = function(character, texInfo)
+    local charNum, altNum = character_get_number_from_allocation(character)
+    local char = characterTable[charNum][altNum]
+    if char ~= nil and char.allocate ~= nil then
+        if char.allocate == character then
+            char.lifeIcon = texInfo or char.lifeIcon
+        end
+    end
+end
+
+---@param character Character
+---@param animID MarioAnimID|CharacterAnimID|integer
+---@param animString string
+_G.character_set_animation = function(character, animID, animString)
+    local charNum, charAlt = character_get_number_from_allocation(character)
+    local animTable = characterAnims[characterTable[charNum][charAlt].model]
+    if animTable == nil then
+        animTable = {}
+    end
+    animTable.anims[animID] = animString
+end
+
 local function update()
     for i = 0, #characterTable do
         for a = 1, #characterTable do
@@ -1356,7 +1426,7 @@ local function update()
                 char.model = coopChar.modelId
                 char.name = coopChar.name
                 char.baseChar = coopChar.type
-                character_set_hud_head_texture(coopChar, char.lifeIcon)
+                emerald_character_set_hud_head_texture(coopChar, char.lifeIcon)
             end
         end
     end

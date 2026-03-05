@@ -330,6 +330,34 @@ local function network_player_set_full_override_palette(networkPlayer, colorTabl
     end
 end
 
+--[[
+function check_palette_duplicate(paletteTable)
+    for model, compare in pairs(characterColorPresets) do
+        log_to_console(tostring(model))
+        for i = 1, #compare do
+            local comparePalette = compare[i]
+            log_to_console(tostring(comparePalette.name))
+            if comparePalette.name == paletteTable.name and comparePalette.name ~= "Default" then
+                return true
+            end
+            local repeatCount = 0
+            for p = 0, 7 do
+                if comparePalette[p].r == paletteTable[p].r and
+                comparePalette[p].g == paletteTable[p].g and
+                comparePalette[p].b == paletteTable[p].b then
+                    repeatCount = repeatCount + 1
+                end
+            end
+                log_to_console("count"..tostring(repeatCount))
+            if repeatCount > 6 then
+                return true
+            end
+        end
+    end
+    return false
+end
+]]
+
 ---@param np NetworkPlayer
 function update_preset_palette(np)
     local p = gCSPlayers[np.localIndex]

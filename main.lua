@@ -962,15 +962,10 @@ local function mario_update(m)
 
         if djui_hud_is_pause_menu_created() then     
             if prevBaseCharFrame ~= np.modelIndex then
-                for i = 0, #characterTable do
-                    for a = 1, #characterTable[i] do
-                        local char = characterTable[i][a]
-                        if char.index == np.modelIndex then
-                            force_set_character(i, a)
-                        end
-                    end
-                end
+                local charNum, charAlt = character_get_number_from_allocation(np.modelIndex)
+                force_set_character(charNum, charAlt)
                 p.presetPalette = 0
+                m.marioObj.header.gfx.animInfo.animID = -1
             end
 
             if gCSPlayers[0].presetPalette ~= 0 then
@@ -1288,7 +1283,6 @@ function set_model(o, model, extendedModel, charNum)
 
     -- Player Models
     if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
-        
         local i = network_local_index_from_global(o.globalPlayerIndex)
         local localModelData = nil
         for c = 0, #characterTable do
@@ -1311,7 +1305,6 @@ function set_model(o, model, extendedModel, charNum)
                 obj_set_model_extended(o, gCSPlayers[i].modelId)
             end
         end
-        
     elseif sCapBhvs[bhvID] then -- Cap Behaviors
         local playerToObj = nearest_player_to_object(o.parentObj)
         o.globalPlayerIndex = playerToObj and playerToObj.globalPlayerIndex or 0
