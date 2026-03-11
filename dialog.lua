@@ -9,27 +9,8 @@ local ogDialog = {}
 
 local function dialog_update(dialogId)
     local m = gMarioStates[0]
-
-    -- Save Original Dialog
-    if ogDialog[dialogId] == nil then
-        local dialog = smlua_text_utils_dialog_get(dialogId)
-        ogDialog[dialogId] = {
-            unused = dialog.unused,
-            linesPerBox = dialog.linesPerBox,
-            leftOffset = dialog.leftOffset,
-            width = dialog.width,
-            text = dialog.text
-        }
-    end
-
-    -- Clone original dialog table
-    local dialog = {
-        unused = ogDialog[dialogId].unused,
-        linesPerBox = ogDialog[dialogId].linesPerBox,
-        leftOffset = ogDialog[dialogId].leftOffset,
-        width = ogDialog[dialogId].width,
-        text = ogDialog[dialogId].text
-    }
+    local dialog = smlua_text_utils_dialog_get(dialogId)
+    local dialogText = dialog.text
     local charName = characterTable[currChar].nickname
     local charAuto = characterTable[currChar].autoDialog
     -- Check for Override Dialog and use it instead
@@ -38,8 +19,8 @@ local function dialog_update(dialogId)
         dialog = characterDialog[currChar][dialogId]
         colorDialog = true
     elseif charAuto then
-        colorDialog = dialog.text:find(DEFAULT_DIALOG_NAME) ~= nil
-        dialog.text = dialog.text:gsub(DEFAULT_DIALOG_NAME, charName)
+        colorDialog = dialogText:find(DEFAULT_DIALOG_NAME) ~= nil
+        dialogText = dialogText:gsub(DEFAULT_DIALOG_NAME, charName)
     end
 
     -- Get Dialog Color (DialogBoxType isn't exposed to lua)
@@ -61,16 +42,7 @@ local function dialog_update(dialogId)
     end
 
     -- Apply Text Changes
-    smlua_text_utils_dialog_replace(
-        dialogId,
-        dialog.unused,
-        dialog.linesPerBox,
-        dialog.leftOffset,
-        dialog.width,
-        dialog.text
-    )
-
-    return true, dialog.text
+    return true, dialogText
 end
 
 hook_event(HOOK_ON_DIALOG, dialog_update)
