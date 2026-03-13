@@ -1586,7 +1586,14 @@ local function on_hud_render()
                 end
             end
 
-            local paletteName = (palettes.currPalette == 0) and "Custom" or (palettes[palettes.currPalette].name or ("Palette "..palettes.currPalette))
+            local paletteName = "Custom"
+            if palettes.currPalette ~= 0 then
+                if palettes[palettes.currPalette] and palettes[palettes.currPalette].name then
+                    paletteName = palettes[palettes.currPalette].name
+                else
+                    paletteName = "Palette " .. palettes.currPalette
+                end
+            end
             djui_hud_set_font(FONT_RECOLOR_HUD)
             local x = width*0.85 - djui_hud_measure_text(paletteName)*0.25
             local y = height*0.68 - math.abs(math.cos((get_global_timer() - palettes.currPalette*10)*0.05))*3
