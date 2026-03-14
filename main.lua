@@ -519,9 +519,9 @@ local function update_character_render_table()
         end
     end
     
-    if #characterTableRender > 0 then
+    if characterTableRender[0] ~= nil then
         -- Get icons for category based on name similarity
-        if category.icon1 == nil or category.icon2 == nil then
+        if category.icon1 == nil or (category.icon2 == nil and #characterTableRender > 0) then
             local sorted = {}
             for i = 0, #characterTableRender do
                 local char = characterTableRender[i]
@@ -921,17 +921,17 @@ local function mario_update(m)
         m.marioObj.header.gfx.sharedChild.hookProcess = 1
 
         -- Check for Locked Chars
-        for i = CT_MAX, #characterTable do
+        local unlockedChars = 0
+        for i = 0, #characterTable do
             local char = characterTable[i]
+            if char.locked ~= LOCKED_TRUE then
+                unlockedChars = unlockedChars + 1
+            end
             if char.locked ~= LOCKED_NEVER then
                 local unlock = characterUnlock[i].check
                 local notif = characterUnlock[i].notif
                 local prevLockState = char.locked
-                if type(unlock) == TYPE_FUNCTION then
-                    char.locked = (unlock() ~= false) and LOCKED_FALSE or LOCKED_TRUE
-                elseif type(unlock) == TYPE_BOOLEAN then
-                    char.locked = (unlock ~= false) and LOCKED_FALSE or LOCKED_TRUE
-                end
+                char.locked = run_func_or_get_var(unlock) and LOCKED_FALSE or LOCKED_TRUE
                 if char.locked ~= prevLockState then
                     update_character_render_table()
                     if prevLockState == LOCKED_TRUE then -- Character was unlocked
@@ -943,6 +943,13 @@ local function mario_update(m)
                     end
                 end
             end
+        end
+
+        -- Force Mario to be unlocked if no characters are unlocked
+        if unlockedChars < 1 then
+            characterTable[CT_MARIO].locked = LOCKED_FALSE
+            characterUnlock[CT_MARIO].check = true
+            update_character_render_table()
         end
 
         if djui_hud_is_pause_menu_created() then     
@@ -1778,9 +1785,11 @@ local function on_hud_render()
         local icon2 = characterCategories[currCategory].icon2
         local name = characterCategories[currCategory].name
         local char1 = characterTable[icon1] and characterTable[icon1][1]
-        local char2 = characterTable[icon2] and characterTable[icon2][1]
         djui_hud_render_life_icon(char1, width*0.7 - 30 - 4 - menuOffsetX*0.1, 10 - 4 - menuOffsetY*0.1, 1)
-        djui_hud_render_life_icon(char2, width*0.7 - 30 + 4 - menuOffsetX*0.1, 10 + 4 - menuOffsetY*0.1, 1)
+        if icon2 ~= nil then
+            local char2 = characterTable[icon2] and characterTable[icon2][1]
+            djui_hud_render_life_icon(char2, width*0.7 - 30 + 4 - menuOffsetX*0.1, 10 + 4 - menuOffsetY*0.1, 1)
+        end
         djui_hud_set_font(FONT_NORMAL)
         djui_hud_print_text(name, width*0.7 - 65 - djui_hud_measure_text(name)*0.4 - menuOffsetX*0.1, 2 - menuOffsetY*0.1, 0.4)
         djui_hud_set_color(255, 255, 255, 255)

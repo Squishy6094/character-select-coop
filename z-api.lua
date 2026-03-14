@@ -783,10 +783,10 @@ end
 ---@param unlockCondition function|boolean? The condition for if the character stays locked
 ---@param notify boolean? Toggles whether Character Select should notify the user when the character is unlocked
 local function character_set_locked(charNum, unlockCondition, notify)
-    if charNum == nil or charNum > #characterTable or charNum < CT_MAX then return end
+    if charNum == nil or charNum > #characterTable or charNum < 0 then return end
     if unlockCondition == nil then unlockCondition = false end
     if notify == nil then notify = true end
-    characterTable[charNum].locked = LOCKED_TRUE
+    characterTable[charNum].locked = LOCKED_FALSE
     if currChar == charNum then
         force_set_character()
     end
