@@ -586,6 +586,10 @@ end
 function force_set_character(charNum, charAlt)
     if not charNum then charNum = gNetworkPlayers[0].modelIndex end
     if not charAlt then charAlt = 1 end
+    while characterTable[charNum].locked == LOCKED_TRUE do
+        charAlt = 1
+        charNum = num_wrap(charNum - 1, 0, #characterTable)
+    end
     currCategory = 1
     prevChar = currChar
     currChar = charNum
@@ -986,6 +990,8 @@ local function mario_update(m)
         local charTable = characterTable[currChar]
         p.saveName = charTable.saveName
         p.currAlt = charTable.currAlt
+        -- Needed for emerald stuffs
+        gNetworkPlayers[0].overrideModelIndex = charTable[charTable.currAlt].index
     
         p.modelId = charTable[charTable.currAlt].model
         if charTable[charTable.currAlt].baseChar ~= nil then
@@ -1277,7 +1283,7 @@ function set_model(o, model, extendedModel, charNum)
     local visualToggle = optionTable[optionTableRef.localVisuals].toggle == 1
 
     -- Player Models
-    if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
+    if --[[obj_has_behavior_id(o, id_bhvMario) ~= 0 then
         local i = network_local_index_from_global(o.globalPlayerIndex)
         local localModelData = nil
         for c = 0, #characterTable do
@@ -1331,7 +1337,7 @@ function set_model(o, model, extendedModel, charNum)
                 end
             end
         end
-    elseif characterTable[charNum].replaceModels ~= nil then -- Other Custom Models
+    elseif]] characterTable[charNum].replaceModels ~= nil then -- Other Custom Models
         if stoppedBhvs[bhvID] then return end
         local currReplace = characterTable[charNum].replaceModels[get_id_from_behavior(o.behavior)]
         if o.unused1 ~= extendedModel and currReplace == nil then

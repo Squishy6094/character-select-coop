@@ -348,15 +348,30 @@ end
 ---@note }
 ---@note ```
 local function character_add_caps(modelInfo, caps)
-    characterCaps[modelInfo] = type(caps) == TYPE_TABLE and caps or nil
+    if type(caps) ~= TYPE_TABLE then return end
+    local charNum, charAlt = character_get_number_from_model(modelInfo)
+    local allocate = characterTable[charNum][charAlt].allocate ---@type Character
+    allocate.capModelId = caps.normal
+    allocate.capWingModelId = caps.wing or caps.normal
+    allocate.capMetalModelId = caps.metal or caps.normal
+    allocate.capMetalWingModelId = caps.metalWing or caps.normal
 end
 
 ---@description A function that gets a model's cap table
 ---@added 1.13
 ---@param modelInfo ModelExtendedId|integer? Model Information Received from smlua_model_util_get_id
 local function character_get_caps(modelInfo)
-    if modelInfo == nil then modelInfo = characterTable[currChar][characterTable[currChar].currAlt].model end
-    return characterCaps[modelInfo]
+    local charNum, charAlt = currChar, characterTable[currChar].currAlt
+    if modelInfo ~= nil then
+        charNum, charAlt = character_get_number_from_model(modelInfo)
+    end
+    local allocate = characterTable[charNum][charAlt].allocate ---@type Character
+    return {
+        normal = allocate.capModelId,
+        wing = allocate.capWingModelId,
+        metal = allocate.capMetalModelId,
+        metalWing = allocate.capMetalWingModelId,
+    }
 end
 
 ---@description A function that adds health meter textures to a costume
@@ -498,7 +513,7 @@ end
 ---@param peachlettersig TextureInfo?  texture to replace peach's letter texture in the intro
 local function character_add_peach_custom(modelInfo, peachmodelstart, peachmodelend, peachletterleft, peachletterright, peachlettersig)
     if modelInfo == nil then return end
-    local charNum = character_get_number_from_model(modelInfo) ---@type integer
+    local charNum = character_get_number_from_model(modelInfo)
     character_add_model_replacement(charNum, id_bhvBeginningPeach, function(o)
         if peachmodelstart ~= nil then
             return peachmodelstart
@@ -735,9 +750,9 @@ end
 ---@description A function that searches for a character's table posision based on model
 ---@added 1.16
 ---@param model integer|ModelExtendedId
----@return integer?, integer?
+---@return integer, integer
 function character_get_number_from_model(model)
-    if type(model) ~= TYPE_INTEGER then return nil end
+    if type(model) ~= TYPE_INTEGER then return 0, 1 end
     for i = 0, #characterTable do
         for a = 1, #characterTable[i] do
             if characterTable[i][a].model == model or characterTable[i][a].ogModel == model then
@@ -745,6 +760,7 @@ function character_get_number_from_model(model)
             end
         end
     end
+    return 0, 1
 end
 
 ---@description A function to get a Character's Number from an Allocated Character
