@@ -786,7 +786,7 @@ local function character_set_locked(charNum, unlockCondition, notify)
     if charNum == nil or charNum > #characterTable or charNum < 0 then return end
     if unlockCondition == nil then unlockCondition = false end
     if notify == nil then notify = true end
-    characterTable[charNum].locked = LOCKED_FALSE
+    characterTable[charNum].locked = run_func_or_get_var(unlockCondition) and LOCKED_FALSE or LOCKED_TRUE
     if currChar == charNum then
         force_set_character()
     end
