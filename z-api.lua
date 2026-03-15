@@ -86,6 +86,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         autoDialog = true,
         replaceModels = {},
         replaceTextures = {},
+        menuInst = nil,
         [1] = {
             allocate = allocate,
             index = index,
@@ -852,10 +853,10 @@ end
 ---@param unlockCondition function|boolean? The condition for if the character stays locked
 ---@param notify boolean? Toggles whether Character Select should notify the user when the character is unlocked
 local function character_set_locked(charNum, unlockCondition, notify)
-    if charNum == nil or charNum > #characterTable or charNum < CT_MAX then return end
+    if charNum == nil or charNum > #characterTable or charNum < 0 then return end
     if unlockCondition == nil then unlockCondition = false end
     if notify == nil then notify = true end
-    characterTable[charNum].locked = LOCKED_TRUE
+    characterTable[charNum].locked = run_func_or_get_var(unlockCondition) and LOCKED_FALSE or LOCKED_TRUE
     if currChar == charNum then
         force_set_character()
     end
@@ -1229,11 +1230,12 @@ end
 ---@added 1.16
 ---@param charNum integer The character number you want to add instruments for
 ---@param loadedAudio ModAudio The loaded instrumental audio file
----@note Original Song is `.ogg` File Format, `Mono` Channel, `G# Major Key`, `82` BPM, `93.659` Seconds Long, and is set to a sample rate of `22050`. If these requirements are not met then the song will not properly play, or incorrectly fit with the base theme.
+---@note Original Song is `.ogg` File Format, `Mono` Channel, `C Minor Key`, `82` BPM, `93.659` Seconds Long, and is set to a sample rate of `22050`. If these requirements are not met then the song will not properly play, or incorrectly fit with the base theme.
 local function character_add_menu_instrumental(charNum, loadedAudio)
     audio_stream_set_looping(loadedAudio, true)
     audio_stream_set_loop_points(loadedAudio, 0, 93.659*22050)
-    characterInstrumentals[charNum] = {
+    characterTable[charNum].menuInst = loadedAudio.filepath
+    characterInstrumentals[loadedAudio.filepath] = {
         audio = loadedAudio,
         volume = 0,
         targetVolume = 0,

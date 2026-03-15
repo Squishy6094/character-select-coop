@@ -64,11 +64,10 @@ local function convert_unicode_table_to_string_table(input)
 end
 
 local function string_to_table(str)
-    local charArray = {};
-    local iStart = 0;
-    local strLen = str:len();
+    local charArray = {}
+    local iStart = 0
     local function bit(b)
-        return 2 ^ (b - 1);
+        return 2 ^ (b - 1)
     end
     local function hasbit(w, b)
         return w % (b + b) >= b
@@ -79,7 +78,7 @@ local function string_to_table(str)
             iStart = 0
         end
     end
-    for i = 1, strLen do
+    for i = 1, #str do
         local b = str:byte(i)
         local multiStart = hasbit(b, bit(7)) and hasbit(b, bit(8))
         local multiTrail = not hasbit(b, bit(7)) and hasbit(b, bit(8))

@@ -1,5 +1,5 @@
 -- name: Character Select
--- description:\\#ffff33\\-- Character Select Coop v1.16.3 --\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
+-- description:\\#ffff33\\-- Character Select Coop v1.16.4 --\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
 -- pausable: false
 -- category: cs
 
@@ -525,9 +525,9 @@ local function update_character_render_table()
         end
     end
     
-    if #characterTableRender > 0 then
+    if characterTableRender[0] ~= nil then
         -- Get icons for category based on name similarity
-        if category.icon1 == nil or category.icon2 == nil then
+        if category.icon1 == nil or (category.icon2 == nil and #characterTableRender > 0) then
             local sorted = {}
             for i = 0, #characterTableRender do
                 local char = characterTableRender[i]
@@ -862,11 +862,11 @@ local function act_cs_menu_idle(m)
     if not m then return 0 end
     local p = gCSPlayers[m.playerIndex]
     if (m.quicksandDepth > 30.0) then
-        return set_mario_action(m, ACT_IN_QUICKSAND, 0);
+        return set_mario_action(m, ACT_IN_QUICKSAND, 0)
     end
 
     if (check_common_idle_cancels(m) ~= 0) then
-        return 1;
+        return 1
     end
 
     m.actionState = 0
@@ -875,7 +875,7 @@ local function act_cs_menu_idle(m)
     local customIdleExists = (characterAnims[p.modelId] and characterAnims[p.modelId].anims and characterAnims[p.modelId].anims[CS_ANIM_MENU])
     set_character_animation(m, customIdleExists and CS_ANIM_MENU or CHAR_ANIM_FIRST_PERSON)
 
-    stationary_ground_step(m);
+    stationary_ground_step(m)
 
     return 0
 end
@@ -927,17 +927,17 @@ local function mario_update(m)
         m.marioObj.header.gfx.sharedChild.hookProcess = 1
 
         -- Check for Locked Chars
-        for i = CT_MAX, #characterTable do
+        local unlockedChars = 0
+        for i = 0, #characterTable do
             local char = characterTable[i]
+            if char.locked ~= LOCKED_TRUE then
+                unlockedChars = unlockedChars + 1
+            end
             if char.locked ~= LOCKED_NEVER then
                 local unlock = characterUnlock[i].check
                 local notif = characterUnlock[i].notif
                 local prevLockState = char.locked
-                if type(unlock) == TYPE_FUNCTION then
-                    char.locked = (unlock() ~= false) and LOCKED_FALSE or LOCKED_TRUE
-                elseif type(unlock) == TYPE_BOOLEAN then
-                    char.locked = (unlock ~= false) and LOCKED_FALSE or LOCKED_TRUE
-                end
+                char.locked = run_func_or_get_var(unlock) and LOCKED_FALSE or LOCKED_TRUE
                 if char.locked ~= prevLockState then
                     update_character_render_table()
                     if prevLockState == LOCKED_TRUE then -- Character was unlocked
@@ -951,13 +951,11 @@ local function mario_update(m)
             end
         end
 
-
-        for i = 0, #characterTable do
-            local char = characterTable[i]
-            if char.saveName == p.saveName then
-                np.overrideModelIndex = char[p.currAlt].index
-                m.character.type = char[p.currAlt].index
-            end
+        -- Force Mario to be unlocked if no characters are unlocked
+        if unlockedChars < 1 then
+            characterTable[CT_MARIO].locked = LOCKED_FALSE
+            characterUnlock[CT_MARIO].check = true
+            update_character_render_table()
         end
 
         if djui_hud_is_pause_menu_created() then     
@@ -1015,7 +1013,7 @@ local function mario_update(m)
 
         if menuAndTransition then
             local musicToggle = optionTable[optionTableRef.music].toggle
-            local charInst = characterInstrumentals[currChar]
+            local charInst = characterInstrumentals[characterTable[currChar].menuInst]
             if not p.inMenu or prevMusicToggle ~= musicToggle or prevChar ~= currChar then
                 local levelMusic = false
                 if musicToggle == 0 then
@@ -1030,11 +1028,10 @@ local function mario_update(m)
                 end
 
                 -- Set Target Volumes
-                for i = 0, #characterTable do
-                    local charInst = characterInstrumentals[i]
-                    if charInst ~= nil then
-                        audio_stream_play(charInst.audio, false, 1)
-                        charInst.targetVolume = 0
+                for _, inst in pairs(characterInstrumentals) do
+                    if inst ~= nil then
+                        audio_stream_play(inst.audio, false, 1)
+                        inst.targetVolume = 0
                     end
                 end
                 if musicToggle ~= 0 and musicToggle ~= 2 then
@@ -1059,11 +1056,10 @@ local function mario_update(m)
             menuThemeVolume = math.lerp(menuThemeVolume, menuThemeTargetVolume, 0.1)
             audio_stream_set_volume(SOUND_CHAR_SELECT_THEME, menuThemeVolume)
 
-            for i = 0, #characterTable do
-                local charInst = characterInstrumentals[i]
-                if charInst ~= nil then
-                    charInst.volume = math.lerp(charInst.volume, charInst.targetVolume, 0.1)
-                    audio_stream_set_volume(charInst.audio, charInst.volume)
+            for _, inst in pairs(characterInstrumentals) do
+                if inst ~= nil then
+                    inst.volume = math.lerp(inst.volume, inst.targetVolume, 0.1)
+                    audio_stream_set_volume(inst.audio, inst.volume)
                 end
             end
 
@@ -1115,10 +1111,9 @@ local function mario_update(m)
         else
             if p.inMenu then
                 audio_stream_stop(SOUND_CHAR_SELECT_THEME)
-                for i = 0, #characterTable do
-                    local charInst = characterInstrumentals[i]
-                    if charInst ~= nil then
-                        audio_stream_stop(charInst.audio)
+                for _, inst in pairs(characterInstrumentals) do
+                    if inst ~= nil then
+                        audio_stream_stop(inst.audio)
                     end
                 end
                 stop_secondary_music(50)
@@ -1604,7 +1599,14 @@ local function on_hud_render()
                 end
             end
 
-            local paletteName = (palettes.currPalette == 0) and "Custom" or (palettes[palettes.currPalette].name or ("Palette "..palettes.currPalette))
+            local paletteName = "Custom"
+            if palettes.currPalette ~= 0 then
+                if palettes[palettes.currPalette] and palettes[palettes.currPalette].name then
+                    paletteName = palettes[palettes.currPalette].name
+                else
+                    paletteName = "Palette " .. palettes.currPalette
+                end
+            end
             djui_hud_set_font(FONT_RECOLOR_HUD)
             local x = width*0.85 - djui_hud_measure_text(paletteName)*0.25
             local y = height*0.68 - math.abs(math.cos((get_global_timer() - palettes.currPalette*10)*0.05))*3
@@ -1668,7 +1670,7 @@ local function on_hud_render()
                     local segmentsMeasured = (math.ceil(((charNameLength*textScale + 16*scale))/(16*scale)))
                     local segments = segmentsMeasured
                     local charAltCount = #characterTableRender[i]
-                    local channel = characterInstrumentals[i] and tostring(math.floor(879 + hash(characterTableRender[i].saveName)%(1029 - 879))*0.1) .. " FM " or "---.- -- "
+                    local channel = charTable.menuInst and tostring(math.floor(879 + hash(charTable.menuInst)%(1029 - 879))*0.1) .. " FM " or "---.- -- "
                     channel = channel .. tostring(math.ceil(charTable.playtime / totalPlaytime * 100)) .. "%"
                     -- Backlight
                     djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
@@ -1720,10 +1722,11 @@ local function on_hud_render()
                 local column = i%gridButtonsPerRow
                 local charIcon = characterTableRender[i][characterTableRender[i].currAlt].lifeIcon
                 local charColor = characterTableRender[i][characterTableRender[i].currAlt].color
+                local charMusic = characterTableRender[i][characterTableRender[i].currAlt].menuInst
                 local x = 40 + buttonSpacing*column - math.abs(row - gridYOffset/buttonSpacing)^2*3 + math.sin((get_global_timer() + i*10)*0.1) - menuOffsetX*0.5 - optionsMenuOffset + 4
                 local y = height*0.5 - buttonSpacing*0.5 + row*buttonSpacing - gridYOffset + math.cos((get_global_timer() + i*10)*0.1) - characterTableRender[i].UIOffset*0.5 - menuOffsetY*0.5 + 4
                 djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
-                if characterInstrumentals[i] ~= nil then
+                if charMusic ~= nil then
                     djui_hud_render_texture(TEX_ALBUM_LAYER1, x + 3, y, 0.1875, 0.1875)
                     local discColors = {charColor, charColor, charColor}
                     local palettes = characterColorPresets[characterTableRender[i][characterTableRender[i].currAlt].model]
@@ -1788,9 +1791,11 @@ local function on_hud_render()
         local icon2 = characterCategories[currCategory].icon2
         local name = characterCategories[currCategory].name
         local char1 = characterTable[icon1] and characterTable[icon1][1]
-        local char2 = characterTable[icon2] and characterTable[icon2][1]
         djui_hud_render_life_icon(char1, width*0.7 - 30 - 4 - menuOffsetX*0.1, 10 - 4 - menuOffsetY*0.1, 1)
-        djui_hud_render_life_icon(char2, width*0.7 - 30 + 4 - menuOffsetX*0.1, 10 + 4 - menuOffsetY*0.1, 1)
+        if icon2 ~= nil then
+            local char2 = characterTable[icon2] and characterTable[icon2][1]
+            djui_hud_render_life_icon(char2, width*0.7 - 30 + 4 - menuOffsetX*0.1, 10 + 4 - menuOffsetY*0.1, 1)
+        end
         djui_hud_set_font(FONT_NORMAL)
         djui_hud_print_text(name, width*0.7 - 65 - djui_hud_measure_text(name)*0.4 - menuOffsetX*0.1, 2 - menuOffsetY*0.1, 0.4)
         djui_hud_set_color(255, 255, 255, 255)
