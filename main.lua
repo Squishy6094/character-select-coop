@@ -590,12 +590,14 @@ function force_set_character(charNum, charAlt)
         charAlt = 1
         charNum = num_wrap(charNum - 1, 0, #characterTable)
     end
+    local charTable = characterTable[currChar]
     currCategory = 1
     prevChar = currChar
     currChar = charNum
-    characterTable[currChar].currAlt = charAlt
+    charTable.currAlt = charAlt
     currCharRender = charNum
     charBeingSet = true
+    gNetworkPlayers[0].overrideModelIndex = charTable[charTable.currAlt].index
     update_character_render_table()
 end
 

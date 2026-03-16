@@ -1397,7 +1397,10 @@ local function obj_set_model_extended(obj, modelInfo)
 end
 _G.obj_set_model_extended = obj_set_model_extended
 
--- CoopDX Implementation Support
+-----------------------------------
+-- CoopDX Implementation Support --
+-----------------------------------
+
 ---@param name string
 _G.character_allocate = function(name)
     local charIndex = character_add(name, nil, nil, {r = 255, g = 255, b = 255}, E_MODEL_MARIO, nil, nil, 1)
@@ -1408,7 +1411,6 @@ end
 ---@param character Character
 _G.character_deallocate = function(character)
     log_to_console_once("'character_deallocate' is unsupported while Character Select is active.", CONSOLE_MESSAGE_WARNING)
-    return nil
 end
 
 ---@param character Character
@@ -1434,7 +1436,7 @@ _G.character_set_animation = function(character, animID, animString)
     animTable.anims[animID] = animString
 end
 
-local function update()
+local function apply_coop_changes()
     for i = 0, #characterTable do
         for a = 1, #characterTable do
             local char = characterTable[i][a]
@@ -1450,4 +1452,4 @@ local function update()
     end
 end
 
-hook_event(HOOK_UPDATE, update)
+hook_event(HOOK_UPDATE, apply_coop_changes)
