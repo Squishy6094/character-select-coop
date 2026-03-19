@@ -1,6 +1,5 @@
 -- name: Character Select
 -- description:\\#ffff33\\-- Character Select Coop v1.16.4 --\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
--- pausable: false
 -- category: cs
 
 if incompatibleClient then return 0 end
@@ -2067,11 +2066,6 @@ local function before_mario_update(m)
         end
     end
 
-    -- Menu Inputs
-    if is_game_paused() and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and (controller.buttonPressed & Z_TRIG) ~= 0 then
-        menu = true
-    end
-
     if not menu_is_allowed(m) then
         menu = false
         return
@@ -2267,9 +2261,6 @@ local function before_mario_update(m)
         end
 
         nullify_inputs(m)
-        if is_game_paused() then
-            game_unpause()
-        end
     end
 
     if options == OPTIONS_MAIN then
@@ -2383,7 +2374,22 @@ local function before_mario_update(m)
     currChar = characterTableRender[currCharRender].ogNum
 end
 
+-- Menu Inputs
+local function update()
+    local m = gMarioStates[0]
+    if is_game_paused() and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and (m.controller.buttonPressed & Z_TRIG) ~= 0 then
+        menu = true
+    end
+
+    if menuAndTransition then
+        if is_game_paused() then
+            game_unpause()
+        end
+    end
+end
+
 hook_event(HOOK_BEFORE_MARIO_UPDATE, before_mario_update)
+hook_event(HOOK_UPDATE, update)
 hook_event(HOOK_ON_HUD_RENDER, on_hud_render)
 
 --------------
