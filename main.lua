@@ -1993,7 +1993,7 @@ local function on_hud_render()
         djui_hud_set_font(FONT_USER)
         local currCharY = 27
         local text = (not easterEggDynOS
-        and (menu_is_allowed() and "Z " .. get_lang_string("button") .. " - " .. get_lang_string("mod_name") or get_lang_string("menu_unavailible"))
+        and (menu_is_allowed() and "Z " .. get_lang_string("button") .. " - " .. get_lang_string("mod_name") or get_lang_string("menu_unavailable"))
         or "Z - DynOS")
         width = djui_hud_get_screen_width() - djui_hud_measure_text(text)
         djui_hud_set_color(255, 255, 255, 255)
@@ -2407,7 +2407,7 @@ local function chat_command(msg)
             menu = not menu
             return true
         else
-            djui_chat_message_create(get_lang_string("menu_unavailible"))
+            djui_chat_message_create(get_lang_string("menu_unavailable"))
             return true
         end
     end

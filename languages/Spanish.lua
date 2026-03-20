@@ -14,7 +14,7 @@ return {
     -- Menu Text
     menu_version = "Versión: %s | sm64coopdx",
     menu_birthday = "%d años de Character Select!",
-    menu_unavailible = "Character Select no esta Disponible",
+    menu_unavailable = "Character Select no esta Disponible",
     menu_char_cannot_change = "No se puede Cambiar el Personaje",
     menu_char_set = 'Personaje cambiado a "%s" Exitosamente!',
     menu_char_not_found = "Personaje No Encontrado",
@@ -28,7 +28,7 @@ return {
 
     binds_char = "Cambiar Personaje",
     binds_costume = "Cambiar Disfraz",
-    binds_pref_char = "Establezer Personaje Preferido",
+    binds_pref_char = "Establecer Personaje Preferido",
     binds_exit = "Cambiar Personaje",
     binds_list = "Activa/Desactiva Vista de Lista",
     binds_grid = "Activa/Desactiva Vista de Cuadrícula",
