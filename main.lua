@@ -321,24 +321,24 @@ local characterTableRender = {}
 characterCaps = {}
 characterColorPresets = {}
 characterAnims = {
-    [E_MODEL_MARIO] = {
+    [CT_MARIO] = {
         anims = {[CS_ANIM_MENU] = MARIO_ANIM_CS_MENU},
         eyes = {[CS_ANIM_MENU] = MARIO_EYES_LOOK_RIGHT},
     },
-    [E_MODEL_LUIGI] = {
+    [CT_LUIGI] = {
         anims = {[CS_ANIM_MENU] = LUIGI_ANIM_CS_MENU},
         eyes = {[CS_ANIM_MENU] = MARIO_EYES_LOOK_RIGHT},
         hands = {[CS_ANIM_MENU] = MARIO_HAND_OPEN}
     },
-    [E_MODEL_TOAD_PLAYER] = {
+    [CT_TOAD] = {
         anims = {[CS_ANIM_MENU] = TOAD_PLAYER_ANIM_CS_MENU},
         hands = {[CS_ANIM_MENU] = MARIO_HAND_OPEN}
     },
-    [E_MODEL_WALUIGI] = {
+    [CT_WALUIGI] = {
         anims = {[CS_ANIM_MENU] = WALUIGI_ANIM_CS_MENU},
         eyes = {[CS_ANIM_MENU] = MARIO_EYES_LOOK_RIGHT},
     },
-    [E_MODEL_WARIO] = {
+    [CT_WARIO] = {
         anims = {[CS_ANIM_MENU] = WARIO_ANIM_CS_MENU},
         eyes = {[CS_ANIM_MENU] = MARIO_EYES_LOOK_LEFT},
     },
@@ -866,7 +866,7 @@ local ACT_CS_MENU_IDLE = allocate_mario_action(ACT_FLAG_STATIONARY | ACT_FLAG_ID
 ---@param m MarioState
 local function act_cs_menu_idle(m)
     if not m then return 0 end
-    local p = gCSPlayers[m.playerIndex]
+    local np = gNetworkPlayers[m.playerIndex]
     if (m.quicksandDepth > 30.0) then
         return set_mario_action(m, ACT_IN_QUICKSAND, 0)
     end
@@ -878,7 +878,8 @@ local function act_cs_menu_idle(m)
     m.actionState = 0
     m.actionTimer = 0
 
-    local customIdleExists = (characterAnims[p.modelId] and characterAnims[p.modelId].anims and characterAnims[p.modelId].anims[CS_ANIM_MENU])
+    local charAnims = characterAnims[np.overrideModelIndex]
+    local customIdleExists = (charAnims and charAnims.anims and charAnims.anims[CS_ANIM_MENU])
     set_character_animation(m, customIdleExists and CS_ANIM_MENU or CHAR_ANIM_FIRST_PERSON)
 
     stationary_ground_step(m)
@@ -1214,17 +1215,19 @@ local function mario_update(m)
     end
 
     -- Character Animations
-    if characterAnims[p.modelId] then
+    -- REMOVE NIL LATER!!!!
+    local charAnims = nil --characterAnims[np.overrideModelIndex]
+    if charAnims then
         local animInfo = m.marioObj.header.gfx.animInfo
-        local animID = characterAnims[p.modelId].anims and run_func_or_get_var(characterAnims[p.modelId].anims[animInfo.animID], m, animInfo.animFrame)
+        local animID = charAnims.anims and run_func_or_get_var(charAnims.anims[animInfo.animID], m, animInfo.animFrame)
         if animID then
             smlua_anim_util_set_animation(m.marioObj, animID)
         end
-        local eyeState = characterAnims[p.modelId].eyes and run_func_or_get_var(characterAnims[p.modelId].eyes[animInfo.animID], m, animInfo.animFrame)
+        local eyeState = charAnims.eyes and run_func_or_get_var(charAnims.eyes[animInfo.animID], m, animInfo.animFrame)
         if eyeState then
             m.marioBodyState.eyeState = eyeState
         end
-        local handState = characterAnims[p.modelId].hands and run_func_or_get_var(characterAnims[p.modelId].hands[animInfo.animID], m, animInfo.animFrame)
+        local handState = charAnims.hands and run_func_or_get_var(charAnims.hands[animInfo.animID], m, animInfo.animFrame)
         if handState then
             m.marioBodyState.handState = handState
         end

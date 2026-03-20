@@ -630,32 +630,26 @@ end
 ---@param eyeTable? table
 ---@param handTable? table
 local function character_add_animations(modelInfo, animTable, eyeTable, handTable)
-    characterAnims[modelInfo] = {
+    local charNum, charAlt = character_get_number_from_model(modelInfo)
+    characterAnims[characterTable[charNum][charAlt].index] = {
         anims = type(animTable) == TYPE_TABLE and animTable or nil,
         eyes = type(eyeTable) == TYPE_TABLE and eyeTable or nil,
         hands = type(handTable) == TYPE_TABLE and handTable or nil,
     }
 
-    --[[
-    local charNum, altNum = character_get_number_from_model(modelInfo)
-    if charNum and altNum then
-        local char = characterTable[charNum][altNum]
-        if char and animTable then
-            for i = 0, CHAR_ANIM_MAX do
-                if animTable[i] ~= nil then
-                    emerald_character_set_animation(char.allocate, i, animTable[i])
-                end
-            end
+    if type(animTable) == TYPE_TABLE and animTable then
+        for anim, custom in pairs(animTable) do
+            emerald_character_set_animation(characterTable[charNum][charAlt].allocate, anim, custom)
         end
     end
-    ]]
 end
 
 ---@description A function that gets any animation table from a model
 ---@added 1.10
 ---@param modelInfo ModelExtendedId|integer
 local function character_get_animations(modelInfo)
-    return characterAnims[modelInfo]
+    local charNum, charAlt = character_get_number_from_model(modelInfo)
+    return characterAnims[characterTable[charNum][charAlt].index]
 end
 
 ---@description A function that gets a character's full Character Select Table
@@ -1405,7 +1399,7 @@ _G.obj_set_model_extended = obj_set_model_extended
 _G.character_allocate = function(name)
     local charIndex = character_add(name, nil, nil, {r = 255, g = 255, b = 255}, E_MODEL_MARIO, nil, nil, 1)
     characterTable[charIndex].category = characterTable[charIndex].category .. "_Allocated"
-    return characterTable[charIndex][1].allocate, charIndex
+    return characterTable[charIndex][1].allocate, characterTable[charIndex][1].index
 end
 
 ---@param character Character
@@ -1429,7 +1423,7 @@ end
 ---@param animString string
 _G.character_set_animation = function(character, animID, animString)
     local charNum, charAlt = character_get_number_from_allocation(character)
-    local animTable = characterAnims[characterTable[charNum][charAlt].model]
+    local animTable = characterAnims[characterTable[charNum][charAlt].index]
     if animTable == nil then
         animTable = {}
     end
