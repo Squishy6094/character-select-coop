@@ -1,6 +1,5 @@
 -- name: Character Select
 -- description:\\#ffff33\\-- Character Select Coop v1.16.4 --\n\n\\#dcdcdc\\A Library / API made to make adding and using Custom Characters as simple as possible!\nUse\\#ffff33\\ /char-select\\#dcdcdc\\ to get started!\n\nCreated by:\\#008800\\ Squishy6094\n\n\\#AAAAFF\\Updates can be found on\nCharacter Select's Github:\n\\#6666FF\\Squishy6094/character-select-coop
--- pausable: false
 -- category: cs
 
 if incompatibleClient then return 0 end
@@ -139,7 +138,10 @@ characterTable = {
         locked = LOCKED_NEVER,
         playtime = 0,
         autoDialog = true,
-        replaceModels = {},
+        replaceModels = {
+            model = {},
+            bhv = {},
+        },
         replaceTextures = {},
         [1] = {
             index = CT_MARIO,
@@ -181,7 +183,10 @@ characterTable = {
         locked = LOCKED_NEVER,
         playtime = 0,
         autoDialog = true,
-        replaceModels = {},
+        replaceModels = {
+            model = {},
+            bhv = {},
+        },
         replaceTextures = {},
         [1] = {
             index = CT_LUIGI,
@@ -214,7 +219,10 @@ characterTable = {
         locked = LOCKED_NEVER,
         playtime = 0,
         autoDialog = true,
-        replaceModels = {},
+        replaceModels = {
+            model = {},
+            bhv = {},
+        },
         replaceTextures = {},
         [1] = {
             index = CT_TOAD,
@@ -247,7 +255,10 @@ characterTable = {
         locked = LOCKED_NEVER,
         playtime = 0,
         autoDialog = true,
-        replaceModels = {},
+        replaceModels = {
+            model = {},
+            bhv = {},
+        },
         replaceTextures = {},
         [1] = {
             index = CT_WALUIGI,
@@ -280,7 +291,10 @@ characterTable = {
         locked = LOCKED_NEVER,
         playtime = 0,
         autoDialog = true,
-        replaceModels = {},
+        replaceModels = {
+            model = {},
+            bhv = {},
+        },
         replaceTextures = {},
         [1] = {
             index = CT_WARIO,
@@ -1259,14 +1273,6 @@ local sCapBhvs = {
     [id_bhvMetalCap] = true,
 }
 
-local stoppedBhvs = {
-    [id_bhvMario] = true,
-    [id_bhvNormalCap] = true,
-    [id_bhvWingCap] = true,
-    [id_bhvVanishCap] = true,
-    [id_bhvMetalCap] = true,
-}
-
 local settingModel = false
 local obj_set_model_extended = obj_set_model_extended
 ---@param o Object
@@ -1342,18 +1348,36 @@ function set_model(o, model, extendedModel, charNum)
                 end
             end
         end
-    elseif]] characterTable[charNum].replaceModels ~= nil then -- Other Custom Models
-        if stoppedBhvs[bhvID] then return end
-        local currReplace = characterTable[charNum].replaceModels[get_id_from_behavior(o.behavior)]
-        if o.unused1 ~= extendedModel and currReplace == nil then
-            o.unused1 = extendedModel
+    else]]
+        local model = o.unused1
+        if characterTable[charNum].replaceModels.bhv ~= nil then -- Other Custom Behaviors
+            local currReplace = characterTable[charNum].replaceModels.bhv[get_id_from_behavior(o.behavior)]
+            if currReplace ~= nil then
+                model = run_func_or_get_var(currReplace, o, o.unused1) or o.unused1
+                if not visualToggle then
+                    model = o.unused1
+                end
+            else
+                if o.unused1 ~= extendedModel then
+                    o.unused1 = extendedModel
+                end
+            end
         end
-        
-        local model = run_func_or_get_var(currReplace, o, o.unused1) or o.unused1
-        if not visualToggle then
-            model = o.unused1
+
+        if characterTable[charNum].replaceModels.model ~= nil then -- Other Custom Models
+            local currReplace = characterTable[charNum].replaceModels.model[extendedModel]
+            if currReplace ~= nil then
+                model = run_func_or_get_var(currReplace, o, o.unused1) or o.unused1
+                if not visualToggle then
+                    model = o.unused1
+                end
+            else
+                if o.unused1 ~= extendedModel then
+                    o.unused1 = extendedModel
+                end
+            end
         end
-        
+
         if obj_has_model_extended(o, model) == 0 then
             settingModel = true
             obj_set_model_extended(o, model)
@@ -2011,7 +2035,7 @@ local function on_hud_render()
         djui_hud_set_font(FONT_USER)
         local currCharY = 27
         local text = (not easterEggDynOS
-        and (menu_is_allowed() and "Z " .. get_lang_string("button") .. " - " .. get_lang_string("mod_name") or get_lang_string("menu_unavailible"))
+        and (menu_is_allowed() and "Z " .. get_lang_string("button") .. " - " .. get_lang_string("mod_name") or get_lang_string("menu_unavailable"))
         or "Z - DynOS")
         width = djui_hud_get_screen_width() - djui_hud_measure_text(text)
         djui_hud_set_color(255, 255, 255, 255)
@@ -2082,11 +2106,6 @@ local function before_mario_update(m)
         if num and num > 0 then
             menuInputCooldowns[index] = num - 1
         end
-    end
-
-    -- Menu Inputs
-    if is_game_paused() and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and (controller.buttonPressed & Z_TRIG) ~= 0 then
-        menu = true
     end
 
     if not menu_is_allowed(m) then
@@ -2284,9 +2303,6 @@ local function before_mario_update(m)
         end
 
         nullify_inputs(m)
-        if is_game_paused() then
-            game_unpause()
-        end
     end
 
     if options == OPTIONS_MAIN then
@@ -2400,7 +2416,22 @@ local function before_mario_update(m)
     currChar = characterTableRender[currCharRender].ogNum
 end
 
+-- Menu Inputs
+local function update()
+    local m = gMarioStates[0]
+    if is_game_paused() and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and (m.controller.buttonPressed & Z_TRIG) ~= 0 then
+        menu = true
+    end
+
+    if menuAndTransition then
+        if is_game_paused() then
+            game_unpause()
+        end
+    end
+end
+
 hook_event(HOOK_BEFORE_MARIO_UPDATE, before_mario_update)
+hook_event(HOOK_UPDATE, update)
 hook_event(HOOK_ON_HUD_RENDER, on_hud_render)
 
 --------------
@@ -2418,7 +2449,7 @@ local function chat_command(msg)
             menu = not menu
             return true
         else
-            djui_chat_message_create(get_lang_string("menu_unavailible"))
+            djui_chat_message_create(get_lang_string("menu_unavailable"))
             return true
         end
     end

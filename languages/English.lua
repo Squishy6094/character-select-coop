@@ -14,7 +14,7 @@ return {
     -- Menu Text
     menu_version = "Version: %s | sm64coopdx",
     menu_birthday = "%d years of Character Select!",
-    menu_unavailible = "Character Select is Unavailable",
+    menu_unavailable = "Character Select is Unavailable",
     menu_char_cannot_change = "Character Cannot be Changed",
     menu_char_set = 'Character set to "%s" Successfully!',
     menu_char_not_found = "Character Not Found",

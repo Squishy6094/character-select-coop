@@ -84,7 +84,10 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         ogNum = charNum,
         playtime = 0,
         autoDialog = true,
-        replaceModels = {},
+        replaceModels = {
+            model = {},
+            bhv = {},
+        },
         replaceTextures = {},
         menuInst = nil,
         [1] = {
@@ -469,10 +472,15 @@ end
 ---@description A function that replaces a behaviors model with your own
 ---@added 1.16.2
 ---@param charNum integer Player Model ID	
----@param bhvId BehaviorId|integer Behavior ID of the type of objects you want to replace
+---@param bhvId BehaviorId|ModelExtendedId|integer Behavior ID of the type of objects you want to replace
 ---@param replaceModel ModelExtendedId|integer|function? Model ID
-local function character_add_model_replacement(charNum, bhvId, replaceModel)
-    characterTable[charNum].replaceModels[bhvId] = replaceModel
+---@param isModel boolean? Makes `bhvId` act as a `ModelExtendedId` input, replacing objects based on it's model rather then it's behavior
+local function character_add_model_replacement(charNum, bhvId, replaceModel, isModel)
+    if isModel then
+        characterTable[charNum].replaceModels.model[bhvId] = replaceModel
+    else
+        characterTable[charNum].replaceModels.bhv[bhvId] = replaceModel
+    end
 end
 
 ---@description A function that replaces a texture with your own
@@ -491,16 +499,10 @@ end
 ---@param starModel ModelExtendedId|integer Custom Star Model ID
 ---@param starIcon TextureInfo? Custom Star Texture
 local function character_add_celebration_star(modelInfo, starModel, starIcon)
-    for i = 0, #characterTable do
-        for a = 1, #characterTable[i] do 
-            if characterTable[i][a].model == modelInfo then
-                character_add_model_replacement(i, id_bhvCelebrationStar, starModel)
-                characterTable[i][a].starIcon = type(starIcon) == TYPE_TABLE and starIcon or gTextures.star
-                return
-            end
-        end
-    end
-    return false
+    local charNum, charAlt = character_get_number_from_model(modelInfo)
+
+    character_add_model_replacement(charNum, E_MODEL_STAR, starModel, true)
+    characterTable[charNum][charAlt].starIcon = type(starIcon) == TYPE_TABLE and starIcon or gTextures.star
 end
 
 ---@description A function that adds a peach model to a character for the opening letter and ending cutscene.Can also change peach's letter for the character
