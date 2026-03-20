@@ -1332,39 +1332,38 @@ function set_model(o, model, extendedModel, charNum)
             end
         end
     else
+        local model = o.unused1
         if characterTable[charNum].replaceModels.bhv ~= nil then -- Other Custom Behaviors
             local currReplace = characterTable[charNum].replaceModels.bhv[get_id_from_behavior(o.behavior)]
-            if o.unused1 ~= extendedModel and currReplace == nil then
-                o.unused1 = extendedModel
-            end
-            
-            local model = run_func_or_get_var(currReplace, o, o.unused1) or o.unused1
-            if not visualToggle then
-                model = o.unused1
-            end
-            
-            if obj_has_model_extended(o, model) == 0 then
-                settingModel = true
-                obj_set_model_extended(o, model)
+            if currReplace ~= nil then
+                model = run_func_or_get_var(currReplace, o, o.unused1) or o.unused1
+                if not visualToggle then
+                    model = o.unused1
+                end
+            else
+                if o.unused1 ~= extendedModel then
+                    o.unused1 = extendedModel
+                end
             end
         end
 
         if characterTable[charNum].replaceModels.model ~= nil then -- Other Custom Models
-            djui_chat_message_create("model ding")
             local currReplace = characterTable[charNum].replaceModels.model[extendedModel]
-            if o.unused1 ~= extendedModel and currReplace == nil then
-                o.unused1 = extendedModel
+            if currReplace ~= nil then
+                model = run_func_or_get_var(currReplace, o, o.unused1) or o.unused1
+                if not visualToggle then
+                    model = o.unused1
+                end
+            else
+                if o.unused1 ~= extendedModel then
+                    o.unused1 = extendedModel
+                end
             end
-            
-            local model = run_func_or_get_var(currReplace, o, o.unused1) or o.unused1
-            if not visualToggle then
-                model = o.unused1
-            end
-            
-            if obj_has_model_extended(o, model) == 0 then
-                settingModel = true
-                obj_set_model_extended(o, model)
-            end
+        end
+
+        if obj_has_model_extended(o, model) == 0 then
+            settingModel = true
+            obj_set_model_extended(o, model)
         end
     end
 end
