@@ -138,7 +138,10 @@ characterTable = {
         locked = LOCKED_NEVER,
         playtime = 0,
         autoDialog = true,
-        replaceModels = {},
+        replaceModels = {
+            model = {},
+            bhv = {},
+        },
         replaceTextures = {},
         [1] = {
             name = "Mario",
@@ -179,7 +182,10 @@ characterTable = {
         locked = LOCKED_NEVER,
         playtime = 0,
         autoDialog = true,
-        replaceModels = {},
+        replaceModels = {
+            model = {},
+            bhv = {},
+        },
         replaceTextures = {},
         [1] = {
             name = "Luigi",
@@ -211,7 +217,10 @@ characterTable = {
         locked = LOCKED_NEVER,
         playtime = 0,
         autoDialog = true,
-        replaceModels = {},
+        replaceModels = {
+            model = {},
+            bhv = {},
+        },
         replaceTextures = {},
         [1] = {
             name = "Toad",
@@ -243,7 +252,10 @@ characterTable = {
         locked = LOCKED_NEVER,
         playtime = 0,
         autoDialog = true,
-        replaceModels = {},
+        replaceModels = {
+            model = {},
+            bhv = {},
+        },
         replaceTextures = {},
         [1] = {
             name = "Waluigi",
@@ -275,7 +287,10 @@ characterTable = {
         locked = LOCKED_NEVER,
         playtime = 0,
         autoDialog = true,
-        replaceModels = {},
+        replaceModels = {
+            model = {},
+            bhv = {},
+        },
         replaceTextures = {},
         [1] = {
             name = "Wario",
@@ -1241,14 +1256,6 @@ local sCapBhvs = {
     [id_bhvMetalCap] = true,
 }
 
-local stoppedBhvs = {
-    [id_bhvMario] = true,
-    [id_bhvNormalCap] = true,
-    [id_bhvWingCap] = true,
-    [id_bhvVanishCap] = true,
-    [id_bhvMetalCap] = true,
-}
-
 local settingModel = false
 local obj_set_model_extended = obj_set_model_extended
 ---@param o Object
@@ -1324,21 +1331,40 @@ function set_model(o, model, extendedModel, charNum)
                 end
             end
         end
-    elseif characterTable[charNum].replaceModels ~= nil then -- Other Custom Models
-        if stoppedBhvs[bhvID] then return end
-        local currReplace = characterTable[charNum].replaceModels[get_id_from_behavior(o.behavior)]
-        if o.unused1 ~= extendedModel and currReplace == nil then
-            o.unused1 = extendedModel
+    else
+        if characterTable[charNum].replaceModels.bhv ~= nil then -- Other Custom Behaviors
+            local currReplace = characterTable[charNum].replaceModels.bhv[get_id_from_behavior(o.behavior)]
+            if o.unused1 ~= extendedModel and currReplace == nil then
+                o.unused1 = extendedModel
+            end
+            
+            local model = run_func_or_get_var(currReplace, o, o.unused1) or o.unused1
+            if not visualToggle then
+                model = o.unused1
+            end
+            
+            if obj_has_model_extended(o, model) == 0 then
+                settingModel = true
+                obj_set_model_extended(o, model)
+            end
         end
-        
-        local model = run_func_or_get_var(currReplace, o, o.unused1) or o.unused1
-        if not visualToggle then
-            model = o.unused1
-        end
-        
-        if obj_has_model_extended(o, model) == 0 then
-            settingModel = true
-            obj_set_model_extended(o, model)
+
+        if characterTable[charNum].replaceModels.model ~= nil then -- Other Custom Models
+            djui_chat_message_create("model ding")
+            local currReplace = characterTable[charNum].replaceModels.model[extendedModel]
+            if o.unused1 ~= extendedModel and currReplace == nil then
+                o.unused1 = extendedModel
+            end
+            
+            local model = run_func_or_get_var(currReplace, o, o.unused1) or o.unused1
+            if not visualToggle then
+                model = o.unused1
+            end
+            
+            if obj_has_model_extended(o, model) == 0 then
+                settingModel = true
+                obj_set_model_extended(o, model)
+            end
         end
     end
 end
