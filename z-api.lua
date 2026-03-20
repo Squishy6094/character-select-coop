@@ -457,6 +457,7 @@ local function character_add_celebration_star(modelInfo, starModel, starIcon)
     local charNum, charAlt = character_get_number_from_model(modelInfo)
 
     character_add_model_replacement(charNum, E_MODEL_STAR, starModel, true)
+    character_add_texture_replacement(charNum, "texture_hud_char_star", starIcon)
     characterTable[charNum][charAlt].starIcon = type(starIcon) == TYPE_TABLE and starIcon or gTextures.star
 end
 
