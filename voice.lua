@@ -249,7 +249,7 @@ function custom_character_sound(m, sound, pos)
         levelReverbs[np.currLevelNum][1] = levelInfo.echoLevel1 or reverbAmount
         levelReverbs[np.currLevelNum][2] = levelInfo.echoLevel2 or reverbAmount
         levelReverbs[np.currLevelNum][3] = levelInfo.echoLevel3 or reverbAmount
-        reverbAmount = levelReverbs[np.currLevelNum][np.currAreaIndex]/127
+        reverbAmount = (levelReverbs[np.currLevelNum][np.currAreaIndex] or levelReverbs[np.currLevelNum][1] or levelReverbs[LEVEL_NONE][1])/127
     else
         reverbAmount = levelReverbs[np.currLevelNum][1]/127
     end
