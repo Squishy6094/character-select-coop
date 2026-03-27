@@ -102,6 +102,7 @@ local TEX_RECORD         = get_texture_info("char_select_record")
 local TEX_PALETTE_BUCKET = get_texture_info("char_select_palette_bucket")
 local TEX_OPTIONS_TV     = get_texture_info("char_select_options_tv")
 local TEX_GEAR           = get_texture_info("char_select_gear")
+local TEX_PREF_TAG       = get_texture_info("char_select_pref_tag")
 
 LOCKED_NEVER = 0
 LOCKED_TRUE = 1
@@ -117,8 +118,9 @@ audio_stream_set_loop_points(SOUND_CHAR_SELECT_THEME, 0, 93.659*22050)
 
 CS_ANIM_MENU = CHAR_ANIM_MAX + 1
 
-local TEXT_PREF_LOAD_NAME = "Default"
-local TEXT_PREF_LOAD_ALT = 1
+local prefSaveName = "Default"
+local prefNick = "?"
+local prefAlt = 1
 
 --[[
     Note: Do NOT add characters via the characterTable below,
@@ -721,6 +723,7 @@ local function load_preferred_char()
     for i = 0, #characterTable do
         local char = characterTable[i]
         if char.saveName == savedChar and char.locked ~= LOCKED_TRUE then
+            prefSaveName = char.saveName
             currChar = i
             currCharRender = i
             charFound = true
@@ -767,8 +770,8 @@ local function load_preferred_char()
             end
         end
     end
-    TEXT_PREF_LOAD_NAME = string_space_to_underscore(savedNick or savedChar)
-    TEXT_PREF_LOAD_ALT = savedAlt
+    prefNick = savedNick
+    prefAlt = savedAlt
     update_character_render_table()
 end
 
@@ -779,8 +782,8 @@ local function mod_storage_save_pref_char(charTable)
     mod_storage_save("PrefAlt", tostring(charTable.currAlt))
     mod_storage_save("PrefPalette", tostring(gCSPlayers[0].presetPalette))
     mod_storage_save("PrefCharColor", tostring(charTable[charTable.currAlt].color.r) .. "_" .. tostring(charTable[charTable.currAlt].color.g) .. "_" .. tostring(charTable[charTable.currAlt].color.b))
-    TEXT_PREF_LOAD_NAME = string_space_to_underscore(charTable.nickname)
-    TEXT_PREF_LOAD_ALT = charTable.currAlt
+    prefSaveName = charTable.saveName
+    prefAlt = charTable.currAlt
     prefCharColor = charTable[charTable.currAlt].color
 end
 
@@ -1021,7 +1024,7 @@ local function mario_update(m)
             set_mario_action(m, ACT_WAKING_UP, m.actionArg)
         end
 
-        if menu and options == OPTIONS_MAIN then
+        if menu and options == OPTIONS_MAIN and currOption == optionTableRef.restrictMovesets then
             if (network_is_server() or network_is_moderator()) and gGlobalSyncTable.charSelectRestrictMovesets < 2 then
                 gGlobalSyncTable.charSelectRestrictMovesets = optionTable[optionTableRef.restrictMovesets].toggle
             end
@@ -1479,7 +1482,7 @@ function update_menu_color()
     if optionTable[optionTableRef.menuColor].toggle > 1 then
         targetMenuColor = menuColorTable[optionTable[optionTableRef.menuColor].toggle - 1]
     elseif optionTable[optionTableRef.menuColor].toggle == 1 then
-        optionTable[optionTableRef.menuColor].toggleNames[2] = TEXT_PREF_LOAD_NAME .. ((TEXT_PREF_LOAD_ALT ~= 1 and currChar ~= 1) and " ("..TEXT_PREF_LOAD_ALT..")" or "") .. " (Pref)"
+        optionTable[optionTableRef.menuColor].toggleNames[2] = prefNick .. ((prefAlt ~= 1 and currChar ~= 1) and " ("..prefAlt..")" or "") .. " (Pref)"
         targetMenuColor = prefCharColor
     elseif characterTable[currChar] ~= nil then
         local char = characterTable[currChar]
@@ -1535,6 +1538,7 @@ local gearRotation = 0
 local paletteTrans = 0
 local optionsMenuOffset = 0
 local optionsMenuOffsetMax = 210
+local prefTagRot = 0
 local function on_hud_render()
     local FONT_USER = djui_menu_get_font()
     djui_hud_set_font(FONT_ALIASED)
@@ -1688,6 +1692,7 @@ local function on_hud_render()
         
         if not gridMenu then
             -- Render Character List
+            local prevGridY = gridYOffset
             gridYOffset = lerp(gridYOffset, currCharRender*buttonSpacing, 0.1)
             djui_hud_set_font(FONT_SPECIAL)
             for i = 0, #characterTableRender do
@@ -1707,6 +1712,18 @@ local function on_hud_render()
                     local charAltCount = #characterTableRender[i]
                     local channel = charTable.menuInst and tostring(math.floor(879 + hash(charTable.menuInst)%(1029 - 879))*0.1) .. " FM " or "---.- -- "
                     channel = channel .. tostring(math.ceil(charTable.playtime / totalPlaytime * 100)) .. "%"
+
+                    -- Preference Tag
+                    if charTable.saveName == prefSaveName then
+                        prefTagRot = math.lerp(prefTagRot, 0, 0.1) + math.clamp(prevGridY - gridYOffset, -7, 7)*0x100
+                        djui_hud_set_rotation(prefTagRot + 0x2000, 0.5, 0.02)
+                        djui_hud_set_color(255, 255, 255, 255)
+                        djui_hud_render_texture_tile(TEX_PREF_TAG, x + (112 + segments*16 + 145)*scale, y + 40*scale, scale*128/64, scale, 0, 0, 64, 128)
+                        djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
+                        djui_hud_render_texture_tile(TEX_PREF_TAG, x + (112 + segments*16 + 145)*scale, y + 40*scale, scale*128/64, scale, 64, 0, 64, 128)
+                    end
+                    djui_hud_set_rotation(0, 0, 0)
+
                     -- Backlight
                     djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
                     djui_hud_render_rect(x + 96*scale, y + 24*scale, (128*scale + segments*16*scale), 80*scale)

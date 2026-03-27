@@ -94,7 +94,7 @@ local dependacyFiles = {
     "textures/char_select_custom_meter_pie7.tex",
     "textures/char_select_custom_meter_pie8.tex",
     "textures/char_select_custom_meter_right.tex",
-    "textures/char_select_font_brick.tex",
+    "textures/char_select_pref_tag.tex",
     "textures/char_select_font_characteristic.tex",
     "textures/char_select_gear.tex",
     "textures/char_select_graffiti_default.tex",
