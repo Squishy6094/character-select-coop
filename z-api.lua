@@ -337,7 +337,6 @@ local function character_add_voice(modelInfo, clips)
     end
 
     characterVoices[modelInfo] = voiceTable
-    --end)
 end
 hook_event(HOOK_ON_MODS_LOADED, character_add_voice)
 
@@ -1459,6 +1458,21 @@ _G.character_set_animation = function(character, animID, animString)
         animTable = {}
     end
     animTable.anims[animID] = animString
+end
+
+---@param character Character
+---@param characterSound CharacterSound|integer
+---@param audioName string
+_G.character_add_sound = function(character, characterSound, audioName)
+    local charNum, charAlt = character_get_number_from_allocation(character)
+    if charNum ~= nil then
+        local voiceTable = characterVoices[characterTable[charNum][charAlt].model]
+        if voiceTable[characterSound] == nil then
+            voiceTable[characterSound] = {audioName}
+        else
+            table.insert(voiceTable[characterSound], audioName)
+        end
+    end
 end
 
 ---@ignore
