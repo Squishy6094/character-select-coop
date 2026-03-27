@@ -17,6 +17,16 @@ local TYPE_TABLE = "table"
 local TYPE_TEX_INFO = "userdata"
 local TYPE_FUNCTION = "function"
 
+local function log_mod_to_console(msg, level)
+    local level = level or CONSOLE_MESSAGE_ERROR
+    local logColor = "\\#d9d9d9\\"
+    if level == CONSOLE_MESSAGE_WARNING then
+        logColor = "\\#fcfc9e\\"
+    elseif level == CONSOLE_MESSAGE_ERROR then
+        logColor = "\\#fc9e9e\\"
+    end
+    return log_to_console("[Character Select - " .. string.gsub(get_active_mod().name, "%[CS%]%s+", "") .. logColor .. "]: " .. msg, level)
+end
 
 emerald_character_allocate = character_allocate
 emerald_character_set_name = character_set_name
@@ -68,12 +78,12 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         local charNum = charNum ---@type CharacterType
         define_valid_global("CT_"..name:upper():gsub(" ", "_"), charNum)
     end
-    
+
     -- Allocate Character for Coop
     local allocate, index = emerald_character_allocate(name)
+    log_mod_to_console("Adding Character '" .. name .. "' at index '" .. tostring(index) .. "'", CONSOLE_MESSAGE_INFO)
     allocate.modelId = modelInfo or E_MODEL_MARIO
 
-    log_to_console(tostring(index).. " - " .. name)
     table.insert(characterTable, {
         saveName = type(name) == TYPE_STRING and string_space_to_underscore(name.."_"..credit) or "Untitled",
         nickname = name,
@@ -147,7 +157,6 @@ local function character_add_costume(charNum, name, description, credit, color, 
     local allocate, index = emerald_character_allocate(name)
     allocate.modelId = addedModel
 
-    log_to_console(tostring(index).. " - " .. name)
     table.insert(characterTable[charNum], {
         allocate = allocate,
         index = index,
@@ -353,11 +362,13 @@ end
 local function character_add_caps(modelInfo, caps)
     if type(caps) ~= TYPE_TABLE then return end
     local charNum, charAlt = character_get_number_from_model(modelInfo)
-    local allocate = characterTable[charNum][charAlt].allocate ---@type Character
-    allocate.capModelId = caps.normal
-    allocate.capWingModelId = caps.wing or caps.normal
-    allocate.capMetalModelId = caps.metal or caps.normal
-    allocate.capMetalWingModelId = caps.metalWing or caps.normal
+    if charNum ~= nil then
+        local allocate = characterTable[charNum][charAlt].allocate ---@type Character
+        allocate.capModelId = caps.normal or E_MODEL_MARIOS_CAP
+        allocate.capWingModelId = caps.wing or allocate.capModelId
+        allocate.capMetalModelId = caps.metal or allocate.capModelId
+        allocate.capMetalWingModelId = caps.metalWing or allocate.capModelId
+    end
 end
 
 ---@description A function that gets a model's cap table
@@ -368,13 +379,15 @@ local function character_get_caps(modelInfo)
     if modelInfo ~= nil then
         charNum, charAlt = character_get_number_from_model(modelInfo)
     end
-    local allocate = characterTable[charNum][charAlt].allocate ---@type Character
-    return {
-        normal = allocate.capModelId,
-        wing = allocate.capWingModelId,
-        metal = allocate.capMetalModelId,
-        metalWing = allocate.capMetalWingModelId,
-    }
+    if charNum ~= nil then
+        local allocate = characterTable[charNum][charAlt].allocate ---@type Character
+        return {
+            normal = allocate.capModelId,
+            wing = allocate.capWingModelId,
+            metal = allocate.capMetalModelId,
+            metalWing = allocate.capMetalWingModelId,
+        }
+    end
 end
 
 ---@description A function that adds health meter textures to a costume
@@ -500,9 +513,10 @@ end
 ---@param starIcon TextureInfo? Custom Star Texture
 local function character_add_celebration_star(modelInfo, starModel, starIcon)
     local charNum, charAlt = character_get_number_from_model(modelInfo)
-
-    character_add_model_replacement(charNum, E_MODEL_STAR, starModel, true)
-    characterTable[charNum][charAlt].starIcon = type(starIcon) == TYPE_TABLE and starIcon or gTextures.star
+    if charNum ~= nil then
+        character_add_model_replacement(charNum, E_MODEL_STAR, starModel, true)
+        characterTable[charNum][charAlt].starIcon = type(starIcon) == TYPE_TABLE and starIcon or gTextures.star
+    end
 end
 
 ---@description A function that adds a peach model to a character for the opening letter and ending cutscene.Can also change peach's letter for the character
@@ -516,18 +530,20 @@ end
 local function character_add_peach_custom(modelInfo, peachmodelstart, peachmodelend, peachletterleft, peachletterright, peachlettersig)
     if modelInfo == nil then return end
     local charNum = character_get_number_from_model(modelInfo)
-    character_add_model_replacement(charNum, id_bhvBeginningPeach, function(o)
-        if peachmodelstart ~= nil then
-            return peachmodelstart
-        else
-            return obj_get_model_id_extended(o)
+    if charNum ~= nil then
+        character_add_model_replacement(charNum, id_bhvBeginningPeach, function(o)
+            if peachmodelstart ~= nil then
+                return peachmodelstart
+            else
+                return obj_get_model_id_extended(o)
+            end
+        end)
+        character_add_model_replacement(charNum, id_bhvEndPeach, peachmodelend)
+        if (peachletterleft ~= nil) and (peachletterright ~= nil) and (peachlettersig ~= nil) then
+            character_add_texture_replacement(charNum, "castle_grounds_seg7_texture_0700C9E8", peachletterleft)
+            character_add_texture_replacement(charNum, "castle_grounds_seg7_texture_0700D9E8", peachletterright)
+            character_add_texture_replacement(charNum, "castle_grounds_seg7_us_texture_0700EAE8", peachlettersig)
         end
-    end)
-    character_add_model_replacement(charNum, id_bhvEndPeach, peachmodelend)
-    if (peachletterleft ~= nil) and (peachletterright ~= nil) and (peachlettersig ~= nil) then
-        character_add_texture_replacement(charNum, "castle_grounds_seg7_texture_0700C9E8", peachletterleft)
-        character_add_texture_replacement(charNum, "castle_grounds_seg7_texture_0700D9E8", peachletterright)
-        character_add_texture_replacement(charNum, "castle_grounds_seg7_us_texture_0700EAE8", peachlettersig)
     end
 end
 
@@ -539,19 +555,21 @@ end
 local function character_add_ending_toad_model(modelInfo, toadModelRight, toadModelLeft)
     if modelInfo == nil then return end
     local settingRightToad = false
-    local charNum = character_get_number_from_model(modelInfo) ---@type integer
-    character_add_model_replacement(charNum, id_bhvEndToad, function (o)
-        if (obj_has_model_extended(o,toadModelRight) == 0) and (obj_has_model_extended(o,toadModelLeft) == 0)  then --if the model was already changed
-            settingRightToad = not settingRightToad
-            if settingRightToad then
-                return toadModelRight
+    local charNum = character_get_number_from_model(modelInfo)
+    if charNum ~= nil then
+        character_add_model_replacement(charNum, id_bhvEndToad, function (o)
+            if (obj_has_model_extended(o,toadModelRight) == 0) and (obj_has_model_extended(o,toadModelLeft) == 0)  then --if the model was already changed
+                settingRightToad = not settingRightToad
+                if settingRightToad then
+                    return toadModelRight
+                end
+                return toadModelLeft
+            else --the ending toads model was already changed
+                return obj_get_model_id_extended(o)
             end
-            return toadModelLeft
-        else --the ending toads model was already changed
-            return obj_get_model_id_extended(o)
-        end
-        
-    end)
+            
+        end)
+    end
 end
 
 ---@description A function that adds a palette preset to a character
@@ -633,15 +651,17 @@ end
 ---@param handTable? table
 local function character_add_animations(modelInfo, animTable, eyeTable, handTable)
     local charNum, charAlt = character_get_number_from_model(modelInfo)
-    characterAnims[characterTable[charNum][charAlt].index] = {
-        anims = type(animTable) == TYPE_TABLE and animTable or nil,
-        eyes = type(eyeTable) == TYPE_TABLE and eyeTable or nil,
-        hands = type(handTable) == TYPE_TABLE and handTable or nil,
-    }
+    if charNum ~= nil then
+        characterAnims[characterTable[charNum][charAlt].index] = {
+            anims = type(animTable) == TYPE_TABLE and animTable or nil,
+            eyes = type(eyeTable) == TYPE_TABLE and eyeTable or nil,
+            hands = type(handTable) == TYPE_TABLE and handTable or nil,
+        }
 
-    if type(animTable) == TYPE_TABLE and animTable then
-        for anim, custom in pairs(animTable) do
-            emerald_character_set_animation(characterTable[charNum][charAlt].allocate, anim, custom)
+        if type(animTable) == TYPE_TABLE and animTable then
+            for anim, custom in pairs(animTable) do
+                emerald_character_set_animation(characterTable[charNum][charAlt].allocate, anim, custom)
+            end
         end
     end
 end
@@ -651,7 +671,9 @@ end
 ---@param modelInfo ModelExtendedId|integer
 local function character_get_animations(modelInfo)
     local charNum, charAlt = character_get_number_from_model(modelInfo)
-    return characterAnims[characterTable[charNum][charAlt].index]
+    if charNum ~= nil then
+        return characterAnims[characterTable[charNum][charAlt].index]
+    end
 end
 
 ---@description A function that gets a character's full Character Select Table
@@ -746,9 +768,8 @@ end
 ---@description A function that searches for a character's table posision based on model
 ---@added 1.16
 ---@param model integer|ModelExtendedId
----@return integer, integer
+---@return integer?, integer?
 function character_get_number_from_model(model)
-    if type(model) ~= TYPE_INTEGER then return 0, 1 end
     for i = 0, #characterTable do
         for a = 1, #characterTable[i] do
             if characterTable[i][a].model == model or characterTable[i][a].ogModel == model then
@@ -756,12 +777,12 @@ function character_get_number_from_model(model)
             end
         end
     end
-    return 0, 1
+    log_mod_to_console("Failed to find Character Number from Model ID '" .. tostring(model) .. "'", CONSOLE_MESSAGE_WARNING)
 end
 
 ---@description A function to get a Character's Number from an Allocated Character
 ---@added 1.16.4
----@param character Character|CharacterType|integer The number/table position of the Character you want to get the nickname of
+---@param character Character|CharacterType|integer
 ---@return integer?, integer?
 function character_get_number_from_allocation(character)
     for i = 0, #characterTable do
@@ -1380,6 +1401,7 @@ _G.charSelect = {
 }
 
 -- Replace obj_set_model_extended to warn for mario models
+--[[
 local obj_set_model_extended_original = obj_set_model_extended
 ---@ignore
 local function obj_set_model_extended(obj, modelInfo)
@@ -1392,6 +1414,7 @@ local function obj_set_model_extended(obj, modelInfo)
     return obj_set_model_extended_original(obj, modelInfo)
 end
 _G.obj_set_model_extended = obj_set_model_extended
+]]
 
 -----------------------------------
 -- CoopDX Implementation Support --
@@ -1406,7 +1429,7 @@ end
 
 ---@param character Character
 _G.character_deallocate = function(character)
-    log_to_console_once("'character_deallocate' is unsupported while Character Select is active.", CONSOLE_MESSAGE_WARNING)
+    log_mod_to_console("'character_deallocate' is unsupported while Character Select is active.", CONSOLE_MESSAGE_WARNING)
 end
 
 ---@param character Character
