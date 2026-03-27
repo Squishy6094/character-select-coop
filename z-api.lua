@@ -1468,10 +1468,9 @@ _G.character_add_sound = function(character, characterSound, audioName)
     if charNum ~= nil then
         local voiceTable = characterVoices[characterTable[charNum][charAlt].model]
         if voiceTable[characterSound] == nil then
-            voiceTable[characterSound] = {audioName}
-        else
-            table.insert(voiceTable[characterSound], audioName)
+            voiceTable[characterSound] = {}
         end
+        table.insert(voiceTable[characterSound], audioName)
     end
 end
 
