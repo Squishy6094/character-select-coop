@@ -1232,8 +1232,7 @@ local function mario_update(m)
     end
 
     -- Character Animations
-    -- REMOVE NIL LATER!!!!
-    local charAnims = nil --characterAnims[np.overrideModelIndex]
+    local charAnims = characterAnims[np.overrideModelIndex]
     if charAnims then
         local animInfo = m.marioObj.header.gfx.animInfo
         local animID = charAnims.anims and run_func_or_get_var(charAnims.anims[animInfo.animID], m, animInfo.animFrame)

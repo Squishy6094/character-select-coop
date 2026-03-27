@@ -17,6 +17,7 @@ local TYPE_TABLE = "table"
 local TYPE_TEX_INFO = "userdata"
 local TYPE_FUNCTION = "function"
 
+---@ignore
 local function log_mod_to_console(msg, level)
     local level = level or CONSOLE_MESSAGE_ERROR
     local logColor = "\\#d9d9d9\\"
@@ -33,6 +34,7 @@ emerald_character_set_name = character_set_name
 emerald_character_deallocate = character_deallocate
 emerald_character_set_hud_head_texture = character_set_hud_head_texture
 emerald_character_set_animation = character_set_animation
+emerald_character_add_sound = character_add_sound
 emerald_preset_palette_allocate = preset_palette_allocate
 emerald_preset_palette_set_color_of_part = preset_palette_set_color_of_part
 emerald_preset_palette_set_name = preset_palette_set_name
@@ -659,11 +661,14 @@ local function character_add_animations(modelInfo, animTable, eyeTable, handTabl
             hands = type(handTable) == TYPE_TABLE and handTable or nil,
         }
 
+        --[[
+        -- Unused due to anim system being jank
         if type(animTable) == TYPE_TABLE and animTable then
             for anim, custom in pairs(animTable) do
-                emerald_character_set_animation(characterTable[charNum][charAlt].allocate, anim, custom)
+                emerald_character_set_animation(characterTable[charNum][charAlt].allocate, anim, run_func_or_get_var(custom, gMarioStates[0], 0))
             end
         end
+        ]]
     end
 end
 
@@ -1456,6 +1461,7 @@ _G.character_set_animation = function(character, animID, animString)
     animTable.anims[animID] = animString
 end
 
+---@ignore
 local function apply_coop_changes()
     for i = 0, #characterTable do
         for a = 1, #characterTable do
