@@ -1536,9 +1536,6 @@ local function on_hud_render()
 
         djui_hud_set_resolution(RESOLUTION_N64)
 
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(width * 0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
-
         -- Render Character Name
         local angle1 = angle_from_2d_points(width*0.7, 8, width*1.1, 30)
         local angle2 = angle_from_2d_points(width*0.7, 40, width*1.1, 35)
