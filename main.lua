@@ -1492,6 +1492,23 @@ local function djui_hud_render_life_icon(char, x, y, scale)
     djui_hud_set_color(djuiColor.r, djuiColor.g, djuiColor.b, djuiColor.a)
 end
 
+local function reload_health_meters()
+    for i, c in pairs(characterTable) do
+        for j, a in ipairs(c) do -- ipairs because alts use number indices
+            if type(a.healthMeter) == "table" then    
+                for k, t in pairs(a.healthMeter.label) do
+                    a.healthMeter.label[k] = get_texture_info(t.name)
+                end
+                for k, t in pairs(a.healthMeter.pie) do
+                    a.healthMeter.pie[k] = get_texture_info(t.name)
+                end
+            end
+        end
+    end
+end
+
+hook_event(HOOK_ON_DYNOS_CHANGED, reload_health_meters)
+
 local gridButtonsPerRow = 5
 local paletteXOffset = 0
 local gearRotationTarget = 0
