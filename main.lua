@@ -1507,7 +1507,7 @@ local function reload_health_meters()
     end
 end
 
-hook_event(HOOK_ON_DYNOS_CHANGED, reload_health_meters)
+hook_event(HOOK_ON_DYNOS_PACK_TOGGLED, reload_health_meters)
 
 local gridButtonsPerRow = 5
 local paletteXOffset = 0
