@@ -1271,7 +1271,7 @@ function set_model(o, model, extendedModel, charNum)
     -- Already changed model
     if settingModel then settingModel = false return end
     -- "unused1" refers to an object's original model, will find a better solution later
-    if o.unused1 == 0 then
+    if o.unused1 ~= extendedModel then
         o.unused1 = extendedModel or obj_get_model_id_extended(o)
     end
     -- Extended Model Incompatible
