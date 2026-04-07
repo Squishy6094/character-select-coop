@@ -1284,14 +1284,14 @@ local obj_set_model_extended = obj_set_model_extended
 function set_model(o, model, extendedModel, charNum)
     local charNum = charNum or currChar
     local bhvID = get_id_from_behavior(o.behavior)
+    -- Already changed model
+    if settingModel then settingModel = false return end
     -- "unused1" refers to an object's original model, will find a better solution later
-    if o.unused1 == 0 then
+    if o.unused1 ~= extendedModel then
         o.unused1 = extendedModel or obj_get_model_id_extended(o)
     end
     -- Extended Model Incompatible
     if o.unused1 == E_MODEL_ERROR_MODEL or o.unused1 == E_MODEL_NONE then return end
-    -- Already changed model
-    if settingModel then settingModel = false return end
 
     local visualToggle = optionTable[optionTableRef.localVisuals].toggle == 1
 
@@ -1354,18 +1354,13 @@ function set_model(o, model, extendedModel, charNum)
         local replaceBhv = characterTable[charNum].replaceModels.bhv[get_id_from_behavior(o.behavior)]
         local replaceModel = characterTable[charNum].replaceModels.model[extendedModel]
         local currReplace = replaceBhv or replaceModel
-        if currReplace then -- Other Custom Behaviors
-            local model = run_func_or_get_var(currReplace, o, o.unused1) or o.unused1
-            if not visualToggle then
-                model = o.unused1
-            end
-            
-            if obj_has_model_extended(o, model) == 0 then
-                settingModel = true
-                obj_set_model_extended(o, model)
-            end
-        elseif o.unused1 ~= extendedModel then
-            o.unused1 = extendedModel
+        local modelSet = o.unused1
+        if currReplace and visualToggle then -- Other Custom Behaviors
+            modelSet = run_func_or_get_var(currReplace, o, o.unused1) or o.unused1
+        end
+        if obj_has_model_extended(o, modelSet) == 0 then
+            settingModel = true
+            obj_set_model_extended(o, modelSet)
         end
     --end
 end
@@ -1551,9 +1546,6 @@ local function on_hud_render()
         optionsMenuOffset = lerp(optionsMenuOffset, options and optionsMenuOffsetMax or 0, 0.1)
 
         djui_hud_set_resolution(RESOLUTION_N64)
-
-        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        djui_hud_render_rect(width * 0.5 - 50 * widthScale, height - 2, 100 * widthScale, 2)
 
         -- Render Character Name
         local angle1 = angle_from_2d_points(width*0.7, 8, width*1.1, 30)
