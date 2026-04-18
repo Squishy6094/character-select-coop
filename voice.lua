@@ -3,6 +3,7 @@ if incompatibleClient then return 0 end
 local TYPE_TABLE = "table"
 local TYPE_USERDATA = "userdata"
 local TYPE_STRING = "string"
+local TYPE_INTEGER = "number"
 
 local SLEEP_TALK_SNORES = 8
 local STARTING_SNORE = 46
@@ -158,6 +159,7 @@ end
 ---@param sample ModAudio?
 local function stop_sound_with_reverb(sample)
     if sample == nil then return end
+    if type(sample) == TYPE_INTEGER then return end
     audio_sample_stop(sample)
     if #stalledAudio > 0 then
         for i = #stalledAudio, 1, -1 do
@@ -203,14 +205,11 @@ function custom_character_sound(m, sound, pos)
     local voiceTable = character_get_voice(m)
     local voiceToggle = optionTable[optionTableRef.localVoices].toggle
     local voiceOff = (voiceToggle == 0 or (voiceToggle == 2 and m.playerIndex ~= 0))
+    local index = m.playerIndex
     if m.playerIndex == 0 then
         if not startup_init_stall() then
             return NO_SOUND
         end
-    end
-    local index = m.playerIndex
-    if playerSample[index] ~= nil and type(playerSample[index]) ~= TYPE_STRING then
-        stop_sound_with_reverb(playerSample[index])
     end
 
     -- Add punch "woosh" since NO_SOUND removes it
@@ -228,8 +227,18 @@ function custom_character_sound(m, sound, pos)
     -- Load the appropriate sample
     local voice = character_get_sound(m, sound)
     if voice == nil then
+        stop_sound_with_reverb(playerSample[index])
         return NO_SOUND
+    elseif type(voice) == TYPE_INTEGER then
+        if voice == 0 then
+            return 0
+        else
+            play_sound(voice, m.marioObj.header.gfx.cameraToObject)
+            stop_sound_with_reverb(playerSample[index])
+            return NO_SOUND
+        end
     else
+        stop_sound_with_reverb(playerSample[index])
         playerSample[index] = voice
     end
 
@@ -302,7 +311,7 @@ function custom_character_snore(m)
     if snoreTable == nil or snoreTable._pointer ~= nil then
         snoreTable = {}
         for i = CHAR_SOUND_SNORING1, CHAR_SOUND_SNORING3 do
-            local snoreSound = character_get_sound(m, CHAR_SOUND_SNORING3)
+            local snoreSound = character_get_sound(m, i)
             if snoreSound ~= nil then
                 table.insert(snoreTable, snoreSound)
             end
