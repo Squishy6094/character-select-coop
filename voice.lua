@@ -298,12 +298,13 @@ function custom_character_snore(m)
     -- Check empty table for no sound
     if voiceTable == nil then return NO_SOUND end
     
-    local snoreTable = voiceTable[CHAR_SOUND_SNORING3]
+    local snoreTable = character_get_sound(m, CHAR_SOUND_SNORING3)
     if snoreTable == nil or snoreTable._pointer ~= nil then
         snoreTable = {}
         for i = CHAR_SOUND_SNORING1, CHAR_SOUND_SNORING3 do
-            if voiceTable[i] ~= nil then
-                table.insert(snoreTable, voiceTable[i])
+            local snoreSound = character_get_sound(m, CHAR_SOUND_SNORING3)
+            if snoreSound ~= nil then
+                table.insert(snoreTable, snoreSound)
             end
         end
     end
