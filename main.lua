@@ -1732,7 +1732,7 @@ local function on_hud_render()
                 local column = i%gridButtonsPerRow
                 local charIcon = characterTableRender[i][characterTableRender[i].currAlt].lifeIcon
                 local charColor = characterTableRender[i][characterTableRender[i].currAlt].color
-                local charMusic = characterTableRender[i][characterTableRender[i].currAlt].menuInst
+                local charMusic = characterTableRender[i].menuInst
                 local x = 40 + buttonSpacing*column - math.abs(row - gridYOffset/buttonSpacing)^2*3 + math.sin((get_global_timer() + i*10)*0.1) - menuOffsetX*0.5 - optionsMenuOffset + 4
                 local y = height*0.5 - buttonSpacing*0.5 + row*buttonSpacing - gridYOffset + math.cos((get_global_timer() + i*10)*0.1) - characterTableRender[i].UIOffset*0.5 - menuOffsetY*0.5 + 4
                 djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
