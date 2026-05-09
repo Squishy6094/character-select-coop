@@ -1,5 +1,6 @@
-
 if incompatibleClient then return 0 end
+
+hookedByChar = {}
 
 local function find_character_number(index)
     if not startup_init_stall() then return 0 end
@@ -12,42 +13,18 @@ local function find_character_number(index)
     return 0
 end
 
-local function get_mario_state(...)
-    local out = {}
-    local n = select("#", ...)
-
-    for i = 1, n do
-        local v = select(i, ...)
-        if type(v) == "table" and v.marioObj ~= nil then
-            out[#out + 1] = v
-        end
-    end
-
-    if #out == 0 then
-        return gMarioStates[0]
-    end
-
-    return table.unpack(out)
-end
-
-local function moveset_is_active(index)
-    index = index or 0
-    return gCSPlayers[index].movesetToggle
-end
-
 -- Hook everything after other mods
 hook_event(HOOK_ON_MODS_LOADED, function()
     for hookId = 0, HOOK_MAX - 1 do
         hook_event(hookId, function(...)
-            for _, m in ipairs({get_mario_state(...)}) do
-                if not moveset_is_active(m.playerIndex) then return end
+            if not hookedByChar[hookId] then return end
+            if not gCSPlayers[0].movesetToggle then return end
 
-                local charNum = find_character_number(m.playerIndex)
-                local currMoveset = characterMovesets[charNum]
+            local charNum = find_character_number(0)
+            local currMoveset = characterMovesets[charNum]
 
-                if not currMoveset or not currMoveset[hookId] then return end
-                return currMoveset[hookId](...)
-            end
+            if not currMoveset or not currMoveset[hookId] then return end
+            return currMoveset[hookId](...)
         end)
     end
 end)

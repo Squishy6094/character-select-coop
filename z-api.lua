@@ -1142,6 +1142,7 @@ end
 local function character_hook_moveset(charNum, hookEventType, func)
     if charNum > #characterTable then return end
     if type(func) ~= TYPE_FUNCTION then return end
+    hookedByChar[hookEventType] = true
     characterMovesets[charNum][hookEventType] = func
     characterTable[charNum].hasMoveset = true
 end

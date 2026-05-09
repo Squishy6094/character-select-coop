@@ -397,6 +397,21 @@ optionTableRef = {
     credits = make_table_ref_num(),
 }
 
+
+local targetMenuColor = nil
+local prefCharColor = {r = 255, g = 50, b = 50}
+local menuColorTable = {
+    { r = 255, g = 50,  b = 50  },
+    { r = 255, g = 100, b = 50  },
+    { r = 255, g = 255, b = 50  },
+    { r = 50,  g = 255, b = 50  },
+    { r = 50,  g = 50,  b = 255 },
+    { r = 251, g = 148, b = 220 },
+    { r = 130, g = 25,  b = 130 },
+    { r = 255, g = 255, b = 255 },
+    { r = 50,  g = 50,  b = 50  }
+}
+
 optionTable = {
     [optionTableRef.notification] = {
         name = "notifs",
@@ -416,7 +431,17 @@ optionTable = {
         toggleDefault = 0,
         toggleMax = 10,
         toggleNames = {"auto", "saved", "red", "orange", "yellow", "green", "blue", "pink", "purple", "white", "black"},
-        description = {"menu_color_desc1"}
+        description = {"menu_color_desc1"},
+        hook = function(toggle)
+            if toggle > 1 then
+                targetMenuColor = menuColorTable[toggle - 1]
+            elseif toggle == 1 then
+                optionTable[optionTableRef.menuColor].toggleNames[2] = prefNick .. ((prefAlt ~= 1 and currChar ~= 1) and " ("..prefAlt..")" or "") .. " (Pref)"
+                targetMenuColor = prefCharColor
+            elseif characterTable[currChar] ~= nil then
+                targetMenuColor = nil
+            end
+        end,
     },
     [optionTableRef.music] = {
         name = "menu_music",
@@ -647,18 +672,6 @@ end
 
 local latencyValueTable = {12, 6, 3}
 
-local menuColorTable = {
-    { r = 255, g = 50,  b = 50  },
-    { r = 255, g = 100, b = 50  },
-    { r = 255, g = 255, b = 50  },
-    { r = 50,  g = 255, b = 50  },
-    { r = 50,  g = 50,  b = 255 },
-    { r = 251, g = 148, b = 220 },
-    { r = 130, g = 25,  b = 130 },
-    { r = 255, g = 255, b = 255 },
-    { r = 50,  g = 50,  b = 50  }
-}
-
 ---@param m MarioState
 local function nullify_inputs(m)
     local c = m.controller
@@ -683,8 +696,6 @@ local function nullify_inputs(m)
     c.stickX = 0
     c.stickY = 0
 end
-
-local prefCharColor = {r = 255, g = 50, b = 50}
 
 local function load_preferred_char()
     local m = gMarioStates[0]
@@ -786,6 +797,9 @@ function failsafe_options()
         end
         if optionTable[i].toggleNames == nil then
             optionTable[i].toggleNames = {"off", "on"}
+        end
+        if optionTable[i].hook then
+            optionTable[i].hook(optionTable[i].toggle)
         end
     end
 end
@@ -995,12 +1009,13 @@ local function mario_update(m)
         local charTable = characterTable[currChar]
         p.saveName = charTable.saveName
         p.currAlt = charTable.currAlt
-    
-        p.modelId = charTable[charTable.currAlt].model
-        if charTable[charTable.currAlt].baseChar ~= nil then
-            p.baseChar = charTable[charTable.currAlt].baseChar
+
+        local charTableAlt = charTable[charTable.currAlt]
+        p.modelId = charTableAlt.model
+        if charTableAlt.baseChar ~= nil then
+            p.baseChar = charTableAlt.baseChar
         end
-        p.modelEditOffset = charTable[charTable.currAlt].model - charTable[charTable.currAlt].ogModel
+        p.modelEditOffset = charTableAlt.model - charTableAlt.ogModel
         m.marioObj.hookRender = 1
 
         if menu and m.action == ACT_SLEEPING then
@@ -1431,37 +1446,26 @@ local TEXT_KOFI_LINK = "ko-fi.com/squishy6094"
 local MATH_DIVIDE_320 = 1/320
 local MATH_DIVIDE_16 = 1/16
 
-local targetMenuColor = {r = 0 , g = 0, b = 0}
-menuColor = targetMenuColor
-local menuColorHalf = menuColor
-local menuColorTint = menuColor
+menuColor = {r = 0 , g = 0, b = 0}
+local menuColorHalf = {r = 0 , g = 0, b = 0}
+local menuColorTint = {r = 0 , g = 0, b = 0}
+local charColor = {r = 0 , g = 0, b = 0}
 local transSpeed = 0.1
 local playerShirt = network_player_get_override_palette_color(gNetworkPlayers[0], SHIRT)
 local playerPants = network_player_get_override_palette_color(gNetworkPlayers[0], PANTS)
 function update_menu_color()
-    if optionTable[optionTableRef.menuColor].toggle == nil then return end
-    if optionTable[optionTableRef.menuColor].toggle > 1 then
-        targetMenuColor = menuColorTable[optionTable[optionTableRef.menuColor].toggle - 1]
-    elseif optionTable[optionTableRef.menuColor].toggle == 1 then
-        optionTable[optionTableRef.menuColor].toggleNames[2] = prefNick .. ((prefAlt ~= 1 and currChar ~= 1) and " ("..prefAlt..")" or "") .. " (Pref)"
-        targetMenuColor = prefCharColor
-    elseif characterTable[currChar] ~= nil then
-        local char = characterTable[currChar]
-        targetMenuColor = char[char.currAlt].color
+    if not targetMenuColor then
+        charColor = characterTable[currChar][characterTable[currChar].currAlt].color
     end
-    menuColor.r = math.lerp(menuColor.r, targetMenuColor.r, transSpeed)
-    menuColor.g = math.lerp(menuColor.g, targetMenuColor.g, transSpeed)
-    menuColor.b = math.lerp(menuColor.b, targetMenuColor.b, transSpeed)
-    menuColorHalf = {
-        r = menuColor.r * 0.5 + 127,
-        g = menuColor.g * 0.5 + 127,
-        b = menuColor.b * 0.5 + 127
-    }
-    menuColorTint = {
-        r = 205 + 50*menuColor.r/256,
-        g = 205 + 50*menuColor.g/256,
-        b = 205 + 50*menuColor.b/256
-    }
+    menuColor.r = math.lerp(menuColor.r, targetMenuColor and targetMenuColor.r or charColor.r, transSpeed)
+    menuColor.g = math.lerp(menuColor.g, targetMenuColor and targetMenuColor.g or charColor.g, transSpeed)
+    menuColor.b = math.lerp(menuColor.b, targetMenuColor and targetMenuColor.b or charColor.b, transSpeed)
+    menuColorHalf.r = menuColor.r * 0.5 + 127
+    menuColorHalf.g = menuColor.g * 0.5 + 127
+    menuColorHalf.b = menuColor.b * 0.5 + 127
+    menuColorTint.r = 205 + 50*menuColor.r/256
+    menuColorTint.g = 205 + 50*menuColor.g/256
+    menuColorTint.b = 205 + 50*menuColor.b/256
 
     -- Update BG Wall Color
     local shirtColor = network_player_get_override_palette_color(gNetworkPlayers[0], SHIRT)
@@ -1529,13 +1533,13 @@ local function on_hud_render()
     local widthScale = math.max(width, 320) * MATH_DIVIDE_320
 
     if startup_init_stall() then
-        update_menu_color()
         if not menu_is_allowed() then
             menu = false
         end
     end
 
     if menuAndTransition then
+        update_menu_color()
         if characterTable[currChar][characterTable[currChar].currAlt].model == E_MODEL_ERROR_MODEL then
             djui_hud_set_color(0, 0, 0, 200)
             djui_hud_render_rect(0, 0, width, height)
@@ -2324,6 +2328,9 @@ local function before_mario_update(m)
                     if optionTable[currOption].toggleSaveName ~= nil then
                         mod_storage_save(optionTable[currOption].toggleSaveName, tostring(optionTable[currOption].toggle))
                     end
+                    if optionTable[currOption].hook then
+                        optionTable[currOption].hook(optionTable[currOption].toggle)
+                    end
                     play_sound(SOUND_MENU_CHANGE_SELECT, cameraToObject)
                 else
                     play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
@@ -2339,6 +2346,9 @@ local function before_mario_update(m)
                     optionTable[currOption].toggle = num_wrap(optionTable[currOption].toggle + 1, 0, optionTable[currOption].toggleMax)
                     if optionTable[currOption].toggleSaveName ~= nil then
                         mod_storage_save(optionTable[currOption].toggleSaveName, tostring(optionTable[currOption].toggle))
+                    end
+                    if optionTable[currOption].hook then
+                        optionTable[currOption].hook(optionTable[currOption].toggle)
                     end
                     play_sound(SOUND_MENU_CHANGE_SELECT, cameraToObject)
                 else
