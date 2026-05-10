@@ -35,7 +35,7 @@ end
 incompatibleClient = false
 
 -- Check CoopDX Version
-VERSION_REQUIRED = 41
+VERSION_REQUIRED = 42
 if VERSION_NUMBER < VERSION_REQUIRED then
     incompatibleClient = true
     local frameCount = 0
