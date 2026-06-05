@@ -8,6 +8,7 @@
 
 ### <p align=center>⭐ [Download Here](https://github.com/Squishy6094/character-select-coop/releases) ⭐ - 🧰 [CoopDX Forum Upload](https://mods.sm64coopdx.com/mods/character-select.149/) 🧰</p>
 ### <p align=center>☕ [Support Development on Ko-Fi](https://ko-fi.com/squishy6094) ☕</p>
+<p align=center> Character Select Logo Artwork by JerThePear </p>
 
 ## Resources
 - **[CoopDX Forums - Character Select](http://mods.sm64coopdx.com/mods/categories/character-select.14/)** - Browse Character Select Packs hosted on the CoopDX Forums
