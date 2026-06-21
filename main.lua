@@ -2104,6 +2104,10 @@ local function before_mario_update(m)
         end
     end
 
+    if charBeingSet and characterTable[currChar] ~= nil then
+        mod_storage_save_pref_char(characterTable[currChar])
+    end
+
     if not menu_is_allowed(m) then
         menu = false
         return
