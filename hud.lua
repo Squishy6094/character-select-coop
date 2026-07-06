@@ -1,7 +1,3 @@
-------------------------------------------------------
--- Custom HUD Rendering by Agent X and xLuigiGamerx --
-------------------------------------------------------
-
 if incompatibleClient then return 0 end
 
 local og_hud_get_value = hud_get_value

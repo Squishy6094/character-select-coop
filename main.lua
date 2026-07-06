@@ -2183,6 +2183,29 @@ local function before_mario_update(m)
                             characterTableRender[currCharRender].dialAnim = characterTableRender[currCharRender].dialAnim - 10
                             audio_stream_set_frequency(SOUND_CHAR_SELECT_DIAL, math.random(20, 80)*0.01 + 0.5)
                             audio_stream_play(SOUND_CHAR_SELECT_DIAL, true, 0.75)
+
+                            -- Try to get same palette
+                            local prevPaletteName = ""
+                            if gGlobalSyncTable.charSelectRestrictPalettes == 0 then
+                                local prevPaletteTable = characterColorPresets[gCSPlayers[0].modelId] and characterColorPresets[gCSPlayers[0].modelId] or {currPalette = 0}
+                                if #prevPaletteTable > 0 and prevPaletteTable.currPalette > 0 then
+                                    prevPaletteName = prevPaletteTable[prevPaletteTable.currPalette].name
+                                end
+                                local nextModel = character[character.currAlt].model
+                                local nextPaletteTable = characterColorPresets[nextModel] and characterColorPresets[nextModel] or {currPalette = 0}
+                                if #nextPaletteTable > 0 then
+                                    if prevPaletteTable.currPalette > 0 then
+                                        for i = 1, #nextPaletteTable do
+                                            if nextPaletteTable[i].name == prevPaletteName then
+                                                nextPaletteTable.currPalette = i
+                                                break
+                                            end
+                                        end
+                                    else
+                                        nextPaletteTable.currPalette = 0
+                                    end
+                                end
+                            end
                         end
                     )
 
@@ -2193,6 +2216,29 @@ local function before_mario_update(m)
                             characterTableRender[currCharRender].dialAnim = characterTableRender[currCharRender].dialAnim + 10
                             audio_stream_set_frequency(SOUND_CHAR_SELECT_DIAL, math.random(20, 80)*0.01 + 0.5)
                             audio_stream_play(SOUND_CHAR_SELECT_DIAL, true, 0.75)
+
+                            -- Try to get same palette
+                            local prevPaletteName = ""
+                            if gGlobalSyncTable.charSelectRestrictPalettes == 0 then
+                                local prevPaletteTable = characterColorPresets[gCSPlayers[0].modelId] and characterColorPresets[gCSPlayers[0].modelId] or {currPalette = 0}
+                                if #prevPaletteTable > 0 and prevPaletteTable.currPalette > 0 then
+                                    prevPaletteName = prevPaletteTable[prevPaletteTable.currPalette].name
+                                end
+                                local nextModel = character[character.currAlt].model
+                                local nextPaletteTable = characterColorPresets[nextModel] and characterColorPresets[nextModel] or {currPalette = 0}
+                                if #nextPaletteTable > 0 then
+                                    if prevPaletteTable.currPalette > 0 then
+                                        for i = 1, #nextPaletteTable do
+                                            if nextPaletteTable[i].name == prevPaletteName then
+                                                nextPaletteTable.currPalette = i
+                                                break
+                                            end
+                                        end
+                                    else
+                                        nextPaletteTable.currPalette = 0
+                                    end
+                                end
+                            end
                         end
                     )
                 end
