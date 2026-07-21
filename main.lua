@@ -2092,6 +2092,7 @@ function run_func_with_condition_and_cooldown(funcIndex, condition, func, cooldo
 end
 
 local mouseScroll = 0
+local prevZState = false
 ---@param m MarioState
 local function before_mario_update(m)
     if m.playerIndex ~= 0 then return end
@@ -2142,6 +2143,18 @@ local function before_mario_update(m)
                 end
             )
 
+            if controller.buttonDown & Z_TRIG ~= 0 then
+                if not prevZState then
+                    play_sound(SOUND_MENU_CAMERA_ZOOM_IN, cameraToObject)
+                    prevZState = true
+                end
+            else
+                if prevZState then
+                    play_sound(SOUND_MENU_CAMERA_ZOOM_OUT, cameraToObject)
+                    prevZState = false
+                end
+            end
+
             run_func_with_condition_and_cooldown(FUNC_INDEX_CATEGORY,
                 (controller.buttonPressed & R_TRIG) ~= 0,
                 function ()
@@ -2160,7 +2173,8 @@ local function before_mario_update(m)
                 run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
                     (controller.buttonPressed & D_JPAD) ~= 0 or controller.stickY < -45 --[[or prevMouseScroll < mouseScroll]],
                     function ()
-                        currCharRender = num_wrap(currCharRender + 1, 0, #characterTableRender)
+                        currCharRender = currCharRender + (controller.buttonDown & Z_TRIG ~= 0 and 2 or 1)
+                        currCharRender = num_wrap(currCharRender, 0, #characterTableRender)
                         play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                     end
                 )
@@ -2168,7 +2182,8 @@ local function before_mario_update(m)
                 run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
                     (controller.buttonPressed & U_JPAD) ~= 0 or controller.stickY > 45 --[[or prevMouseScroll > mouseScroll]],
                     function ()
-                        currCharRender = num_wrap(currCharRender - 1, 0, #characterTableRender)
+                        currCharRender = currCharRender - (controller.buttonDown & Z_TRIG ~= 0 and 2 or 1)
+                        currCharRender = num_wrap(currCharRender, 0, #characterTableRender)
                         play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                     end
                 )
@@ -2319,7 +2334,7 @@ local function before_mario_update(m)
                     local currPaletteTable = characterColorPresets[gCSPlayers[0].modelId] and characterColorPresets[gCSPlayers[0].modelId] or {currPalette = 0}
                     if #currPaletteTable > 0 and gGlobalSyncTable.charSelectRestrictPalettes == 0 then
                         play_sound(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject)
-                        currPaletteTable.currPalette = currPaletteTable.currPalette + 1
+                        currPaletteTable.currPalette = currPaletteTable.currPalette + (controller.buttonDown & Z_TRIG ~= 0 and -1 or 1)
                     else
                         play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
                     end
