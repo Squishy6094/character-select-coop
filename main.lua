@@ -119,7 +119,6 @@ audio_stream_set_looping(SOUND_CHAR_SELECT_THEME, true)
 audio_stream_set_loop_points(SOUND_CHAR_SELECT_THEME, 0, 93.659*22050)
 audio_stream_set_looping(SOUND_CHAR_SELECT_TURN_SIGNAL, true)
 audio_stream_set_volume_channel(SOUND_CHAR_SELECT_DIAL, MOD_AUDIO_CHANNEL_SFX)
-audio_stream_set_volume_channel(SOUND_CHAR_SELECT_TV_ON, MOD_AUDIO_CHANNEL_SFX)
 audio_stream_set_volume_channel(SOUND_CHAR_SELECT_TURN_SIGNAL, MOD_AUDIO_CHANNEL_SFX)
 
 CS_ANIM_MENU = CHAR_ANIM_MAX + 1
