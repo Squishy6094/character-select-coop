@@ -103,6 +103,7 @@ local TEX_PALETTE_BUCKET = get_texture_info("char_select_palette_bucket")
 local TEX_OPTIONS_TV     = get_texture_info("char_select_options_tv")
 local TEX_GEAR           = get_texture_info("char_select_gear")
 local TEX_PREF_TAG       = get_texture_info("char_select_pref_tag")
+local TEX_ALT_SWITCH     = get_texture_info("char_select_alt_switch")
 
 LOCKED_NEVER = 0
 LOCKED_TRUE = 1
@@ -111,10 +112,15 @@ LOCKED_FALSE = 2
 local SOUND_CHAR_SELECT_THEME = audio_stream_load("char_select_menu_theme.ogg")
 local SOUND_CHAR_SELECT_DIAL = audio_stream_load("char_select_dial_wind.ogg")
 local SOUND_CHAR_SELECT_TV_ON = audio_sample_load("char_select_tv_on.ogg")
+local SOUND_CHAR_SELECT_TURN_SIGNAL = audio_stream_load("char_select_turn_signal.ogg")
 local menuThemeTargetVolume = 0
 local menuThemeVolume = menuThemeTargetVolume
 audio_stream_set_looping(SOUND_CHAR_SELECT_THEME, true)
 audio_stream_set_loop_points(SOUND_CHAR_SELECT_THEME, 0, 93.659*22050)
+audio_stream_set_looping(SOUND_CHAR_SELECT_TURN_SIGNAL, true)
+audio_stream_set_volume_channel(SOUND_CHAR_SELECT_DIAL, MOD_AUDIO_CHANNEL_SFX)
+audio_stream_set_volume_channel(SOUND_CHAR_SELECT_TV_ON, MOD_AUDIO_CHANNEL_SFX)
+audio_stream_set_volume_channel(SOUND_CHAR_SELECT_TURN_SIGNAL, MOD_AUDIO_CHANNEL_SFX)
 
 CS_ANIM_MENU = CHAR_ANIM_MAX + 1
 
@@ -1044,6 +1050,7 @@ local function mario_update(m)
                     levelMusic = true
                 end
                 audio_stream_play(SOUND_CHAR_SELECT_THEME, false, 0)
+                audio_stream_play(SOUND_CHAR_SELECT_TURN_SIGNAL, false, 0)
                 if musicToggle ~= 0 and musicToggle ~= 3 then
                     menuThemeTargetVolume = 1
                     levelMusic = false
@@ -1135,6 +1142,7 @@ local function mario_update(m)
         else
             if p.inMenu then
                 audio_stream_stop(SOUND_CHAR_SELECT_THEME)
+                audio_stream_stop(SOUND_CHAR_SELECT_TURN_SIGNAL)
                 for _, inst in pairs(characterInstrumentals) do
                     if inst ~= nil then
                         audio_stream_stop(inst.audio)
@@ -1463,9 +1471,9 @@ function update_menu_color()
     menuColorHalf.r = menuColor.r * 0.5 + 127
     menuColorHalf.g = menuColor.g * 0.5 + 127
     menuColorHalf.b = menuColor.b * 0.5 + 127
-    menuColorTint.r = 205 + 50*menuColor.r/256
-    menuColorTint.g = 205 + 50*menuColor.g/256
-    menuColorTint.b = 205 + 50*menuColor.b/256
+    menuColorTint.r = 185 + 70*menuColor.r/256
+    menuColorTint.g = 185 + 70*menuColor.g/256
+    menuColorTint.b = 185 + 70*menuColor.b/256
 
     -- Update BG Wall Color
     local shirtColor = network_player_get_override_palette_color(gNetworkPlayers[0], SHIRT)
@@ -1521,6 +1529,8 @@ local paletteTrans = 0
 local optionsMenuOffset = 0
 local optionsMenuOffsetMax = 210
 local prefTagRot = 0
+local prevZState = false
+local altSwitchX = 0
 local function on_hud_render()
     local FONT_USER = djui_menu_get_font()
     djui_hud_set_font(FONT_ALIASED)
@@ -1631,6 +1641,14 @@ local function on_hud_render()
             djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, math.min(paletteTrans, 255))
             djui_hud_print_text(paletteName, x, y, 0.5)
         end
+
+        -- Render Z Alt Switch
+        djui_hud_set_filter(FILTER_LINEAR)
+        altSwitchX = math.lerp(altSwitchX, prevZState and 15 or 0, 0.4)
+        audio_stream_set_volume(SOUND_CHAR_SELECT_TURN_SIGNAL, (prevZState and altSwitchX > 14) and 0.5 or 0)
+        djui_hud_set_color(menuColorTint.r, menuColorTint.g, menuColorTint.b, 255)
+        djui_hud_render_texture(TEX_ALT_SWITCH, width*0.74 + altSwitchX, height*0.77, 0.3, 0.3)
+        djui_hud_set_filter(FILTER_NEAREST)
     
         -- Render Background Wall
         local wallWidth = TEX_WALL_LEFT.width
@@ -2092,7 +2110,6 @@ function run_func_with_condition_and_cooldown(funcIndex, condition, func, cooldo
 end
 
 local mouseScroll = 0
-local prevZState = false
 ---@param m MarioState
 local function before_mario_update(m)
     if m.playerIndex ~= 0 then return end
@@ -2145,12 +2162,12 @@ local function before_mario_update(m)
 
             if controller.buttonDown & Z_TRIG ~= 0 then
                 if not prevZState then
-                    play_sound(SOUND_MENU_CAMERA_ZOOM_IN, cameraToObject)
+                    play_sound_with_freq_scale(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject, 1.4)
                     prevZState = true
                 end
             else
                 if prevZState then
-                    play_sound(SOUND_MENU_CAMERA_ZOOM_OUT, cameraToObject)
+                    play_sound_with_freq_scale(SOUND_MENU_CLICK_FILE_SELECT, cameraToObject, 1.2)
                     prevZState = false
                 end
             end
