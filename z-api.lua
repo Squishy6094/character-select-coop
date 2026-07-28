@@ -270,7 +270,7 @@ local function character_add_voice(modelInfo, clips)
 
     -- Load samples that haven't been loaded
     for voice, sound in pairs(clips) do
-        if sound then 
+        if sound then
             if type(sound) == TYPE_STRING then
                 local load = audio_sample_load(sound)
                 if load ~= nil then
@@ -1166,8 +1166,7 @@ end
 ---@param loadedAudio ModAudio The loaded instrumental audio file
 ---@note Original Song is `.ogg` File Format, `Mono` Channel, `C Minor Key`, `82` BPM, `93.659` Seconds Long, and is set to a sample rate of `22050`. If these requirements are not met then the song will not properly play, or incorrectly fit with the base theme.
 local function character_add_menu_instrumental(charNum, loadedAudio)
-    audio_stream_set_looping(loadedAudio, true)
-    audio_stream_set_loop_points(loadedAudio, 0, 93.659*22050)
+    audio_set_loop_points(loadedAudio, 0, 2065181)
     characterTable[charNum].menuInst = loadedAudio.filepath
     characterInstrumentals[loadedAudio.filepath] = {
         audio = loadedAudio,
