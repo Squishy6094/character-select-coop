@@ -1122,6 +1122,8 @@ local function on_hud_render_behind()
     djui_hud_set_font(FONT_HUD)
 
     render_nametag_powermeter() -- Render before setting the color, it sets its own
+    djui_hud_set_resolution(RESOLUTION_N64)
+    djui_hud_set_font(FONT_HUD)
 
     djui_hud_set_color(255, 255, 255, 255)
 
