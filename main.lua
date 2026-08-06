@@ -1581,7 +1581,7 @@ local function on_hud_render()
         djui_hud_render_caution_tape(width*0.7, 40, width*1.1, 35, 1)
 
         djui_hud_set_font(FONT_CHARACTERISTIC)
-        local charName = string.upper(characterTable[currChar][characterTable[currChar].currAlt].name)
+        local charName = string.upper(characterTable[currChar].nickname)
         local nameScale = math.min(width*0.23/djui_hud_measure_text(charName), 1)
         local charCreator = string.upper(characterTable[currChar][characterTable[currChar].currAlt].credit)
         local creatorScale = math.min(width*0.23/djui_hud_measure_text(charCreator), 0.4)
@@ -1704,12 +1704,15 @@ local function on_hud_render()
                     local char = characterTableRender[i][currAlt]
                     local charName = charTable.nickname
                     local charAltName = char.name
-                    local charNameLength = djui_hud_measure_text(charName)
+                    local charNameLength = 0
+                    for iAlt = 1, #charTable do
+                        charNameLength = math.max(charNameLength, djui_hud_measure_text(charTable[iAlt].name))
+                    end
+                    local charAltNameLength = djui_hud_measure_text(charAltName)
                     local charColor = char.color
                     local x = -(math.abs(i - gridYOffset/buttonSpacing)^2)*5 + 32 - menuOffsetX*0.2 - optionsMenuOffset
                     local y = height*0.45 - buttonSpacing*0.5 + i*buttonSpacing - gridYOffset - menuOffsetY*0.2
-                    local segmentsMeasured = (math.ceil(((charNameLength*textScale + 16*scale))/(16*scale)))
-                    local segments = segmentsMeasured
+                    local segments = math.clamp(math.ceil(((charNameLength*textScale + 16*scale))/(16*scale)), 1, 15)
                     local charAltCount = #characterTableRender[i]
                     local channel = charTable.menuInst and tostring(math.floor(879 + hash(charTable.menuInst)%(1029 - 879))*0.1) .. " FM " or "---.- -- "
                     channel = channel .. tostring(math.ceil(charTable.playtime / totalPlaytime * 100)) .. "%"
@@ -1728,14 +1731,19 @@ local function on_hud_render()
                     -- Backlight
                     djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
                     djui_hud_render_rect(x + 96*scale, y + 24*scale, (128*scale + segments*16*scale), 80*scale)
+
                     -- Name Screen
+                    local nameDiff = math.max(0, charAltNameLength*textScale - (segments*16)*scale + 1)*0.5
+                    local nameScroll = math.round(((math.sin(get_global_timer()*0.02)))*nameDiff)
                     djui_hud_set_color(charColor.r*0.5, charColor.g*0.5, charColor.b*0.5, 255)
-                    djui_hud_print_text(charName, x + 112*scale + segments*16*scale*0.5 - charNameLength*textScale*0.5, y + 32*scale, textScale)
-                    
+                    djui_hud_set_scissor((x + 104*scale) * 320/djui_hud_get_screen_width(), 0, (x + 104*scale + (segments+1)*16*scale) * 320/djui_hud_get_screen_width(), height)
+                    djui_hud_print_text(charAltName, x + 112*scale + segments*16*scale*0.5 - charAltNameLength*textScale*0.5 + nameScroll, y + 32*scale, textScale)
+                    djui_hud_set_scissor(0, 0, scissorWidth, height)
+
                     -- Bottom Info
                     djui_hud_render_rect(x + 112*scale, y + 84*scale, segments*16*scale, scale)
                     djui_hud_print_text(channel, x + 112*scale, y + 85*scale, 0.3*scale)
-                    djui_hud_print_text(charAltName, x + segments*16*scale + 112*scale - djui_hud_measure_text(charAltName)*0.3*scale, y + 85*scale, 0.3*scale)
+                    djui_hud_print_text(charName, x + segments*16*scale + 112*scale - djui_hud_measure_text(charName)*0.3*scale, y + 85*scale, 0.3*scale)
 
                     -- Icon
                     djui_hud_set_color(charColor.r, charColor.g, charColor.b, 150)

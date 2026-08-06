@@ -45,7 +45,6 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
             description = description .. table[i] .. (i ~= #table and " " or "")
         end
     end
-    description = string.gsub(description, "\n", "")
     if color ~= nil and type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
@@ -80,7 +79,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         menuInst = nil,
         [1] = {
             name = name,
-            description = type(description) == TYPE_STRING and description or "No description has been provided",
+            description = type(description) == TYPE_STRING and string.gsub(description, "\n", "") or "No description has been provided",
             credit = credit,
             color = type(color) == TYPE_TABLE and color or {r = 255, g = 255, b = 255},
             model = addedModel,
@@ -118,7 +117,6 @@ local function character_add_costume(charNum, name, description, credit, color, 
             description = description .. table[i] .. (i ~= #table and " " or "")
         end
     end
-    description = string.gsub(description, "\n", "")
     if color ~= nil and type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
@@ -129,7 +127,7 @@ local function character_add_costume(charNum, name, description, credit, color, 
     local addedModel = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model
     table.insert(characterTable[charNum], {
         name = type(name) == TYPE_STRING and name or tableCache.name,
-        description = type(description) == TYPE_STRING and description or tableCache.description,
+        description = type(description) == TYPE_STRING and string.gsub(description, "\n", "") or tableCache.description,
         credit = type(credit) == TYPE_STRING and credit or tableCache.credit,
         color = type(color) == TYPE_TABLE and color or tableCache.color,
         model = addedModel,
@@ -164,7 +162,6 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
             description = description .. table[i] .. (i ~= #table and " " or "")
         end
     end
-    description = string.gsub(description, "\n", "")
     if color ~= nil and type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
@@ -174,7 +171,7 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
     local tableCache = characterTable[charNum][charAlt]
     characterTable[charNum][charAlt] = characterTable[charNum][charAlt] and {
         name = type(name) == TYPE_STRING and name or tableCache.name,
-        description = type(description) == TYPE_STRING and description or tableCache.description,
+        description = type(description) == TYPE_STRING and string.gsub(description, "\n", "") or tableCache.description,
         credit = type(credit) == TYPE_STRING and credit or tableCache.credit,
         color = type(color) == TYPE_TABLE and color or tableCache.color,
         model = (modelInfo and modelInfo ~= E_MODEL_ERROR_MODEL) and modelInfo or tableCache.model,
