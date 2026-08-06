@@ -136,6 +136,7 @@ local prefAlt = 1
 
 characterTable = {
     [CT_MARIO] = {
+        modData = get_active_mod(),
         saveName = "Mario_CoopDX",
         nickname = "Mario",
         category = "All_CoopDX",
@@ -181,6 +182,7 @@ characterTable = {
         },
     },
     [CT_LUIGI] = {
+        modData = get_active_mod(),
         saveName = "Luigi_CoopDX",
         nickname = "Luigi",
         category = "All_CoopDX",
@@ -217,6 +219,7 @@ characterTable = {
         },
     },
     [CT_TOAD] = {
+        modData = get_active_mod(),
         saveName = "Toad_CoopDX",
         nickname = "Toad",
         category = "All_CoopDX",
@@ -253,6 +256,7 @@ characterTable = {
         },
     },
     [CT_WALUIGI] = {
+        modData = get_active_mod(),
         saveName = "Waluigi_CoopDX",
         nickname = "Waluigi",
         category = "All_CoopDX",
@@ -289,6 +293,7 @@ characterTable = {
         },
     },
     [CT_WARIO] = {
+        modData = get_active_mod(),
         saveName = "Wario_CoopDX",
         nickname = "Wario",
         category = "All_CoopDX",
@@ -583,8 +588,8 @@ local function update_character_render_table()
                 log_to_console_once(tostring(b.ogNum) .. " - " .. tostring(b.sim), CONSOLE_MESSAGE_INFO)
                 return a.sim < b.sim
             end)
-            category.icon1 = category.icon1 or sorted[1].ogNum
-            category.icon2 = category.icon2 or sorted[2].ogNum
+            category.icon1 = category.icon1 or (sorted[1] and sorted[1].ogNum or nil)
+            category.icon2 = category.icon2 or (sorted[2] and sorted[2].ogNum or nil)
         end
         -- Set Character if they are in the category
         currChar = (characterTableRender[currCharRender] and characterTableRender[currCharRender].ogNum or characterTableRender[0].ogNum)
@@ -814,6 +819,14 @@ function failsafe_options()
     end
 end
 
+function autofill_categories()
+    for i = 0, #characterTable do
+        if characterTable[i].category == "All" then
+            character_set_category(i, string.gsub(characterTable[i].modData.name, "%[CS%]", ""))
+        end
+    end
+end
+
 hookTableOnReset = {}
 local promptedAreYouSure = false
 local function reset_options()
@@ -945,6 +958,7 @@ local prevVisualToggle = 1
 local function mario_update(m)
     if m.playerIndex == 0 and (startup_init_stall(1) or queueStorageFailsafe) then
         failsafe_options()
+        autofill_categories()
         if not queueStorageFailsafe then
             load_preferred_char()
             if optionTable[optionTableRef.notification].toggle == 1 then
