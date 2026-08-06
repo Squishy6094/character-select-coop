@@ -1738,7 +1738,7 @@ local function on_hud_render()
                     djui_hud_set_color(charColor.r*0.5, charColor.g*0.5, charColor.b*0.5, 255)
                     djui_hud_set_scissor((x + 104*scale) * 320/djui_hud_get_screen_width(), 0, (x + 104*scale + (segments+1)*16*scale) * 320/djui_hud_get_screen_width(), height)
                     djui_hud_print_text(charAltName, x + 112*scale + segments*16*scale*0.5 - charAltNameLength*textScale*0.5 + nameScroll, y + 32*scale, textScale)
-                    djui_hud_set_scissor(0, 0, scissorWidth, height)
+                    djui_hud_reset_scissor()
 
                     -- Bottom Info
                     djui_hud_render_rect(x + 112*scale, y + 84*scale, segments*16*scale, scale)
@@ -1774,6 +1774,7 @@ local function on_hud_render()
                     end
                 end
             end
+            djui_hud_set_scissor(0, 0, scissorWidth, height)
         else
             -- Render Character Grid
             local currRow = math.floor((currCharRender)/gridButtonsPerRow)
