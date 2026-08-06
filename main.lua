@@ -1592,11 +1592,11 @@ local function on_hud_render()
         -- Palette Selection
         local charColor = characterTableRender[currCharRender][characterTableRender[currCharRender].currAlt].color
         local palettes = characterColorPresets[characterTableRender[currCharRender][characterTableRender[currCharRender].currAlt].model]
+        local bottomTapeAngle = angle_from_2d_points(-10, height - 50, width + 10, height - 35)
         if palettes then
             local bucketSpacing = 24
             paletteXOffset = lerp(paletteXOffset, palettes.currPalette*bucketSpacing, 0.1)
             paletteTrans = math.max(paletteTrans - 6, 0)
-            local bottomTapeAngle = angle_from_2d_points(-10, height - 50, width + 10, height - 35)
 
             for i = 0, #palettes do
                 local x = width*0.85 - 16 - paletteXOffset + coss(bottomTapeAngle)*bucketSpacing*i
@@ -1957,33 +1957,39 @@ local function on_hud_render()
         djui_hud_reset_scissor()
 
         -- Render Character Description
-        djui_hud_set_rotation(angle_from_2d_points(-10, height - 50, width + 10, height - 35), 0, 0)
+        djui_hud_set_rotation(bottomTapeAngle, 0, 0)
         djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_render_rect(-10, height - 50, width*1.5, 100)
-        djui_hud_set_rotation(0, 0, 0)
+        djui_hud_render_rect(-10, height - 45, width*1.5, 100)
 
-        djui_hud_set_font(FONT_TINY)
+        djui_hud_set_font(FONT_MENU)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         local credit = characterTable[currChar][characterTable[currChar].currAlt].credit
         local desc = characterTable[currChar][characterTable[currChar].currAlt].description
+        local descMeasure = djui_hud_measure_text(desc .. " - ")
         local descRender = desc .. " - " .. desc
-        while djui_hud_measure_text(descRender)*0.8 < width do
+        local scale = 0.25
+        while djui_hud_measure_text(descRender)*scale < width do
             descRender = descRender .. " - " .. desc
         end
         descRender = descRender .. " - " .. desc
-        djui_hud_print_text_interpolated(descRender, 5 - (get_global_timer()%djui_hud_measure_text(desc .. " - ") - 1)*0.8 - menuOffsetX*0.1, height - 25 + menuOffsetY*0.15, 0.8, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8 - menuOffsetX*0.1, height - 25 + menuOffsetY*0.15, 0.8)
+        local prevDescX = ((get_global_timer()/scale)%descMeasure - 1)
+        local descX = ((get_global_timer()/scale)%descMeasure)
+        -- Main desc
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_print_text_interpolated(descRender, 5 - prevDescX*coss(bottomTapeAngle)*scale - menuOffsetX*0.2, height + prevDescX*sins(bottomTapeAngle)*scale - 38 + menuOffsetY*0.2, scale,
+                                            5 - descX*coss(bottomTapeAngle)*scale - menuOffsetX*0.2, height + descX*sins(bottomTapeAngle)*scale - 38 + menuOffsetY*0.2, scale)
 
-        djui_hud_set_rotation(angle_from_2d_points(-10, height - 50, width + 10, height - 35), 0, 0)
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(0, height - 45, width*0.3, 100)
         djui_hud_set_rotation(0, 0, 0)
 
+        djui_hud_set_font(FONT_SPECIAL)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         local verString = get_lang_string("menu_version", MOD_VERSION_STRING) 
         if seasonalEvent == SEASON_EVENT_BIRTHDAY then
             verString = verString .. " | " .. get_lang_string("menu_birthday", get_date_and_time().year - 123)
         end
-        djui_hud_print_text(verString, 2, height - 7, 0.4)
+        djui_hud_print_text(verString, width*0.3 + 5, height - 7, 0.2)
         local currMenu = gridMenu and MENU_BINDS_GRID or MENU_BINDS_DEFAULT
         if options == OPTIONS_MAIN then
             currMenu = MENU_BINDS_OPTIONS 
@@ -1991,8 +1997,8 @@ local function on_hud_render()
             currMenu = MENU_BINDS_GRID
         end
         local bindInfo = TEXT_TABLE_MENU_BINDS[currMenu][math.floor(get_global_timer()/150)%(#TEXT_TABLE_MENU_BINDS[currMenu]) + 1]
-        djui_hud_print_text(bindInfo.bind, width*0.15 - djui_hud_measure_text(bindInfo.bind)*0.4, height - 35, 0.8)
-        djui_hud_print_text(get_lang_string(bindInfo.desc), width*0.15 - djui_hud_measure_text(get_lang_string(bindInfo.desc))*0.4, height - 25, 0.8)
+        djui_hud_print_text(bindInfo.bind, width*0.15 - djui_hud_measure_text(bindInfo.bind)*0.2, height - 32, 0.4)
+        djui_hud_print_text(get_lang_string(bindInfo.desc), width*0.15 - djui_hud_measure_text(get_lang_string(bindInfo.desc))*0.15, height - 20, 0.3)
 
         -- API Rendering (Above Text)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)

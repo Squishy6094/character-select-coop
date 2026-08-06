@@ -45,6 +45,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
             description = description .. table[i] .. (i ~= #table and " " or "")
         end
     end
+    description = string.gsub(description, "\n", "")
     if color ~= nil and type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
@@ -117,6 +118,7 @@ local function character_add_costume(charNum, name, description, credit, color, 
             description = description .. table[i] .. (i ~= #table and " " or "")
         end
     end
+    description = string.gsub(description, "\n", "")
     if color ~= nil and type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
@@ -162,6 +164,7 @@ local function character_edit_costume(charNum, charAlt, name, description, credi
             description = description .. table[i] .. (i ~= #table and " " or "")
         end
     end
+    description = string.gsub(description, "\n", "")
     if color ~= nil and type(color) == TYPE_STRING then
         color = {r = tonumber(color:sub(1,2), 16), g = tonumber(color:sub(3,4), 16), b = tonumber(color:sub(5,6), 16) }
     end
