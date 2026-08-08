@@ -134,6 +134,7 @@ local prefAlt = 1
 
 characterTable = {
     [CT_MARIO] = {
+        modData = get_active_mod(),
         saveName = "Mario_CoopDX",
         nickname = "Mario",
         category = "All_CoopDX",
@@ -148,6 +149,7 @@ characterTable = {
             bhv = {},
         },
         replaceTextures = {},
+        replaceSeq = {},
         [1] = {
             name = "Mario",
             description = "The iconic Italian plumber himself! He's quite confident and brave, always prepared to jump into action to save the Mushroom Kingdom!",
@@ -178,6 +180,7 @@ characterTable = {
         },
     },
     [CT_LUIGI] = {
+        modData = get_active_mod(),
         saveName = "Luigi_CoopDX",
         nickname = "Luigi",
         category = "All_CoopDX",
@@ -192,6 +195,7 @@ characterTable = {
             bhv = {},
         },
         replaceTextures = {},
+        replaceSeq = {},
         [1] = {
             name = "Luigi",
             description = "The other iconic Italian plumber! He's a bit shy and scares easily, but he's willing to follow his brother Mario through any battle that may come their way!",
@@ -213,6 +217,7 @@ characterTable = {
         },
     },
     [CT_TOAD] = {
+        modData = get_active_mod(),
         saveName = "Toad_CoopDX",
         nickname = "Toad",
         category = "All_CoopDX",
@@ -227,6 +232,7 @@ characterTable = {
             bhv = {},
         },
         replaceTextures = {},
+        replaceSeq = {},
         [1] = {
             name = "Toad",
             description = "Princess Peach's little attendant! He's an energetic little mushroom that's never afraid to follow Mario and Luigi on their adventures!",
@@ -248,6 +254,7 @@ characterTable = {
         },
     },
     [CT_WALUIGI] = {
+        modData = get_active_mod(),
         saveName = "Waluigi_CoopDX",
         nickname = "Waluigi",
         category = "All_CoopDX",
@@ -262,6 +269,7 @@ characterTable = {
             bhv = {},
         },
         replaceTextures = {},
+        replaceSeq = {},
         [1] = {
             name = "Waluigi",
             description = "The mischievous rival of Luigi! He's a narcissistic competitor that takes great taste in others getting pummeled from his success!",
@@ -283,6 +291,7 @@ characterTable = {
         },
     },
     [CT_WARIO] = {
+        modData = get_active_mod(),
         saveName = "Wario_CoopDX",
         nickname = "Wario",
         category = "All_CoopDX",
@@ -297,6 +306,7 @@ characterTable = {
             bhv = {},
         },
         replaceTextures = {},
+        replaceSeq = {},
         [1] = {
             name = "Wario",
             description = "The mischievous rival of Mario! He's a greed-filled treasure hunter obsessed with money and gold coins. He's always ready for a brawl if his money is on the line!",
@@ -576,8 +586,8 @@ local function update_character_render_table()
                 log_to_console_once(tostring(b.ogNum) .. " - " .. tostring(b.sim), CONSOLE_MESSAGE_INFO)
                 return a.sim < b.sim
             end)
-            category.icon1 = category.icon1 or sorted[1].ogNum
-            category.icon2 = category.icon2 or sorted[2].ogNum
+            category.icon1 = category.icon1 or (sorted[1] and sorted[1].ogNum or nil)
+            category.icon2 = category.icon2 or (sorted[2] and sorted[2].ogNum or nil)
         end
         -- Set Character if they are in the category
         currChar = (characterTableRender[currCharRender] and characterTableRender[currCharRender].ogNum or characterTableRender[0].ogNum)
@@ -807,6 +817,14 @@ function failsafe_options()
     end
 end
 
+function autofill_categories()
+    for i = 0, #characterTable do
+        if characterTable[i].category == "All" then
+            character_set_category(i, string.gsub(characterTable[i].modData.name, "%[CS%]", ""))
+        end
+    end
+end
+
 hookTableOnReset = {}
 local promptedAreYouSure = false
 local function reset_options()
@@ -938,6 +956,7 @@ local prevVisualToggle = 1
 local function mario_update(m)
     if m.playerIndex == 0 and (startup_init_stall(1) or queueStorageFailsafe) then
         failsafe_options()
+        autofill_categories()
         if not queueStorageFailsafe then
             load_preferred_char()
             if optionTable[optionTableRef.notification].toggle == 1 then
@@ -1574,7 +1593,7 @@ local function on_hud_render()
         djui_hud_render_caution_tape(width*0.7, 40, width*1.1, 35, 1)
 
         djui_hud_set_font(FONT_CHARACTERISTIC)
-        local charName = string.upper(characterTable[currChar][characterTable[currChar].currAlt].name)
+        local charName = string.upper(characterTable[currChar].nickname)
         local nameScale = math.min(width*0.23/djui_hud_measure_text(charName), 1)
         local charCreator = string.upper(characterTable[currChar][characterTable[currChar].currAlt].credit)
         local creatorScale = math.min(width*0.23/djui_hud_measure_text(charCreator), 0.4)
@@ -1585,11 +1604,11 @@ local function on_hud_render()
         -- Palette Selection
         local charColor = characterTableRender[currCharRender][characterTableRender[currCharRender].currAlt].color
         local palettes = characterColorPresets[characterTableRender[currCharRender][characterTableRender[currCharRender].currAlt].model]
+        local bottomTapeAngle = angle_from_2d_points(-10, height - 50, width + 10, height - 35)
         if palettes then
             local bucketSpacing = 24
             paletteXOffset = lerp(paletteXOffset, palettes.currPalette*bucketSpacing, 0.1)
             paletteTrans = math.max(paletteTrans - 6, 0)
-            local bottomTapeAngle = angle_from_2d_points(-10, height - 50, width + 10, height - 35)
 
             for i = 0, #palettes do
                 local x = width*0.85 - 16 - paletteXOffset + coss(bottomTapeAngle)*bucketSpacing*i
@@ -1697,12 +1716,15 @@ local function on_hud_render()
                     local char = characterTableRender[i][currAlt]
                     local charName = charTable.nickname
                     local charAltName = char.name
-                    local charNameLength = djui_hud_measure_text(charName)
+                    local charNameLength = 0
+                    for iAlt = 1, #charTable do
+                        charNameLength = math.max(charNameLength, djui_hud_measure_text(charTable[iAlt].name))
+                    end
+                    local charAltNameLength = djui_hud_measure_text(charAltName)
                     local charColor = char.color
                     local x = -(math.abs(i - gridYOffset/buttonSpacing)^2)*5 + 32 - menuOffsetX*0.2 - optionsMenuOffset
                     local y = height*0.45 - buttonSpacing*0.5 + i*buttonSpacing - gridYOffset - menuOffsetY*0.2
-                    local segmentsMeasured = (math.ceil(((charNameLength*textScale + 16*scale))/(16*scale)))
-                    local segments = segmentsMeasured
+                    local segments = math.clamp(math.ceil(((charNameLength*textScale + 16*scale))/(16*scale)), 1, 15)
                     local charAltCount = #characterTableRender[i]
                     local channel = charTable.menuInst and tostring(math.floor(879 + hash(charTable.menuInst)%(1029 - 879))*0.1) .. " FM " or "---.- -- "
                     channel = channel .. tostring(math.ceil(charTable.playtime / totalPlaytime * 100)) .. "%"
@@ -1721,14 +1743,19 @@ local function on_hud_render()
                     -- Backlight
                     djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, 255)
                     djui_hud_render_rect(x + 96*scale, y + 24*scale, (128*scale + segments*16*scale), 80*scale)
+
                     -- Name Screen
+                    local nameDiff = math.max(0, charAltNameLength*textScale - (segments*16)*scale + 1)*0.5
+                    local nameScroll = math.round(((math.sin(get_global_timer()*0.02)))*nameDiff)
                     djui_hud_set_color(charColor.r*0.5, charColor.g*0.5, charColor.b*0.5, 255)
-                    djui_hud_print_text(charName, x + 112*scale + segments*16*scale*0.5 - charNameLength*textScale*0.5, y + 32*scale, textScale)
+                    djui_hud_set_scissor((x + 104*scale) * 320/djui_hud_get_screen_width(), 0, (x + 104*scale + (segments+1)*16*scale) * 320/djui_hud_get_screen_width(), height)
+                    djui_hud_print_text(charAltName, x + 112*scale + segments*16*scale*0.5 - charAltNameLength*textScale*0.5 + nameScroll, y + 32*scale, textScale)
+                    djui_hud_reset_scissor()
 
                     -- Bottom Info
                     djui_hud_render_rect(x + 112*scale, y + 84*scale, segments*16*scale, scale)
                     djui_hud_print_text(channel, x + 112*scale, y + 85*scale, 0.3*scale)
-                    djui_hud_print_text(charAltName, x + segments*16*scale + 112*scale - djui_hud_measure_text(charAltName)*0.3*scale, y + 85*scale, 0.3*scale)
+                    djui_hud_print_text(charName, x + segments*16*scale + 112*scale - djui_hud_measure_text(charName)*0.3*scale, y + 85*scale, 0.3*scale)
 
                     -- Icon
                     djui_hud_set_color(charColor.r, charColor.g, charColor.b, 150)
@@ -1759,6 +1786,7 @@ local function on_hud_render()
                     end
                 end
             end
+            djui_hud_set_scissor(0, 0, scissorWidth, height)
         else
             -- Render Character Grid
             local currRow = math.floor((currCharRender)/gridButtonsPerRow)
@@ -1950,33 +1978,39 @@ local function on_hud_render()
         djui_hud_reset_scissor()
 
         -- Render Character Description
-        djui_hud_set_rotation(angle_from_2d_points(-10, height - 50, width + 10, height - 35), 0, 0)
+        djui_hud_set_rotation(bottomTapeAngle, 0, 0)
         djui_hud_set_color(0, 0, 0, 255)
-        djui_hud_render_rect(-10, height - 50, width*1.5, 100)
-        djui_hud_set_rotation(0, 0, 0)
+        djui_hud_render_rect(-10, height - 45, width*1.5, 100)
 
-        djui_hud_set_font(FONT_TINY)
+        djui_hud_set_font(FONT_MENU)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         local credit = characterTable[currChar][characterTable[currChar].currAlt].credit
         local desc = characterTable[currChar][characterTable[currChar].currAlt].description
+        local descMeasure = djui_hud_measure_text(desc .. " - ")
         local descRender = desc .. " - " .. desc
-        while djui_hud_measure_text(descRender)*0.8 < width do
+        local scale = 0.25
+        while djui_hud_measure_text(descRender)*scale < width do
             descRender = descRender .. " - " .. desc
         end
         descRender = descRender .. " - " .. desc
-        djui_hud_print_text_interpolated(descRender, 5 - (get_global_timer()%djui_hud_measure_text(desc .. " - ") - 1)*0.8 - menuOffsetX*0.1, height - 25 + menuOffsetY*0.15, 0.8, 5 - get_global_timer()%djui_hud_measure_text(desc .. " - ")*0.8 - menuOffsetX*0.1, height - 25 + menuOffsetY*0.15, 0.8)
+        local prevDescX = ((get_global_timer()/scale)%descMeasure - 1)
+        local descX = ((get_global_timer()/scale)%descMeasure)
+        -- Main desc
+        djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
+        djui_hud_print_text_interpolated(descRender, 5 - prevDescX*coss(bottomTapeAngle)*scale - menuOffsetX*0.2, height + prevDescX*sins(bottomTapeAngle)*scale - 38 + menuOffsetY*0.2, scale,
+                                            5 - descX*coss(bottomTapeAngle)*scale - menuOffsetX*0.2, height + descX*sins(bottomTapeAngle)*scale - 38 + menuOffsetY*0.2, scale)
 
-        djui_hud_set_rotation(angle_from_2d_points(-10, height - 50, width + 10, height - 35), 0, 0)
         djui_hud_set_color(0, 0, 0, 255)
         djui_hud_render_rect(0, height - 45, width*0.3, 100)
         djui_hud_set_rotation(0, 0, 0)
 
+        djui_hud_set_font(FONT_SPECIAL)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
         local verString = get_lang_string("menu_version", MOD_VERSION_STRING)
         if seasonalEvent == SEASON_EVENT_BIRTHDAY then
             verString = verString .. " | " .. get_lang_string("menu_birthday", get_date_and_time().year - 123)
         end
-        djui_hud_print_text(verString, 2, height - 7, 0.4)
+        djui_hud_print_text(verString, width*0.3 + 5, height - 7, 0.2)
         local currMenu = gridMenu and MENU_BINDS_GRID or MENU_BINDS_DEFAULT
         if options == OPTIONS_MAIN then
             currMenu = MENU_BINDS_OPTIONS
@@ -1984,8 +2018,8 @@ local function on_hud_render()
             currMenu = MENU_BINDS_GRID
         end
         local bindInfo = TEXT_TABLE_MENU_BINDS[currMenu][math.floor(get_global_timer()/150)%(#TEXT_TABLE_MENU_BINDS[currMenu]) + 1]
-        djui_hud_print_text(bindInfo.bind, width*0.15 - djui_hud_measure_text(bindInfo.bind)*0.4, height - 35, 0.8)
-        djui_hud_print_text(get_lang_string(bindInfo.desc), width*0.15 - djui_hud_measure_text(get_lang_string(bindInfo.desc))*0.4, height - 25, 0.8)
+        djui_hud_print_text(bindInfo.bind, width*0.15 - djui_hud_measure_text(bindInfo.bind)*0.2, height - 32, 0.4)
+        djui_hud_print_text(get_lang_string(bindInfo.desc), width*0.15 - djui_hud_measure_text(get_lang_string(bindInfo.desc))*0.15, height - 20, 0.3)
 
         -- API Rendering (Above Text)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
