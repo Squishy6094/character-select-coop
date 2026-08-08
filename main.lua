@@ -109,17 +109,15 @@ LOCKED_NEVER = 0
 LOCKED_TRUE = 1
 LOCKED_FALSE = 2
 
-local SOUND_CHAR_SELECT_THEME = audio_stream_load("char_select_menu_theme.ogg")
-local SOUND_CHAR_SELECT_DIAL = audio_stream_load("char_select_dial_wind.ogg")
+local SOUND_CHAR_SELECT_THEME = audio_load("char_select_menu_theme.ogg", MA_TYPE_STREAM)
+audio_set_loop_points(SOUND_CHAR_SELECT_THEME, 0, 2065181)
+local SOUND_CHAR_SELECT_DIAL = audio_load("char_select_dial_wind.ogg")
+SOUND_CHAR_SELECT_DIAL.volume = 0.75
 local SOUND_CHAR_SELECT_TV_ON = audio_sample_load("char_select_tv_on.ogg")
-local SOUND_CHAR_SELECT_TURN_SIGNAL = audio_stream_load("char_select_turn_signal.ogg")
+local SOUND_CHAR_SELECT_TURN_SIGNAL = audio_load("char_select_turn_signal.ogg")
+SOUND_CHAR_SELECT_TURN_SIGNAL.looping = true
 local menuThemeTargetVolume = 0
 local menuThemeVolume = menuThemeTargetVolume
-audio_stream_set_looping(SOUND_CHAR_SELECT_THEME, true)
-audio_stream_set_loop_points(SOUND_CHAR_SELECT_THEME, 0, 93.659*22050)
-audio_stream_set_looping(SOUND_CHAR_SELECT_TURN_SIGNAL, true)
-audio_stream_set_volume_channel(SOUND_CHAR_SELECT_DIAL, MOD_AUDIO_CHANNEL_SFX)
-audio_stream_set_volume_channel(SOUND_CHAR_SELECT_TURN_SIGNAL, MOD_AUDIO_CHANNEL_SFX)
 
 CS_ANIM_MENU = CHAR_ANIM_MAX + 1
 
@@ -574,7 +572,7 @@ local function update_character_render_table()
             end
         end
     end
-    
+
     if characterTableRender[0] ~= nil then
         -- Get icons for category based on name similarity
         if category.icon1 == nil or (category.icon2 == nil and #characterTableRender > 0) then
@@ -611,7 +609,7 @@ hookTableOnCharacterChange = {
 
         -- Reset anim to ensure Custom Anims don't leak
         m.marioObj.header.gfx.animInfo.animID = -1
-        
+
         if m.action & ACT_FLAG_RIDING_SHELL ~= 0 then
             set_mario_action(m, ACT_RIDING_SHELL_FALL, 0)
         elseif m.action & ACT_FLAG_ALLOW_FIRST_PERSON ~= 0 then
@@ -950,7 +948,7 @@ local worldColor = {
     ambient = {r = 255, g = 255, b = 255}
 }
 local menuOffsetX = 0
-local menuOffsetY = 0 
+local menuOffsetY = 0
 local camScale = 1
 local prevMusicToggle = 1
 local prevVisualToggle = 1
@@ -967,7 +965,7 @@ local function mario_update(m)
         end
         queueStorageFailsafe = false
     end
-    
+
     local np = gNetworkPlayers[m.playerIndex]
     local p = gCSPlayers[m.playerIndex]
 
@@ -1007,7 +1005,7 @@ local function mario_update(m)
             update_character_render_table()
         end
 
-        if djui_hud_is_pause_menu_created() then     
+        if djui_hud_is_pause_menu_created() then
             if prevBaseCharFrame ~= np.modelIndex then
                 force_set_character(np.modelIndex)
                 p.presetPalette = 0
@@ -1067,8 +1065,8 @@ local function mario_update(m)
                 if musicToggle == 0 then
                     levelMusic = true
                 end
-                audio_stream_play(SOUND_CHAR_SELECT_THEME, false, 0)
-                audio_stream_play(SOUND_CHAR_SELECT_TURN_SIGNAL, false, 0)
+                SOUND_CHAR_SELECT_THEME:play()
+                SOUND_CHAR_SELECT_TURN_SIGNAL:play()
                 if musicToggle ~= 0 and musicToggle ~= 3 then
                     menuThemeTargetVolume = 1
                     levelMusic = false
@@ -1079,7 +1077,7 @@ local function mario_update(m)
                 -- Set Target Volumes
                 for _, inst in pairs(characterInstrumentals) do
                     if inst ~= nil then
-                        audio_stream_play(inst.audio, false, 1)
+                        inst.audio:play()
                         inst.targetVolume = 0
                     end
                 end
@@ -1103,12 +1101,12 @@ local function mario_update(m)
 
             -- Update Volumes
             menuThemeVolume = math.lerp(menuThemeVolume, menuThemeTargetVolume, 0.1)
-            audio_stream_set_volume(SOUND_CHAR_SELECT_THEME, menuThemeVolume)
+            SOUND_CHAR_SELECT_THEME.volume = menuThemeVolume
 
             for _, inst in pairs(characterInstrumentals) do
                 if inst ~= nil then
                     inst.volume = math.lerp(inst.volume, inst.targetVolume, 0.1)
-                    audio_stream_set_volume(inst.audio, inst.volume)
+                    inst.audio.volume = inst.volume
                 end
             end
 
@@ -1159,11 +1157,11 @@ local function mario_update(m)
             set_vertex_color(2, menuColor.b * worldColor.lighting.b/255)
         else
             if p.inMenu then
-                audio_stream_stop(SOUND_CHAR_SELECT_THEME)
-                audio_stream_stop(SOUND_CHAR_SELECT_TURN_SIGNAL)
+                SOUND_CHAR_SELECT_THEME:stop()
+                SOUND_CHAR_SELECT_TURN_SIGNAL:stop()
                 for _, inst in pairs(characterInstrumentals) do
                     if inst ~= nil then
-                        audio_stream_stop(inst.audio)
+                        inst.audio:stop()
                     end
                 end
                 stop_secondary_music(50)
@@ -1525,7 +1523,7 @@ end
 local function reload_health_meters()
     for i, c in pairs(characterTable) do
         for j, a in ipairs(c) do -- ipairs because alts use number indices
-            if type(a.healthMeter) == "table" then    
+            if type(a.healthMeter) == "table" then
                 for k, t in pairs(a.healthMeter.label) do
                     a.healthMeter.label[k] = get_texture_info(t.name)
                 end
@@ -1663,11 +1661,11 @@ local function on_hud_render()
         -- Render Z Alt Switch
         djui_hud_set_filter(FILTER_LINEAR)
         altSwitchX = math.lerp(altSwitchX, prevZState and 15 or 0, 0.4)
-        audio_stream_set_volume(SOUND_CHAR_SELECT_TURN_SIGNAL, (prevZState and altSwitchX > 14) and 0.5 or 0)
+        SOUND_CHAR_SELECT_TURN_SIGNAL.volume = (prevZState and altSwitchX > 14) and 0.5 or 0
         djui_hud_set_color(menuColorTint.r, menuColorTint.g, menuColorTint.b, 255)
         djui_hud_render_texture(TEX_ALT_SWITCH, width*0.74 + altSwitchX, height*0.77, 0.3, 0.3)
         djui_hud_set_filter(FILTER_NEAREST)
-    
+
         -- Render Background Wall
         local wallWidth = TEX_WALL_LEFT.width
         local wallHeight = TEX_WALL_LEFT.height
@@ -1675,17 +1673,17 @@ local function on_hud_render()
         local wallMiddle = width*(0.35 - ((optionsMenuOffset - optionsMenuOffsetMax*0.5)/optionsMenuOffsetMax)*0.3)
         local x = wallMiddle - wallWidth*wallScale*0.5 - menuOffsetX
         local y = height*0.42 - wallHeight*wallScale*0.5 - menuOffsetY
-        local scissorWidth = math.max(320/djui_hud_get_screen_width(), 1)*320*0.7 -- Ensure Wall Space doesn't break when under 4:3
+        local scissorWidth = width*0.7
         djui_hud_set_scissor(0, 0, scissorWidth, height)
         djui_hud_set_color(playerShirt.r, playerShirt.g, playerShirt.b, 255)
         djui_hud_render_texture_auto_interpolated("wall-l", TEX_WALL_LEFT, x, y, wallScale, wallScale)
         djui_hud_set_color(playerPants.r, playerPants.g, playerPants.b, 255)
         djui_hud_render_texture_auto_interpolated("wall-r", TEX_WALL_RIGHT, x, y, wallScale, wallScale)
-        
+
         -- Render Graffiti
         local graffiti = characterGraffiti[currChar] or TEX_GRAFFITI_DEFAULT
-        local graffitiWidthScale = 120/graffiti.width 
-        local graffitiHeightScale = 120/graffiti.width 
+        local graffitiWidthScale = 120/graffiti.width
+        local graffitiHeightScale = 120/graffiti.width
         djui_hud_set_color(255, 255, 255, 150)
         djui_hud_render_texture_auto_interpolated("graffiti", graffiti, wallMiddle - graffiti.width*0.5*graffitiWidthScale - menuOffsetX, height*0.5 - graffiti.height*0.5*graffitiHeightScale - menuOffsetY, graffitiWidthScale, graffitiHeightScale)
 
@@ -1704,7 +1702,7 @@ local function on_hud_render()
         local scale = 0.35
         local textScale = scale*1.5
         local buttonSpacing = 32
-        
+
         if not gridMenu then
             -- Render Character List
             local prevGridY = gridYOffset
@@ -2008,14 +2006,14 @@ local function on_hud_render()
 
         djui_hud_set_font(FONT_SPECIAL)
         djui_hud_set_color(menuColor.r, menuColor.g, menuColor.b, 255)
-        local verString = get_lang_string("menu_version", MOD_VERSION_STRING) 
+        local verString = get_lang_string("menu_version", MOD_VERSION_STRING)
         if seasonalEvent == SEASON_EVENT_BIRTHDAY then
             verString = verString .. " | " .. get_lang_string("menu_birthday", get_date_and_time().year - 123)
         end
         djui_hud_print_text(verString, width*0.3 + 5, height - 7, 0.2)
         local currMenu = gridMenu and MENU_BINDS_GRID or MENU_BINDS_DEFAULT
         if options == OPTIONS_MAIN then
-            currMenu = MENU_BINDS_OPTIONS 
+            currMenu = MENU_BINDS_OPTIONS
         elseif options == OPTIONS_CREDITS then
             currMenu = MENU_BINDS_GRID
         end
@@ -2188,7 +2186,7 @@ local function before_mario_update(m)
                     until update_character_render_table()
                     gearRotationTarget = gearRotationTarget + 0x10000/#characterCategories
                     categoryOpenTimer = 150
-                    
+
                     play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
                 end
             )
@@ -2217,7 +2215,7 @@ local function before_mario_update(m)
                     play_sound(SOUND_MENU_CAMERA_TURN, cameraToObject)
                 end
             )
-            
+
             if not gridMenu then
                 -- List Controls
                 run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
@@ -2246,8 +2244,8 @@ local function before_mario_update(m)
                         function ()
                             character.currAlt = num_wrap(character.currAlt + 1, 1, #character)
                             characterTableRender[currCharRender].dialAnim = characterTableRender[currCharRender].dialAnim - 10
-                            audio_stream_set_frequency(SOUND_CHAR_SELECT_DIAL, math.random(20, 80)*0.01 + 0.5)
-                            audio_stream_play(SOUND_CHAR_SELECT_DIAL, true, 0.75)
+                            SOUND_CHAR_SELECT_DIAL.frequency = math.random(20, 80)*0.01 + 0.5
+                            SOUND_CHAR_SELECT_DIAL:play()
 
                             -- Try to get same palette
                             local prevPaletteName = ""
@@ -2279,8 +2277,8 @@ local function before_mario_update(m)
                         function ()
                             character.currAlt = num_wrap(character.currAlt - 1, 1, #character)
                             characterTableRender[currCharRender].dialAnim = characterTableRender[currCharRender].dialAnim + 10
-                            audio_stream_set_frequency(SOUND_CHAR_SELECT_DIAL, math.random(20, 80)*0.01 + 0.5)
-                            audio_stream_play(SOUND_CHAR_SELECT_DIAL, true, 0.75)
+                            SOUND_CHAR_SELECT_DIAL.frequency = math.random(20, 80)*0.01 + 0.5
+                            SOUND_CHAR_SELECT_DIAL:play()
 
                             -- Try to get same palette
                             local prevPaletteName = ""
@@ -2307,7 +2305,7 @@ local function before_mario_update(m)
                         end
                     )
                 end
-            
+
             else
                 -- Grid Controls
                 run_func_with_condition_and_cooldown(FUNC_INDEX_VERTICAL,
@@ -2341,15 +2339,15 @@ local function before_mario_update(m)
                         play_sound(SOUND_MENU_MESSAGE_NEXT_PAGE, cameraToObject)
                     end
                 )
-                
+
                 -- Alt switcher
                 if #characterTable[currChar] > 1 then
                     run_func_with_condition_and_cooldown(FUNC_INDEX_ALT,
                         (controller.buttonPressed & R_CBUTTONS) ~= 0,
                         function ()
                             character.currAlt = num_wrap(character.currAlt + 1, 1, #character)
-                            audio_stream_set_frequency(SOUND_CHAR_SELECT_DIAL, math.random(20, 80)*0.01 + 0.5)
-                            audio_stream_play(SOUND_CHAR_SELECT_DIAL, true, 0.75)
+                            SOUND_CHAR_SELECT_DIAL.frequency = math.random(20, 80)*0.01 + 0.5
+                            SOUND_CHAR_SELECT_DIAL:play()
                         end
                     )
 
@@ -2357,8 +2355,8 @@ local function before_mario_update(m)
                         (controller.buttonPressed & L_CBUTTONS) ~= 0,
                         function ()
                             character.currAlt = num_wrap(character.currAlt - 1, 1, #character)
-                            audio_stream_set_frequency(SOUND_CHAR_SELECT_DIAL, math.random(20, 80)*0.01 + 0.5)
-                            audio_stream_play(SOUND_CHAR_SELECT_DIAL, true, 0.75)
+                            SOUND_CHAR_SELECT_DIAL.frequency = math.random(20, 80)*0.01 + 0.5
+                            SOUND_CHAR_SELECT_DIAL:play()
                         end
                     )
                 end
@@ -2579,7 +2577,7 @@ local function chat_command(msg)
         return true
     end
 
-    -- Stop Character checks if API disallows it 
+    -- Stop Character checks if API disallows it
     if not menu_is_allowed() or charBeingSet then
         djui_chat_message_create(get_lang_string("menu_char_cannot_change"))
         return true

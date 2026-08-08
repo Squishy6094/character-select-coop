@@ -15,11 +15,11 @@ local stallSayLine = 5
 characterVoices = {
     [E_MODEL_WALUIGI] = {
         [CHAR_SOUND_OKEY_DOKEY] =        audio_sample_load('0B_waluigi_okey_dokey.aiff'),
-        [CHAR_SOUND_LETS_A_GO] =         audio_sample_load('1A_waluigi_lets_a_go.aiff'), 
-        [CHAR_SOUND_GAME_OVER] =         audio_sample_load('11_waluigi_game_over.aiff'), 
-        [CHAR_SOUND_PUNCH_YAH] =         audio_sample_load('08_waluigi_punch_yah.aiff'), 
+        [CHAR_SOUND_LETS_A_GO] =         audio_sample_load('1A_waluigi_lets_a_go.aiff'),
+        [CHAR_SOUND_GAME_OVER] =         audio_sample_load('11_waluigi_game_over.aiff'),
+        [CHAR_SOUND_PUNCH_YAH] =         audio_sample_load('08_waluigi_punch_yah.aiff'),
         [CHAR_SOUND_PUNCH_WAH] =         audio_sample_load('01_waluigi_jump_wah.aiff'),
-        [CHAR_SOUND_PUNCH_HOO] =         audio_sample_load('09_waluigi_punch_hoo.aiff'), 
+        [CHAR_SOUND_PUNCH_HOO] =         audio_sample_load('09_waluigi_punch_hoo.aiff'),
         [CHAR_SOUND_YAH_WAH_HOO] =       {audio_sample_load('00_waluigi_jump_hoo.aiff'), audio_sample_load('01_waluigi_jump_wah.aiff'), audio_sample_load('02_waluigi_yah.aiff')},
         [CHAR_SOUND_HOOHOO] =            audio_sample_load('01_waluigi_hoohoo.aiff'),
         [CHAR_SOUND_YAHOO_WAHA_YIPPEE] = {audio_sample_load('04_waluigi_yahoo.aiff'), audio_sample_load('18_waluigi_waha.aiff'), audio_sample_load('19_waluigi_yippee.aiff')},
@@ -133,7 +133,7 @@ end
 local function play_sound_with_reverb(sample, pos, baseVolume, reverbAmount)
     if is_game_paused() or optionTable[optionTableRef.localVoices].toggle == 0 then return end
     -- Play the original sample
-    audio_sample_play(sample, pos, baseVolume)
+    sample:play(pos, baseVolume)
 
     -- Define simple fake reverb delays and volume reductions
     local echoDelays = { 0.1, 0.2, 0.35, 0.5 }
@@ -148,7 +148,7 @@ local function play_sound_with_reverb(sample, pos, baseVolume, reverbAmount)
         table.insert(stalledAudio, {
             path = sample.filepath,
             frame = (get_global_timer() + math.floor(echoDelays[i]*30)),
-            sample = sample, 
+            sample = sample,
             pos = pos,
             volume = echoVolumes[i]
         })
@@ -160,15 +160,7 @@ end
 local function stop_sound_with_reverb(sample)
     if sample == nil then return end
     if type(sample) == TYPE_INTEGER then return end
-    audio_sample_stop(sample)
-    if #stalledAudio > 0 then
-        for i = #stalledAudio, 1, -1 do
-            if stalledAudio[i] ~= nil and stalledAudio[i].path == sample.filepath then
-                audio_sample_stop(stalledAudio[i].sample)
-                table.remove(stalledAudio, i)
-            end
-        end
-    end
+    sample:stop()
 end
 
 local function stop_all_custom_character_sounds()
@@ -263,7 +255,7 @@ function custom_character_sound(m, sound, pos)
     else
         reverbAmount = levelReverbs[np.currLevelNum][1]/127
     end
-    
+
     play_sound_with_reverb(playerSample[index], position, baseVolume, reverbAmount)
 
     return NO_SOUND
@@ -288,7 +280,7 @@ function custom_character_snore(m)
         for i = 1, #stalledAudio do
             if stalledAudio[i] ~= nil and stalledAudio[i].frame <= get_global_timer() then
                 local voice = stalledAudio[i]
-                audio_sample_play(voice.sample, voice.pos, voice.volume)
+                voice.sample:play(voice.pos, voice.volume)
                 table.remove(stalledAudio, i)
             end
         end
@@ -306,7 +298,7 @@ function custom_character_snore(m)
     if voiceTable == nil then return end
     -- Check empty table for no sound
     if voiceTable == nil then return NO_SOUND end
-    
+
     local snoreTable = character_get_sound(m, CHAR_SOUND_SNORING3)
     if snoreTable == nil or snoreTable._pointer ~= nil then
         snoreTable = {}
@@ -383,7 +375,7 @@ cs_hook_mario_update(mario_update)
 
 -- Peach Line Replacements
 ---@param soundbits integer
----@param pos Vec3f 
+---@param pos Vec3f
 local function on_play_sound(soundbits,pos)
     local endpeachsoundtable = {[SOUND_PEACH_MARIO] = true,[SOUND_PEACH_POWER_OF_THE_STARS] = true,[SOUND_PEACH_THANKS_TO_YOU] = true, [SOUND_PEACH_THANK_YOU_MARIO] = true,[SOUND_PEACH_SOMETHING_SPECIAL] = true,[SOUND_PEACH_BAKE_A_CAKE] = true,[SOUND_PEACH_FOR_MARIO] = true,[SOUND_PEACH_MARIO2] = true}
     local m = gMarioStates[0]
