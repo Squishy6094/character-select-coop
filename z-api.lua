@@ -674,10 +674,13 @@ end
 
 ---@description A function that gets the current character's palette data
 ---@added 1.12
+---@param model ModelExtendedId|integer? The model you want to pull from
+---@param paletteNum integer? The palette you want to pull from
 ---@return table?
-local function character_get_current_palette()
-    local model = characterTable[currChar][characterTable[currChar].currAlt].model
-    return characterColorPresets[model] ~= nil and characterColorPresets[model][gCSPlayers[0].presetPalette] or nil
+local function character_get_current_palette(model, paletteNum)
+    model = model or characterTable[currChar][characterTable[currChar].currAlt].model
+    paletteNum = paletteNum or (characterColorPresets[model] and characterColorPresets[model].currPalette or 0)
+    return characterColorPresets[model] ~= nil and characterColorPresets[model][paletteNum] or nil
 end
 
 ---@description A function that gets the current character's palette number
