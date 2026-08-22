@@ -1323,6 +1323,7 @@ function set_model(o, model, extendedModel, charNum)
     -- Player Models
     if obj_has_behavior_id(o, id_bhvMario) ~= 0 then
         local i = network_local_index_from_global(o.globalPlayerIndex)
+        if not gCSPlayers[i] then return end
         local localModelData = nil
         for c = 0, #characterTable do
             if gCSPlayers[i].saveName == characterTable[c].saveName then
