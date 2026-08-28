@@ -1423,7 +1423,13 @@ function set_all_visuals(charNum)
 end
 
 cs_hook_mario_update(mario_update)
-hook_event(HOOK_ON_SYNC_VALID, set_all_visuals)
+
+local function on_sync_valid()
+    set_all_visuals()
+    update_character_render_table()
+end
+
+hook_event(HOOK_ON_SYNC_VALID, on_sync_valid)
 
 ------------------
 -- Menu Handler --
@@ -2533,7 +2539,8 @@ end
 -- Menu Inputs
 local function update()
     local m = gMarioStates[0]
-    if is_game_paused() and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and (m.controller.buttonPressed & Z_TRIG) ~= 0 then
+    if not menu and is_game_paused() and m.action ~= ACT_EXIT_LAND_SAVE_DIALOG and (m.controller.buttonPressed & Z_TRIG) ~= 0 then
+        update_character_render_table()
         menu = true
     end
 
