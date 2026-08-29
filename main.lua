@@ -979,9 +979,6 @@ local function mario_update(m)
         local unlockedChars = 0
         for i = 0, #characterTable do
             local char = characterTable[i]
-            if char.locked ~= LOCKED_TRUE then
-                unlockedChars = unlockedChars + 1
-            end
             if char.locked ~= LOCKED_NEVER then
                 local unlock = characterUnlock[i].check
                 local notif = characterUnlock[i].notif
@@ -997,6 +994,9 @@ local function mario_update(m)
                         end
                     end
                 end
+            end
+            if char.locked ~= LOCKED_TRUE then
+                unlockedChars = unlockedChars + 1
             end
         end
 
