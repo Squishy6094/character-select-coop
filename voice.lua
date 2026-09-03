@@ -188,7 +188,10 @@ end
 
 local playerSample = {}
 for i = 0, MAX_PLAYERS - 1 do
-    playerSample[i] = nil
+    playerSample[i] = {
+        sound = nil,
+        model = E_MODEL_MARIO,
+    }
 end
 
 local characterAddonSounds = {
@@ -203,6 +206,7 @@ local characterAddonSounds = {
 function custom_character_sound(m, sound, pos)
     local np = gNetworkPlayers[m.playerIndex]
     local voiceTable = character_get_voice(m)
+    local voiceModel = gCSPlayers[m.playerIndex].modelId
     local voiceToggle = optionTable[optionTableRef.localVoices].toggle
     local voiceOff = (voiceToggle == 0 or (voiceToggle == 2 and m.playerIndex ~= 0))
     local index = m.playerIndex
@@ -226,21 +230,22 @@ function custom_character_sound(m, sound, pos)
 
     -- Load the appropriate sample
     local voice = character_get_sound(m, sound)
+    if voiceModel == playerSample[index].model then
+        stop_sound_with_reverb(playerSample[index].sound)
+    end
     if voice == nil then
-        stop_sound_with_reverb(playerSample[index])
         return NO_SOUND
     elseif type(voice) == TYPE_INTEGER then
         if voice == 0 then
             return 0
         else
             play_sound(voice, m.marioObj.header.gfx.cameraToObject)
-            stop_sound_with_reverb(playerSample[index])
             return NO_SOUND
         end
     else
-        stop_sound_with_reverb(playerSample[index])
-        playerSample[index] = voice
+        playerSample[index].sound = voice
     end
+    playerSample[index].model = voiceModel
 
     -- Play the sample
     -- Volume based on sound type
@@ -264,7 +269,7 @@ function custom_character_sound(m, sound, pos)
         reverbAmount = levelReverbs[np.currLevelNum][1]/127
     end
     
-    play_sound_with_reverb(playerSample[index], position, baseVolume, reverbAmount)
+    play_sound_with_reverb(playerSample[index].sound, position, baseVolume, reverbAmount)
 
     return NO_SOUND
 end
