@@ -1611,6 +1611,9 @@ local function on_hud_render()
         djui_hud_print_text_auto_interpolated("topCreator", charCreator, width*0.85 - djui_hud_measure_text(charCreator)*0.5*creatorScale - 2 + menuOffsetX*0.2, 42 - 16*creatorScale + menuOffsetY*0.2, creatorScale)
 
         -- Palette Selection
+        if not characterTableRender[currCharRender] then
+            update_character_render_table()
+        end
         local charColor = characterTableRender[currCharRender][characterTableRender[currCharRender].currAlt].color
         local palettes = characterColorPresets[characterTableRender[currCharRender][characterTableRender[currCharRender].currAlt].model]
         local bottomTapeAngle = angle_from_2d_points(-10, height - 50, width + 10, height - 35)
@@ -2533,6 +2536,9 @@ local function before_mario_update(m)
     end
 
     -- Checks
+    if not characterTableRender[currCharRender] then
+        update_character_render_table()
+    end
     currChar = characterTableRender[currCharRender].ogNum
 end
 
