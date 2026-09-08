@@ -866,7 +866,6 @@ end
 ---@param width integer Verticle Position on screen (Dispite Variable Name)
 ---@param text string Dialog to be replaced with
 local function character_replace_dialog(charNum, dialogId, unused, linesPerBox, leftOffset, width, text)
-    if modded == nil then modded = true end
     characterDialog[charNum][dialogId] = {
         unused = unused,
         linesPerBox = linesPerBox,

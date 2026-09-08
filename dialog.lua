@@ -16,7 +16,7 @@ local function dialog_update(dialogId)
     -- Check for Override Dialog and use it instead
     local colorDialog = false
     if characterDialog[currChar] ~= nil and characterDialog[currChar][dialogId] ~= nil then
-        dialog = characterDialog[currChar][dialogId]
+        dialogText = characterDialog[currChar][dialogId].text
         colorDialog = true
     elseif charAuto then
         colorDialog = dialogText:find(DEFAULT_DIALOG_NAME) ~= nil
