@@ -450,25 +450,11 @@ local function character_add_texture_replacement(charNum, textureName, overrideT
     characterTable[charNum].replaceTextures[textureName] = overrideTexInfo
 end
 
-local sSequenceCount = SEQ_COUNT + 16
-
----@description Allocates a sequence via character select, ensuring your sequence isn't overwritten
----@added 1.17
----@param bankId integer
----@param defaultVolume integer
----@param m64Name string
-local function character_allocate_sequence_id(bankId, defaultVolume, m64Name)
-    local allocateID = sSequenceCount
-    smlua_audio_utils_replace_sequence(allocateID, bankId, defaultVolume, m64Name)
-    sSequenceCount = sSequenceCount + 1
-    return allocateID
-end
-
 ---@description A function that replaces a texture with your own
 ---@added 1.17
 ---@param charNum integer Character ID
 ---@param sequenceId integer The original Sequence ID you want to replace
----@param replaceId integer|function Your own allocated sequence to replace with. (Refer to character_allocate_sequence_id)
+---@param replaceId integer|ModAudio|function Your own allocated sequence to replace with.
 local function character_add_sequence_replacement(charNum, sequenceId, replaceId)
     characterTable[charNum].replaceSeq[sequenceId] = replaceId
 end
@@ -1241,7 +1227,6 @@ _G.charSelect = {
     character_get_caps = character_get_caps,
     character_add_model_replacement = character_add_model_replacement,
     character_add_texture_replacement = character_add_texture_replacement,
-    character_allocate_sequence_id = character_allocate_sequence_id,
     character_add_sequence_replacement = character_add_sequence_replacement,
     character_add_celebration_star = character_add_celebration_star,
     character_add_peach_custom = character_add_peach_custom,
