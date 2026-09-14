@@ -18,6 +18,11 @@ return {
     menu_char_cannot_change = "Character Cannot be Changed",
     menu_char_set = 'Character set to "%s" Successfully!',
     menu_char_not_found = "Character Not Found",
+    menu_option_not_found = "Option Not Found",
+    menu_option_locked = "Option is Locked, %s",
+    menu_option_must_be_number = "Option must be set to a Number between %d and %d",
+    menu_option_help = "Character Select's Option Commands:",
+    menu_option_set = "Set Option %s to %s",
     menu_curr_char = "Current Character: ",
     menu_boot = "Character Select has %d characters available!\nYou can use \\#ffff33\\/char-select \\#ffffff\\or \\#ffff33\\Z Button while Paused \\#ffffff\\\nto open the menu!",
     menu_boot_no_chars = "Character Select is active!\nYou can use \\#ffff33\\/char-select \\#ffffff\\or \\#ffff33\\Z Button while Paused \\#ffffff\\\nto open the menu!",
@@ -49,6 +54,7 @@ return {
         "\n\\#ffff33\\/char-select help\\#ffffff\\ - Returns Avalible Commands" ..
         "\n\\#ffff33\\/char-select menu\\#ffffff\\ - Opens the Menu" ..
         "\n\\#ffff33\\/char-select [name/num]\\#ffffff\\ - Switches to Character" ..
+        "\n\\#ffff33\\/char-select options\\#ffffff\\ - Toggles an Option" ..
         "\n\\#ff3333\\/char-select reset\\#ffffff\\ - Resets your Save Data",
     menu_reset_are_you_sure = "\\#ffdcdc\\Are you sure you want to reset your Save Data for Character Select, including your Preferred Character\nand Settings?\n\nType \\#ff3333\\/char-select reset\\#ffdcdc\\ or toggle \\#ff3333\\Reset Save Data\\#ffdcdc\\ to confirm.",
     menu_reset_done = "\\#ff3333\\Character Select Save Data Reset!\\#ffffff\\\n\nNote: If your issue has not been resolved, you may need to manually delete your save data via the directory below:\n\\#dcdcFF\\%appdata%/sm64coopdx/sav/character-select-coop.sav",
@@ -88,7 +94,7 @@ return {
     char_voices_desc3 = "",
     char_visuals_desc1 = "Toggle if Characters can",
     char_visuals_desc2 = "change the apperence of",
-    char_visuals_desc3 = "Objects and Textures.",
+    char_visuals_desc3 = "Objects, Textures, and Music.",
     char_moveset_desc1 = "Toggles if Custom Movesets",
     char_moveset_desc2 = "are active on compatible",
     char_moveset_desc3 = "characters.",

@@ -535,7 +535,8 @@ optionTable = {
         toggleDefault = 0,
         toggleMax = 1,
         toggleNames = {"reset_save_data", "reset_save_data"},
-        description = {"reset_save_data_desc1", "reset_save_data_desc2"}
+        description = {"reset_save_data_desc1", "reset_save_data_desc2"},
+        noCommand = true,
     },
     [optionTableRef.credits] = {
         name = "credits",
@@ -544,7 +545,8 @@ optionTable = {
         toggleDefault = 0,
         toggleMax = 1,
         toggleNames = {"open_credits", "open_credits"},
-        description = {"credits_desc1", "credits_desc2"}
+        description = {"credits_desc1", "credits_desc2"},
+        noCommand = true,
     },
 }
 
@@ -2569,6 +2571,7 @@ promptedAreYouSure = false
 
 local function chat_command(msg)
     msg = string.lower(msg)
+    msgSplit = string_split(msg)
 
     -- Open Menu Check
     if (msg == "" or msg == "menu") then
@@ -2584,6 +2587,67 @@ local function chat_command(msg)
     -- Help Prompt Check
     if msg == "?" or msg == "help" then
         djui_chat_message_create(get_lang_string("menu_help"))
+        return true
+    end
+
+    if msgSplit[1] == "options" then
+        if msgSplit[2] == "?" then
+            djui_chat_message_create(get_lang_string("menu_option_help"))
+            local helpString = ""
+            for i = 1, #optionTable do
+                if not optionTable[i].noCommand then
+                    local optionName = string.lower(string_space_to_underscore(optionTable[i].name))
+                    local optionDescription = ""
+                    for d = 1, #optionTable[i].description do
+                        optionDescription = optionDescription..get_lang_string(optionTable[i].description[d]).." "
+                    end
+                    helpString = helpString.."\n\\#ffff33\\/char-select options "..optionName
+                    if optionDescription ~= "" then
+                        helpString = helpString.."\\#ffffff\\ - "..optionDescription
+                    end
+                    if i%5 == 0 then
+                        djui_chat_message_create(get_lang_string(string.gsub(helpString, "\n", "", 1)))
+                        helpString = ""
+                    end
+                end
+            end
+            if helpString ~= "" then
+                djui_chat_message_create(get_lang_string(string.gsub(helpString, "\n", "", 1)))
+            end
+            return true
+        end
+
+        local optionNum = tonumber(msgSplit[2])
+        if not optionNum then
+            for i = 1, #optionTable do
+                if string.lower(string_space_to_underscore(optionTable[i].name)) == msgSplit[2] then
+                    optionNum = i
+                    break
+                end
+            end
+        end
+        if not optionNum or optionTable[optionNum].noCommand then
+            djui_chat_message_create(get_lang_string("menu_option_not_found"))
+            return true
+        end
+        local locked = optionTable[optionNum].lock ~= nil and optionTable[optionNum].lock() or nil
+        if locked ~= nil then
+            djui_chat_message_create(get_lang_string("menu_option_locked", get_lang_string(locked)))
+            return true
+        end
+        local optionSet = tonumber(msgSplit[3])
+        if not optionSet or optionSet < 0 or optionSet > optionTable[optionNum].toggleMax then
+            djui_chat_message_create(get_lang_string("menu_option_must_be_number", 0, optionTable[optionNum].toggleMax))
+            return true
+        end
+        optionTable[optionNum].toggle = optionSet
+        if optionTable[optionNum].toggleSaveName ~= nil then
+            mod_storage_save(optionTable[optionNum].toggleSaveName, tostring(optionTable[optionNum].toggle))
+        end
+        if optionTable[optionNum].hook then
+            optionTable[optionNum].hook(optionTable[optionNum].toggle)
+        end
+        djui_chat_message_create(get_lang_string("menu_option_set", get_lang_string(optionTable[optionNum].name), get_lang_string(optionTable[optionNum].toggleNames[optionSet + 1])))
         return true
     end
 
@@ -2614,7 +2678,6 @@ local function chat_command(msg)
     end
 
     -- Number Check
-    msgSplit = string_split(msg)
     if tonumber(msgSplit[1]) then
         local charNum = tonumber(msgSplit[1])
         local altNum = tonumber(msgSplit[2])
