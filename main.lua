@@ -880,8 +880,9 @@ local function menu_is_allowed(m)
     if m == nil then m = gMarioStates[0] end
     -- API Check
     for _, func in pairs(allowMenu) do
-        if not func() then
-            return false
+        local allowed, reason = func()
+        if not allowed then
+            return allowed, reason
         end
     end
 
@@ -2093,9 +2094,17 @@ local function on_hud_render()
         djui_hud_set_resolution(RESOLUTION_DJUI)
         djui_hud_set_font(FONT_USER)
         local currCharY = 27
-        local text = (not easterEggDynOS
-        and (menu_is_allowed() and "[Z] " .. get_lang_string("button") .. " - " .. get_lang_string("mod_name") or get_lang_string("menu_unavailable"))
-        or "Z - DynOS")
+        local text = (not easterEggDynOS and "[Z] " .. get_lang_string("button") .. " - " .. get_lang_string("mod_name") or "Z - DynOS")
+
+        local allowed, reason = menu_is_allowed()
+        if not allowed then
+            text = get_lang_string("menu_unavailable")
+            if reason then
+                width = djui_hud_get_screen_width() - djui_hud_measure_text(reason)
+                djui_hud_print_text(reason, width - 20, 16 + currCharY, 1)
+                currCharY = currCharY + 27
+            end
+        end
         width = djui_hud_get_screen_width() - djui_hud_measure_text(text)
         djui_hud_set_color(255, 255, 255, 255)
         djui_hud_print_text(text, width - 20, 16, 1)
@@ -2109,6 +2118,7 @@ local function on_hud_render()
         djui_hud_print_text(get_lang_string("menu_curr_char"), width - 20, 16 + currCharY, 1)
         djui_hud_set_color(charColor.r, charColor.g, charColor.b, 255)
         djui_hud_print_text(charName, djui_hud_get_screen_width() - djui_hud_measure_text(charName) - 20, 16 + currCharY, 1)
+        currCharY = currCharY + 27
 
         local text = nil
         if gGlobalSyncTable.charSelectRestrictMovesets > 0 and gGlobalSyncTable.charSelectRestrictPalettes > 0 then
@@ -2121,8 +2131,8 @@ local function on_hud_render()
         if text ~= nil then
             width = djui_hud_get_screen_width() - djui_hud_measure_text(text)
             djui_hud_set_color(255, 255, 255, 255)
-            currCharY = currCharY + 27
             djui_hud_print_text(text, width - 20, 16 + currCharY, 1)
+            currCharY = currCharY + 27
         end
     end
 
