@@ -980,6 +980,7 @@ local function mario_update(m)
 
         -- Check for Locked Chars
         local unlockedChars = 0
+        local lockStateChange = false
         for i = 0, #characterTable do
             local char = characterTable[i]
             if char.locked ~= LOCKED_NEVER then
@@ -988,7 +989,7 @@ local function mario_update(m)
                 local prevLockState = char.locked
                 char.locked = run_func_or_get_var(unlock) and LOCKED_FALSE or LOCKED_TRUE
                 if char.locked ~= prevLockState then
-                    update_character_render_table()
+                    lockStateChange = true
                     if prevLockState == LOCKED_TRUE then -- Character was unlocked
                         if startup_init_stall() and notif then
                             if optionTable[optionTableRef.notification].toggle > 0 then
@@ -1002,11 +1003,11 @@ local function mario_update(m)
                 unlockedChars = unlockedChars + 1
             end
         end
-
-        -- Force Mario to be unlocked if no characters are unlocked
-        if unlockedChars < 1 then
-            characterTable[CT_MARIO].locked = LOCKED_FALSE
-            characterUnlock[CT_MARIO].check = true
+        if lockStateChange then
+            -- Force Mario to be unlocked if no characters are unlocked
+            if unlockedChars < 1 then
+                characterTable[CT_MARIO].locked = LOCKED_FALSE
+            end
             update_character_render_table()
         end
 
