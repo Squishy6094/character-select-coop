@@ -945,6 +945,7 @@ local prevBasePalette = {
     [CAP]    = network_player_get_palette_color(gNetworkPlayers[0], CAP),
     [EMBLEM] = network_player_get_palette_color(gNetworkPlayers[0], EMBLEM),
 }
+local paletteTrans = 0
 local worldColor = {
     lighting = {r = 255, g = 255, b = 255},
     skybox = {r = 255, g = 255, b = 255},
@@ -1146,21 +1147,24 @@ local function mario_update(m)
             vec3f_copy(gLakituState.pos, camHit)
             set_override_fov(45/widthScale)
 
-            set_lighting_color(0, (menuColor.r*0.33 + 255*0.66) * worldColor.lighting.r/255)
-            set_lighting_color(1, (menuColor.g*0.33 + 255*0.66) * worldColor.lighting.g/255)
-            set_lighting_color(2, (menuColor.b*0.33 + 255*0.66) * worldColor.lighting.b/255)
-            set_lighting_color_ambient(0, (menuColor.r*0.33 + 255*0.66) * worldColor.ambient.r/127)
-            set_lighting_color_ambient(1, (menuColor.g*0.33 + 255*0.66) * worldColor.ambient.g/127)
-            set_lighting_color_ambient(2, (menuColor.b*0.33 + 255*0.66) * worldColor.ambient.b/127)
-            set_skybox_color(0, menuColor.r * worldColor.lighting.r/255)
-            set_skybox_color(1, menuColor.g * worldColor.lighting.g/255)
-            set_skybox_color(2, menuColor.b * worldColor.lighting.b/255)
-            set_fog_color(0, menuColor.r * worldColor.lighting.r/255)
-            set_fog_color(1, menuColor.g * worldColor.lighting.g/255)
-            set_fog_color(2, menuColor.b * worldColor.lighting.b/255)
-            set_vertex_color(0, menuColor.r * worldColor.lighting.r/255)
-            set_vertex_color(1, menuColor.g * worldColor.lighting.g/255)
-            set_vertex_color(2, menuColor.b * worldColor.lighting.b/255)
+            local r = math.lerp(menuColor.r, 255, math.min(paletteTrans/255, 1))
+            local g = math.lerp(menuColor.g, 255, math.min(paletteTrans/255, 1))
+            local b = math.lerp(menuColor.b, 255, math.min(paletteTrans/255, 1))
+            set_lighting_color(0, (r*0.33 + 255*0.66) * worldColor.lighting.r/255)
+            set_lighting_color(1, (g*0.33 + 255*0.66) * worldColor.lighting.g/255)
+            set_lighting_color(2, (b*0.33 + 255*0.66) * worldColor.lighting.b/255)
+            set_lighting_color_ambient(0, (r*0.33 + 255*0.66) * worldColor.ambient.r/127)
+            set_lighting_color_ambient(1, (g*0.33 + 255*0.66) * worldColor.ambient.g/127)
+            set_lighting_color_ambient(2, (b*0.33 + 255*0.66) * worldColor.ambient.b/127)
+            set_skybox_color(0, r * worldColor.lighting.r/255)
+            set_skybox_color(1, g * worldColor.lighting.g/255)
+            set_skybox_color(2, b * worldColor.lighting.b/255)
+            set_fog_color(0, r * worldColor.lighting.r/255)
+            set_fog_color(1, g * worldColor.lighting.g/255)
+            set_fog_color(2, b * worldColor.lighting.b/255)
+            set_vertex_color(0, r * worldColor.lighting.r/255)
+            set_vertex_color(1, g * worldColor.lighting.g/255)
+            set_vertex_color(2, b * worldColor.lighting.b/255)
         else
             if p.inMenu then
                 audio_stream_stop(SOUND_CHAR_SELECT_THEME)
@@ -1554,7 +1558,6 @@ local gridButtonsPerRow = 5
 local paletteXOffset = 0
 local gearRotationTarget = 0
 local gearRotation = 0
-local paletteTrans = 0
 local optionsMenuOffset = 0
 local optionsMenuOffsetMax = 210
 local prefTagRot = 0
