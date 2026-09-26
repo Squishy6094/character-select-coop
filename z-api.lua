@@ -35,6 +35,7 @@ local TYPE_FUNCTION = "function"
 ---@param lifeIcon TextureInfo|string? Use get_texture_info
 ---@param camScale integer? Zooms the camera based on a multiplier (Default `1`)
 ---@return integer --The index of the character in the character table
+---@return table --The character table
 local function character_add(name, description, credit, color, modelInfo, baseChar, lifeIcon, camScale)
     name = type(name) == TYPE_STRING and name or "Untitled"
     credit = type(credit) == TYPE_STRING and credit or "Unknown"
@@ -94,7 +95,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
     })
     characterMovesets[charNum] = {}
     characterDialog[charNum] = {}
-    return charNum
+    return charNum, characterTable[charNum]
 end
 
 ---@description A function that adds a Costume to an Existing Character, all inputs mimic character_edit
