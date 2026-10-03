@@ -1766,7 +1766,7 @@ local function on_hud_render()
                     local nameDiff = math.max(0, charAltNameLength*textScale - (segments*16)*scale + 1)*0.5
                     local nameScroll = math.round(((math.sin(get_global_timer()*0.02)))*nameDiff)
                     djui_hud_set_color(charColor.r*0.5, charColor.g*0.5, charColor.b*0.5, 255)
-                    djui_hud_set_scissor(x + 104*scale, 0, x + 104*scale + (segments+1)*16*scale, height)
+                    djui_hud_set_scissor(x + 104*scale, 0, 104*scale + (segments+1)*16*scale, height)
                     djui_hud_print_text(charAltName, x + 112*scale + segments*16*scale*0.5 - charAltNameLength*textScale*0.5 + nameScroll, y + 32*scale, textScale)
                     djui_hud_reset_scissor()
 

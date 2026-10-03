@@ -742,3 +742,17 @@ function string_sim(str1, str2)
     if maxLength == 0 then return 1 end
     return (distance / maxLength)
 end
+
+-- Can remove when coop updates
+local og_djui_hud_set_scissor = djui_hud_set_scissor
+function djui_hud_set_scissor(x, y, width, height)
+    if VERSION_NUMBER > 42 then
+        og_djui_hud_set_scissor(x, y, width, height)
+    else
+        local scale = 1
+        if djui_hud_get_resolution() == RESOLUTION_N64 then
+            scale = 320/djui_hud_get_screen_width()
+        end
+        og_djui_hud_set_scissor(math.max(0, x*scale), math.max(0, y), (x + width)*scale, y + height)
+    end
+end
