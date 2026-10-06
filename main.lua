@@ -755,10 +755,32 @@ local function load_preferred_char()
     characterTable[currChar].currAlt = savedAlt
 
     -- Set Palette
-    local model = characterTable[currChar][savedAlt].model
+    --[[
+    local currModel = characterTable[currChar][savedAlt].model
     if characterColorPresets[model] ~= nil then
         gCSPlayers[0].presetPalette = charFound and savedPalette or 0
         characterColorPresets[model].currPalette = gCSPlayers[0].presetPalette
+    end
+    ]]
+
+    for model, palettes in pairs(characterColorPresets) do
+        local saveName = nil
+        local charNum = 0
+        for i = 0, #characterTable do
+            for a = 1, #characterTable[i] do
+                if characterTable[i][a].ogModel == model then
+                    saveName = "prefPalette"..string_space_to_underscore(characterTable[i].saveName .. a)
+                    charNum = i
+                end
+            end
+            if saveName then
+                break
+            end
+        end
+        if saveName then
+            palettes.saveName = saveName
+            palettes.currPalette = math.clamp(mod_storage_load_integer(saveName, charNum < CT_MAX and 0 or 1), 0, #palettes)
+        end
     end
 
     local savedCharColors = mod_storage_load("PrefCharColor")
@@ -2421,6 +2443,13 @@ local function before_mario_update(m)
             run_func_with_condition_and_cooldown(FUNC_INDEX_MISC,
                 (controller.buttonPressed & B_BUTTON) ~= 0,
                 function ()
+                    -- Save pref palette on menu exit
+                    for model, palettes in pairs(characterColorPresets) do
+                        if palettes.saveName then
+                            mod_storage_save_integer(palettes.saveName, palettes.currPalette)
+                        end
+                    end
+
                     menu = false
                 end
             )
