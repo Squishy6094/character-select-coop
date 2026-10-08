@@ -709,6 +709,46 @@ local function render_hud_camera_status()
     })
 end
 
+local function render_tutorial()
+    if not characterTable[currChar].movesetTutorial then return end
+    local currTutorial = nil
+    for _, tutorial in pairs(characterTable[currChar].movesetTutorial) do
+        if tutorial.saveName == nil then
+            tutorial.saveName = characterTable[currChar].saveName.."tutorial"..string_space_to_underscore(tutorial.name)
+            tutorial.complete = mod_storage_load_bool(tutorial.saveName, false)
+        end
+
+        if not tutorial.complete then
+            currTutorial = tutorial
+            break
+        end
+    end
+
+    if currTutorial == nil then return end
+
+    djui_hud_set_font(FONT_SPECIAL)
+    local cW, cH = djui_hud_measure_text(characterTable[currChar].nickname.."'s Moveset")
+    djui_hud_set_font(FONT_NORMAL)
+    local nW, nH = djui_hud_measure_text(currTutorial.name)
+    local dW, dH = djui_hud_measure_text(currTutorial.desc)
+    djui_hud_set_color(0, 0, 0, 150)
+    djui_hud_render_rect(15, 48, math.max(nW*0.5, dW*0.3) + 6, nH*0.5 + dH*0.3 + cH*0.2 + 4)
+    djui_hud_set_color(255, 255, 255, 255)
+    
+    djui_hud_set_font(FONT_SPECIAL)
+    djui_hud_print_text(characterTable[currChar].nickname.."'s Moveset", 18, 50, 0.2, 0.2)
+    djui_hud_set_font(FONT_NORMAL)
+    djui_hud_print_text(currTutorial.name, 18, 50 + cH*0.2, 0.5, 0.5)
+    djui_hud_print_text(currTutorial.desc, 18, 50 + cH*0.2 + nH*0.5, 0.3, 0.3)
+
+    local status = run_func_or_get_var(currTutorial.action)
+    if gMarioStates[0].action == status or status == true then
+        currTutorial.complete = true
+        mod_storage_save_bool(currTutorial.saveName, true)
+        play_sound(SOUND_MENU_LET_GO_MARIO_FACE, gGlobalSoundSource)
+    end
+end
+
 -- Act Select Hud --
 
 local STAR_SELECTOR_NOT_SELECTED = 0
@@ -1137,6 +1177,7 @@ local function on_hud_render_behind()
         --render_hud_stars()
         render_hud_camera_status()
         render_hud_power_meter()
+        render_tutorial()
         sVisibleStars = 0
     else
         if enablePlayersInLevelDisplay then

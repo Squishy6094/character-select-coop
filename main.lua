@@ -152,6 +152,7 @@ characterTable = {
         },
         replaceTextures = {},
         replaceSeq = {},
+        movesetTutorial = {},
         [1] = {
             name = "Mario",
             description = "The iconic Italian plumber himself! He's quite confident and brave, always prepared to jump into action to save the Mushroom Kingdom!",
@@ -198,6 +199,7 @@ characterTable = {
         },
         replaceTextures = {},
         replaceSeq = {},
+        movesetTutorial = {},
         [1] = {
             name = "Luigi",
             description = "The other iconic Italian plumber! He's a bit shy and scares easily, but he's willing to follow his brother Mario through any battle that may come their way!",
@@ -235,6 +237,7 @@ characterTable = {
         },
         replaceTextures = {},
         replaceSeq = {},
+        movesetTutorial = {},
         [1] = {
             name = "Toad",
             description = "Princess Peach's little attendant! He's an energetic little mushroom that's never afraid to follow Mario and Luigi on their adventures!",
@@ -272,6 +275,7 @@ characterTable = {
         },
         replaceTextures = {},
         replaceSeq = {},
+        movesetTutorial = {},
         [1] = {
             name = "Waluigi",
             description = "The mischievous rival of Luigi! He's a narcissistic competitor that takes great taste in others getting pummeled from his success!",
@@ -309,6 +313,7 @@ characterTable = {
         },
         replaceTextures = {},
         replaceSeq = {},
+        movesetTutorial = {},
         [1] = {
             name = "Wario",
             description = "The mischievous rival of Mario! He's a greed-filled treasure hunter obsessed with money and gold coins. He's always ready for a brawl if his money is on the line!",
