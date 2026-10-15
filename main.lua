@@ -972,6 +972,7 @@ local prevBasePalette = {
     [CAP]    = network_player_get_palette_color(gNetworkPlayers[0], CAP),
     [EMBLEM] = network_player_get_palette_color(gNetworkPlayers[0], EMBLEM),
 }
+local paletteTransTarget = 0
 local paletteTrans = 0
 local worldColor = {
     lighting = {r = 255, g = 255, b = 255},
@@ -1174,9 +1175,9 @@ local function mario_update(m)
             vec3f_copy(gLakituState.pos, camHit)
             set_override_fov(45/widthScale)
 
-            local r = math.lerp(menuColor.r, 255, math.min(paletteTrans/255, 1))
-            local g = math.lerp(menuColor.g, 255, math.min(paletteTrans/255, 1))
-            local b = math.lerp(menuColor.b, 255, math.min(paletteTrans/255, 1))
+            local r = math.lerp(menuColor.r, 255, paletteTrans/255)
+            local g = math.lerp(menuColor.g, 255, paletteTrans/255)
+            local b = math.lerp(menuColor.b, 255, paletteTrans/255)
             set_lighting_color(0, (r*0.33 + 255*0.66) * worldColor.lighting.r/255)
             set_lighting_color(1, (g*0.33 + 255*0.66) * worldColor.lighting.g/255)
             set_lighting_color(2, (b*0.33 + 255*0.66) * worldColor.lighting.b/255)
@@ -1653,8 +1654,8 @@ local function on_hud_render()
         local bottomTapeAngle = angle_from_2d_points(-10, height - 50, width + 10, height - 35)
         if palettes then
             local bucketSpacing = 24
-            paletteXOffset = lerp(paletteXOffset, palettes.currPalette*bucketSpacing, 0.1)
-            paletteTrans = math.max(paletteTrans - 6, 0)
+            paletteXOffset = lerp(paletteXOffset, palettes.currPalette*bucketSpacing, 0.15)
+            paletteTransTarget = math.max(paletteTransTarget - 6, 0)
 
             for i = 0, #palettes do
                 local x = width*0.85 - 16 - paletteXOffset + coss(bottomTapeAngle)*bucketSpacing*i
@@ -1673,17 +1674,17 @@ local function on_hud_render()
                 if paletteShirt and palettePants and (x > width*0.7 - 32 and x < width + 32) then
                     local bucketFrame = (math.floor((get_global_timer() + i*10)*0.2)%10) * 32
                     local bucketPaintFrame = (math.floor(get_global_timer()*0.3)%10) * 32
-                    djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, math.min(paletteTrans, 255))
+                    djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, paletteTrans)
                     djui_hud_render_texture_tile(TEX_PALETTE_BUCKET, x, y, 1, 1, 0, bucketFrame, 32, 32)
-                    djui_hud_set_color(paletteShirt.r, paletteShirt.g, paletteShirt.b, math.min(paletteTrans, 255))
+                    djui_hud_set_color(paletteShirt.r, paletteShirt.g, paletteShirt.b, paletteTrans)
                     djui_hud_render_texture_tile(TEX_PALETTE_BUCKET, x, y, 1, 1, 32, bucketFrame, 32, 32)
-                    djui_hud_set_color(palettePants.r, palettePants.g, palettePants.b, math.min(paletteTrans, 255))
+                    djui_hud_set_color(palettePants.r, palettePants.g, palettePants.b, paletteTrans)
                     djui_hud_render_texture_tile(TEX_PALETTE_BUCKET, x, y, 1, 1, 64, bucketFrame, 32, 32)
 
                     if i == palettes.currPalette then
-                        djui_hud_set_color(paletteShirt.r, paletteShirt.g, paletteShirt.b, math.min(paletteTrans, 255))
+                        djui_hud_set_color(paletteShirt.r, paletteShirt.g, paletteShirt.b, paletteTrans)
                         djui_hud_render_texture_tile(TEX_PALETTE_BUCKET, x, y, 1, 1, 96, bucketPaintFrame, 32, 32)
-                        djui_hud_set_color(palettePants.r, palettePants.g, palettePants.b, math.min(paletteTrans, 255))
+                        djui_hud_set_color(palettePants.r, palettePants.g, palettePants.b, paletteTrans)
                         djui_hud_render_texture_tile(TEX_PALETTE_BUCKET, x, y, 1, 1, 128, bucketPaintFrame, 32, 32)
                     end
                 end
@@ -1700,9 +1701,12 @@ local function on_hud_render()
             djui_hud_set_font(FONT_RECOLOR_HUD)
             local x = width*0.85 - djui_hud_measure_text(paletteName)*0.25
             local y = height*0.68 - math.abs(math.cos((get_global_timer() - palettes.currPalette*10)*0.05))*3
-            djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, math.min(paletteTrans, 255))
+            djui_hud_set_color(charColor.r*0.7 + 255*0.3, charColor.g*0.7 + 255*0.3, charColor.b*0.7 + 255*0.3, paletteTrans)
             djui_hud_print_text(paletteName, x, y, 0.5)
+        else
+            paletteTransTarget = 0
         end
+        paletteTrans = math.lerp(paletteTrans, math.clamp(paletteTransTarget, 0, 255), 0.15)
 
         -- Render Z Alt Switch
         djui_hud_set_filter(FILTER_LINEAR)
@@ -2440,7 +2444,7 @@ local function before_mario_update(m)
                     else
                         play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
                     end
-                    paletteTrans = 1000
+                    paletteTransTarget = 1000
                     currPaletteTable.currPalette = num_wrap(currPaletteTable.currPalette, 0, #currPaletteTable)
                 end
             )
