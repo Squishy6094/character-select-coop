@@ -1,5 +1,7 @@
 if incompatibleClient then return 0 end
 
+local hudDodge = require("libs/hudDodge")
+
 local og_hud_get_value = hud_get_value
 local og_hud_set_value = hud_set_value
 
@@ -709,6 +711,69 @@ local function render_hud_camera_status()
     })
 end
 
+local tutorialOpacity = -1
+local tutorialOffset = 150
+local prevTutorial = nil
+local function render_tutorial()
+    if not characterTable[currChar].movesetTutorial or not gCSPlayers[0].movesetToggle then return end
+    djui_hud_set_resolution(RESOLUTION_DJUI)
+    local djuiScale = 240/djui_hud_get_screen_height()
+    djui_hud_set_resolution(RESOLUTION_N64)
+    local currTutorial = nil
+    for _, tutorial in pairs(characterTable[currChar].movesetTutorial) do
+        if tutorial.saveName == nil then
+            tutorial.saveName = "tutorial"..characterTable[currChar].saveName..string_space_to_underscore(tutorial.name)
+            tutorial.complete = mod_storage_load_bool(tutorial.saveName, false)
+        end
+
+        if not tutorial.complete then
+            currTutorial = tutorial
+            break
+        end
+    end
+
+    if tutorialOpacity ~= -1 then
+        tutorialOpacity = math.floor(math.lerp(tutorialOpacity, 0, 0.1))
+        if tutorialOpacity == 0 then
+            tutorialOffset = 150
+            tutorialOpacity = -1
+        end
+    end
+    if tutorialOpacity == -1 then
+        prevTutorial = currTutorial
+    end
+
+    tutorialOffset = math.lerp(tutorialOffset, 0, 0.2)
+    if prevTutorial == nil then return end
+
+    djui_hud_set_font(FONT_SPECIAL)
+    local cW, cH = djui_hud_measure_text(characterTable[currChar].nickname.."'s Moveset - "..prevTutorial.name)
+    djui_hud_set_font(FONT_NORMAL)
+    local dW, dH = djui_hud_measure_text(run_func_or_get_var(prevTutorial.desc))
+    local opacity = (tutorialOpacity == -1 and 255 or tutorialOpacity)
+    djui_hud_set_color(0, 0, 0, opacity/255*150)
+    local w = dW*0.3 + 6
+    local h = dH*0.3 + cH*0.2 + 4
+    local x, y = hudDodge.find_open_hud_space(0, 0, w, h, 0, 1, 5)
+    x = x - tutorialOffset
+    djui_hud_render_rect(x - djuiScale*8, y - djuiScale*8, w + djuiScale*16, h + djuiScale*16)
+    djui_hud_render_rect(x, y, w, h)
+    djui_hud_set_color(255, 255, 255, opacity)
+    
+    djui_hud_set_font(FONT_SPECIAL)
+    djui_hud_print_text(characterTable[currChar].nickname.."'s Moveset - "..prevTutorial.name, x + 3, y + 2, 0.2, 0.2)
+    djui_hud_set_font(FONT_NORMAL)
+    djui_hud_print_text(run_func_or_get_var(prevTutorial.desc), x + 3, y + 2 + cH*0.2, 0.3, 0.3)
+
+    local status = run_func_or_get_var(prevTutorial.action)
+    if tutorialOpacity == -1 and (gMarioStates[0].action == status or status == true) then
+        prevTutorial.complete = true
+        tutorialOpacity = 255
+        mod_storage_save_bool(prevTutorial.saveName, true)
+        play_sound(SOUND_GENERAL2_RIGHT_ANSWER, gGlobalSoundSource)
+    end
+end
+
 -- Act Select Hud --
 
 local STAR_SELECTOR_NOT_SELECTED = 0
@@ -1137,6 +1202,7 @@ local function on_hud_render_behind()
         --render_hud_stars()
         render_hud_camera_status()
         render_hud_power_meter()
+        render_tutorial()
         sVisibleStars = 0
     else
         if enablePlayersInLevelDisplay then

@@ -35,6 +35,7 @@ local TYPE_FUNCTION = "function"
 ---@param lifeIcon TextureInfo|string? Use get_texture_info
 ---@param camScale integer? Zooms the camera based on a multiplier (Default `1`)
 ---@return integer --The index of the character in the character table
+---@return table --The character table
 local function character_add(name, description, credit, color, modelInfo, baseChar, lifeIcon, camScale)
     name = type(name) == TYPE_STRING and name or "Untitled"
     credit = type(credit) == TYPE_STRING and credit or "Unknown"
@@ -77,6 +78,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         },
         replaceTextures = {},
         replaceSeq = {},
+        movesetTutorial = {},
         menuInst = nil,
         [1] = {
             name = name,
@@ -94,7 +96,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
     })
     characterMovesets[charNum] = {}
     characterDialog[charNum] = {}
-    return charNum
+    return charNum, characterTable[charNum]
 end
 
 ---@description A function that adds a Costume to an Existing Character, all inputs mimic character_edit
@@ -1167,6 +1169,17 @@ local function character_get_moveset(charNum)
     return characterMovesets[charNum]
 end
 
+---@description Adds a prompt for the user to perform an action
+---@added 1.17
+local function character_add_moveset_tutorial(charNum, name, desc, action)
+    if not characterTable[charNum] then return end
+    table.insert(characterTable[charNum].movesetTutorial, {
+        name = name,
+        desc = desc,
+        action = action
+    })
+end
+
 ---@description A function that returns if the character number is of a character that is included with CoopDX
 ---@added 1.15.1
 ---@param charNum integer? The character number you want to check, Default is the local character
@@ -1262,6 +1275,7 @@ _G.charSelect = {
     character_set_category = character_set_category,
     character_replace_dialog = character_replace_dialog,
     character_get_moveset = character_get_moveset,
+    character_add_moveset_tutorial = character_add_moveset_tutorial,
     character_is_vanilla = character_is_vanilla, -- Function located in main.lua
     character_add_menu_instrumental = character_add_menu_instrumental,
     character_add_graffiti = character_add_graffiti,

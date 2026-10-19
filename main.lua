@@ -152,6 +152,7 @@ characterTable = {
         },
         replaceTextures = {},
         replaceSeq = {},
+        movesetTutorial = {},
         [1] = {
             name = "Mario",
             description = "The iconic Italian plumber himself! He's quite confident and brave, always prepared to jump into action to save the Mushroom Kingdom!",
@@ -198,6 +199,7 @@ characterTable = {
         },
         replaceTextures = {},
         replaceSeq = {},
+        movesetTutorial = {},
         [1] = {
             name = "Luigi",
             description = "The other iconic Italian plumber! He's a bit shy and scares easily, but he's willing to follow his brother Mario through any battle that may come their way!",
@@ -235,6 +237,7 @@ characterTable = {
         },
         replaceTextures = {},
         replaceSeq = {},
+        movesetTutorial = {},
         [1] = {
             name = "Toad",
             description = "Princess Peach's little attendant! He's an energetic little mushroom that's never afraid to follow Mario and Luigi on their adventures!",
@@ -272,6 +275,7 @@ characterTable = {
         },
         replaceTextures = {},
         replaceSeq = {},
+        movesetTutorial = {},
         [1] = {
             name = "Waluigi",
             description = "The mischievous rival of Luigi! He's a narcissistic competitor that takes great taste in others getting pummeled from his success!",
@@ -309,6 +313,7 @@ characterTable = {
         },
         replaceTextures = {},
         replaceSeq = {},
+        movesetTutorial = {},
         [1] = {
             name = "Wario",
             description = "The mischievous rival of Mario! He's a greed-filled treasure hunter obsessed with money and gold coins. He's always ready for a brawl if his money is on the line!",
@@ -755,10 +760,32 @@ local function load_preferred_char()
     characterTable[currChar].currAlt = savedAlt
 
     -- Set Palette
-    local model = characterTable[currChar][savedAlt].model
+    --[[
+    local currModel = characterTable[currChar][savedAlt].model
     if characterColorPresets[model] ~= nil then
         gCSPlayers[0].presetPalette = charFound and savedPalette or 0
         characterColorPresets[model].currPalette = gCSPlayers[0].presetPalette
+    end
+    ]]
+
+    for model, palettes in pairs(characterColorPresets) do
+        local saveName = nil
+        local charNum = 0
+        for i = 0, #characterTable do
+            for a = 1, #characterTable[i] do
+                if characterTable[i][a].ogModel == model then
+                    saveName = "prefPalette"..string_space_to_underscore(characterTable[i].saveName .. a)
+                    charNum = i
+                end
+            end
+            if saveName then
+                break
+            end
+        end
+        if saveName then
+            palettes.saveName = saveName
+            palettes.currPalette = math.clamp(mod_storage_load_integer(saveName, charNum < CT_MAX and 0 or 1), 0, #palettes)
+        end
     end
 
     local savedCharColors = mod_storage_load("PrefCharColor")
@@ -945,6 +972,8 @@ local prevBasePalette = {
     [CAP]    = network_player_get_palette_color(gNetworkPlayers[0], CAP),
     [EMBLEM] = network_player_get_palette_color(gNetworkPlayers[0], EMBLEM),
 }
+local paletteTransTarget = 0
+local paletteTrans = 0
 local worldColor = {
     lighting = {r = 255, g = 255, b = 255},
     skybox = {r = 255, g = 255, b = 255},
@@ -1146,21 +1175,24 @@ local function mario_update(m)
             vec3f_copy(gLakituState.pos, camHit)
             set_override_fov(45/widthScale)
 
-            set_lighting_color(0, (menuColor.r*0.33 + 255*0.66) * worldColor.lighting.r/255)
-            set_lighting_color(1, (menuColor.g*0.33 + 255*0.66) * worldColor.lighting.g/255)
-            set_lighting_color(2, (menuColor.b*0.33 + 255*0.66) * worldColor.lighting.b/255)
-            set_lighting_color_ambient(0, (menuColor.r*0.33 + 255*0.66) * worldColor.ambient.r/127)
-            set_lighting_color_ambient(1, (menuColor.g*0.33 + 255*0.66) * worldColor.ambient.g/127)
-            set_lighting_color_ambient(2, (menuColor.b*0.33 + 255*0.66) * worldColor.ambient.b/127)
-            set_skybox_color(0, menuColor.r * worldColor.lighting.r/255)
-            set_skybox_color(1, menuColor.g * worldColor.lighting.g/255)
-            set_skybox_color(2, menuColor.b * worldColor.lighting.b/255)
-            set_fog_color(0, menuColor.r * worldColor.lighting.r/255)
-            set_fog_color(1, menuColor.g * worldColor.lighting.g/255)
-            set_fog_color(2, menuColor.b * worldColor.lighting.b/255)
-            set_vertex_color(0, menuColor.r * worldColor.lighting.r/255)
-            set_vertex_color(1, menuColor.g * worldColor.lighting.g/255)
-            set_vertex_color(2, menuColor.b * worldColor.lighting.b/255)
+            local r = math.lerp(menuColor.r, 255, paletteTrans/255)
+            local g = math.lerp(menuColor.g, 255, paletteTrans/255)
+            local b = math.lerp(menuColor.b, 255, paletteTrans/255)
+            set_lighting_color(0, (r*0.33 + 255*0.66) * worldColor.lighting.r/255)
+            set_lighting_color(1, (g*0.33 + 255*0.66) * worldColor.lighting.g/255)
+            set_lighting_color(2, (b*0.33 + 255*0.66) * worldColor.lighting.b/255)
+            set_lighting_color_ambient(0, (r*0.33 + 255*0.66) * worldColor.ambient.r/127)
+            set_lighting_color_ambient(1, (g*0.33 + 255*0.66) * worldColor.ambient.g/127)
+            set_lighting_color_ambient(2, (b*0.33 + 255*0.66) * worldColor.ambient.b/127)
+            set_skybox_color(0, r * worldColor.lighting.r/255)
+            set_skybox_color(1, g * worldColor.lighting.g/255)
+            set_skybox_color(2, b * worldColor.lighting.b/255)
+            set_fog_color(0, r * worldColor.lighting.r/255)
+            set_fog_color(1, g * worldColor.lighting.g/255)
+            set_fog_color(2, b * worldColor.lighting.b/255)
+            set_vertex_color(0, r * worldColor.lighting.r/255)
+            set_vertex_color(1, g * worldColor.lighting.g/255)
+            set_vertex_color(2, b * worldColor.lighting.b/255)
         else
             if p.inMenu then
                 audio_stream_stop(SOUND_CHAR_SELECT_THEME)
@@ -1554,7 +1586,6 @@ local gridButtonsPerRow = 5
 local paletteXOffset = 0
 local gearRotationTarget = 0
 local gearRotation = 0
-local paletteTrans = 0
 local optionsMenuOffset = 0
 local optionsMenuOffsetMax = 210
 local prefTagRot = 0
@@ -1623,8 +1654,8 @@ local function on_hud_render()
         local bottomTapeAngle = angle_from_2d_points(-10, height - 50, width + 10, height - 35)
         if palettes then
             local bucketSpacing = 24
-            paletteXOffset = lerp(paletteXOffset, palettes.currPalette*bucketSpacing, 0.1)
-            paletteTrans = math.max(paletteTrans - 6, 0)
+            paletteXOffset = lerp(paletteXOffset, palettes.currPalette*bucketSpacing, 0.15)
+            paletteTransTarget = math.max(paletteTransTarget - 6, 0)
 
             for i = 0, #palettes do
                 local x = width*0.85 - 16 - paletteXOffset + coss(bottomTapeAngle)*bucketSpacing*i
@@ -1643,17 +1674,17 @@ local function on_hud_render()
                 if paletteShirt and palettePants and (x > width*0.7 - 32 and x < width + 32) then
                     local bucketFrame = (math.floor((get_global_timer() + i*10)*0.2)%10) * 32
                     local bucketPaintFrame = (math.floor(get_global_timer()*0.3)%10) * 32
-                    djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, math.min(paletteTrans, 255))
+                    djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, paletteTrans)
                     djui_hud_render_texture_tile(TEX_PALETTE_BUCKET, x, y, 1, 1, 0, bucketFrame, 32, 32)
-                    djui_hud_set_color(paletteShirt.r, paletteShirt.g, paletteShirt.b, math.min(paletteTrans, 255))
+                    djui_hud_set_color(paletteShirt.r, paletteShirt.g, paletteShirt.b, paletteTrans)
                     djui_hud_render_texture_tile(TEX_PALETTE_BUCKET, x, y, 1, 1, 32, bucketFrame, 32, 32)
-                    djui_hud_set_color(palettePants.r, palettePants.g, palettePants.b, math.min(paletteTrans, 255))
+                    djui_hud_set_color(palettePants.r, palettePants.g, palettePants.b, paletteTrans)
                     djui_hud_render_texture_tile(TEX_PALETTE_BUCKET, x, y, 1, 1, 64, bucketFrame, 32, 32)
 
                     if i == palettes.currPalette then
-                        djui_hud_set_color(paletteShirt.r, paletteShirt.g, paletteShirt.b, math.min(paletteTrans, 255))
+                        djui_hud_set_color(paletteShirt.r, paletteShirt.g, paletteShirt.b, paletteTrans)
                         djui_hud_render_texture_tile(TEX_PALETTE_BUCKET, x, y, 1, 1, 96, bucketPaintFrame, 32, 32)
-                        djui_hud_set_color(palettePants.r, palettePants.g, palettePants.b, math.min(paletteTrans, 255))
+                        djui_hud_set_color(palettePants.r, palettePants.g, palettePants.b, paletteTrans)
                         djui_hud_render_texture_tile(TEX_PALETTE_BUCKET, x, y, 1, 1, 128, bucketPaintFrame, 32, 32)
                     end
                 end
@@ -1670,9 +1701,12 @@ local function on_hud_render()
             djui_hud_set_font(FONT_RECOLOR_HUD)
             local x = width*0.85 - djui_hud_measure_text(paletteName)*0.25
             local y = height*0.68 - math.abs(math.cos((get_global_timer() - palettes.currPalette*10)*0.05))*3
-            djui_hud_set_color(charColor.r*0.5 + 127, charColor.g*0.5 + 127, charColor.b*0.5 + 127, math.min(paletteTrans, 255))
+            djui_hud_set_color(charColor.r*0.7 + 255*0.3, charColor.g*0.7 + 255*0.3, charColor.b*0.7 + 255*0.3, paletteTrans)
             djui_hud_print_text(paletteName, x, y, 0.5)
+        else
+            paletteTransTarget = 0
         end
+        paletteTrans = math.lerp(paletteTrans, math.clamp(paletteTransTarget, 0, 255), 0.15)
 
         -- Render Z Alt Switch
         djui_hud_set_filter(FILTER_LINEAR)
@@ -1689,8 +1723,7 @@ local function on_hud_render()
         local wallMiddle = width*(0.35 - ((optionsMenuOffset - optionsMenuOffsetMax*0.5)/optionsMenuOffsetMax)*0.3)
         local x = wallMiddle - wallWidth*wallScale*0.5 - menuOffsetX
         local y = height*0.42 - wallHeight*wallScale*0.5 - menuOffsetY
-        local scissorWidth = math.max(320/djui_hud_get_screen_width(), 1)*320*0.7 -- Ensure Wall Space doesn't break when under 4:3
-        djui_hud_set_scissor(0, 0, scissorWidth, height)
+        djui_hud_set_scissor(0, 0, width*0.7, height)
         djui_hud_set_color(playerShirt.r, playerShirt.g, playerShirt.b, 255)
         djui_hud_render_texture_auto_interpolated("wall-l", TEX_WALL_LEFT, x, y, wallScale, wallScale)
         djui_hud_set_color(playerPants.r, playerPants.g, playerPants.b, 255)
@@ -1764,7 +1797,7 @@ local function on_hud_render()
                     local nameDiff = math.max(0, charAltNameLength*textScale - (segments*16)*scale + 1)*0.5
                     local nameScroll = math.round(((math.sin(get_global_timer()*0.02)))*nameDiff)
                     djui_hud_set_color(charColor.r*0.5, charColor.g*0.5, charColor.b*0.5, 255)
-                    djui_hud_set_scissor((x + 104*scale) * 320/djui_hud_get_screen_width(), 0, (x + 104*scale + (segments+1)*16*scale) * 320/djui_hud_get_screen_width(), height)
+                    djui_hud_set_scissor(x, 0, x + (112 + segments*16)*scale, height)
                     djui_hud_print_text(charAltName, x + 112*scale + segments*16*scale*0.5 - charAltNameLength*textScale*0.5 + nameScroll, y + 32*scale, textScale)
                     djui_hud_reset_scissor()
 
@@ -1802,7 +1835,7 @@ local function on_hud_render()
                     end
                 end
             end
-            djui_hud_set_scissor(0, 0, scissorWidth, height)
+            djui_hud_set_scissor(0, 0, width*0.7, height)
         else
             -- Render Character Grid
             local currRow = math.floor((currCharRender)/gridButtonsPerRow)
@@ -2411,7 +2444,7 @@ local function before_mario_update(m)
                     else
                         play_sound(SOUND_MENU_CAMERA_BUZZ, cameraToObject)
                     end
-                    paletteTrans = 1000
+                    paletteTransTarget = 1000
                     currPaletteTable.currPalette = num_wrap(currPaletteTable.currPalette, 0, #currPaletteTable)
                 end
             )
@@ -2419,6 +2452,13 @@ local function before_mario_update(m)
             run_func_with_condition_and_cooldown(FUNC_INDEX_MISC,
                 (controller.buttonPressed & B_BUTTON) ~= 0,
                 function ()
+                    -- Save pref palette on menu exit
+                    for model, palettes in pairs(characterColorPresets) do
+                        if palettes.saveName then
+                            mod_storage_save_integer(palettes.saveName, palettes.currPalette)
+                        end
+                    end
+
                     menu = false
                 end
             )
