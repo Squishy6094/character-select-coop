@@ -1069,7 +1069,7 @@ end
 ---@param toggle integer What you want to set the option to
 local function set_options_status(tableNum, toggle)
     local currOption = optionTable[tableNum]
-    if currOption == nil or type(toggle) ~= TYPE_INTEGER or toggle > currOption.toggleMax or toggle < 1 then return end
+    if currOption == nil or type(toggle) ~= TYPE_INTEGER or toggle > currOption.toggleMax or toggle < 0 then return end
     optionTable[tableNum].toggle = toggle
     optionTable[tableNum].optionBeingSet = true
 end
