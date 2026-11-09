@@ -461,6 +461,15 @@ local function character_add_sequence_replacement(charNum, sequenceId, replaceId
     characterTable[charNum].replaceSeq[sequenceId] = replaceId
 end
 
+---@description A function that replaces a texture with your own
+---@added 1.17
+---@param charNum integer Character ID
+---@param soundID integer The original Sequence ID you want to replace
+---@param replaceId integer|ModAudio|function Your own allocated sequence to replace with.
+local function character_add_sound_replacement(charNum, soundID, replaceId)
+    characterTable[charNum].replaceSound[soundID] = replaceId
+end
+
 ---@description A function that adds a celebration star model to a character
 ---@added 1.7
 ---@param modelInfo ModelExtendedId|integer Player Model ID	
@@ -1241,6 +1250,7 @@ _G.charSelect = {
     character_add_model_replacement = character_add_model_replacement,
     character_add_texture_replacement = character_add_texture_replacement,
     character_add_sequence_replacement = character_add_sequence_replacement,
+    character_add_sound_replacement = character_add_sound_replacement,
     character_add_celebration_star = character_add_celebration_star,
     character_add_peach_custom = character_add_peach_custom,
     character_add_ending_toad_model = character_add_ending_toad_model,

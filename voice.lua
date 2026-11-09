@@ -389,17 +389,29 @@ cs_hook_mario_update(mario_update)
 -- Peach Line Replacements
 ---@param soundbits integer
 ---@param pos Vec3f 
-local function on_play_sound(soundbits,pos)
-    local endpeachsoundtable = {[SOUND_PEACH_MARIO] = true,[SOUND_PEACH_POWER_OF_THE_STARS] = true,[SOUND_PEACH_THANKS_TO_YOU] = true, [SOUND_PEACH_THANK_YOU_MARIO] = true,[SOUND_PEACH_SOMETHING_SPECIAL] = true,[SOUND_PEACH_BAKE_A_CAKE] = true,[SOUND_PEACH_FOR_MARIO] = true,[SOUND_PEACH_MARIO2] = true}
-    local m = gMarioStates[0]
-    if endpeachsoundtable[soundbits] and (character_get_voice(m) ~= nil) and (character_get_voice(m)[soundbits] ~= nil) then --ending peach cutscene sounds
-        custom_character_sound(m,soundbits,pos)
-        return NO_SOUND
-    elseif (soundbits == SOUND_PEACH_DEAR_MARIO) and (character_get_voice(m) ~= nil) and (character_get_voice(m)[soundbits] ~= nil)  then --introduction peach sounds
-        custom_character_sound(m,soundbits,pos)
-        return NO_SOUND
-    elseif (soundbits == SOUND_MENU_THANK_YOU_PLAYING_MY_GAME) and (character_get_voice(m) ~= nil) and (character_get_voice(m)[soundbits] ~= nil)  then --cake screen thank you for playing my game voice
-        custom_character_sound(m,soundbits,pos)
+local function on_play_sound(soundbits, pos)
+    if optionTable[optionTableRef.localVisuals].toggle ~= 1 then
+        return
+    end
+
+    local replaceSound = run_func_or_get_var(characterTable[currChar].replaceSound[soundbits], pos)
+    if not replaceSound then return end
+    local m = gMarioStates[0] ---@type MarioState
+    if type(replaceSound) == TYPE_INTEGER then
+        if replaceSound == 0 then
+            return 0
+        else
+            play_sound(replaceSound, pos)
+            return NO_SOUND
+        end
+    else
+        -- Add camera pos to counterbalance the sample play offset
+        if m.area and m.area.camera then
+            pos.x = pos.x + m.area.camera.pos.x
+            pos.y = pos.y + m.area.camera.pos.y
+            pos.z = pos.z + m.area.camera.pos.z
+        end
+        audio_sample_play(replaceSound, pos, 1)
         return NO_SOUND
     end
 end
