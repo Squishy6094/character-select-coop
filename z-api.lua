@@ -78,6 +78,7 @@ local function character_add(name, description, credit, color, modelInfo, baseCh
         },
         replaceTextures = {},
         replaceSeq = {},
+        replaceSound = {},
         movesetTutorial = {},
         menuInst = nil,
         [1] = {

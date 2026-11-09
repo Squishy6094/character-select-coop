@@ -152,6 +152,7 @@ characterTable = {
         },
         replaceTextures = {},
         replaceSeq = {},
+        replaceSound = {},
         movesetTutorial = {},
         [1] = {
             name = "Mario",
@@ -199,6 +200,7 @@ characterTable = {
         },
         replaceTextures = {},
         replaceSeq = {},
+        replaceSound = {},
         movesetTutorial = {},
         [1] = {
             name = "Luigi",
@@ -237,6 +239,7 @@ characterTable = {
         },
         replaceTextures = {},
         replaceSeq = {},
+        replaceSound = {},
         movesetTutorial = {},
         [1] = {
             name = "Toad",
@@ -275,6 +278,7 @@ characterTable = {
         },
         replaceTextures = {},
         replaceSeq = {},
+        replaceSound = {},
         movesetTutorial = {},
         [1] = {
             name = "Waluigi",
@@ -313,6 +317,7 @@ characterTable = {
         },
         replaceTextures = {},
         replaceSeq = {},
+        replaceSound = {},
         movesetTutorial = {},
         [1] = {
             name = "Wario",
